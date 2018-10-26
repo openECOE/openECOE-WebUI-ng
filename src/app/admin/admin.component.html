@@ -1,0 +1,21 @@
+<nz-layout>
+  <nz-sider [nzCollapsible]="true" [(nzCollapsed)]="isCollapsed" [nzTrigger]="triggerTemplate">
+    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+      <li (click)="isCollapsed = !isCollapsed">
+        <button nz-button [nzType]="'primary'" [nzBlock]="true">
+          <i nz-icon [type]="isCollapsed?'menu-unfold':'menu-fold'" style="font-size: 25px"></i>
+        </button>
+      </li>
+
+      <li nz-menu-item>
+        <span title>
+          <i nz-icon type="user"></i>
+          <span class="nav-text">User</span>
+        </span>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <router-outlet></router-outlet>
+  </nz-layout>
+</nz-layout>

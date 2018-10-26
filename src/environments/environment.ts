@@ -3,7 +3,14 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  SERVER_NAME: 'dev.openecoe.umh.es:5080',
+  SECRET_KEY: 'f24b05095b4748a8b9d13df5cdb8d83c',
+  DEBUG: true,
+  TESTING: false,
+  API_ROUTE: 'http://dev.api.openecoe.umh.es:5000',
+  API_AUTH_TOKEN: 'http://dev.api.openecoe.umh.es:5000/auth/tokens',
+  CHRONO_ROUTE: 'http://dev.chrono.openecoe.umh.es:6080'
 };
 
 /*

@@ -1,0 +1,78 @@
+{
+  "EVALUATION": "Evaluación",
+  "ADMIN": "Administración",
+  "HOME": "Inicio",
+  "LOGIN": "Inicio de sesión",
+
+  "CREATE_ECOE": "Crear nueva ECOE",
+  "ECOE_NAME": "Nombre de la ECOE",
+  "DELETE_ECOE": "Eliminar ECOE",
+
+  "ORGANIZATION": "Organización",
+
+  "STATIONS": "Estaciones",
+  "STATION": "Estación",
+  "STATIONS_NUMBER": "Número de estaciones",
+  "ADD_STATIONS": "Añadir estación",
+  "STATION_NAME": "Nombre de la estación",
+  "PARENT_STATION": "Estación padre",
+
+  "INFORMATION": "Información",
+
+  "AREAS": "Areas",
+  "ADD_AREA": "Añadir area",
+  "AREAS_NUMBER": "Número de areas",
+  "AREA_NAME": "Nombre del area",
+  "CODE": "Código",
+
+  "ADD_QUESTIONS": "Añadir preguntas",
+  "ADD_QUESTION": "Añadir pregunta",
+  "REFERENCE": "Referencia",
+  "DESCRIPTION": "Descripción",
+  "QUESTION_TYPE": "Tipo de pregunta",
+
+  "OPTIONS_NUMBER": "Número de opciones",
+  "ADD_OPTIONS": "Añadir opciones",
+  "LABEL": "Texto",
+  "POINTS": "Puntos",
+  "POINT": "Punto",
+  "ORDER": "Orden",
+  "OPTIONAL": "opcional",
+  "SELECT_VALUE": "Seleccionar un valor...",
+
+  "QBLOCK_NAME": "Nombre del QBlock",
+  "QBLOCKS": "Qblocks",
+  "ASSIGN_QBLOCKS": "Asignar QBlocks",
+  "SELECT_QBLOCKS": "Selecciona los QBlocks:",
+  "ADD_QBLOCKS": "Añadir QBlocks",
+
+  "QUESTIONS": "Preguntas",
+  "CHRONOMETERS": "Cronómetros",
+  "STUDENTS": "Alumnos",
+  "GROUPS": "Grupos",
+
+  "REPORTS_AND_STATISTICS": "Informes y estadísticas",
+
+  "TO_UPDATE": "actualizar",
+  "UPDATED": "actualizado",
+  "TO_CREATE": "crear",
+  "CREATED": "creado",
+  "TO_DELETE": "eliminar",
+  "DELETED": "eliminado",
+
+  "MULTI_ANSWER": "Respuesta múltiple",
+  "ONE_ANSWER": "Respuesta única",
+  "VALUE_RANGE": "Rango de valores",
+
+  "ITEM_ACTION_SUCCESSFUL": "Elemento {{action}} con éxito",
+  "ITEM_ACTION_ERROR": "Error al {{action}} el elemento",
+
+  "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
+  "DELETE": "Eliminar",
+  "ADD": "Añadir",
+  "EDIT": "Editar",
+  "UPDATE": "Actualizar",
+  "ACCEPT": "Aceptar",
+  "CANCEL": "Cancelar",
+  "CLOSE": "Cerrar"
+}

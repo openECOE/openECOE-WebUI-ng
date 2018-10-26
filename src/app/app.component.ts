@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,15 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent {
-  title = 'openECOE-WebUI-ng';
+
+  language: string = 'es';
+
+  constructor(private translate: TranslateService) {
+    this.initializeTranslate();
+  }
+
+  initializeTranslate() {
+    this.translate.setDefaultLang(this.language);
+    this.translate.use(this.translate.getBrowserLang() || this.language);
+  }
 }
