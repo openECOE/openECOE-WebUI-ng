@@ -1,6 +1,11 @@
 <nz-layout>
   <nz-sider [nzCollapsible]="true" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
-    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" style="height:100%" [nzInlineCollapsed]="isCollapsed" [nzSelectable]="false">
+    <ul nz-menu
+        [nzTheme]="'dark'"
+        [nzMode]="'inline'"
+        style="height:100%"
+        [nzInlineCollapsed]="isCollapsed"
+        [nzSelectable]="false">
       <li (click)="isCollapsed = !isCollapsed">
         <button nz-button [nzType]="'primary'" [nzBlock]="true">
           <i nz-icon [type]="isCollapsed?'menu-unfold':'menu-fold'" style="font-size: 25px"></i>
@@ -26,82 +31,28 @@
 </nz-layout>
 
 <nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
-           [nzMaskClosable]="false"
-           [nzWidth]="720"
+           [nzMaskClosable]="true"
            [nzVisible]="showCreateEcoe"
-           [nzTitle]="'Create'"
+           [nzTitle]="'CREATE_ECOE' | translate"
            (nzOnClose)="closeDrawer()"
-           [nzPlacement]="'left'">
-  <form nz-form>
-    <div nz-row nzGutter="8">
-      <div nz-col nzSpan="12">
+           [nzPlacement]="'top'">
+  <form nz-form (submit)="submitForm()">
+    <div nz-row [nzGutter]="8">
+      <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label>Name</nz-form-label>
-          <nz-form-control>
-            <input nz-input placeholder="please enter user name">
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzSpan="12">
-        <nz-form-item>
-          <nz-form-label>Url</nz-form-label>
-          <nz-form-control>
-            <nz-input-group nzAddOnBefore="http://" nzAddOnAfter=".com">
-              <input type="text" nz-input placeholder="please enter url">
-            </nz-input-group>
-          </nz-form-control>
+          <nz-form-label [nzRequired]="true" [nzFor]="'name'">{{"ECOE_NAME" | translate}}</nz-form-label>
+          <input nz-input id="name" [formControl]="ecoeForm" />
         </nz-form-item>
       </div>
     </div>
-    <div nz-row nzGutter="8">
-      <div nz-col nzSpan="12">
-        <nz-form-item>
-          <nz-form-label>Owner</nz-form-label>
-          <nz-form-control>
-            <nz-select nzPlaceHolder="Please select an owner"></nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzSpan="12">
-        <nz-form-item>
-          <nz-form-label>Type</nz-form-label>
-          <nz-form-control>
-            <nz-select nzPlaceHolder="Please choose the type"></nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-    <div nz-row nzGutter="8">
-      <div nz-col nzSpan="12">
-        <nz-form-item>
-          <nz-form-label>Approver</nz-form-label>
-          <nz-form-control>
-            <nz-select nzPlaceHolder="Please choose the approver"></nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzSpan="12">
-        <nz-form-item>
-          <nz-form-label>DateTime</nz-form-label>
-          <nz-form-control>
-            <nz-range-picker></nz-range-picker>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-    <div nz-row nzGutter="8">
-      <div nz-col nzSpan="24">
-        <nz-form-item>
-          <nz-form-label>Description</nz-form-label>
-          <nz-form-control>
-            <textarea nz-input placeholder="please enter url description" [nzAutosize]="{ minRows: 4, maxRows: 4 }"></textarea>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
+
+    <div class="footer">
+      <button type="button" (click)="closeDrawer()" class="ant-btn margin-right">
+        <span>{{"CANCEL" | translate}}</span>
+      </button>
+      <button type="submit" [disabled]="!ecoeForm.valid" class="ant-btn ant-btn-primary">
+        <span>{{"ACCEPT" | translate}}</span>
+      </button>
     </div>
   </form>
-  <div class="footer">
-    <button type="button" (click)="closeDrawer()" class="ant-btn" style="margin-right: 8px;"><span>Cancel</span></button>
-    <button type="button" (click)="closeDrawer()" class="ant-btn ant-btn-primary"><span>Submit</span></button>
-  </div>
 </nz-drawer>

@@ -6,7 +6,6 @@ import { AdminComponent } from './admin.component';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
-import { CreateEcoeComponent } from './components/create-ecoe/create-ecoe.component';
 import { HomeAdminComponent } from './components/home-admin/home-admin.component';
 
 @NgModule({
@@ -20,7 +19,6 @@ import { HomeAdminComponent } from './components/home-admin/home-admin.component
   ],
   declarations: [
     AdminComponent,
-    CreateEcoeComponent,
     HomeAdminComponent
   ]
 })
