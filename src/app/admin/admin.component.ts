@@ -11,10 +11,20 @@ export class AdminComponent implements OnInit {
   isCollapsed: boolean = false;
   ecoes: any[];
 
+  showCreateEcoe: boolean;
+
   constructor(private apiService: ApiService) { }
 
   ngOnInit() {
     this.apiService.getResources('ecoe').subscribe(ecoes => this.ecoes = ecoes);
+  }
+
+  createEcoe() {
+
+  }
+
+  closeDrawer() {
+    this.showCreateEcoe = false;
   }
 
 }
