@@ -7,11 +7,9 @@
         </button>
       </li>
 
-      <li nz-menu-item *ngFor="let ecoe of ecoes" [routerLink]="'./ecoe/' + ecoe.id">
-        <span title>
-          <i nz-icon type="user"></i>
-          <span class="nav-text">{{ecoe.name}}</span>
-        </span>
+      <li nz-menu-item *ngFor="let item of items_menu" [routerLink]="item.path">
+        <i nz-icon type="user"></i>
+        <span class="nav-text">{{item.title | translate}}</span>
       </li>
     </ul>
   </nz-sider>

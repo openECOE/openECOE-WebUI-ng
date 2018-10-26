@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {ApiService} from '../services/api/api.service';
 
 @Component({
   selector: 'app-admin',
@@ -8,11 +9,12 @@ import { Component, OnInit } from '@angular/core';
 export class AdminComponent implements OnInit {
 
   isCollapsed: boolean = false;
-  triggerTemplate = null;
+  ecoes: any[];
 
-  constructor() { }
+  constructor(private apiService: ApiService) { }
 
   ngOnInit() {
+    this.apiService.getResources('ecoe').subscribe(ecoes => this.ecoes = ecoes);
   }
 
 }
