@@ -9,7 +9,6 @@ import { AreasComponent } from './areas/areas.component';
 import { StationsComponent } from './stations/stations.component';
 import { InformationComponent } from './information/information.component';
 
-
 @NgModule({
   imports: [
     CommonModule,

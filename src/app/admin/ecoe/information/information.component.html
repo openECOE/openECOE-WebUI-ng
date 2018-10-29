@@ -1,3 +1,30 @@
-<p>
-  information works!
-</p>
+<nz-content>
+  <nz-list [nzBordered]="true" [nzSize]="'large'"
+           [nzHeader]="ecoe.name">
+    <ng-template let-item>
+      <nz-list-item>
+        {{"AREAS" | translate}}: {{(ecoe.areas.length > 0) ? ecoe.areas.length : ('NO_AREAS' | translate)}}
+        <i nz-icon type="warning" [theme]="'fill'" *ngIf="ecoe.areas.length == 0"></i>
+      </nz-list-item>
+      <nz-list-item>
+        {{"STATIONS" | translate}}: {{(ecoe.stations.length > 0) ? ecoe.stations.length : ('NO_STATIONS' | translate)}}
+        <i nz-icon type="warning" [theme]="'fill'" *ngIf="ecoe.stations.length == 0"></i>
+      </nz-list-item>
+      <nz-list-item>
+        {{"STUDENTS" | translate}}: {{(ecoe.students.length > 0) ? ecoe.students.length : ('NO_STUDENTS' | translate)}}
+        <i nz-icon type="warning" [theme]="'fill'" *ngIf="ecoe.students.length == 0"></i>
+      </nz-list-item>
+    </ng-template>
+  </nz-list>
+
+  <button nz-popconfirm
+          [nzTitle]="'DELETE_CONFIRMATION' | translate"
+          (nzOnConfirm)="deleteEcoe()"
+          [nzPlacement]="'top'"
+          [nzOkText]="'DELETE' | translate" [nzCancelText]="'CANCEL' | translate"
+          nz-button
+          [nzType]="'danger'"
+          [nzBlock]="true">
+    <span>{{"DELETE_ECOE" | translate}}</span>
+  </button>
+</nz-content>

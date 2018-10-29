@@ -1,3 +1,36 @@
-<p>
-  stations works!
-</p>
+<nz-content>
+  <nz-table #stationsTable
+            [nzData]="stations"
+            [nzTitle]="'STATIONS' | translate"
+            [nzScroll]="{ y: '240px' }">
+    <thead>
+      <tr>
+        <th [nzShowExpand]="true"></th>
+        <th>{{"NAME" | translate}}</th>
+        <th>{{"QBLOCKS" | translate}}</th>
+        <th>{{"QUESTIONS" | translate}}</th>
+        <th>{{"ACTION" | translate}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-station [ngForOf]="stationsTable.data">
+        <tr>
+          <td [nzShowExpand]="true" [(nzExpand)]="station.expand"></td>
+          <td>{{station.name}}</td>
+          <td>{{station.qblocks.length}}</td>
+          <td>
+            <i nz-icon type="edit" nz-tooltip [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
+            <nz-divider [nzType]="'vertical'"></nz-divider>
+            <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(station['$uri'])">
+              <i nz-icon type="delete" nz-tooltip [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
+            </a>
+          </td>
+        </tr>
+        <tr [nzExpand]="station.expand">
+          <td></td>
+          <!--<td colspan="4">{{station.description}}</td>-->
+        </tr>
+      </ng-template>
+    </tbody>
+  </nz-table>
+</nz-content>

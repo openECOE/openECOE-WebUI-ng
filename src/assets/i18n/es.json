@@ -11,6 +11,7 @@
   "ORGANIZATION": "Organización",
 
   "STATIONS": "Estaciones",
+  "NO_STATIONS": "No hay estaciones",
   "STATION": "Estación",
   "STATIONS_NUMBER": "Número de estaciones",
   "ADD_STATIONS": "Añadir estación",
@@ -20,11 +21,13 @@
   "INFORMATION": "Información",
 
   "AREAS": "Areas",
+  "NO_AREAS": "No hay areas",
   "ADD_AREA": "Añadir area",
   "AREAS_NUMBER": "Número de areas",
   "AREA_NAME": "Nombre del area",
   "CODE": "Código",
 
+  "QUESTIONS": "Preguntas",
   "ADD_QUESTIONS": "Añadir preguntas",
   "ADD_QUESTION": "Añadir pregunta",
   "REFERENCE": "Referencia",
@@ -46,9 +49,11 @@
   "SELECT_QBLOCKS": "Selecciona los QBlocks:",
   "ADD_QBLOCKS": "Añadir QBlocks",
 
-  "QUESTIONS": "Preguntas",
   "CHRONOMETERS": "Cronómetros",
+
   "STUDENTS": "Alumnos",
+  "NO_STUDENTS": "No hay alumnos",
+
   "GROUPS": "Grupos",
 
   "REPORTS_AND_STATISTICS": "Informes y estadísticas",
@@ -68,6 +73,7 @@
   "ITEM_ACTION_ERROR": "Error al {{action}} el elemento",
 
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
+  "ACTION": "Acción",
   "DELETE": "Eliminar",
   "ADD": "Añadir",
   "EDIT": "Editar",

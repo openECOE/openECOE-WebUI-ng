@@ -1,9 +1,8 @@
-<nz-layout>
+<nz-layout style="height:100%">
   <nz-sider [nzCollapsible]="true" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
     <ul nz-menu
         [nzTheme]="'dark'"
         [nzMode]="'inline'"
-        style="height:100%"
         [nzInlineCollapsed]="isCollapsed"
         [nzSelectable]="false">
       <li (click)="isCollapsed = !isCollapsed">

@@ -6,7 +6,7 @@ import { AdminComponent } from './admin.component';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
-import { HomeAdminComponent } from './components/home-admin/home-admin.component';
+import { HomeAdminComponent } from './home-admin/home-admin.component';
 
 @NgModule({
   imports: [

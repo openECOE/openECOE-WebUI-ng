@@ -1,3 +1,34 @@
-<p>
-  areas works!
-</p>
+<nz-content>
+  <nz-table #areasTable [nzData]="areas" [nzScroll]="{ y: '240px' }">
+    <thead>
+      <tr>
+        <th [nzShowExpand]="true"></th>
+        <th>{{"NAME" | translate}}</th>
+        <th>{{"CODE" | translate}}</th>
+        <th>{{"QUESTIONS" | translate}}</th>
+        <th>{{"ACTION" | translate}}</th>
+      </tr>
+    </thead>
+    <tbody>
+    <ng-template ngFor let-area [ngForOf]="areasTable.data">
+        <tr>
+          <td [nzShowExpand]="true" [(nzExpand)]="area.expand"></td>
+          <td>{{area.name}}</td>
+          <td>{{area.code}}</td>
+          <td>{{area.questions.length}}</td>
+          <td>
+            <i nz-icon type="edit" nz-tooltip [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
+            <nz-divider [nzType]="'vertical'"></nz-divider>
+            <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(area['$uri'])">
+              <i nz-icon type="delete" nz-tooltip [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
+            </a>
+          </td>
+        </tr>
+        <tr [nzExpand]="area.expand" *ngFor="let question of loadQuestionsByArea(area.id) | async">
+          <td></td>
+          <td colspan="4">{{question.description}}</td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </nz-table>
+</nz-content>
