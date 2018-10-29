@@ -13,28 +13,28 @@ export class EcoeComponent implements OnInit {
     {
       title: 'INFORMATION',
       path: './',
-      icon: ''
+      icon: 'info-circle'
     },
     {
       title: 'AREAS',
       path: './areas',
-      icon: ''
+      icon: 'tags'
     },
-    {
-      title: 'QUESTIONS',
-      path: './questions',
-      icon: ''
-    },
+    // {
+    //   title: 'QUESTIONS',
+    //   path: './questions',
+    //   icon: ''
+    // },
     {
       title: 'STATIONS',
       path: './stations',
-      icon: ''
+      icon: 'project'
     },
-    {
-      title: 'QBLOCKS',
-      path: './qblocks',
-      icon: ''
-    },
+    // {
+    //   title: 'QBLOCKS',
+    //   path: './qblocks',
+    //   icon: ''
+    // },
     {
       title: 'CHRONOMETERS',
       path: '',

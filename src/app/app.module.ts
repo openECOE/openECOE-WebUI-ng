@@ -51,7 +51,7 @@ export function createTranslateLoader(http: HttpClient) {
     {
       provide: NZ_MESSAGE_CONFIG,
       useValue: {
-        nzMaxStack: 2,
+        nzMaxStack: 1,
       }
     },
     {

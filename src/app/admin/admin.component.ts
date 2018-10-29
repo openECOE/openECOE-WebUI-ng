@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../services/api/api.service';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
+import {NavigationEnd, Router} from '@angular/router';
+import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-admin',
@@ -15,9 +17,14 @@ export class AdminComponent implements OnInit {
   showCreateEcoe: boolean;
 
   constructor(private apiService: ApiService,
-              private formBuilder: FormBuilder) { }
+              private formBuilder: FormBuilder,
+              private router: Router) { }
 
   ngOnInit() {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => this.isCollapsed = !(event.url === '/admin'));
+
     this.ecoeForm = this.formBuilder.control('', Validators.required);
 
     this.loadEcoes();

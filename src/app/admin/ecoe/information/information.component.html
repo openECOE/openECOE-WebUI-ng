@@ -1,19 +1,30 @@
-<nz-content>
-  <nz-list [nzBordered]="true" [nzSize]="'large'"
-           [nzHeader]="ecoe.name">
-    <ng-template let-item>
+<nz-content *ngIf="ecoe">
+  <nz-list [nzBordered]="true" [nzSize]="'large'" [nzDataSource]="ecoe" [nzRenderItem]="item" [nzHeader]="ecoe.name">
+    <ng-template #item let-item>
       <nz-list-item>
-        {{"AREAS" | translate}}: {{(ecoe.areas.length > 0) ? ecoe.areas.length : ('NO_AREAS' | translate)}}
-        <i nz-icon type="warning" [theme]="'fill'" *ngIf="ecoe.areas.length == 0"></i>
+        <nz-list-item-meta [nzTitle]="titleArea">
+          <ng-template #titleArea>
+            <a routerLink="./areas">{{"AREAS" | translate}}</a>
+            <nz-divider [nzType]="'vertical'"></nz-divider>
+            <span>{{(item.areas.length > 0) ? item.areas.length : ('NO_AREAS' | translate)}}</span>
+            <i nz-icon type="warning" [theme]="'fill'" *ngIf="item.areas.length == 0"></i>
+          </ng-template>
+        </nz-list-item-meta>
       </nz-list-item>
       <nz-list-item>
-        {{"STATIONS" | translate}}: {{(ecoe.stations.length > 0) ? ecoe.stations.length : ('NO_STATIONS' | translate)}}
-        <i nz-icon type="warning" [theme]="'fill'" *ngIf="ecoe.stations.length == 0"></i>
+        <nz-list-item-meta [nzTitle]="titleStation">
+          <ng-template #titleStation>
+            <a routerLink="./stations">{{"STATIONS" | translate}}</a>
+            <nz-divider [nzType]="'vertical'"></nz-divider>
+            <span>{{(item.stations.length > 0) ? item.stations.length : ('NO_STATIONS' | translate)}}</span>
+            <i nz-icon type="warning" [theme]="'fill'" *ngIf="item.stations.length == 0"></i>
+          </ng-template>
+        </nz-list-item-meta>
       </nz-list-item>
-      <nz-list-item>
-        {{"STUDENTS" | translate}}: {{(ecoe.students.length > 0) ? ecoe.students.length : ('NO_STUDENTS' | translate)}}
-        <i nz-icon type="warning" [theme]="'fill'" *ngIf="ecoe.students.length == 0"></i>
-      </nz-list-item>
+      <!--<nz-list-item>-->
+        <!--{{"STUDENTS" | translate}}: {{(ecoe.students.length > 0) ? ecoe.students.length : ('NO_STUDENTS' | translate)}}-->
+        <!--<i nz-icon type="warning" [theme]="'fill'" *ngIf="ecoe.students.length == 0"></i>-->
+      <!--</nz-list-item>-->
     </ng-template>
   </nz-list>
 

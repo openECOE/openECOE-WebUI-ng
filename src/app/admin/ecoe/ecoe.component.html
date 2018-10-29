@@ -1,19 +1,17 @@
-<nz-layout>
+<nz-layout style="height:100%">
   <nz-sider [nzCollapsible]="true" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
-    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" style="height:100%" [nzInlineCollapsed]="isCollapsed">
+    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
       <li (click)="isCollapsed = !isCollapsed">
         <button nz-button [nzType]="'primary'" [nzBlock]="true">
-          <i nz-icon [type]="isCollapsed?'menu-unfold':'menu-fold'" style="font-size: 25px"></i>
+          <i nz-icon [type]="isCollapsed ? 'menu-unfold' : 'menu-fold'" style="font-size: 25px"></i>
         </button>
       </li>
 
       <li nz-menu-item *ngFor="let item of items_menu" [routerLink]="item.path">
-        <i nz-icon type="user"></i>
+        <i nz-icon [type]="item.icon" [theme]="'fill'"></i>
         <span class="nav-text">{{item.title | translate}}</span>
       </li>
     </ul>
   </nz-sider>
-  <nz-layout>
-    <router-outlet></router-outlet>
-  </nz-layout>
+  <router-outlet></router-outlet>
 </nz-layout>

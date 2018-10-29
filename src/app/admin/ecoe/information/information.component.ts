@@ -18,7 +18,7 @@ export class InformationComponent implements OnInit {
 
   ngOnInit() {
     const ecoeId = +this.route.snapshot.params.id;
-    this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => this.ecoe = ecoe);
+    this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => this.ecoe = [ecoe]);
   }
 
   deleteEcoe() {

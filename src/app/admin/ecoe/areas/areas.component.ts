@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Component, NgZone, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
-import {take} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-areas',
@@ -12,10 +12,11 @@ export class AreasComponent implements OnInit {
 
   areas: any[];
   ecoeId: number;
+  questions: any[];
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private ngZone: NgZone) {
   }
 
   ngOnInit() {
@@ -26,18 +27,36 @@ export class AreasComponent implements OnInit {
   loadAreas() {
     this.apiService.getResources('area', {
       where: `{"ecoe":${this.ecoeId}}`
-    }).subscribe(response => this.areas = response);
+    }).pipe(
+      map(areas => {
+        return areas.map(area => {
+          return {questionsArray: [], ...area};
+        });
+      })
+    ).subscribe(response => this.areas = response);
   }
 
-  loadQuestionsByArea(areaId: number) {
-    return this.apiService.getResources('question', {
-      where: `{"area":${areaId}}`,
-      sort: '{"order":false}'
-    }).pipe(take(1));
-    // this.router.navigate(['./questions'], {queryParams: {area: areaId}});
+  loadQuestionsByArea(expandOpen: boolean, areaId: number) {
+    if (expandOpen) {
+      this.apiService.getResources('question', {
+        where: `{"area":${areaId}}`,
+        sort: '{"order":false}'
+      }).subscribe(questions => {
+        this.areas = this.areas.map(area => {
+          if (area.id === areaId) {
+            area.questionsArray = questions;
+          }
+
+          return area;
+        });
+      });
+    }
   }
 
   deleteItem(ref: string) {
-    this.apiService.deleteResource(ref);
+    this.apiService.deleteResource(ref)
+      .subscribe(() => {
+        this.areas = this.areas.filter(area => area['$uri'] !== ref);
+      });
   }
 }
