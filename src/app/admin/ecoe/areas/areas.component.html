@@ -4,34 +4,114 @@
             [nzPageSize]="10">
     <thead>
       <tr>
-        <th [nzExpand]="true"></th>
-        <th [nzWidth]="'350px'">{{"AREAS" | translate}}</th>
-        <th [nzWidth]="'250px'">{{"CODE" | translate}}</th>
-        <th [nzWidth]="'150px'">{{"QUESTIONS" | translate}}</th>
-        <th [nzWidth]="'100px'">{{"ACTION" | translate}}</th>
+        <th [nzExpand]="true">
+          <a (click)="loadAreas()">
+            <i nz-icon type="reload" [nz-tooltip] [nzTitle]="'RELOAD' | translate"></i>
+          </a>
+        </th>
+        <th>{{"AREAS" | translate}}</th>
+        <th>{{"CODE" | translate}}</th>
+        <th>{{"QUESTIONS" | translate}}</th>
+        <th>{{"ACTION" | translate}}</th>
       </tr>
     </thead>
     <tbody>
       <ng-template ngFor let-area [ngForOf]="areasTable.data">
         <tr>
           <td [nzShowExpand]="area.questions.length > 0" [(nzExpand)]="area.expand" (nzExpandChange)="loadQuestionsByArea($event, area.id)"></td>
-          <td>{{area.name}}</td>
-          <td>{{area.code}}</td>
-          <td>{{area.questions.length}}</td>
           <td>
-            <a>
-              <i nz-icon type="edit" [nz-tooltip] [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
-            </a>
-            <nz-divider [nzType]="'vertical'"></nz-divider>
-            <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(area['$uri'])">
-              <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
-            </a>
+            <ng-container *ngIf="!editCache[area.id].edit">
+              {{area.name}}
+            </ng-container>
+
+            <ng-container *ngIf="editCache[area.id].edit">
+              <input type="text" nz-input [(ngModel)]="editCache[area.id].name">
+            </ng-container>
+          </td>
+
+          <td>
+            <ng-container *ngIf="!editCache[area.id].edit">
+              {{area.code}}
+            </ng-container>
+
+            <ng-container *ngIf="editCache[area.id].edit">
+              <input type="text" nz-input [(ngModel)]="editCache[area.id].code">
+            </ng-container>
+          </td>
+
+          <td>{{area.questions.length}}</td>
+
+          <td>
+            <ng-container *ngIf="!editCache[area.id].edit">
+              <a (click)="startEdit(area.id)">
+                <i nz-icon type="edit" [nz-tooltip] [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
+              </a>
+              <nz-divider [nzType]="'vertical'"></nz-divider>
+              <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(area['$uri'], areas)">
+                <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
+              </a>
+            </ng-container>
+
+            <ng-container *ngIf="editCache[area.id].edit">
+              <a (click)="saveEditArea(area.id)">
+                <i nz-icon type="save" [nz-tooltip] [nzTitle]="'UPDATE' | translate" [theme]="'twotone'"></i>
+              </a>
+              <nz-divider [nzType]="'vertical'"></nz-divider>
+              <a (click)="cancelEdit(area.id)">
+                <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" [theme]="'twotone'"></i>
+              </a>
+            </ng-container>
           </td>
         </tr>
-        <tr [nzExpand]="area.expand" *ngFor="let question of area.questionsArray">
+        <tr [nzExpand]="area.expand">
           <td></td>
-          <td>{{question.description}}</td>
-          <td>{{question.reference}}</td>
+          <td colspan="4">
+            <nz-table #questionTable [nzData]="area.questionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
+              <thead>
+                <tr>
+                  <th>{{"DESCRIPTION" | translate}}</th>
+                  <th>{{"REFERENCE" | translate}}</th>
+                  <th>{{"AREA" | translate}}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let question of questionTable.data; let i = index">
+                  <td>
+                    <ng-container *ngIf="!editCache[area.id].edit">
+                      {{question.description}}
+                    </ng-container>
+
+                    <ng-container *ngIf="editCache[area.id].edit">
+                      <input type="text" nz-input [(ngModel)]="editCache[area.id].questionsArray[i].description">
+                    </ng-container>
+                  </td>
+
+                  <td>
+                    <ng-container *ngIf="!editCache[area.id].edit">
+                      {{question.reference}}
+                    </ng-container>
+
+                    <ng-container *ngIf="editCache[area.id].edit">
+                      <input type="text" nz-input [(ngModel)]="editCache[area.id].questionsArray[i].reference">
+                    </ng-container>
+
+                  </td>
+                  <td>
+                    <ng-container *ngIf="!editCache[area.id].edit">
+                      {{area.name}}
+                    </ng-container>
+
+                    <ng-container *ngIf="editCache[area.id].edit">
+                      <nz-select style="width: 150px;" [nzShowSearch]="true" [(ngModel)]="editCache[area.id].questionsArray[i].areaId">
+                        <nz-option *ngFor="let a of areas" [nzLabel]="a.name" [nzValue]="a.id"></nz-option>
+                      </nz-select>
+                    </ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </td>
         </tr>
       </ng-template>
     </tbody>

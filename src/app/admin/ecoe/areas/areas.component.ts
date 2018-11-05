@@ -1,7 +1,8 @@
-import {Component, NgZone, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {map} from 'rxjs/operators';
+import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-areas',
@@ -13,10 +14,10 @@ export class AreasComponent implements OnInit {
   areas: any[];
   ecoeId: number;
   questions: any[];
+  editCache = {};
 
   constructor(private apiService: ApiService,
-              private route: ActivatedRoute,
-              private ngZone: NgZone) {
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -33,7 +34,10 @@ export class AreasComponent implements OnInit {
           return {questionsArray: [], ...area};
         });
       })
-    ).subscribe(response => this.areas = response);
+    ).subscribe(response => {
+      this.areas = response;
+      this.updateEditCache();
+    });
   }
 
   loadQuestionsByArea(expandOpen: boolean, areaId: number) {
@@ -41,7 +45,13 @@ export class AreasComponent implements OnInit {
       this.apiService.getResources('question', {
         where: `{"area":${areaId}}`,
         sort: '{"order":false}'
-      }).subscribe(questions => {
+      }).pipe(
+        map(questions => {
+          return questions.map(question => {
+            return {areaId, ...question};
+          });
+        })
+      ).subscribe(questions => {
         this.areas = this.areas.map(area => {
           if (area.id === areaId) {
             area.questionsArray = questions;
@@ -49,14 +59,61 @@ export class AreasComponent implements OnInit {
 
           return area;
         });
+
+        this.updateEditCache();
       });
     }
   }
 
-  deleteItem(ref: string) {
+  deleteItem(ref: string, itemArray: any[]) {
     this.apiService.deleteResource(ref)
-      .subscribe(() => {
-        this.areas = this.areas.filter(area => area['$uri'] !== ref);
+      .subscribe(() => itemArray = itemArray.filter(item => item['$uri'] !== ref));
+  }
+
+  startEdit(id: number): void {
+    this.editCache[id].edit = true;
+  }
+
+  cancelEdit(id: number): void {
+    this.editCache[id].edit = false;
+  }
+
+  saveEditArea(key: number): void {
+    const area = this.editCache[key];
+    const arrayObservables = [];
+
+    const bodyArea = {
+      name: area.name,
+      code: area.code
+    };
+    arrayObservables.push(this.apiService.updateResource(area['$uri'], bodyArea));
+
+    const questions = area.questionsArray;
+
+    if (questions) {
+      questions.forEach(question => {
+        const body = {
+          description: question.description,
+          reference: question.reference,
+          area: question.areaId
+        };
+
+        arrayObservables.push(this.apiService.updateResource(question['$uri'], body));
       });
+    }
+
+    forkJoin(arrayObservables).subscribe(() => {
+      area.edit = false;
+      this.loadAreas();
+    });
+  }
+
+  updateEditCache(): void {
+    this.areas.forEach(area => {
+      this.editCache[area.id] = {
+        edit: this.editCache[area.id] ? this.editCache[area.id].edit : false,
+        ...area
+      };
+    });
   }
 }

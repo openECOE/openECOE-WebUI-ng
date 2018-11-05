@@ -21,10 +21,12 @@
   "INFORMATION": "Información",
 
   "AREAS": "Areas",
+  "AREA": "Area",
   "NO_AREAS": "No hay areas",
   "ADD_AREA": "Añadir area",
   "AREAS_NUMBER": "Número de areas",
   "AREA_NAME": "Nombre del area",
+  "CHANGE_AREA": "Cambiar area",
   "CODE": "Código",
 
   "QUESTIONS": "Preguntas",
@@ -80,5 +82,6 @@
   "UPDATE": "Actualizar",
   "ACCEPT": "Aceptar",
   "CANCEL": "Cancelar",
-  "CLOSE": "Cerrar"
+  "CLOSE": "Cerrar",
+  "RELOAD": "Refrescar"
 }
