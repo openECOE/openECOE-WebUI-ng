@@ -36,6 +36,7 @@ export class AreasComponent implements OnInit {
       })
     ).subscribe(response => {
       this.areas = response;
+      this.editCache = {};
       this.updateEditCache();
     });
   }
@@ -118,5 +119,23 @@ export class AreasComponent implements OnInit {
         ...area
       };
     });
+  }
+
+  addArea() {
+    const index = this.areas.reduce((max, p) => p.id > max ? p.id : max, this.areas[0].id) + 1;
+    const newArea = {
+      id: index,
+      name: '',
+      code: '',
+      questions: [],
+      ecoe: this.ecoeId
+    };
+
+    this.areas = [...this.areas, newArea];
+
+    this.editCache[index] = {
+      edit: true,
+      ...newArea
+    };
   }
 }

@@ -1,7 +1,8 @@
 <nz-content *ngIf="areas">
   <nz-table #areasTable
             [nzData]="areas"
-            [nzPageSize]="10">
+            [nzPageSize]="8"
+            [nzTitle]="addButton">
     <thead>
       <tr>
         <th [nzExpand]="true">
@@ -9,8 +10,8 @@
             <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'RELOAD' | translate"></i>
           </a>
         </th>
-        <th>{{"AREAS" | translate}}</th>
-        <th>{{"CODE" | translate}}</th>
+        <th [nzWidth]="'30%'">{{"AREAS" | translate}}</th>
+        <th [nzWidth]="'30%'">{{"CODE" | translate}}</th>
         <th>{{"QUESTIONS" | translate}}</th>
         <th>{{"ACTION" | translate}}</th>
       </tr>
@@ -18,14 +19,17 @@
     <tbody>
       <ng-template ngFor let-area [ngForOf]="areasTable.data">
         <tr>
-          <td [nzShowExpand]="area.questions.length > 0" [(nzExpand)]="area.expand" (nzExpandChange)="loadQuestionsByArea($event, area.id)"></td>
+          <td [nzShowExpand]="area.questions.length > 0"
+              [(nzExpand)]="area.expand"
+              (nzExpandChange)="loadQuestionsByArea($event, area.id)">
+          </td>
           <td>
             <ng-container *ngIf="!editCache[area.id].edit">
               {{area.name}}
             </ng-container>
 
             <ng-container *ngIf="editCache[area.id].edit">
-              <input type="text" nz-input [(ngModel)]="editCache[area.id].name">
+              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[area.id].name">
             </ng-container>
           </td>
 
@@ -35,7 +39,7 @@
             </ng-container>
 
             <ng-container *ngIf="editCache[area.id].edit">
-              <input type="text" nz-input [(ngModel)]="editCache[area.id].code">
+              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[area.id].code">
             </ng-container>
           </td>
 
@@ -69,8 +73,8 @@
             <nz-table #questionTable [nzData]="area.questionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
               <thead>
                 <tr>
-                  <th>{{"DESCRIPTION" | translate}}</th>
-                  <th>{{"REFERENCE" | translate}}</th>
+                  <th [nzWidth]="'30%'">{{"DESCRIPTION" | translate}}</th>
+                  <th [nzWidth]="'30%'">{{"REFERENCE" | translate}}</th>
                   <th>{{"AREA" | translate}}</th>
                 </tr>
               </thead>
@@ -83,7 +87,11 @@
                     </ng-container>
 
                     <ng-container *ngIf="editCache[area.id].edit">
-                      <input type="text" nz-input [(ngModel)]="editCache[area.id].questionsArray[i].description">
+                      <input type="text"
+                             nz-input
+                             [nzSize]="'small'"
+                             required
+                             [(ngModel)]="editCache[area.id].questionsArray[i].description">
                     </ng-container>
                   </td>
 
@@ -93,7 +101,11 @@
                     </ng-container>
 
                     <ng-container *ngIf="editCache[area.id].edit">
-                      <input type="text" nz-input [(ngModel)]="editCache[area.id].questionsArray[i].reference">
+                      <input type="text"
+                             nz-input
+                             [nzSize]="'small'"
+                             required
+                             [(ngModel)]="editCache[area.id].questionsArray[i].reference">
                     </ng-container>
 
                   </td>
@@ -103,7 +115,10 @@
                     </ng-container>
 
                     <ng-container *ngIf="editCache[area.id].edit">
-                      <nz-select style="width: 150px;" [nzShowSearch]="true" [(ngModel)]="editCache[area.id].questionsArray[i].areaId">
+                      <nz-select style="width: 150px;"
+                                 [nzSize]="'small'"
+                                 [nzShowSearch]="true"
+                                 [(ngModel)]="editCache[area.id].questionsArray[i].areaId">
                         <nz-option *ngFor="let a of areas" [nzLabel]="a.name" [nzValue]="a.id"></nz-option>
                       </nz-select>
                     </ng-container>
@@ -116,4 +131,11 @@
       </ng-template>
     </tbody>
   </nz-table>
+
+  <ng-template #addButton>
+    <button nz-button [nzType]="'primary'" class="margin-left" (click)="addArea()">
+      <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+      {{"ADD_AREA" | translate}}
+    </button>
+  </ng-template>
 </nz-content>

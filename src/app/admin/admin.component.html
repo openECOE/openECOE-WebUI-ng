@@ -1,4 +1,4 @@
-<nz-layout style="height:100%">
+<nz-layout>
   <nz-sider [nzCollapsible]="true" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
     <ul nz-menu
         [nzTheme]="'dark'"
@@ -22,7 +22,9 @@
       </li>
     </ul>
   </nz-sider>
-  <router-outlet></router-outlet>
+  <nz-layout>
+    <router-outlet></router-outlet>
+  </nz-layout>
 </nz-layout>
 
 <nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
@@ -42,10 +44,10 @@
     </div>
 
     <div class="footer">
-      <button type="button" (click)="closeDrawer()" class="ant-btn margin-right">
+      <button type="button" nz-button (click)="closeDrawer()" class="margin-right">
         <span>{{"CANCEL" | translate}}</span>
       </button>
-      <button type="submit" [disabled]="!ecoeForm.valid" class="ant-btn ant-btn-primary">
+      <button type="submit" nz-button [nzType]="'primary'" [disabled]="!ecoeForm.valid">
         <span>{{"ACCEPT" | translate}}</span>
       </button>
     </div>

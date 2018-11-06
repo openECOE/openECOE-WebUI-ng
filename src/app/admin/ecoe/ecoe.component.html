@@ -1,4 +1,4 @@
-<nz-layout style="height:100%">
+<nz-layout>
   <nz-sider [nzCollapsible]="true" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
     <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
       <li (click)="isCollapsed = !isCollapsed">
@@ -13,5 +13,7 @@
       </li>
     </ul>
   </nz-sider>
-  <router-outlet></router-outlet>
+  <nz-layout>
+    <router-outlet></router-outlet>
+  </nz-layout>
 </nz-layout>
