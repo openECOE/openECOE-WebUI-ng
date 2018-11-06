@@ -47,7 +47,7 @@
                 <i nz-icon type="edit" [nz-tooltip] [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
               </a>
               <nz-divider [nzType]="'vertical'"></nz-divider>
-              <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(area['$uri'], areas)">
+              <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(area['$uri'])">
                 <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
               </a>
             </ng-container>

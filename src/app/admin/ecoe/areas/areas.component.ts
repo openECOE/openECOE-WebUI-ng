@@ -65,9 +65,12 @@ export class AreasComponent implements OnInit {
     }
   }
 
-  deleteItem(ref: string, itemArray: any[]) {
+  deleteItem(ref: string) {
     this.apiService.deleteResource(ref)
-      .subscribe(() => itemArray = itemArray.filter(item => item['$uri'] !== ref));
+      .subscribe(() => {
+        this.areas = this.areas.filter(item => item['$uri'] !== ref);
+        this.updateEditCache();
+      });
   }
 
   startEdit(id: number): void {
