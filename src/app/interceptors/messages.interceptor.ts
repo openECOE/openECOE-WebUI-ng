@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
+import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
@@ -36,8 +36,11 @@ export class MessagesInterceptor implements HttpInterceptor {
             );
           }
         }),
-        catchError((err: any) => {
+        catchError((err: HttpErrorResponse) => {
           if (requestMethod) {
+            // if (err.status === 409) {
+            //    CONFLICT
+            // }
             this.actionMessagesService.createErrorMsg(
               this.translate.instant('ITEM_ACTION_ERROR', {
                 action: this.translate.instant(requestMethod.actionErr)

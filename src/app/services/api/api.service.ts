@@ -63,7 +63,11 @@ export class ApiService {
   }
 
   createResource(resource: string, body: any): Observable<any> {
-    return this.http.post(`${environment.API_ROUTE}/${this.apiUrl}/${resource}`, body);
+    return this.http.post(`${environment.API_ROUTE}/${this.apiUrl}/${resource}`, body)
+      .pipe(map(response => {
+        const itemId = this.getIdFromRef(response['$uri']);
+        return {id: itemId, ...response};
+      }));
   }
 
   deleteResource(ref: string): Observable<any> {

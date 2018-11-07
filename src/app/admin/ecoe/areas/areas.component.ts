@@ -13,7 +13,6 @@ export class AreasComponent implements OnInit {
 
   areas: any[];
   ecoeId: number;
-  questions: any[];
   editCache = {};
 
   constructor(private apiService: ApiService,
@@ -28,15 +27,9 @@ export class AreasComponent implements OnInit {
   loadAreas() {
     this.apiService.getResources('area', {
       where: `{"ecoe":${this.ecoeId}}`
-    }).pipe(
-      map(areas => {
-        return areas.map(area => {
-          return {questionsArray: [], ...area};
-        });
-      })
-    ).subscribe(response => {
-      this.areas = response;
+    }).subscribe(response => {
       this.editCache = {};
+      this.areas = response;
       this.updateEditCache();
     });
   }
@@ -67,10 +60,12 @@ export class AreasComponent implements OnInit {
   }
 
   deleteItem(ref: string) {
+    const areaId = this.areas.find(a => a['$uri'] === ref).id;
+
     this.apiService.deleteResource(ref)
       .subscribe(() => {
-        this.areas = this.areas.filter(item => item['$uri'] !== ref);
-        this.updateEditCache();
+        this.areas = this.areas.filter(item => item.id !== areaId);
+        delete this.editCache[areaId];
       });
   }
 
@@ -87,22 +82,16 @@ export class AreasComponent implements OnInit {
     }
   }
 
-  saveEditArea(key: number): void {
+  saveEditItem(key: number): void {
     const area = this.editCache[key];
     const arrayObservables = [];
 
     const bodyArea = {
       name: area.name,
-      code: area.code,
-      ecoe: area.ecoe
+      code: area.code
     };
 
-    if (area.new_area) {
-      this.areas = this.areas.filter(a => a.id !== area.id);
-      arrayObservables.push(this.apiService.createResource('area', bodyArea));
-    } else {
-      arrayObservables.push(this.apiService.updateResource(area['$uri'], bodyArea));
-    }
+    arrayObservables.push(this.apiService.updateResource(area['$uri'], bodyArea));
 
     const questions = area.questionsArray;
 
@@ -124,23 +113,44 @@ export class AreasComponent implements OnInit {
     });
   }
 
+  saveItem(key: number): void {
+    const area = this.editCache[key];
+    const body = {
+      name: area.name,
+      code: area.code,
+      ecoe: area.ecoe
+    };
+
+    this.apiService.createResource('area', body)
+      .pipe(
+        map(res => {
+          return {questionsArray: [], ...res};
+        })
+      )
+      .subscribe(res => {
+        this.loadAreas();
+        // this.areas = [ ...this.areas.filter(a => a.id !== area.id), res];
+        // area.edit = false;
+        // this.updateEditCache();
+      });
+  }
+
   updateEditCache(): void {
-    this.areas.forEach(area => {
-      this.editCache[area.id] = {
-        edit: this.editCache[area.id] ? this.editCache[area.id].edit : false,
-        ...area
+    this.areas.forEach(item => {
+      this.editCache[item.id] = {
+        edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
+        ...item
       };
     });
   }
 
-  addArea() {
+  addItem() {
     const index = this.areas.reduce((max, p) => p.id > max ? p.id : max, this.areas[0].id) + 1;
     const newArea = {
       id: index,
       name: '',
       code: '',
       questions: [],
-      new_area: true,
       ecoe: this.ecoeId
     };
 
@@ -148,6 +158,7 @@ export class AreasComponent implements OnInit {
 
     this.editCache[index] = {
       edit: true,
+      new_area: true,
       ...newArea
     };
   }

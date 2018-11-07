@@ -14,7 +14,7 @@
   "NO_STATIONS": "No hay estaciones",
   "STATION": "Estación",
   "STATIONS_NUMBER": "Número de estaciones",
-  "ADD_STATIONS": "Añadir estación",
+  "ADD_STATION": "Añadir estación",
   "STATION_NAME": "Nombre de la estación",
   "PARENT_STATION": "Estación padre",
 
@@ -73,6 +73,8 @@
 
   "ITEM_ACTION_SUCCESSFUL": "Elemento {{action}} con éxito",
   "ITEM_ACTION_ERROR": "Error al {{action}} el elemento",
+
+  "NAME": "Nombre",
 
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
   "ACTION": "Acción",
