@@ -79,7 +79,12 @@ export class AreasComponent implements OnInit {
   }
 
   cancelEdit(id: number): void {
-    this.editCache[id].edit = false;
+    const area = this.editCache[id];
+    area.edit = false;
+
+    if (area.new_area) {
+      this.areas = this.areas.filter(a => a.id !== area.id);
+    }
   }
 
   saveEditArea(key: number): void {
@@ -88,13 +93,20 @@ export class AreasComponent implements OnInit {
 
     const bodyArea = {
       name: area.name,
-      code: area.code
+      code: area.code,
+      ecoe: area.ecoe
     };
-    arrayObservables.push(this.apiService.updateResource(area['$uri'], bodyArea));
+
+    if (area.new_area) {
+      this.areas = this.areas.filter(a => a.id !== area.id);
+      arrayObservables.push(this.apiService.createResource('area', bodyArea));
+    } else {
+      arrayObservables.push(this.apiService.updateResource(area['$uri'], bodyArea));
+    }
 
     const questions = area.questionsArray;
 
-    if (questions) {
+    if (questions && questions.length > 0) {
       questions.forEach(question => {
         const body = {
           description: question.description,
@@ -128,6 +140,7 @@ export class AreasComponent implements OnInit {
       name: '',
       code: '',
       questions: [],
+      new_area: true,
       ecoe: this.ecoeId
     };
 
