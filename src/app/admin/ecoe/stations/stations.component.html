@@ -10,7 +10,7 @@
             <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'RELOAD' | translate"></i>
           </a>
         </th>
-        <th>{{"ORDER" | translate}}</th>
+        <th [nzWidth]="'10%'">{{"ORDER" | translate}}</th>
         <th [nzWidth]="'25%'">{{"NAME" | translate}}</th>
         <th [nzWidth]="'25%'">{{"PARENT_STATION" | translate}}</th>
         <th>{{"CHILDREN_STATIONS" | translate}}</th>
@@ -101,7 +101,7 @@
                 <tr *ngFor="let qblock of qblockTable.data; let i = index">
                   <td [nzShowExpand]="qblock.questions.length > 0"
                       [(nzExpand)]="qblock.expand"
-                      (nzExpandChange)="loadQuestionsByQblock($event, qblock.id)">
+                      (nzExpandChange)="loadQuestionsByQblock($event, item.id, qblock.id)">
                   </td>
 
                   <td>
@@ -114,7 +114,7 @@
                              nz-input
                              [nzSize]="'small'"
                              required
-                             [(ngModel)]="editCache[item.id].questionsArray[i].order">
+                             [(ngModel)]="editCache[item.id].qblocksArray[i].order">
                     </ng-container>
                   </td>
 
@@ -128,12 +128,87 @@
                              nz-input
                              [nzSize]="'small'"
                              required
-                             [(ngModel)]="editCache[item.id].questionsArray[i].name">
+                             [(ngModel)]="editCache[item.id].qblocksArray[i].name">
                     </ng-container>
                   </td>
 
                   <td>{{qblock.questions.length}}</td>
+
+                  <td>
+                    <ng-container *ngIf="!editCache[item.id].edit">
+                      <a (click)="startEdit(item.id)">
+                        <i nz-icon type="edit" [nz-tooltip] [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
+                      </a>
+                      <nz-divider [nzType]="'vertical'"></nz-divider>
+                      <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(item['$uri'])">
+                        <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
+                      </a>
+                    </ng-container>
+
+                    <ng-container *ngIf="editCache[item.id].edit">
+                      <a (click)="saveEditItem(item.id)">
+                        <i nz-icon type="save" [nz-tooltip] [nzTitle]="'UPDATE' | translate" [theme]="'twotone'"></i>
+                      </a>
+                      <nz-divider [nzType]="'vertical'"></nz-divider>
+                      <a (click)="cancelEdit(item.id)">
+                        <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" [theme]="'twotone'"></i>
+                      </a>
+                    </ng-container>
+                  </td>
                 </tr>
+
+                <tr [nzExpand]="qblock?.expand">
+                  <td colspan="4">
+                    <nz-table #questionTable [nzData]="qblock?.questionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
+                      <!--<thead>-->
+                        <!--<tr>-->
+                          <!--<th [nzWidth]="'10%'">{{"ORDER" | translate}}</th>-->
+                          <!--<th [nzWidth]="'30%'">{{"NAME" | translate}}</th>-->
+                          <!--<th>{{"QUESTIONS" | translate}}</th>-->
+                          <!--<th>{{"ACTION" | translate}}</th>-->
+                        <!--</tr>-->
+                      <!--</thead>-->
+
+                      <tbody>
+                        <tr *ngFor="let question of questionTable.data; let indexQuestion = index">
+                          <td>Hola</td>
+                        </tr>
+                      </tbody>
+                    </nz-table>
+                  </td>
+                </tr>
+
+                    <!--<td>-->
+                      <!--<ng-container *ngIf="!editCache[item.id].edit">-->
+                        <!--{{question.order || "-"}}-->
+                      <!--</ng-container>-->
+
+                      <!--<ng-container *ngIf="editCache[item.id].edit">-->
+                        <!--<input type="number"-->
+                               <!--nz-input-->
+                               <!--[nzSize]="'small'"-->
+                               <!--required-->
+                               <!--[(ngModel)]="editCache[item.id].qblocksArray[i].questionsArray[indexQuestion].order">-->
+                      <!--</ng-container>-->
+                    <!--</td>-->
+
+                    <!--<td>-->
+                      <!--<ng-container *ngIf="!editCache[item.id].edit">-->
+                        <!--{{question.description}}-->
+                      <!--</ng-container>-->
+                    <!--</td>-->
+
+                    <!--<td>-->
+                      <!--<ng-container *ngIf="!editCache[item.id].edit">-->
+                        <!--{{question.reference}}-->
+                      <!--</ng-container>-->
+                    <!--</td>-->
+
+                    <!--<td>-->
+                      <!--<ng-container *ngIf="!editCache[item.id].edit">-->
+                        <!--{{question.question_type}}-->
+                      <!--</ng-container>-->
+                    <!--</td>-->
               </tbody>
             </nz-table>
           </td>

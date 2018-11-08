@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {map} from 'rxjs/operators';
@@ -16,7 +16,8 @@ export class StationsComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private ngZone: NgZone) {
   }
 
   ngOnInit() {
@@ -43,7 +44,7 @@ export class StationsComponent implements OnInit {
       }).pipe(
         map(qblocks => {
           return qblocks.map(qblock => {
-            return {stationId, ...qblock};
+            return {stationId, questionsArray: [], ...qblock};
           });
         })
       ).subscribe(qblocks => {
@@ -60,28 +61,35 @@ export class StationsComponent implements OnInit {
     }
   }
 
-  loadQuestionsByQblock(expandOpen: boolean, qblockId: number) {
+  loadQuestionsByQblock(expandOpen: boolean, stationId: number, qblockId: number) {
     if (expandOpen) {
       this.apiService.getResources('question', {
-        where: `{"qblocks":{"$contains":${qblockId}}`,
+        where: `{"qblocks":{"$contains":${qblockId}}}`,
         sort: '{"order":false}'
       }).pipe(
-        map(qblocks => {
-          return qblocks.map(qblock => {
-            return {qblockId, ...qblock};
+        map(questions => {
+          return questions.map(question => {
+            return {qblockId, ...question};
           });
         })
-      ).subscribe(qblocks => {
+      ).subscribe(questions => {
         this.stations = this.stations.map(station => {
-          if (station.id === qblockId) {
-            station.qblocksArray = qblocks;
+          if (station.id === stationId) {
+            station.qblocksArray = station.qblocksArray.map(qblock => {
+              if (qblock.id === qblockId) {
+                qblock.questionsArray = questions;
+              }
+
+              return qblock;
+            });
           }
 
           return station;
         });
-
-        this.updateEditCache();
       });
+
+      console.log(this.stations);
+      this.updateEditCache();
     }
   }
 
