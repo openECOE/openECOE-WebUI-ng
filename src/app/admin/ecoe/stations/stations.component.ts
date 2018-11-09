@@ -1,5 +1,5 @@
 import {Component, NgZone, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {map} from 'rxjs/operators';
 
@@ -16,7 +16,6 @@ export class StationsComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router,
               private ngZone: NgZone) {
   }
 

@@ -85,6 +85,7 @@ export class AreasComponent implements OnInit {
   saveEditItem(key: number): void {
     const area = this.editCache[key];
     const arrayObservables = [];
+    let questionsEdit = false;
 
     const bodyArea = {
       name: area.name,
@@ -96,6 +97,7 @@ export class AreasComponent implements OnInit {
     const questions = area.questionsArray;
 
     if (questions && questions.length > 0) {
+      questionsEdit = true;
       questions.forEach(question => {
         const body = {
           description: question.description,
@@ -107,9 +109,13 @@ export class AreasComponent implements OnInit {
       });
     }
 
-    forkJoin(arrayObservables).subscribe(() => {
+    forkJoin(arrayObservables).subscribe(res => {
       area.edit = false;
-      this.loadAreas();
+      if (!questionsEdit) {
+        this.updateArray(key, res[0]);
+      } else {
+        this.loadAreas();
+      }
     });
   }
 
@@ -126,13 +132,9 @@ export class AreasComponent implements OnInit {
         map(res => {
           return {questionsArray: [], ...res};
         })
-      )
-      .subscribe(res => {
-        this.loadAreas();
-        // this.areas = [ ...this.areas.filter(a => a.id !== area.id), res];
-        // area.edit = false;
-        // this.updateEditCache();
-      });
+      ).subscribe(res => {
+        this.updateArray(key, res);
+    });
   }
 
   updateEditCache(): void {
@@ -161,5 +163,15 @@ export class AreasComponent implements OnInit {
       new_area: true,
       ...newArea
     };
+  }
+
+  updateArray(key: number, response: any) {
+    delete this.editCache[key];
+    this.editCache[response['id']] = {
+      edit: false,
+      ...response
+    };
+
+    this.areas = [...this.areas.filter(a => a.id !== key), response];
   }
 }
