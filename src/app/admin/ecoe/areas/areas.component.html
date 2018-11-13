@@ -13,7 +13,7 @@
         <th [nzWidth]="'30%'">{{"NAME" | translate}}</th>
         <th [nzWidth]="'30%'">{{"CODE" | translate}}</th>
         <th>{{"QUESTIONS" | translate}}</th>
-        <th>{{"ACTION" | translate}}</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -23,13 +23,23 @@
               [(nzExpand)]="item.expand"
               (nzExpandChange)="loadQuestionsByArea($event, item.id)">
           </td>
-          <td>
+          <td class="editable-cell">
             <ng-container *ngIf="!editCache[item.id].edit">
               {{item.name}}
+              <i nz-icon type="edit" [theme]="'twotone'"
+                 [nz-tooltip] [nzTitle]="'EDIT' | translate"
+                 (click)="startEdit(item.id)"
+                 class="editable-cell-icon" success-color padding-top>
+              </i>
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
-              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].name">
+              <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].name">
+              <i nz-icon type="save" [theme]="'twotone'"
+                 [nz-tooltip] [nzTitle]="'UPDATE' | translate"
+                 (click)="editCache[item.id].new_area ? saveItem(item.id) : saveEditItem(item.id)"
+                 class="editable-cell-icon-check" padding-top>
+              </i>
             </ng-container>
           </td>
 
@@ -47,20 +57,12 @@
 
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
-              <a (click)="startEdit(item.id)">
-                <i nz-icon type="edit" [nz-tooltip] [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
-              </a>
-              <nz-divider [nzType]="'vertical'"></nz-divider>
               <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(item['$uri'])">
                 <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
               </a>
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
-              <a (click)="editCache[item.id].new_area ? saveItem(item.id) : saveEditItem(item.id)">
-                <i nz-icon type="save" [nz-tooltip] [nzTitle]="'UPDATE' | translate" [theme]="'twotone'"></i>
-              </a>
-              <nz-divider [nzType]="'vertical'"></nz-divider>
               <a (click)="cancelEdit(item.id)">
                 <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" [theme]="'twotone'"></i>
               </a>

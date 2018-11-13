@@ -74,11 +74,16 @@ export class AreasComponent implements OnInit {
   }
 
   cancelEdit(id: number): void {
-    const area = this.editCache[id];
+    let area = this.editCache[id];
     area.edit = false;
 
     if (area.new_area) {
+      delete this.editCache[id];
       this.areas = this.areas.filter(a => a.id !== area.id);
+    } else {
+      area = {
+        ...this.areas.find(a => a.id === id)
+      };
     }
   }
 

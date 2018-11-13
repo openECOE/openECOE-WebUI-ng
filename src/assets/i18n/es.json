@@ -20,6 +20,12 @@
 
   "INFORMATION": "Información",
 
+  "ROUNDS": "Rondas",
+  "NO_ROUNDS": "No hay rondas",
+
+  "SHIFTS": "Turnos",
+  "NO_SHIFTS": "No hay turnos",
+
   "AREAS": "Areas",
   "AREA": "Area",
   "NO_AREAS": "No hay areas",

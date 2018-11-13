@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-information',

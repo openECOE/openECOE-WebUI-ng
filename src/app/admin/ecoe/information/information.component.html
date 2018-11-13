@@ -1,41 +1,78 @@
 <nz-content *ngIf="ecoe">
-  <nz-list [nzBordered]="true" [nzSize]="'large'" [nzDataSource]="ecoe" [nzRenderItem]="item" [nzHeader]="ecoe.name">
-    <ng-template #item let-item>
-      <nz-list-item>
-        <nz-list-item-meta [nzTitle]="titleArea">
-          <ng-template #titleArea>
-            <a routerLink="./areas">{{"AREAS" | translate}}</a>
-            <nz-divider [nzType]="'vertical'"></nz-divider>
-            <span>{{(item.areas.length > 0) ? item.areas.length : ('NO_AREAS' | translate)}}</span>
-            <i nz-icon type="warning" [theme]="'fill'" *ngIf="item.areas.length == 0"></i>
-          </ng-template>
-        </nz-list-item-meta>
-      </nz-list-item>
-      <nz-list-item>
-        <nz-list-item-meta [nzTitle]="titleStation">
-          <ng-template #titleStation>
-            <a routerLink="./stations">{{"STATIONS" | translate}}</a>
-            <nz-divider [nzType]="'vertical'"></nz-divider>
-            <span>{{(item.stations.length > 0) ? item.stations.length : ('NO_STATIONS' | translate)}}</span>
-            <i nz-icon type="warning" [theme]="'fill'" *ngIf="item.stations.length == 0"></i>
-          </ng-template>
-        </nz-list-item-meta>
-      </nz-list-item>
-      <!--<nz-list-item>-->
-        <!--{{"STUDENTS" | translate}}: {{(ecoe.students.length > 0) ? ecoe.students.length : ('NO_STUDENTS' | translate)}}-->
-        <!--<i nz-icon type="warning" [theme]="'fill'" *ngIf="ecoe.students.length == 0"></i>-->
-      <!--</nz-list-item>-->
-    </ng-template>
-  </nz-list>
+  <div nz-row [nzGutter]="16">
+    <div nz-col [nzSpan]="12">
+      <nz-card [nzTitle]="ecoe[0].name" [nzExtra]="headerExtra">
+        <nz-list [nzBordered]="true" [nzDataSource]="ecoe" [nzRenderItem]="item">
+          <ng-template #item let-item>
+            <app-item-info [link]="'areas'"
+                           [title]="'AREAS'"
+                           [no_items]="'NO_AREAS'"
+                           [itemsArray]="item.areas">
+            </app-item-info>
 
-  <button nz-popconfirm
-          [nzTitle]="'DELETE_CONFIRMATION' | translate"
-          (nzOnConfirm)="deleteEcoe()"
-          [nzPlacement]="'top'"
-          [nzOkText]="'DELETE' | translate" [nzCancelText]="'CANCEL' | translate"
-          nz-button
-          [nzType]="'danger'"
-          [nzBlock]="true">
-    <span>{{"DELETE_ECOE" | translate}}</span>
-  </button>
+            <app-item-info [link]="'stations'"
+                           [title]="'STATIONS'"
+                           [no_items]="'NO_STATIONS'"
+                           [itemsArray]="item.stations">
+            </app-item-info>
+
+            <app-item-info [link]="'students'"
+                           [title]="'STUDENTS'"
+                           [no_items]="'NO_STUDENTS'"
+                           [itemsArray]="item.students">
+            </app-item-info>
+
+            <app-item-info [link]="'rounds'"
+                           [title]="'ROUNDS'"
+                           [no_items]="'NO_ROUNDS'"
+                           [itemsArray]="item.rounds">
+            </app-item-info>
+
+            <app-item-info [link]="'shifts'"
+                           [title]="'SHIFTS'"
+                           [no_items]="'NO_SHIFTS'"
+                           [itemsArray]="item.shifts">
+            </app-item-info>
+          </ng-template>
+        </nz-list>
+
+        <ng-template #headerExtra>
+          <button nz-popconfirm
+                  [nzTitle]="'DELETE_CONFIRMATION' | translate"
+                  (nzOnConfirm)="deleteEcoe()"
+                  [nzPlacement]="'top'"
+                  [nzOkText]="'DELETE' | translate" [nzCancelText]="'CANCEL' | translate"
+                  nz-button
+                  [nzType]="'danger'"
+                  [nzBlock]="true">
+            <span>{{"DELETE_ECOE" | translate}}</span>
+          </button>
+        </ng-template>
+      </nz-card>
+    </div>
+
+    <div nz-col [nzSpan]="12">
+      <nz-card [nzTitle]="'REPORTS_AND_STATISTICS' | translate">
+
+      </nz-card>
+    </div>
+  </div>
+
+  <div nz-row [nzGutter]="16" second-row>
+    <div nz-col [nzSpan]="12">
+      <nz-card [nzTitle]="'STATIONS' | translate">
+        <nz-list>
+
+        </nz-list>
+      </nz-card>
+    </div>
+
+    <div nz-col [nzSpan]="12">
+      <nz-card [nzTitle]="'GROUPS' | translate">
+        <nz-list>
+
+        </nz-list>
+      </nz-card>
+    </div>
+  </div>
 </nz-content>

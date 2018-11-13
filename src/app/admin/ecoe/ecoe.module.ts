@@ -8,6 +8,7 @@ import {EcoeRoutingModule} from './ecoe-routing.module';
 import { AreasComponent } from './areas/areas.component';
 import { StationsComponent } from './stations/stations.component';
 import { InformationComponent } from './information/information.component';
+import { ItemInfoComponent } from './information/item-info/item-info.component';
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import { InformationComponent } from './information/information.component';
     EcoeComponent,
     AreasComponent,
     StationsComponent,
-    InformationComponent
+    InformationComponent,
+    ItemInfoComponent
   ]
 })
 export class EcoeModule { }

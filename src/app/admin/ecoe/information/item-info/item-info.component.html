@@ -1,0 +1,18 @@
+<a [routerLink]="'./' + link">
+  <nz-list-item [nzContent]="content">
+    <nz-list-item-meta [nzTitle]="header">
+      <ng-template #header>
+        <a>{{title | translate}}</a>
+      </ng-template>
+
+      <ng-template #content>
+        <h3>
+          <a>
+            <i nz-icon type="warning" *ngIf="itemsArray.length == 0" danger-color></i>
+            {{(itemsArray.length > 0) ? itemsArray.length : (no_items | translate)}}
+          </a>
+        </h3>
+      </ng-template>
+    </nz-list-item-meta>
+  </nz-list-item>
+</a>
