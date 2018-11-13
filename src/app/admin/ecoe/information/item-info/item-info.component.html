@@ -2,7 +2,10 @@
   <nz-list-item [nzContent]="content">
     <nz-list-item-meta [nzTitle]="header">
       <ng-template #header>
-        <a>{{title | translate}}</a>
+        <a>
+          <i nz-icon [type]="icon" [theme]="'fill'" style="padding-right: 10px"></i>
+          {{title | translate}}
+        </a>
       </ng-template>
 
       <ng-template #content>

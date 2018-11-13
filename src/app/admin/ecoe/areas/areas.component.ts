@@ -177,6 +177,6 @@ export class AreasComponent implements OnInit {
       ...response
     };
 
-    this.areas = [...this.areas.filter(a => a.id !== key), response];
+    this.areas = this.areas.map(a => (a.id === key ? response : a));
   }
 }

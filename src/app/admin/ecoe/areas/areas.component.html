@@ -13,7 +13,7 @@
         <th [nzWidth]="'30%'">{{"NAME" | translate}}</th>
         <th [nzWidth]="'30%'">{{"CODE" | translate}}</th>
         <th>{{"QUESTIONS" | translate}}</th>
-        <th></th>
+        <th [nzWidth]="'5%'"></th>
       </tr>
     </thead>
     <tbody>
@@ -29,13 +29,13 @@
               <i nz-icon type="edit" [theme]="'twotone'"
                  [nz-tooltip] [nzTitle]="'EDIT' | translate"
                  (click)="startEdit(item.id)"
-                 class="editable-cell-icon" success-color padding-top>
+                 class="editable-cell-icon" padding-top>
               </i>
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
               <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].name">
-              <i nz-icon type="save" [theme]="'twotone'"
+              <i nz-icon type="save" success-color
                  [nz-tooltip] [nzTitle]="'UPDATE' | translate"
                  (click)="editCache[item.id].new_area ? saveItem(item.id) : saveEditItem(item.id)"
                  class="editable-cell-icon-check" padding-top>
@@ -58,13 +58,13 @@
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
               <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(item['$uri'])">
-                <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
+                <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
               </a>
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
               <a (click)="cancelEdit(item.id)">
-                <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" [theme]="'twotone'"></i>
+                <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" danger-color></i>
               </a>
             </ng-container>
           </td>
@@ -132,12 +132,12 @@
         </tr>
       </ng-template>
     </tbody>
-  </nz-table>
 
-  <ng-template #addButton>
-    <button nz-button [nzType]="'primary'" class="margin-left" (click)="addItem()">
-      <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
-      {{"ADD_AREA" | translate}}
-    </button>
-  </ng-template>
+    <ng-template #addButton>
+      <button nz-button [nzType]="'primary'" class="margin-left" (click)="addItem()">
+        <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+        {{"ADD_AREA" | translate}}
+      </button>
+    </ng-template>
+  </nz-table>
 </nz-content>

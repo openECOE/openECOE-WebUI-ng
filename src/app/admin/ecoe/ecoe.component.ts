@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {ResourceIcons} from '../../constants/icons';
 
 @Component({
   selector: 'app-ecoe',
@@ -13,22 +14,22 @@ export class EcoeComponent implements OnInit {
     {
       title: 'INFORMATION',
       path: './',
-      icon: 'info-circle'
+      icon: ResourceIcons.infoIcon
     },
     {
       title: 'AREAS',
       path: './areas',
-      icon: 'tags'
+      icon: ResourceIcons.areaIcon
     },
     // {
     //   title: 'QUESTIONS',
     //   path: './questions',
-    //   icon: ''
+    //   icon: ResourceIcons.questionIcon
     // },
     {
       title: 'STATIONS',
       path: './stations',
-      icon: 'project'
+      icon: ResourceIcons.stationIcon
     },
     // {
     //   title: 'QBLOCKS',
@@ -43,12 +44,12 @@ export class EcoeComponent implements OnInit {
     {
       title: 'STUDENTS',
       path: '',
-      icon: ''
+      icon: ResourceIcons.studentIcon
     },
     {
       title: 'GROUPS',
       path: '',
-      icon: ''
+      icon: ResourceIcons.groupIcon
     }
   ];
 

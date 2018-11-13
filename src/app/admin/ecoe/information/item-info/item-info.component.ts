@@ -11,4 +11,5 @@ export class ItemInfoComponent {
   @Input() title: string;
   @Input() no_items: string;
   @Input() itemsArray: any[];
+  @Input() icon: string;
 }

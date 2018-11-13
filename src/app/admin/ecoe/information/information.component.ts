@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ResourceIcons} from '../../../constants/icons';
 
 @Component({
   selector: 'app-information',
@@ -10,10 +11,16 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class InformationComponent implements OnInit {
 
   ecoe: any;
+  areaIcon: string = ResourceIcons.areaIcon;
+  stationIcon: string = ResourceIcons.stationIcon;
+  studentIcon: string = ResourceIcons.studentIcon;
+  roundIcon: string = ResourceIcons.roundIcon;
+  shiftIcon: string = ResourceIcons.shiftIcon;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router) { }
+              private router: Router) {
+  }
 
   ngOnInit() {
     const ecoeId = +this.route.snapshot.params.id;
