@@ -16,7 +16,7 @@
         <span class="nav-text">{{"CREATE_ECOE" | translate}}</span>
       </li>
 
-      <li nz-menu-item *ngFor="let ecoe of ecoes" [routerLink]="'./ecoe/' + ecoe.id">
+      <li nz-menu-item *ngFor="let ecoe of ecoes" [routerLink]="['./ecoe', ecoe.id]">
         <i nz-icon type="user"></i>
         <span class="nav-text">{{ecoe.name}}</span>
       </li>

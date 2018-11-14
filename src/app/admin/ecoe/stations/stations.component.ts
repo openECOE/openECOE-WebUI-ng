@@ -1,5 +1,5 @@
-import {Component, NgZone, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {map} from 'rxjs/operators';
 
@@ -10,13 +10,13 @@ import {map} from 'rxjs/operators';
 })
 export class StationsComponent implements OnInit {
 
-  stations: any[];
+  stations: any[] = [];
   ecoeId: number;
   editCache = {};
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private ngZone: NgZone) {
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -102,6 +102,13 @@ export class StationsComponent implements OnInit {
         edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
         ...item
       };
+    });
+  }
+
+  navigateQuestions(qblockId: number, stationId: number) {
+    this.router.navigate(['../questions'], {
+      relativeTo: this.route,
+      queryParams: {station: stationId, qblock: qblockId}
     });
   }
 }

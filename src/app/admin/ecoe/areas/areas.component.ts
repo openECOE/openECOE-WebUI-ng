@@ -11,7 +11,7 @@ import {forkJoin} from 'rxjs';
 })
 export class AreasComponent implements OnInit {
 
-  areas: any[];
+  areas: any[] = [];
   ecoeId: number;
   editCache = {};
 

@@ -85,11 +85,6 @@
             <nz-table #qblockTable [nzData]="item.qblocksArray" [nzSize]="'middle'" [nzShowPagination]="false">
               <thead>
                 <tr>
-                  <th [nzExpand]="true">
-                    <a (click)="loadQblocksByStation(true, item.id)">
-                      <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'RELOAD' | translate"></i>
-                    </a>
-                  </th>
                   <th [nzWidth]="'10%'">{{"ORDER" | translate}}</th>
                   <th [nzWidth]="'30%'">{{"NAME" | translate}}</th>
                   <th>{{"QUESTIONS" | translate}}</th>
@@ -99,11 +94,6 @@
 
               <tbody>
                 <tr *ngFor="let qblock of qblockTable.data; let i = index">
-                  <td [nzShowExpand]="qblock.questions.length > 0"
-                      [(nzExpand)]="qblock.expand"
-                      (nzExpandChange)="loadQuestionsByQblock($event, item.id, qblock.id)">
-                  </td>
-
                   <td>
                     <ng-container *ngIf="!editCache[item.id].edit">
                       {{qblock.order}}
@@ -132,7 +122,14 @@
                     </ng-container>
                   </td>
 
-                  <td>{{qblock.questions.length}}</td>
+                  <td>
+                    <ng-container>
+                      <a (click)="navigateQuestions(qblock.id, item.id)">
+                        {{qblock.questions.length}}
+                        <i nz-icon type="select"></i>
+                      </a>
+                    </ng-container>
+                  </td>
 
                   <td>
                     <ng-container *ngIf="!editCache[item.id].edit">
@@ -156,59 +153,6 @@
                     </ng-container>
                   </td>
                 </tr>
-
-                <tr [nzExpand]="qblock?.expand">
-                  <td colspan="4">
-                    <nz-table #questionTable [nzData]="qblock?.questionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
-                      <!--<thead>-->
-                        <!--<tr>-->
-                          <!--<th [nzWidth]="'10%'">{{"ORDER" | translate}}</th>-->
-                          <!--<th [nzWidth]="'30%'">{{"NAME" | translate}}</th>-->
-                          <!--<th>{{"QUESTIONS" | translate}}</th>-->
-                          <!--<th>{{"ACTION" | translate}}</th>-->
-                        <!--</tr>-->
-                      <!--</thead>-->
-
-                      <tbody>
-                        <tr *ngFor="let question of questionTable.data; let indexQuestion = index">
-                          <td>Hola</td>
-                        </tr>
-                      </tbody>
-                    </nz-table>
-                  </td>
-                </tr>
-
-                    <!--<td>-->
-                      <!--<ng-container *ngIf="!editCache[item.id].edit">-->
-                        <!--{{question.order || "-"}}-->
-                      <!--</ng-container>-->
-
-                      <!--<ng-container *ngIf="editCache[item.id].edit">-->
-                        <!--<input type="number"-->
-                               <!--nz-input-->
-                               <!--[nzSize]="'small'"-->
-                               <!--required-->
-                               <!--[(ngModel)]="editCache[item.id].qblocksArray[i].questionsArray[indexQuestion].order">-->
-                      <!--</ng-container>-->
-                    <!--</td>-->
-
-                    <!--<td>-->
-                      <!--<ng-container *ngIf="!editCache[item.id].edit">-->
-                        <!--{{question.description}}-->
-                      <!--</ng-container>-->
-                    <!--</td>-->
-
-                    <!--<td>-->
-                      <!--<ng-container *ngIf="!editCache[item.id].edit">-->
-                        <!--{{question.reference}}-->
-                      <!--</ng-container>-->
-                    <!--</td>-->
-
-                    <!--<td>-->
-                      <!--<ng-container *ngIf="!editCache[item.id].edit">-->
-                        <!--{{question.question_type}}-->
-                      <!--</ng-container>-->
-                    <!--</td>-->
               </tbody>
             </nz-table>
           </td>

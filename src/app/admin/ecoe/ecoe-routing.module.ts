@@ -4,6 +4,7 @@ import {EcoeComponent} from './ecoe.component';
 import {InformationComponent} from './information/information.component';
 import {StationsComponent} from './stations/stations.component';
 import {AreasComponent} from './areas/areas.component';
+import {QuestionsComponent} from './questions/questions.component';
 
 const routes: Routes = [
   {
@@ -17,7 +18,7 @@ const routes: Routes = [
         children: [
           {path: 'areas', component: AreasComponent},
           {path: 'stations', component: StationsComponent},
-          // {path: 'questions', component: QuestionsComponent},
+          {path: 'questions', component: QuestionsComponent},
           {path: '', component: InformationComponent},
           {path: '**', redirectTo: ''}
         ]

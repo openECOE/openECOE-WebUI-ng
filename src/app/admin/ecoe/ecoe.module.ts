@@ -9,6 +9,7 @@ import { AreasComponent } from './areas/areas.component';
 import { StationsComponent } from './stations/stations.component';
 import { InformationComponent } from './information/information.component';
 import { ItemInfoComponent } from './information/item-info/item-info.component';
+import { QuestionsComponent } from './questions/questions.component';
 
 @NgModule({
   imports: [
@@ -24,7 +25,8 @@ import { ItemInfoComponent } from './information/item-info/item-info.component';
     AreasComponent,
     StationsComponent,
     InformationComponent,
-    ItemInfoComponent
+    ItemInfoComponent,
+    QuestionsComponent
   ]
 })
 export class EcoeModule { }
