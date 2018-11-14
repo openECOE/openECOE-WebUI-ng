@@ -10,23 +10,35 @@
             <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'RELOAD' | translate"></i>
           </a>
         </th>
-        <th [nzWidth]="'5%'">{{"ORDER" | translate}}</th>
-        <th>{{"DESCRIPTION" | translate}}</th>
-        <th [nzWidth]="'30%'">{{"REFERENCE" | translate}}</th>
+        <th [nzWidth]="'10%'">{{"ORDER" | translate}}</th>
+        <th [nzWidth]="'40%'">{{"DESCRIPTION" | translate}}</th>
+        <th [nzWidth]="'20%'">{{"REFERENCE" | translate}}</th>
+        <th [nzWidth]="'20%'">{{"OPTIONS" | translate}}</th>
         <th [nzWidth]="'5%'"></th>
       </tr>
     </thead>
 
     <tbody>
       <ng-template ngFor let-item [ngForOf]="table.data">
-        <tr>
+        <tr class="editable-cell">
           <td [nzShowExpand]="item.options.length > 0"
               [(nzExpand)]="item.expand"
               (nzExpandChange)="loadOptionsByQuestion($event, item.id)">
           </td>
-          <td class="editable-cell">
+
+          <td>
             <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.name}}
+              {{item.order || "-"}}
+            </ng-container>
+
+            <ng-container *ngIf="editCache[item.id].edit">
+              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].order">
+            </ng-container>
+          </td>
+
+          <td>
+            <ng-container *ngIf="!editCache[item.id].edit">
+              {{item.description}}
               <i nz-icon type="edit" [theme]="'twotone'"
                  [nz-tooltip] [nzTitle]="'EDIT' | translate"
                  (click)="startEdit(item.id)"
@@ -35,10 +47,10 @@
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
-              <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].name">
+              <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].description">
               <i nz-icon type="save" success-color
                  [nz-tooltip] [nzTitle]="'UPDATE' | translate"
-                 (click)="editCache[item.id].new_area ? saveItem(item.id) : saveEditItem(item.id)"
+                 (click)="editCache[item.id].new_question ? saveItem(item.id) : saveEditItem(item.id)"
                  class="editable-cell-icon-check" padding-top>
               </i>
             </ng-container>
@@ -46,15 +58,15 @@
 
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.code}}
+              {{item.reference}}
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
-              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].code">
+              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].reference">
             </ng-container>
           </td>
 
-          <td>{{item.questions.length}}</td>
+          <td>{{item.options.length}}</td>
 
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
@@ -72,61 +84,52 @@
         </tr>
         <tr [nzExpand]="item.expand">
           <td></td>
-          <td colspan="4">
-            <nz-table #questionTable [nzData]="item.questionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
-              <thead>
-              <tr>
-                <th [nzWidth]="'30%'">{{"DESCRIPTION" | translate}}</th>
-                <th [nzWidth]="'30%'">{{"REFERENCE" | translate}}</th>
-                <th>{{"AREA" | translate}}</th>
-              </tr>
-              </thead>
-
+          <td colspan="5">
+            <nz-table #optionTable [nzData]="item.optionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
               <tbody>
-              <tr *ngFor="let question of questionTable.data; let i = index">
-                <td>
-                  <ng-container *ngIf="!editCache[item.id].edit">
-                    {{question.description}}
-                  </ng-container>
+                <tr *ngFor="let option of optionTable.data; let i = index">
+                  <td>
+                    <ng-container *ngIf="!editCache[item.id].edit">
+                      {{option.order}}
+                    </ng-container>
 
-                  <ng-container *ngIf="editCache[item.id].edit">
-                    <input type="text"
-                           nz-input
-                           [nzSize]="'small'"
-                           required
-                           [(ngModel)]="editCache[item.id].questionsArray[i].description">
-                  </ng-container>
-                </td>
+                    <ng-container *ngIf="editCache[item.id].edit">
+                      <input type="text"
+                             nz-input
+                             [nzSize]="'small'"
+                             required
+                             [(ngModel)]="editCache[item.id].optionsArray[i].order">
+                    </ng-container>
+                  </td>
 
-                <td>
-                  <ng-container *ngIf="!editCache[item.id].edit">
-                    {{question.reference}}
-                  </ng-container>
+                  <td>
+                    <ng-container *ngIf="!editCache[item.id].edit">
+                      {{option.label}}
+                    </ng-container>
 
-                  <ng-container *ngIf="editCache[item.id].edit">
-                    <input type="text"
-                           nz-input
-                           [nzSize]="'small'"
-                           required
-                           [(ngModel)]="editCache[item.id].questionsArray[i].reference">
-                  </ng-container>
+                    <ng-container *ngIf="editCache[item.id].edit">
+                      <input type="text"
+                             nz-input
+                             [nzSize]="'small'"
+                             required
+                             [(ngModel)]="editCache[item.id].questionsArray[i].label">
+                    </ng-container>
+                  </td>
 
-                </td>
-                <td>
-                  <ng-container *ngIf="!editCache[item.id].edit">
-                    {{item.name}}
-                  </ng-container>
+                  <td>
+                    <ng-container *ngIf="!editCache[item.id].edit">
+                      {{option.points}}
+                    </ng-container>
 
-                  <ng-container *ngIf="editCache[item.id].edit">
-                    <nz-select style="width: 150px;"
-                               [nzSize]="'small'"
-                               [nzShowSearch]="true"
-                               [(ngModel)]="editCache[item.id].questionsArray[i].areaId">
-                      <nz-option *ngFor="let a of areas" [nzLabel]="a.name" [nzValue]="a.id"></nz-option>
-                    </nz-select>
-                  </ng-container>
-                </td>
-              </tr>
+                    <ng-container *ngIf="editCache[item.id].edit">
+                      <input type="text"
+                             nz-input
+                             [nzSize]="'small'"
+                             required
+                             [(ngModel)]="editCache[item.id].questionsArray[i].points">
+                    </ng-container>
+                  </td>
+                </tr>
               </tbody>
             </nz-table>
           </td>
@@ -137,8 +140,13 @@
     <ng-template #addButton>
       <button nz-button [nzType]="'primary'" class="margin-left" (click)="addItem()">
         <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
-        {{"ADD_AREA" | translate}}
+        {{"ADD_QUESTION" | translate}}
       </button>
+
+      <nz-tag style="float: right;" [nzMode]="'closeable'" [nzColor]="'geekblue'" (nzOnClose)="deleteFilter()" *ngIf="qblockId">
+        <i nz-icon type="filter" [theme]="'twotone'"></i>
+        {{"QBLOCK" | translate}} {{qblockId}}
+      </nz-tag>
     </ng-template>
   </nz-table>
 </nz-content>

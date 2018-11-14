@@ -42,6 +42,7 @@
   "DESCRIPTION": "Descripción",
   "QUESTION_TYPE": "Tipo de pregunta",
 
+  "OPTIONS": "Opciones",
   "OPTIONS_NUMBER": "Número de opciones",
   "ADD_OPTIONS": "Añadir opciones",
   "LABEL": "Texto",
@@ -51,11 +52,12 @@
   "OPTIONAL": "opcional",
   "SELECT_VALUE": "Seleccionar un valor...",
 
-  "QBLOCK_NAME": "Nombre del QBlock",
-  "QBLOCKS": "Qblocks",
-  "ASSIGN_QBLOCKS": "Asignar QBlocks",
-  "SELECT_QBLOCKS": "Selecciona los QBlocks:",
-  "ADD_QBLOCKS": "Añadir QBlocks",
+  "QBLOCK_NAME": "Nombre del bloque",
+  "QBLOCKS": "Bloques de preguntas",
+  "ASSIGN_QBLOCKS": "Asignar bloque",
+  "SELECT_QBLOCKS": "Selecciona los bloques:",
+  "ADD_QBLOCKS": "Añadir bloque",
+  "QBLOCK": "Bloque",
 
   "CHRONOMETERS": "Cronómetros",
 

@@ -21,15 +21,15 @@ export class EcoeComponent implements OnInit {
       path: './areas',
       icon: ResourceIcons.areaIcon
     },
-    // {
-    //   title: 'QUESTIONS',
-    //   path: './questions',
-    //   icon: ResourceIcons.questionIcon
-    // },
     {
       title: 'STATIONS',
       path: './stations',
       icon: ResourceIcons.stationIcon
+    },
+    {
+      title: 'QUESTIONS',
+      path: './questions',
+      icon: ResourceIcons.questionIcon
     },
     // {
     //   title: 'QBLOCKS',

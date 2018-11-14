@@ -85,10 +85,9 @@ export class StationsComponent implements OnInit {
 
           return station;
         });
-      });
 
-      console.log(this.stations);
-      this.updateEditCache();
+        this.updateEditCache();
+      });
     }
   }
 
@@ -105,10 +104,10 @@ export class StationsComponent implements OnInit {
     });
   }
 
-  navigateQuestions(qblockId: number, stationId: number) {
+  navigateQuestions(qblockId: number) {
     this.router.navigate(['../questions'], {
       relativeTo: this.route,
-      queryParams: {station: stationId, qblock: qblockId}
+      queryParams: {qblock: qblockId}
     });
   }
 }
