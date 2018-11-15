@@ -93,5 +93,6 @@
   "ACCEPT": "Aceptar",
   "CANCEL": "Cancelar",
   "CLOSE": "Cerrar",
-  "RELOAD": "Refrescar"
+  "REFRESH": "Refrescar",
+  "BACK": "Volver"
 }

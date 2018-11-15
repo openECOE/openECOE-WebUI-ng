@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {SharedService} from '../../services/shared/shared.service';
+import {ResourceIcons} from '../../constants/icons';
 
 @Component({
   selector: 'app-ecoe',
@@ -7,10 +9,60 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EcoeComponent implements OnInit {
 
-  constructor() {
+  isCollapsed: boolean = false;
+
+  ecoe_menu: Array<{title: string, path: string, icon: string}> = [
+    {
+      title: 'BACK',
+      path: '/admin',
+      icon: 'left-square'
+    },
+    {
+      title: 'INFORMATION',
+      path: './',
+      icon: ResourceIcons.infoIcon
+    },
+    {
+      title: 'AREAS',
+      path: './areas',
+      icon: ResourceIcons.areaIcon
+    },
+    {
+      title: 'STATIONS',
+      path: './stations',
+      icon: ResourceIcons.stationIcon
+    },
+    {
+      title: 'QUESTIONS',
+      path: './questions',
+      icon: ResourceIcons.questionIcon
+    },
+    // {
+    //   title: 'QBLOCKS',
+    //   path: './qblocks',
+    //   icon: ''
+    // },
+    {
+      title: 'CHRONOMETERS',
+      path: '',
+      icon: ''
+    },
+    {
+      title: 'STUDENTS',
+      path: '',
+      icon: ResourceIcons.studentIcon
+    },
+    {
+      title: 'GROUPS',
+      path: '',
+      icon: ResourceIcons.groupIcon
+    }
+  ];
+
+  constructor(public sharedService: SharedService) {
   }
 
   ngOnInit() {
-  }
 
+  }
 }

@@ -1,5 +1,8 @@
 <nz-layout>
-  <nz-sider [nzCollapsible]="true" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null" *ngIf="showAdminMenu">
+  <nz-sider [nzCollapsible]="true"
+            [(nzCollapsed)]="isCollapsed"
+            [nzTrigger]="null"
+            *ngIf="(sharedService.getPageChanged() | async) == '/admin'">
     <ul nz-menu
         [nzTheme]="'dark'"
         [nzMode]="'inline'"
@@ -19,21 +22,6 @@
       <li nz-menu-item *ngFor="let ecoe of ecoes" [routerLink]="['./ecoe', ecoe.id]">
         <i nz-icon type="user"></i>
         <span class="nav-text">{{ecoe.name}}</span>
-      </li>
-    </ul>
-  </nz-sider>
-
-  <nz-sider [nzCollapsible]="true" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null" *ngIf="!showAdminMenu">
-    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
-      <li (click)="isCollapsed = !isCollapsed">
-        <button nz-button [nzType]="'primary'" [nzBlock]="true">
-          <i nz-icon [type]="isCollapsed ? 'menu-unfold' : 'menu-fold'" icon-25></i>
-        </button>
-      </li>
-
-      <li nz-menu-item *ngFor="let item of ecoe_menu" [routerLink]="item.path">
-        <i nz-icon [type]="item.icon" [theme]="'fill'"></i>
-        <span class="nav-text">{{item.title | translate}}</span>
       </li>
     </ul>
   </nz-sider>
