@@ -4,7 +4,7 @@ export const ResourceIcons = {
   areaIcon: 'tags',
   stationIcon: 'project',
   studentIcon: '',
-  questionIcon: '',
+  questionIcon: 'bulb',
   groupIcon: '',
   roundIcon: '',
   shiftIcon: ''

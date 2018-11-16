@@ -36,7 +36,7 @@
             <ng-container *ngIf="editCache[item.id].edit">
               <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].name">
               <i nz-icon type="save" success-color
-                 [nz-tooltip] [nzTitle]="'UPDATE' | translate"
+                 [nz-tooltip] [nzTitle]="(editCache[item.id].new_area ? 'SAVE' : 'UPDATE') | translate"
                  (click)="editCache[item.id].new_area ? saveItem(item.id) : saveEditItem(item.id)"
                  class="editable-cell-icon-check" padding-top>
               </i>

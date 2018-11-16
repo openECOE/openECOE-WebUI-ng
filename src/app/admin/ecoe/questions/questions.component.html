@@ -10,17 +10,20 @@
             <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
           </a>
         </th>
-        <th [nzWidth]="'10%'">{{"ORDER" | translate}}</th>
-        <th [nzWidth]="'40%'">{{"DESCRIPTION" | translate}}</th>
-        <th [nzWidth]="'20%'">{{"REFERENCE" | translate}}</th>
-        <th [nzWidth]="'20%'">{{"OPTIONS" | translate}}</th>
-        <th [nzWidth]="'5%'"></th>
+        <th>{{"ORDER" | translate}}</th>
+        <th [nzWidth]="'30%'">{{"DESCRIPTION" | translate}}</th>
+        <th>{{"REFERENCE" | translate}}</th>
+        <th>{{"QUESTION_TYPE" | translate}}</th>
+        <th>{{"AREA" | translate}}</th>
+        <!--<th [nzWidth]="'150px'">{{"QBLOCKS" | translate}}</th>-->
+        <th>{{"OPTIONS" | translate}}</th>
+        <th></th>
       </tr>
     </thead>
 
     <tbody>
       <ng-template ngFor let-item [ngForOf]="table.data">
-        <tr class="editable-cell">
+        <tr>
           <td [nzShowExpand]="item.options.length > 0"
               [(nzExpand)]="item.expand"
               (nzExpandChange)="loadOptionsByQuestion($event, item.id)">
@@ -39,20 +42,10 @@
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
               {{item.description}}
-              <i nz-icon type="edit" [theme]="'twotone'"
-                 [nz-tooltip] [nzTitle]="'EDIT' | translate"
-                 (click)="startEdit(item.id)"
-                 class="editable-cell-icon" padding-top>
-              </i>
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
               <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].description">
-              <i nz-icon type="save" success-color
-                 [nz-tooltip] [nzTitle]="'UPDATE' | translate"
-                 (click)="editCache[item.id].new_question ? saveItem(item.id) : saveEditItem(item.id)"
-                 class="editable-cell-icon-check" padding-top>
-              </i>
             </ng-container>
           </td>
 
@@ -66,19 +59,97 @@
             </ng-container>
           </td>
 
+          <td>
+            <ng-container *ngIf="!editCache[item.id].edit">
+              {{item.question_type}}
+            </ng-container>
+
+            <ng-container *ngIf="editCache[item.id].edit">
+              <nz-select style="width: 150px;"
+                         [nzSize]="'small'"
+                         [nzShowSearch]="true"
+                         [(ngModel)]="editCache[item.id].question_type">
+                <nz-option *ngFor="let option of question_type_options"
+                           [nzLabel]="option.label | translate"
+                           [nzValue]="option.type">
+                </nz-option>
+              </nz-select>
+            </ng-container>
+          </td>
+
+          <td>
+            <ng-container *ngIf="!editCache[item.id].edit">
+              {{item.areaName}}
+            </ng-container>
+
+            <ng-container *ngIf="editCache[item.id].edit">
+              <nz-select style="width: 150px;"
+                         [nzSize]="'small'"
+                         [nzShowSearch]="true"
+                         [(ngModel)]="editCache[item.id].areaId">
+                <nz-option *ngFor="let a of areas" [nzLabel]="a.name" [nzValue]="a.id"></nz-option>
+              </nz-select>
+            </ng-container>
+          </td>
+
+          <!--<td>-->
+            <!--<ng-container *ngIf="!editCache[item.id].edit">-->
+              <!--<nz-select [nzMode]="'tags'"-->
+                         <!--[nzDisabled]="true"-->
+                         <!--[nzSize]="'small'"-->
+                         <!--[(ngModel)]="item.qblocksRefs"-->
+                         <!--style="width: 100%;">-->
+                <!--<nz-option *ngFor="let qblock of qblocks" [nzLabel]="qblock.name" [nzValue]="qblock['$uri']"></nz-option>-->
+              <!--</nz-select>-->
+            <!--</ng-container>-->
+
+            <!--<ng-container *ngIf="editCache[item.id].edit">-->
+              <!--<nz-select style="width: 150px;"-->
+                         <!--[nzSize]="'small'"-->
+                         <!--[nzShowSearch]="true"-->
+                         <!--[(ngModel)]="editCache[item.id].qblocks">-->
+                <!--<nz-option *ngFor="let qblock of qblocks" [nzLabel]="qblock.name" [nzValue]="qblock.id"></nz-option>-->
+              <!--</nz-select>-->
+            <!--</ng-container>-->
+          <!--</td>-->
+
           <td>{{item.options.length}}</td>
 
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
+              <i nz-icon type="folder-add" [theme]="'twotone'"
+                 [nz-tooltip] [nzTitle]="'MOVE_TO' | translate"
+                  tappable>
+              </i>
+
+              <nz-divider [nzType]="'vertical'"></nz-divider>
+
+              <i nz-icon type="edit" [theme]="'outline'"
+                 [nz-tooltip] [nzTitle]="'EDIT' | translate"
+                 (click)="startEdit(item.id)" tappable success-color>
+              </i>
+
+              <nz-divider [nzType]="'vertical'"></nz-divider>
+
               <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(item['$uri'])">
                 <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
               </a>
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
-              <a (click)="cancelEdit(item.id)">
-                <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" danger-color></i>
-              </a>
+              <i nz-icon type="save"
+                 [nz-tooltip] [nzTitle]="(editCache[item.id].new_item ? 'SAVE' : 'UPDATE') | translate"
+                 (click)="editCache[item.id].new_item ? saveItem(item.id) : saveEditItem(item.id)"
+                 success-color tappable>
+              </i>
+
+              <nz-divider [nzType]="'vertical'"></nz-divider>
+
+              <i nz-icon type="close-circle"
+                 [nz-tooltip] [nzTitle]="'CANCEL' | translate"
+                 (click)="cancelEdit(item.id)"
+                 danger-color tappable>
+              </i>
             </ng-container>
           </td>
         </tr>

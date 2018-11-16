@@ -53,7 +53,7 @@
   "SELECT_VALUE": "Seleccionar un valor...",
 
   "QBLOCK_NAME": "Nombre del bloque",
-  "QBLOCKS": "Bloques de preguntas",
+  "QBLOCKS": "Bloques",
   "ASSIGN_QBLOCKS": "Asignar bloque",
   "SELECT_QBLOCKS": "Selecciona los bloques:",
   "ADD_QBLOCKS": "Añadir bloque",
@@ -88,6 +88,8 @@
   "ACTION": "Acción",
   "DELETE": "Eliminar",
   "ADD": "Añadir",
+  "MOVE_TO": "Mover a",
+  "SAVE": "Guardar",
   "EDIT": "Editar",
   "UPDATE": "Actualizar",
   "ACCEPT": "Aceptar",
