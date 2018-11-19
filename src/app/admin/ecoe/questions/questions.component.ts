@@ -28,7 +28,8 @@ export class QuestionsComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router) { }
+              private router: Router) {
+  }
 
   ngOnInit() {
     this.ecoeId = +this.route.snapshot.params.id;
@@ -71,43 +72,33 @@ export class QuestionsComponent implements OnInit {
             this.editCache = {};
             this.stations = response[0];
             this.questions = response[0];
-            console.log(this.stations)
             this.updateEditCache();
           });
       });
   }
 
-  loadOptionsByQuestion(expand: boolean, questionId: number) {
+  loadOptionsByQuestion(expand: boolean, question: any) {
     if (expand) {
       this.apiService.getResources('option', {
-        where: `{"question":${questionId}}`,
+        where: `{"question":${question.id}}`,
         sort: '{"order":false}'
       }).pipe(
         map(options => {
           return options.map(option => {
-            return {questionId, ...option};
+            return {questionId: question.id, ...option};
           });
         })
       ).subscribe(options => {
-        this.questions = this.questions.map(question => {
-          if (question.id === questionId) {
-            question.optionsArray = options;
-          }
-
-          return question;
-        });
-
+        question.optionsArray = options;
         this.updateEditCache();
       });
     }
   }
 
   loadQblocksByStation(stationId: number) {
-    if (true) {
-      this.apiService.getResources('qblock', {
-        where: `{"station":${stationId}}`
-      }).subscribe(qblocks => this.qblocks = qblocks);
-    }
+    this.apiService.getResources('qblock', {
+      where: `{"station":${stationId}}`
+    }).subscribe(qblocks => this.qblocks = qblocks);
   }
 
   startEdit(id: number) {
@@ -140,7 +131,7 @@ export class QuestionsComponent implements OnInit {
   }
 
   deleteItem(ref: string) {
-
+    this.apiService.deleteResource(ref).subscribe(() => this.loadQuestions());
   }
 
   addItem() {

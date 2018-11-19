@@ -26,7 +26,7 @@
             <tr>
               <td [nzShowExpand]="item.options.length > 0"
                   [(nzExpand)]="item.expand"
-                  (nzExpandChange)="loadOptionsByQuestion($event, item.id)">
+                  (nzExpandChange)="loadOptionsByQuestion($event, item)">
               </td>
 
               <td>
