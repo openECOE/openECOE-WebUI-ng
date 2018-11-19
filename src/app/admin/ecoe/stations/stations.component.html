@@ -124,7 +124,7 @@
 
                   <td>
                     <ng-container>
-                      <a (click)="navigateQuestions(qblock.id)">
+                      <a (click)="navigateQuestions(item.id, qblock.id)">
                         {{qblock.questions.length}}
                         <i nz-icon type="select"></i>
                       </a>

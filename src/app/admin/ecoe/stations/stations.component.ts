@@ -104,10 +104,10 @@ export class StationsComponent implements OnInit {
     });
   }
 
-  navigateQuestions(qblockId: number) {
+  navigateQuestions(stationId: number, qblockId: number) {
     this.router.navigate(['../questions'], {
       relativeTo: this.route,
-      queryParams: {qblock: qblockId}
+      queryParams: {station: stationId, qblock: qblockId}
     });
   }
 }

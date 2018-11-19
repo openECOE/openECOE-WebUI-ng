@@ -12,11 +12,12 @@ import {map, mergeMap, tap} from 'rxjs/operators';
 export class QuestionsComponent implements OnInit {
 
   questions: any[] = [];
+  stations: any[] = [];
   editCache = {};
   ecoeId: number;
   qblockId: number;
-  areas: any[] = [];
-  qblocks: any[] = [];
+  stationId: number;
+  // qblocks: any[] = [];
 
   question_type_options: any[] = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -33,58 +34,62 @@ export class QuestionsComponent implements OnInit {
 
     this.route.queryParamMap.subscribe((params: ParamMap) => {
       this.qblockId = +params.get('qblock');
+      this.stationId = +params.get('station');
       this.loadQuestions();
     });
-
-    this.loadQblocks();
   }
 
   loadQuestions() {
-    this.apiService.getResources('area', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).pipe(
-      tap(areas => this.areas = areas),
-      mergeMap(areas => {
-        return <Observable<any[]>>zip(...areas.map(area => {
-          return this.apiService.getResources('question', {
-            where: (this.qblockId ? `{"area":${area.id},"qblocks":{"$contains":${this.qblockId}}}` : `{"area":${area.id}}`)
-          })
-            .pipe(map(questions => {
-              return questions.map(question => {
-                const refs = [];
-                question.qblocks.forEach(qblock => refs.push(qblock['$ref']));
-                return {areaId: area.id, areaName: area.name, qblocksRefs: refs, ...question};
-              });
-            }));
-        }));
-      }),
-      map(questions => {
-        return [].concat.apply([], questions);
-      })
-    ).subscribe(response => {
+    let request;
+
+    if (this.stationId || this.qblockId) {
+      request = this.apiService.getResources('qblock', {
+        where: this.qblockId ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${this.stationId}}`
+      }).pipe(
+        mergeMap(qblocks => {
+          return <Observable<any[]>>zip(...qblocks.map(qblock => {
+            return this.apiService.getResources('question', {
+              where: `{"qblocks":{"$contains":${qblock.id}}}`
+            }).pipe(map(questions => [{id: qblock.id, name: qblock.name, questions}]));
+          }));
+        }),
+        map(qblocks => {
+          return [{id: this.stationId, qblocks: [].concat.apply([], qblocks)}];
+        })
+      );
+
+    } else {
+      request = this.apiService.getResources('station', {
+        where: `{"ecoe":${this.ecoeId}}`
+      }).pipe(
+        mergeMap(stations => {
+          return <Observable<any[]>>zip(...stations.map(station => {
+            return this.apiService.getResources('qblock', {
+              where: `{"station":${station.id}}`
+            }).pipe(
+              mergeMap(qblocks => {
+                return <Observable<any[]>>zip(...qblocks.map(qblock => {
+                  return this.apiService.getResources('question', {
+                    where: `{"qblocks":{"$contains":${qblock.id}}}`
+                  }).pipe(map(questions => [{id: qblock.id, name: qblock.name, questions}]));
+                }));
+              })
+            );
+          }));
+        }),
+        tap(res => console.log(res)),
+        map(questions => {
+          return [].concat.apply([], questions);
+        })
+      );
+    }
+
+    request.subscribe(response => {
+      console.log(response)
       this.editCache = {};
+      this.stations = response;
       this.questions = response;
       this.updateEditCache();
-    });
-  }
-
-  loadQblocks() {
-    this.apiService.getResources('station', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).pipe(
-      mergeMap(stations => {
-        return <Observable<any[]>>zip(...stations.map(station => {
-          return this.apiService.getResources('qblock', {
-            where: `{"station":${station.id}}`,
-            sort: '{"order":false}'
-          });
-        }));
-      }),
-      map(questions => {
-        return [].concat.apply([], questions);
-      })
-    ).subscribe(response => {
-      this.qblocks = response;
     });
   }
 
@@ -169,11 +174,15 @@ export class QuestionsComponent implements OnInit {
   }
 
   updateEditCache(): void {
-    this.questions.forEach(item => {
-      this.editCache[item.id] = {
-        edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
-        ...item
-      };
+    this.stations.forEach(st => {
+      st.qblocks.forEach(qb => {
+        qb.questions.forEach(item => {
+          this.editCache[item.id] = {
+            edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
+            ...item
+          };
+        });
+      });
     });
   }
 
