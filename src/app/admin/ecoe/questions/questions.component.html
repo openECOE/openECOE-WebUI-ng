@@ -173,7 +173,14 @@
         </tbody>
 
         <ng-template #addButton>
-          <span>{{qblock.name}}</span>
+          <nz-breadcrumb>
+            <nz-breadcrumb-item>
+              {{station.name}}
+            </nz-breadcrumb-item>
+            <nz-breadcrumb-item>
+              {{qblock.name}}
+            </nz-breadcrumb-item>
+          </nz-breadcrumb>
           <!--<button nz-button [nzType]="'primary'" class="margin-left" (click)="addItem()">-->
             <!--<i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>-->
             <!--{{"ADD_QUESTION" | translate}}-->

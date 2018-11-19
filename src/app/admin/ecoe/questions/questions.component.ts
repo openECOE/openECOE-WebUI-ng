@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
-import {Observable, zip} from 'rxjs';
-import {map, mergeMap, tap} from 'rxjs/operators';
+import {forkJoin, Observable, zip} from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-questions',
@@ -40,57 +40,39 @@ export class QuestionsComponent implements OnInit {
   }
 
   loadQuestions() {
-    let request;
+    this.apiService.getResources('station', {
+      where: this.stationId ? `{"$uri":"/api/station/${this.stationId}"}` : `{"ecoe":${this.ecoeId}}`
+    })
+      .subscribe(stations => {
+        const requests = [];
 
-    if (this.stationId || this.qblockId) {
-      request = this.apiService.getResources('qblock', {
-        where: this.qblockId ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${this.stationId}}`
-      }).pipe(
-        mergeMap(qblocks => {
-          return <Observable<any[]>>zip(...qblocks.map(qblock => {
-            return this.apiService.getResources('question', {
-              where: `{"qblocks":{"$contains":${qblock.id}}}`
-            }).pipe(map(questions => [{id: qblock.id, name: qblock.name, questions}]));
-          }));
-        }),
-        map(qblocks => {
-          return [{id: this.stationId, qblocks: [].concat.apply([], qblocks)}];
-        })
-      );
+        stations.forEach(station => {
+          const request = this.apiService.getResources('qblock', {
+            where: this.qblockId ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${station.id}}`
+          }).pipe(
+            mergeMap(qblocks => {
+              return <Observable<any[]>>zip(...qblocks.map(qblock => {
+                return this.apiService.getResources('question', {
+                  where: `{"qblocks":{"$contains":${qblock.id}}}`
+                }).pipe(map(questions => [{...qblock, questions}]));
+              }));
+            }),
+            map(qblocks => {
+              return [{...station, qblocks: [].concat.apply([], qblocks)}];
+            })
+          );
 
-    } else {
-      request = this.apiService.getResources('station', {
-        where: `{"ecoe":${this.ecoeId}}`
-      }).pipe(
-        mergeMap(stations => {
-          return <Observable<any[]>>zip(...stations.map(station => {
-            return this.apiService.getResources('qblock', {
-              where: `{"station":${station.id}}`
-            }).pipe(
-              mergeMap(qblocks => {
-                return <Observable<any[]>>zip(...qblocks.map(qblock => {
-                  return this.apiService.getResources('question', {
-                    where: `{"qblocks":{"$contains":${qblock.id}}}`
-                  }).pipe(map(questions => [{id: qblock.id, name: qblock.name, questions}]));
-                }));
-              })
-            );
-          }));
-        }),
-        tap(res => console.log(res)),
-        map(questions => {
-          return [].concat.apply([], questions);
-        })
-      );
-    }
+          requests.push(request);
+        });
 
-    request.subscribe(response => {
-      console.log(response)
-      this.editCache = {};
-      this.stations = response;
-      this.questions = response;
-      this.updateEditCache();
-    });
+        forkJoin(requests)
+          .subscribe(response => {
+            this.editCache = {};
+            this.stations = response[0];
+            this.questions = response;
+            this.updateEditCache();
+          });
+      });
   }
 
   loadOptionsByQuestion(expand: boolean, questionId: number) {
@@ -189,7 +171,8 @@ export class QuestionsComponent implements OnInit {
   deleteFilter() {
     this.router.navigate(['../questions'], {
       relativeTo: this.route,
-      replaceUrl: true
+      replaceUrl: true,
+      queryParams: {station: this.stationId}
     });
   }
 
