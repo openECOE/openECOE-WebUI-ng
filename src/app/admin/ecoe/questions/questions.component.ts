@@ -13,11 +13,12 @@ export class QuestionsComponent implements OnInit {
 
   questions: any[] = [];
   stations: any[] = [];
+  qblocks: any[] = [];
   editCache = {};
   ecoeId: number;
   qblockId: number;
   stationId: number;
-  // qblocks: any[] = [];
+  questionShowQblocks = {};
 
   question_type_options: any[] = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -69,7 +70,8 @@ export class QuestionsComponent implements OnInit {
           .subscribe(response => {
             this.editCache = {};
             this.stations = response[0];
-            this.questions = response;
+            this.questions = response[0];
+            console.log(this.stations)
             this.updateEditCache();
           });
       });
@@ -97,6 +99,14 @@ export class QuestionsComponent implements OnInit {
 
         this.updateEditCache();
       });
+    }
+  }
+
+  loadQblocksByStation(stationId: number) {
+    if (true) {
+      this.apiService.getResources('qblock', {
+        where: `{"station":${stationId}}`
+      }).subscribe(qblocks => this.qblocks = qblocks);
     }
   }
 
@@ -159,6 +169,9 @@ export class QuestionsComponent implements OnInit {
     this.stations.forEach(st => {
       st.qblocks.forEach(qb => {
         qb.questions.forEach(item => {
+          this.questionShowQblocks[item.id] = {
+            show: false
+          };
           this.editCache[item.id] = {
             edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
             ...item
@@ -184,5 +197,15 @@ export class QuestionsComponent implements OnInit {
     };
 
     this.questions = this.questions.map(a => (a.id === id ? response : a));
+  }
+
+  moveQuestion(questionId, qblockPrevId, qblockNextId) {
+    forkJoin(
+      this.apiService.deleteResource(`/api/qblock/${qblockPrevId}/questions`, questionId),
+      this.apiService.createResource(`qblock/${qblockNextId}/questions`, questionId)
+    ).subscribe(() => {
+      this.questionShowQblocks[questionId].show = false;
+      this.loadQuestions();
+    });
   }
 }

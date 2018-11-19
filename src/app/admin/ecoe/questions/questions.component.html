@@ -81,10 +81,17 @@
 
               <td>
                 <ng-container *ngIf="!editCache[item.id].edit">
-                  <i nz-icon type="folder-add" [theme]="'twotone'"
-                     [nz-tooltip] [nzTitle]="'MOVE_TO' | translate"
-                      tappable>
-                  </i>
+                  <a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">
+                    <i nz-icon type="folder-add" [theme]="'twotone'"
+                       nz-popover
+                       [(nzVisible)]="questionShowQblocks[item.id].show"
+                       (click)="loadQblocksByStation(station.id)"
+                       [nzTrigger]="'click'"
+                       [nzPlacement]="'left'"
+                       [nzContent]="qblocksList">
+                    </i>
+                  </a>
+
 
                   <nz-divider [nzType]="'vertical'"></nz-divider>
 
@@ -116,6 +123,19 @@
                   </i>
                 </ng-container>
               </td>
+
+              <ng-template #qblocksList>
+                <nz-list [nzDataSource]="qblocks" [nzSize]="'small'" [nzRenderItem]="qb">
+                  <ng-template #qb let-qb>
+                    <nz-list-item [nzContent]="qb.name" [nzActions]="[moveAction]" tappable
+                                  (click)="moveQuestion(item.id, qblock.id, qb.id)">
+                      <ng-template #moveAction>
+                        <i nz-icon type="right-circle" theme="twotone"></i>
+                      </ng-template>
+                    </nz-list-item>
+                  </ng-template>
+                </nz-list>
+              </ng-template>
             </tr>
             <tr [nzExpand]="item.expand">
               <td></td>
@@ -177,19 +197,18 @@
             <nz-breadcrumb-item>
               {{station.name}}
             </nz-breadcrumb-item>
+
             <nz-breadcrumb-item>
-              {{qblock.name}}
+              <nz-tag [nzMode]="qblockId ? 'closeable' : 'default'" [nzColor]="'geekblue'" (nzOnClose)="deleteFilter()">
+                <i nz-icon type="filter" [theme]="'twotone'"></i>
+                {{qblock.name}}
+              </nz-tag>
             </nz-breadcrumb-item>
           </nz-breadcrumb>
           <!--<button nz-button [nzType]="'primary'" class="margin-left" (click)="addItem()">-->
             <!--<i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>-->
             <!--{{"ADD_QUESTION" | translate}}-->
           <!--</button>-->
-
-          <nz-tag style="float: right;" [nzMode]="'closeable'" [nzColor]="'geekblue'" (nzOnClose)="deleteFilter()" *ngIf="qblockId">
-            <i nz-icon type="filter" [theme]="'twotone'"></i>
-            {{"QBLOCK" | translate}} {{qblockId}}
-          </nz-tag>
         </ng-template>
       </nz-table>
     </div>
