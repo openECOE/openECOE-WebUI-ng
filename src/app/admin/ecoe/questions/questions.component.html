@@ -1,6 +1,6 @@
 <nz-content *ngIf="stations">
-  <div *ngFor="let station of stations">
-    <div *ngFor="let qblock of station.qblocks">
+  <div *ngFor="let station of stations; let indexStation = index">
+    <div *ngFor="let qblock of station.qblocks; let indexQblock = index">
       <nz-table #table
                 [nzData]="qblock.questions"
                 [nzPageSize]="8"
@@ -17,7 +17,13 @@
             <th>{{"REFERENCE" | translate}}</th>
             <th>{{"QUESTION_TYPE" | translate}}</th>
             <th>{{"OPTIONS" | translate}}</th>
-            <th></th>
+            <th>
+              <button nz-button [nzType]="'primary'" class="margin-left"
+                      [nz-tooltip] [nzTitle]="'ADD_QUESTION' | translate"
+                      (click)="addQuestion(qblock)">
+                <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+              </button>
+            </th>
           </tr>
         </thead>
 
@@ -35,7 +41,7 @@
                 </ng-container>
 
                 <ng-container *ngIf="editCache[item.id].edit">
-                  <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].order">
+                  <input type="number" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].order">
                 </ng-container>
               </td>
 
@@ -80,7 +86,7 @@
               <td>{{item.options.length}}</td>
 
               <td>
-                <ng-container *ngIf="!editCache[item.id].edit">
+                <ng-container *ngIf="!editCache[item.id].new_item || !editCache[item.id].edit">
                   <a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">
                     <i nz-icon type="folder-add" [theme]="'twotone'"
                        nz-popover
@@ -102,7 +108,8 @@
 
                   <nz-divider [nzType]="'vertical'"></nz-divider>
 
-                  <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(item['$uri'])">
+                  <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+                     (nzOnConfirm)="deleteItem(item, indexStation, indexQblock)">
                     <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
                   </a>
                 </ng-container>
@@ -110,7 +117,7 @@
                 <ng-container *ngIf="editCache[item.id].edit">
                   <i nz-icon type="save"
                      [nz-tooltip] [nzTitle]="(editCache[item.id].new_item ? 'SAVE' : 'UPDATE') | translate"
-                     (click)="editCache[item.id].new_item ? saveItem(item.id) : saveEditItem(item.id)"
+                     (click)="editCache[item.id].new_item ? saveItem(item.id, indexStation, indexQblock) : saveEditItem(item.id)"
                      success-color tappable>
                   </i>
 
@@ -118,7 +125,7 @@
 
                   <i nz-icon type="close-circle"
                      [nz-tooltip] [nzTitle]="'CANCEL' | translate"
-                     (click)="cancelEdit(item.id)"
+                     (click)="cancelEdit(item, indexStation, indexQblock)"
                      danger-color tappable>
                   </i>
                 </ng-container>

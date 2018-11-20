@@ -11,7 +11,6 @@ import {map, mergeMap} from 'rxjs/operators';
 })
 export class QuestionsComponent implements OnInit {
 
-  questions: any[] = [];
   stations: any[] = [];
   qblocks: any[] = [];
   editCache = {};
@@ -19,6 +18,7 @@ export class QuestionsComponent implements OnInit {
   qblockId: number;
   stationId: number;
   questionShowQblocks = {};
+  index: number = 1;
 
   question_type_options: any[] = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -71,7 +71,6 @@ export class QuestionsComponent implements OnInit {
           .subscribe(response => {
             this.editCache = {};
             this.stations = response[0];
-            this.questions = response[0];
             this.updateEditCache();
           });
       });
@@ -105,20 +104,35 @@ export class QuestionsComponent implements OnInit {
 
   }
 
-  saveItem(id: number) {
+  saveItem(id: number, station: number, qblock: number) {
     const item = this.editCache[id];
     const body = {
-      order: item.order,
+      order: +item.order,
       description: item.description,
       reference: item.reference,
       question_type: item.question_type,
-      area: item.area,
-      qblocks: item.qblocks
+      area: 1,
+      qblocks: [this.stations[station].qblocks[qblock].id]
     };
 
     this.apiService.createResource('question', body)
-      .subscribe(res => {
-        this.updateArray(id, res);
+      .subscribe(response => {
+        delete this.editCache[id];
+        delete this.editCache[response.id];
+        delete this.questionShowQblocks[id];
+        delete this.questionShowQblocks[response.id];
+
+        this.editCache[response.id] = {
+          edit: false,
+          ...response
+        };
+
+        this.questionShowQblocks[response.id] = {
+          show: false
+        };
+
+        this.stations[station].qblocks[qblock].questions =
+          this.stations[station].qblocks[qblock].questions.map(x => (x.id === id ? response : x));
       });
   }
 
@@ -126,34 +140,53 @@ export class QuestionsComponent implements OnInit {
 
   }
 
-  cancelEdit(id: number) {
+  cancelEdit(question: any, station: number, qblock: number) {
+    this.editCache[question.id].edit = false;
+    if (this.editCache[question.id].new_item) {
+      delete this.editCache[question.id];
+      this.stations[station].qblocks[qblock].questions =
+        this.stations[station].qblocks[qblock].questions.filter(x => x.id !== question.id);
 
+    } else {
+      this.editCache[question.id] = {
+        ...question
+      };
+    }
   }
 
-  deleteItem(ref: string) {
-    this.apiService.deleteResource(ref).subscribe(() => this.loadQuestions());
+  deleteItem(question: any, station: number, qblock: number) {
+    this.apiService.deleteResource(question['$uri']).subscribe(() => {
+      delete this.editCache[question.id];
+      delete this.questionShowQblocks[question.id];
+      this.stations[station].qblocks[qblock].questions =
+        this.stations[station].qblocks[qblock].questions.filter(x => x.id !== question.id);
+    });
   }
 
-  addItem() {
-    const index = this.questions.reduce((max, p) => p.id > max ? p.id : max, this.questions[0].id) + 1;
-    const newItem = {
-      id: index,
-      order: '',
-      description: '',
-      reference: '',
-      question_type: '',
-      area: '',
-      qblocks: [],
-      options: []
-    };
+  addQuestion(qblock) {
+    this.apiService.getResources('question')
+      .subscribe(questions => {
+        this.index += questions.reduce((max, p) => p.id > max ? p.id : max, questions[0].id);
 
-    this.questions = [...this.questions, newItem];
+        const newItem = {
+          id: this.index,
+          order: '',
+          description: '',
+          reference: '',
+          question_type: '',
+          area: '',
+          qblocks: [],
+          options: []
+        };
 
-    this.editCache[index] = {
-      edit: true,
-      new_item: true,
-      ...newItem
-    };
+        qblock.questions = [...qblock.questions, newItem];
+
+        this.editCache[this.index] = {
+          edit: true,
+          new_item: true,
+          ...newItem
+        };
+      });
   }
 
   updateEditCache(): void {
@@ -181,13 +214,13 @@ export class QuestionsComponent implements OnInit {
   }
 
   updateArray(id: number, response: any) {
-    delete this.editCache[id];
-    this.editCache[response['id']] = {
-      edit: false,
-      ...response
-    };
-
-    this.questions = this.questions.map(a => (a.id === id ? response : a));
+    // delete this.editCache[id];
+    // this.editCache[response['id']] = {
+    //   edit: false,
+    //   ...response
+    // };
+    //
+    // this.questions = this.questions.map(a => (a.id === id ? response : a));
   }
 
   moveQuestion(questionId, qblockPrevId, qblockNextId) {
