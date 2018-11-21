@@ -12,6 +12,7 @@ import {map, mergeMap} from 'rxjs/operators';
 export class QuestionsComponent implements OnInit {
 
   stations: any[] = [];
+  areas: any[] = [];
   qblocks: any[] = [];
   editCache = {};
   ecoeId: number;
@@ -42,38 +43,54 @@ export class QuestionsComponent implements OnInit {
   }
 
   loadQuestions() {
-    this.apiService.getResources('station', {
-      where: this.stationId ? `{"$uri":"/api/station/${this.stationId}"}` : `{"ecoe":${this.ecoeId}}`
-    })
-      .subscribe(stations => {
-        const requests = [];
+    this.apiService.getResources('area', {
+      where: `{"ecoe":${this.ecoeId}}`
+    }).pipe(
+      mergeMap(areas => {
+        this.areas = areas;
+        return this.apiService.getResources('station', {
+          where: this.stationId ? `{"$uri":"/api/station/${this.stationId}"}` : `{"ecoe":${this.ecoeId}}`
+        }).pipe(
+          mergeMap(stations => {
+            const requests = [];
 
-        stations.forEach(station => {
-          const request = this.apiService.getResources('qblock', {
-            where: this.qblockId ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${station.id}}`
-          }).pipe(
-            mergeMap(qblocks => {
-              return <Observable<any[]>>zip(...qblocks.map(qblock => {
-                return this.apiService.getResources('question', {
-                  where: `{"qblocks":{"$contains":${qblock.id}}}`
-                }).pipe(map(questions => [{...qblock, questions}]));
-              }));
-            }),
-            map(qblocks => {
-              return [{...station, qblocks: [].concat.apply([], qblocks)}];
-            })
-          );
+            stations.forEach(station => {
+              const request = this.apiService.getResources('qblock', {
+                where: this.qblockId ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${station.id}}`
+              }).pipe(
+                mergeMap(qblocks => {
+                  return <Observable<any[]>>zip(...qblocks.map(qblock => {
+                    return this.apiService.getResources('question', {
+                      where: `{"qblocks":{"$contains":${qblock.id}}}`
+                    }).pipe(map(questions => {
+                      questions = questions.map(q => {
+                        const area = areas.find(a => a['$uri'] === q.area['$ref']);
+                        q.areaName = area.name;
+                        q.areaId = area.id;
+                        return q;
+                      });
 
-          requests.push(request);
-        });
+                      return [{...qblock, questions}];
+                    }));
+                  }));
+                }),
+                map(qblocks => {
+                  return [{...station, qblocks: [].concat.apply([], qblocks)}];
+                })
+              );
 
-        forkJoin(requests)
-          .subscribe(response => {
-            this.editCache = {};
-            this.stations = response[0];
-            this.updateEditCache();
-          });
-      });
+              requests.push(request);
+            });
+
+            return forkJoin(requests);
+          })
+        );
+      })
+    ).subscribe(response => {
+      this.editCache = {};
+      this.stations = response[0];
+      this.updateEditCache();
+    });
   }
 
   loadOptionsByQuestion(expand: boolean, question: any) {
@@ -101,51 +118,60 @@ export class QuestionsComponent implements OnInit {
   }
 
   startEdit(id: number) {
-
+    this.editCache[id].edit = true;
   }
 
-  saveItem(id: number, station: number, qblock: number) {
-    const item = this.editCache[id];
+  saveItem(question: any, station: number, qblock: number, newItem: boolean) {
+    const item = this.editCache[question.id];
     const body = {
       order: +item.order,
       description: item.description,
       reference: item.reference,
       question_type: item.question_type,
-      area: 1,
+      area: item.areaId,
       qblocks: [this.stations[station].qblocks[qblock].id]
     };
 
-    this.apiService.createResource('question', body)
-      .subscribe(response => {
-        delete this.editCache[id];
-        delete this.editCache[response.id];
-        delete this.questionShowQblocks[id];
-        delete this.questionShowQblocks[response.id];
+    const request = (
+      newItem ?
+        this.apiService.createResource('question', body) :
+        this.apiService.updateResource(item['$uri'], body)
+    );
 
-        this.editCache[response.id] = {
-          edit: false,
+    request.pipe(
+      map(response => {
+        const area = this.areas.find(a => a.id === item.areaId);
+        return {
+          areaId: area.id,
+          areaName: area.name,
           ...response
         };
+      })
+    ).subscribe(response => {
+      delete this.editCache[question.id];
+      delete this.editCache[response['id']];
+      delete this.questionShowQblocks[question.id];
+      delete this.questionShowQblocks[response['id']];
 
-        this.questionShowQblocks[response.id] = {
-          show: false
-        };
+      this.editCache[response['id']] = {
+        edit: false,
+        areaId: question.areaId,
+        ...response
+      };
 
-        this.stations[station].qblocks[qblock].questions =
-          this.stations[station].qblocks[qblock].questions.map(x => (x.id === id ? response : x));
-      });
-  }
+      this.questionShowQblocks[response['id']] = {
+        show: false
+      };
 
-  saveEditItem(id: number) {
-
+      this.stations[station].qblocks[qblock].questions =
+        this.stations[station].qblocks[qblock].questions.map(x => (x.id === question.id ? response : x));
+    });
   }
 
   cancelEdit(question: any, station: number, qblock: number) {
     this.editCache[question.id].edit = false;
     if (this.editCache[question.id].new_item) {
-      delete this.editCache[question.id];
-      this.stations[station].qblocks[qblock].questions =
-        this.stations[station].qblocks[qblock].questions.filter(x => x.id !== question.id);
+      this.updateArray(question.id, station, qblock);
 
     } else {
       this.editCache[question.id] = {
@@ -156,10 +182,7 @@ export class QuestionsComponent implements OnInit {
 
   deleteItem(question: any, station: number, qblock: number) {
     this.apiService.deleteResource(question['$uri']).subscribe(() => {
-      delete this.editCache[question.id];
-      delete this.questionShowQblocks[question.id];
-      this.stations[station].qblocks[qblock].questions =
-        this.stations[station].qblocks[qblock].questions.filter(x => x.id !== question.id);
+      this.updateArray(question.id, station, qblock);
     });
   }
 
@@ -213,14 +236,11 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
-  updateArray(id: number, response: any) {
-    // delete this.editCache[id];
-    // this.editCache[response['id']] = {
-    //   edit: false,
-    //   ...response
-    // };
-    //
-    // this.questions = this.questions.map(a => (a.id === id ? response : a));
+  updateArray(questionId: number, station: number, qblock: number) {
+    delete this.editCache[questionId];
+    delete this.questionShowQblocks[questionId];
+    this.stations[station].qblocks[qblock].questions =
+      this.stations[station].qblocks[qblock].questions.filter(x => x.id !== questionId);
   }
 
   moveQuestion(questionId, qblockPrevId, qblockNextId) {

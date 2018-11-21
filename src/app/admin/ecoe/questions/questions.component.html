@@ -17,6 +17,7 @@
             <th>{{"REFERENCE" | translate}}</th>
             <th>{{"QUESTION_TYPE" | translate}}</th>
             <th>{{"OPTIONS" | translate}}</th>
+            <th>{{"AREA" | translate}}</th>
             <th>
               <button nz-button [nzType]="'primary'" class="margin-left"
                       [nz-tooltip] [nzTitle]="'ADD_QUESTION' | translate"
@@ -86,7 +87,23 @@
               <td>{{item.options.length}}</td>
 
               <td>
-                <ng-container *ngIf="!editCache[item.id].new_item || !editCache[item.id].edit">
+                <ng-container *ngIf="!editCache[item.id].edit">
+                  {{item.areaName}}
+                </ng-container>
+
+                <ng-container *ngIf="editCache[item.id].edit">
+                  <nz-select style="width: 150px;"
+                             [nzSize]="'small'"
+                             [nzShowSearch]="true"
+                             [(ngModel)]="editCache[item.id].areaId">
+                    <nz-option *ngFor="let area of areas" [nzLabel]="area.name" [nzValue]="area.id">
+                    </nz-option>
+                  </nz-select>
+                </ng-container>
+              </td>
+
+              <td>
+                <ng-container *ngIf="!editCache[item.id].edit">
                   <a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">
                     <i nz-icon type="folder-add" [theme]="'twotone'"
                        nz-popover
@@ -97,7 +114,6 @@
                        [nzContent]="qblocksList">
                     </i>
                   </a>
-
 
                   <nz-divider [nzType]="'vertical'"></nz-divider>
 
@@ -117,7 +133,7 @@
                 <ng-container *ngIf="editCache[item.id].edit">
                   <i nz-icon type="save"
                      [nz-tooltip] [nzTitle]="(editCache[item.id].new_item ? 'SAVE' : 'UPDATE') | translate"
-                     (click)="editCache[item.id].new_item ? saveItem(item.id, indexStation, indexQblock) : saveEditItem(item.id)"
+                     (click)="saveItem(item, indexStation, indexQblock, editCache[item.id].new_item)"
                      success-color tappable>
                   </i>
 
@@ -200,7 +216,7 @@
         </tbody>
 
         <ng-template #addButton>
-          <nz-breadcrumb>
+          <nz-breadcrumb class="margin-left">
             <nz-breadcrumb-item>
               {{station.name}}
             </nz-breadcrumb-item>
