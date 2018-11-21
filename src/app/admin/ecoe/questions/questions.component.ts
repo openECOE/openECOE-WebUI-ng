@@ -15,13 +15,16 @@ export class QuestionsComponent implements OnInit {
   areas: any[] = [];
   qblocks: any[] = [];
   editCache = {};
+  editCacheOption = {};
   ecoeId: number;
   qblockId: number;
   stationId: number;
   questionShowQblocks = {};
-  index: number = 1;
 
-  question_type_options: any[] = [
+  index: number = 1;
+  indexOpt: number = 1;
+
+  question_type_options: Array<{type: string, label: string}> = [
     {type: 'RB', label: 'ONE_ANSWER'},
     {type: 'CH', label: 'MULTI_ANSWER'},
     {type: 'RS', label: 'VALUE_RANGE'}
@@ -106,7 +109,13 @@ export class QuestionsComponent implements OnInit {
         })
       ).subscribe(options => {
         question.optionsArray = options;
-        this.updateEditCache();
+
+        question.optionsArray.forEach(option => {
+          this.editCacheOption[option.id] = {
+            edit: this.editCacheOption[option.id] ? this.editCacheOption[option.id].edit : false,
+            ...option
+          };
+        });
       });
     }
   }
@@ -123,6 +132,11 @@ export class QuestionsComponent implements OnInit {
 
   saveItem(question: any, station: number, qblock: number, newItem: boolean) {
     const item = this.editCache[question.id];
+
+    if (!item.description || !item.reference || !item.question_type || !item.areaId || !this.stations[station].qblocks[qblock].id) {
+      return;
+    }
+
     const body = {
       order: +item.order,
       description: item.description,
@@ -251,5 +265,100 @@ export class QuestionsComponent implements OnInit {
       this.questionShowQblocks[questionId].show = false;
       this.loadQuestions();
     });
+  }
+
+  getQuestionTypeLabel(questionType: string) {
+    return this.question_type_options.find(x => x.type === questionType).label;
+  }
+
+  startEditOption(id: number) {
+    this.editCacheOption[id].edit = true;
+  }
+
+  saveOption(option: any, question: any, newItem: boolean) {
+    const item = this.editCacheOption[option.id];
+
+    if (!item.order || !item.label || !item.points) {
+      return;
+    }
+
+    const body = {
+      order: +item.order,
+      label: item.label,
+      points: +item.points,
+      question: item.questionId
+    };
+
+    const request = (
+      newItem ?
+        this.apiService.createResource('option', body) :
+        this.apiService.updateResource(item['$uri'], body)
+    );
+
+    request.pipe(
+      map(response => {
+        return {
+          questionId: option.questionId,
+          ...response
+        };
+      })
+    ).subscribe(response => {
+      delete this.editCacheOption[option.id];
+      delete this.editCacheOption[response['id']];
+
+      this.editCacheOption[response['id']] = {
+        edit: false,
+        questionId: option.questionId,
+        ...response
+      };
+
+      question.optionsArray = question.optionsArray.map(x => (x.id === option.id ? response : x));
+    });
+  }
+
+  cancelEditOption(option: any, question: any) {
+    this.editCacheOption[option.id].edit = false;
+    if (this.editCacheOption[option.id].new_item) {
+      this.updateArrayOptions(option.id, question);
+
+    } else {
+      this.editCacheOption[option.id] = {
+        ...option
+      };
+    }
+  }
+
+  deleteOption(option: any, question: any) {
+    this.apiService.deleteResource(option['$uri']).subscribe(() => {
+      this.updateArrayOptions(option.id, question);
+    });
+  }
+
+  updateArrayOptions(option: number, question: any) {
+    delete this.editCacheOption[option];
+    question.optionsArray = question.optionsArray.filter(x => x.id !== option);
+  }
+
+  addOption(question: any) {
+    this.apiService.getResources('option')
+      .subscribe(options => {
+        this.indexOpt += options.reduce((max, p) => p.id > max ? p.id : max, options[0].id);
+
+        const newItem = {
+          id: this.indexOpt,
+          order: 0,
+          label: '',
+          points: 0,
+          question: question.id
+        };
+
+        question.optionsArray = [...question.optionsArray, newItem];
+
+        this.editCacheOption[this.indexOpt] = {
+          edit: true,
+          new_item: true,
+          ...newItem
+        };
+      });
   }
 }

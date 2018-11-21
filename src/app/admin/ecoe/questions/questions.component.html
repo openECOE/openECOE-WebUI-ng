@@ -68,7 +68,7 @@
 
               <td>
                 <ng-container *ngIf="!editCache[item.id].edit">
-                  {{item.question_type}}
+                  {{getQuestionTypeLabel(item.question_type) | translate}}
                 </ng-container>
 
                 <ng-container *ngIf="editCache[item.id].edit">
@@ -162,49 +162,106 @@
             </tr>
             <tr [nzExpand]="item.expand">
               <td></td>
-              <td colspan="5">
+              <td colspan="7">
                 <nz-table #optionTable [nzData]="item.optionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
                   <tbody>
-                    <tr *ngFor="let option of optionTable.data; let i = index">
+                    <tr *ngFor="let option of optionTable.data">
                       <td>
-                        <ng-container *ngIf="!editCache[item.id].edit">
+                        <ng-container *ngIf="!editCacheOption[option.id].edit">
                           {{option.order}}
                         </ng-container>
 
-                        <ng-container *ngIf="editCache[item.id].edit">
+                        <ng-container *ngIf="editCacheOption[option.id].edit">
                           <input type="text"
                                  nz-input
                                  [nzSize]="'small'"
                                  required
-                                 [(ngModel)]="editCache[item.id].optionsArray[i].order">
+                                 [(ngModel)]="editCacheOption[option.id].order">
                         </ng-container>
                       </td>
 
                       <td>
-                        <ng-container *ngIf="!editCache[item.id].edit">
+                        <ng-container *ngIf="!editCacheOption[option.id].edit">
                           {{option.label}}
                         </ng-container>
 
-                        <ng-container *ngIf="editCache[item.id].edit">
+                        <ng-container *ngIf="editCacheOption[option.id].edit">
                           <input type="text"
                                  nz-input
                                  [nzSize]="'small'"
                                  required
-                                 [(ngModel)]="editCache[item.id].questionsArray[i].label">
+                                 [(ngModel)]="editCacheOption[option.id].label">
                         </ng-container>
                       </td>
 
                       <td>
-                        <ng-container *ngIf="!editCache[item.id].edit">
+                        <ng-container *ngIf="!editCacheOption[option.id].edit">
                           {{option.points}}
                         </ng-container>
 
-                        <ng-container *ngIf="editCache[item.id].edit">
+                        <ng-container *ngIf="editCacheOption[option.id].edit">
                           <input type="text"
                                  nz-input
                                  [nzSize]="'small'"
                                  required
-                                 [(ngModel)]="editCache[item.id].questionsArray[i].points">
+                                 [(ngModel)]="editCacheOption[option.id].points">
+                        </ng-container>
+                      </td>
+
+                      <td>
+                        <ng-container *ngIf="item.question_type == 'CH'">
+                          <nz-switch [ngModel]="true"
+                                     [nzCheckedChildren]="option.label"
+                                     [nzUnCheckedChildren]="option.label">
+                          </nz-switch>
+                        </ng-container>
+
+                        <!--<ng-container *ngIf="item.question_type == 'RB'">-->
+                        <!--<nz-radio-group>-->
+                        <!---->
+                        <!--</nz-radio-group>-->
+                        <!--<nz-switch [ngModel]="indexOption == 2"-->
+                        <!--[nzCheckedChildren]="option.label"-->
+                        <!--[nzUnCheckedChildren]="option.label">-->
+                        <!--</nz-switch>-->
+                        <!--</ng-container>-->
+                      </td>
+
+                      <td></td>
+
+                      <td></td>
+
+                      <td></td>
+
+                      <td>
+                        <ng-container *ngIf="!editCacheOption[option.id].edit">
+                          <i nz-icon type="edit" [theme]="'outline'"
+                             [nz-tooltip] [nzTitle]="'EDIT' | translate"
+                             (click)="startEditOption(option.id)" tappable success-color>
+                          </i>
+
+                          <nz-divider [nzType]="'vertical'"></nz-divider>
+
+                          <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+                             (nzOnConfirm)="deleteOption(option, item)">
+                            <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
+                          </a>
+                        </ng-container>
+
+                        <ng-container *ngIf="editCacheOption[option.id].edit">
+                          <i nz-icon type="save"
+                             [nz-tooltip] [nzTitle]="(editCacheOption[option.id].new_item ? 'SAVE' : 'UPDATE') | translate"
+                             (click)="saveOption(option, item, editCacheOption[option.id].new_item)"
+                             success-color tappable>
+                          </i>
+
+                          <nz-divider [nzType]="'vertical'"></nz-divider>
+
+                          <i nz-icon type="close-circle"
+                             [nz-tooltip] [nzTitle]="'CANCEL' | translate"
+                             (click)="cancelEditOption(option, item)"
+                             danger-color tappable>
+                          </i>
                         </ng-container>
                       </td>
                     </tr>
@@ -228,10 +285,6 @@
               </nz-tag>
             </nz-breadcrumb-item>
           </nz-breadcrumb>
-          <!--<button nz-button [nzType]="'primary'" class="margin-left" (click)="addItem()">-->
-            <!--<i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>-->
-            <!--{{"ADD_QUESTION" | translate}}-->
-          <!--</button>-->
         </ng-template>
       </nz-table>
     </div>
