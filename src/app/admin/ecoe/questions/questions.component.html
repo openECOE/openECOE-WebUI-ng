@@ -31,7 +31,7 @@
         <tbody>
           <ng-template ngFor let-item [ngForOf]="table.data">
             <tr>
-              <td [nzShowExpand]="item.options.length > 0"
+              <td [nzShowExpand]="true"
                   [(nzExpand)]="item.expand"
                   (nzExpandChange)="loadOptionsByQuestion($event, item)">
               </td>
@@ -162,10 +162,20 @@
             </tr>
             <tr [nzExpand]="item.expand">
               <td></td>
-              <td colspan="7">
+              <td colspan="8">
                 <nz-table #optionTable [nzData]="item.optionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
+                  <thead>
+                    <tr>
+                      <th>{{"ORDER" | translate}}</th>
+                      <th>{{"LABEL" | translate}}</th>
+                      <th>{{"POINTS" | translate}}</th>
+                      <th>{{"PREVIEW" | translate}}</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+
                   <tbody>
-                    <tr *ngFor="let option of optionTable.data">
+                    <tr *ngFor="let option of optionTable.data; let indexOption = index">
                       <td>
                         <ng-container *ngIf="!editCacheOption[option.id].edit">
                           {{option.order}}
@@ -208,30 +218,29 @@
                         </ng-container>
                       </td>
 
-                      <td>
+                      <td *ngIf="(item.question_type == 'RB' && indexOption == 0) || item.question_type == 'CH'"
+                          [attr.rowspan]="item.question_type == 'RB' ? item.optionsArray.length : 1">
                         <ng-container *ngIf="item.question_type == 'CH'">
-                          <nz-switch [ngModel]="true"
-                                     [nzCheckedChildren]="option.label"
-                                     [nzUnCheckedChildren]="option.label">
+                          <nz-switch [ngModel]="!editCacheOption[option.id].edit"
+                                     [nzCheckedChildren]="editCacheOption[option.id].edit ?
+                                       editCacheOption[option.id].label :
+                                       option.label"
+                                     [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
+                                       editCacheOption[option.id].label :
+                                       option.label">
                           </nz-switch>
                         </ng-container>
 
-                        <!--<ng-container *ngIf="item.question_type == 'RB'">-->
-                        <!--<nz-radio-group>-->
-                        <!---->
-                        <!--</nz-radio-group>-->
-                        <!--<nz-switch [ngModel]="indexOption == 2"-->
-                        <!--[nzCheckedChildren]="option.label"-->
-                        <!--[nzUnCheckedChildren]="option.label">-->
-                        <!--</nz-switch>-->
-                        <!--</ng-container>-->
+                        <ng-container *ngIf="item.question_type == 'RB'">
+                          <nz-radio-group [ngModel]="'test'">
+                            <label *ngFor="let opt of item.optionsArray; let indexOpt = index"
+                                   style="display: block; padding-bottom: 8px"
+                                   nz-radio [nzValue]="(indexOpt == 0) ? 'test' : opt.id">
+                              {{editCacheOption[opt.id].label}}
+                            </label>
+                          </nz-radio-group>
+                        </ng-container>
                       </td>
-
-                      <td></td>
-
-                      <td></td>
-
-                      <td></td>
 
                       <td>
                         <ng-container *ngIf="!editCacheOption[option.id].edit">
@@ -263,6 +272,14 @@
                              danger-color tappable>
                           </i>
                         </ng-container>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td colspan="8" style="text-align: center">
+                        <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addOption(item)">
+                          {{"ADD_OPTION" | translate}}
+                        </button>
                       </td>
                     </tr>
                   </tbody>

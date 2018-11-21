@@ -44,7 +44,8 @@
 
   "OPTIONS": "Opciones",
   "OPTIONS_NUMBER": "Número de opciones",
-  "ADD_OPTIONS": "Añadir opciones",
+  "ADD_OPTION": "Añadir opción",
+  "PREVIEW": "Previsualización",
   "LABEL": "Texto",
   "POINTS": "Puntos",
   "POINT": "Punto",

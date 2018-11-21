@@ -275,6 +275,8 @@ export class QuestionsComponent implements OnInit {
     this.editCacheOption[id].edit = true;
   }
 
+
+  // TODO: no guarda los options
   saveOption(option: any, question: any, newItem: boolean) {
     const item = this.editCacheOption[option.id];
 
