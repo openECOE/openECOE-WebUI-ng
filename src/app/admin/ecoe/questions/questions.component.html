@@ -163,7 +163,11 @@
             <tr [nzExpand]="item.expand">
               <td></td>
               <td colspan="8">
-                <nz-table #optionTable [nzData]="item.optionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
+                <nz-table #optionTable
+                          [nzData]="item.optionsArray"
+                          [nzSize]="'middle'"
+                          [nzShowPagination]="false"
+                          [nzFooter]="addOptionBtn">
                   <thead>
                     <tr>
                       <th>{{"ORDER" | translate}}</th>
@@ -274,15 +278,15 @@
                         </ng-container>
                       </td>
                     </tr>
-
-                    <tr>
-                      <td colspan="8" style="text-align: center">
-                        <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addOption(item)">
-                          {{"ADD_OPTION" | translate}}
-                        </button>
-                      </td>
-                    </tr>
                   </tbody>
+
+                  <ng-template #addOptionBtn>
+                    <div style="text-align: center">
+                      <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addOption(item)">
+                        {{"ADD_OPTION" | translate}}
+                      </button>
+                    </div>
+                  </ng-template>
                 </nz-table>
               </td>
             </tr>
