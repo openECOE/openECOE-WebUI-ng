@@ -233,14 +233,14 @@
                                      [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
                                        editCacheOption[option.id].label :
                                        option.label"
-                                     [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : ''">
+                                     [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
                           </nz-switch>
                         </ng-container>
 
                         <ng-container *ngIf="item.question_type == 'RB'">
                           <nz-radio-group [(ngModel)]="option.id">
                             <label nz-radio [nzValue]="option.id"
-                                   [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : ''">
+                                   [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
                               {{editCacheOption[option.id].label}}
                             </label>
                           </nz-radio-group>
