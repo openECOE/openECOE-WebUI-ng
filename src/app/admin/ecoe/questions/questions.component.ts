@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
-import {forkJoin, Observable, zip} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
 @Component({
@@ -62,7 +62,7 @@ export class QuestionsComponent implements OnInit {
                 where: this.qblockId ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${station.id}}`
               }).pipe(
                 mergeMap(qblocks => {
-                  return <Observable<any[]>>zip(...qblocks.map(qblock => {
+                  return <Observable<any[]>>forkJoin(...qblocks.map(qblock => {
                     return this.apiService.getResources('question', {
                       where: `{"qblocks":{"$contains":${qblock.id}}}`
                     }).pipe(map(questions => {
@@ -101,13 +101,7 @@ export class QuestionsComponent implements OnInit {
       this.apiService.getResources('option', {
         where: `{"question":${question.id}}`,
         sort: '{"order":false}'
-      }).pipe(
-        map(options => {
-          return options.map(option => {
-            return {questionId: question.id, ...option};
-          });
-        })
-      ).subscribe(options => {
+      }).subscribe(options => {
         question.optionsArray = options;
 
         question.optionsArray.forEach(option => {
@@ -257,7 +251,7 @@ export class QuestionsComponent implements OnInit {
       this.stations[station].qblocks[qblock].questions.filter(x => x.id !== questionId);
   }
 
-  moveQuestion(questionId, qblockPrevId, qblockNextId) {
+  moveQuestion(questionId: number, qblockPrevId: number, qblockNextId: number) {
     forkJoin(
       this.apiService.deleteResource(`/api/qblock/${qblockPrevId}/questions`, questionId),
       this.apiService.createResource(`qblock/${qblockNextId}/questions`, questionId)
@@ -275,8 +269,6 @@ export class QuestionsComponent implements OnInit {
     this.editCacheOption[id].edit = true;
   }
 
-
-  // TODO: no guarda los options
   saveOption(option: any, question: any, newItem: boolean) {
     const item = this.editCacheOption[option.id];
 
@@ -288,7 +280,7 @@ export class QuestionsComponent implements OnInit {
       order: +item.order,
       label: item.label,
       points: +item.points,
-      question: item.questionId
+      question: question.id
     };
 
     const request = (
@@ -297,20 +289,12 @@ export class QuestionsComponent implements OnInit {
         this.apiService.updateResource(item['$uri'], body)
     );
 
-    request.pipe(
-      map(response => {
-        return {
-          questionId: option.questionId,
-          ...response
-        };
-      })
-    ).subscribe(response => {
+    request.subscribe(response => {
       delete this.editCacheOption[option.id];
       delete this.editCacheOption[response['id']];
 
       this.editCacheOption[response['id']] = {
         edit: false,
-        questionId: option.questionId,
         ...response
       };
 
