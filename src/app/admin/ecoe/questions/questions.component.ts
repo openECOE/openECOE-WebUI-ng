@@ -20,6 +20,7 @@ export class QuestionsComponent implements OnInit {
   qblockId: number;
   stationId: number;
   questionShowQblocks = {};
+  valueopt: number;
 
   index: number = 1;
   indexOpt: number = 1;
@@ -40,7 +41,7 @@ export class QuestionsComponent implements OnInit {
 
     this.route.queryParamMap.subscribe((params: ParamMap) => {
       this.qblockId = +params.get('qblock');
-      this.stationId = +params.get('station');
+      this.stationId = params.get('station') ? +params.get('station') : null;
       this.loadQuestions();
     });
   }
@@ -172,7 +173,7 @@ export class QuestionsComponent implements OnInit {
       };
 
       this.stations[station].qblocks[qblock].questions =
-        this.stations[station].qblocks[qblock].questions.map(x => (x.id === question.id ? response : x));
+        this.stations[station].qblocks[qblock].questions.map(x => (x.id === question.id) ? response : x);
     });
   }
 

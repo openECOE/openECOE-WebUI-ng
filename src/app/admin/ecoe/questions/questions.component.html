@@ -3,7 +3,7 @@
     <div *ngFor="let qblock of station.qblocks; let indexQblock = index">
       <nz-table #table
                 [nzData]="qblock.questions"
-                [nzPageSize]="8"
+                [nzShowPagination]="false"
                 [nzTitle]="addButton">
         <thead>
           <tr>
@@ -186,7 +186,7 @@
                         </ng-container>
 
                         <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <input type="text"
+                          <input type="number"
                                  nz-input
                                  [nzSize]="'small'"
                                  required
@@ -214,7 +214,7 @@
                         </ng-container>
 
                         <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <input type="text"
+                          <input type="number"
                                  nz-input
                                  [nzSize]="'small'"
                                  required
@@ -222,8 +222,9 @@
                         </ng-container>
                       </td>
 
-                      <td *ngIf="(item.question_type == 'RB' && indexOption == 0) || item.question_type == 'CH'"
-                          [attr.rowspan]="item.question_type == 'RB' ? item.optionsArray.length : 1">
+                      <td *ngIf="((item.question_type == 'RS') && indexOption == 0)
+                      || item.question_type == 'CH' || item.question_type == 'RB'"
+                          [attr.rowspan]="(item.question_type == 'RS') ? item.optionsArray.length : 1">
                         <ng-container *ngIf="item.question_type == 'CH'">
                           <nz-switch [ngModel]="!editCacheOption[option.id].edit"
                                      [nzCheckedChildren]="editCacheOption[option.id].edit ?
@@ -231,18 +232,23 @@
                                        option.label"
                                      [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
                                        editCacheOption[option.id].label :
-                                       option.label">
+                                       option.label"
+                                     [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : ''">
                           </nz-switch>
                         </ng-container>
 
                         <ng-container *ngIf="item.question_type == 'RB'">
-                          <nz-radio-group [ngModel]="'test'">
-                            <label *ngFor="let opt of item.optionsArray; let indexOpt = index"
-                                   style="display: block; padding-bottom: 8px"
-                                   nz-radio [nzValue]="(indexOpt == 0) ? 'test' : opt.id">
-                              {{editCacheOption[opt.id].label}}
+                          <nz-radio-group [(ngModel)]="option.id">
+                            <label nz-radio [nzValue]="option.id"
+                                   [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : ''">
+                              {{editCacheOption[option.id].label}}
                             </label>
                           </nz-radio-group>
+                        </ng-container>
+
+                        <ng-container *ngIf="item.question_type == 'RS'">
+                          <nz-rate [(ngModel)]="valueopt" [nzCount]="item.optionsArray.length"></nz-rate>
+                          <span class="ant-rate-text">{{valueopt}}</span>
                         </ng-container>
                       </td>
 
