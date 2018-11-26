@@ -85,6 +85,9 @@
 
   "NAME": "Nombre",
 
+  "MOVE_UP": "Subir posición",
+  "MOVE_DOWN": "Bajar posición",
+
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
   "ACTION": "Acción",
   "DELETE": "Eliminar",

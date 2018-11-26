@@ -299,7 +299,9 @@ export class QuestionsComponent implements OnInit {
         ...response
       };
 
-      question.optionsArray = question.optionsArray.map(x => (x.id === option.id ? response : x));
+      question.optionsArray = question.optionsArray
+        .map(x => (x.id === option.id ? response : x))
+        .sort(this.sortArray);
     });
   }
 
@@ -323,7 +325,9 @@ export class QuestionsComponent implements OnInit {
 
   updateArrayOptions(option: number, question: any) {
     delete this.editCacheOption[option];
-    question.optionsArray = question.optionsArray.filter(x => x.id !== option);
+    question.optionsArray = question.optionsArray
+      .filter(x => x.id !== option)
+      .sort(this.sortArray);
   }
 
   addOption(question: any) {
@@ -347,5 +351,23 @@ export class QuestionsComponent implements OnInit {
           ...newItem
         };
       });
+  }
+
+  changeOptionOrder(direction: string, option: any, question: any) {
+    if (direction === 'up') {
+
+    } else {
+
+    }
+  }
+
+  sortArray(first, second) {
+    if (first.order < second.order) {
+      return -1;
+    } else if (first.order > second.order) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 }
