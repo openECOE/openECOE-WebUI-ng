@@ -311,9 +311,7 @@ export class QuestionsComponent implements OnInit {
       this.updateArrayOptions(option.id, question);
 
     } else {
-      this.editCacheOption[option.id] = {
-        ...option
-      };
+      this.editCacheOption[option.id] = option;
     }
   }
 
@@ -353,12 +351,31 @@ export class QuestionsComponent implements OnInit {
       });
   }
 
-  changeOptionOrder(direction: string, option: any, question: any) {
+  changeOptionOrder(direction: string, option: any, index: number, question: any) {
+    let itemToMove;
+
     if (direction === 'up') {
-
+      itemToMove = question.optionsArray[index - 1];
     } else {
-
+      itemToMove = question.optionsArray[index + 1];
     }
+
+    const actualItemOrder = option.order;
+    option.order = itemToMove.order;
+    itemToMove.order = actualItemOrder;
+
+    forkJoin(
+      this.apiService.updateResource(option['$uri'], {order: option.order}),
+      this.apiService.updateResource(itemToMove['$uri'], {order: itemToMove.order})
+    ).subscribe(response => {
+      response.forEach(res => {
+        this.editCacheOption[res['id']] = res;
+
+        question.optionsArray = question.optionsArray
+          .map(x => (x.id === res.id ? res : x))
+          .sort(this.sortArray);
+      });
+    });
   }
 
   sortArray(first, second) {

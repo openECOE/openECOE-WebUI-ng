@@ -254,6 +254,26 @@
 
                       <td>
                         <ng-container *ngIf="!editCacheOption[option.id].edit">
+                          <i *ngIf="indexOption != 0"
+                             nz-icon type="up-circle" [theme]="'twotone'"
+                             [nz-tooltip] [nzTitle]="'MOVE_UP' | translate"
+                             (click)="changeOptionOrder('up', option, indexOption, item)"
+                             tappable>
+                          </i>
+
+                          <nz-divider *ngIf="indexOption != 0" [nzType]="'vertical'"></nz-divider>
+
+                          <i *ngIf="indexOption != (optionTable.data.length - 1)"
+                             nz-icon type="down-circle" [theme]="'twotone'"
+                             [nz-tooltip] [nzTitle]="'MOVE_DOWN' | translate"
+                             (click)="changeOptionOrder('down', option, indexOption, item)"
+                             tappable>
+                          </i>
+
+                          <nz-divider *ngIf="indexOption != (optionTable.data.length - 1)"
+                                      [nzType]="'vertical'">
+                          </nz-divider>
+
                           <i nz-icon type="edit" [theme]="'outline'"
                              [nz-tooltip] [nzTitle]="'EDIT' | translate"
                              (click)="startEditOption(option.id)" tappable success-color>
