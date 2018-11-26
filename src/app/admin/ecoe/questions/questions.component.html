@@ -20,7 +20,7 @@
           </nz-breadcrumb>
         </ng-template>
 
-        <nz-table *ngIf="qblock.show" #table
+        <nz-table #table
                   [nzData]="qblock.questions"
                   [nzShowPagination]="false">
           <thead>
@@ -30,13 +30,13 @@
                   <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
                 </a>
               </th>
-              <th>{{"ORDER" | translate}}</th>
-              <th [nzWidth]="'30%'">{{"DESCRIPTION" | translate}}</th>
-              <th>{{"REFERENCE" | translate}}</th>
-              <th>{{"QUESTION_TYPE" | translate}}</th>
-              <th>{{"OPTIONS" | translate}}</th>
-              <th>{{"AREA" | translate}}</th>
-              <th>
+              <th nzWidth="85px">{{"ORDER" | translate}}</th>
+              <th>{{"DESCRIPTION" | translate}}</th>
+              <th nzWidth="150px">{{"REFERENCE" | translate}}</th>
+              <th nzWidth="150px">{{"QUESTION_TYPE" | translate}}</th>
+              <th nzWidth="95px">{{"OPTIONS" | translate}}</th>
+              <th nzWidth="130px">{{"AREA" | translate}}</th>
+              <th nzWidth="140px">
                 <button nz-button [nzType]="'primary'" class="margin-left"
                         [nz-tooltip] [nzTitle]="'ADD_QUESTION' | translate"
                         (click)="addQuestion(qblock)">
@@ -70,7 +70,7 @@
                   </ng-container>
 
                   <ng-container *ngIf="editCache[item.id].edit">
-                    <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].description">
+                    <textarea rows="1" [nzAutosize]="true" nz-input [(ngModel)]="editCache[item.id].description"></textarea>
                   </ng-container>
                 </td>
 
@@ -90,7 +90,7 @@
                   </ng-container>
 
                   <ng-container *ngIf="editCache[item.id].edit">
-                    <nz-select style="width: 150px;"
+                    <nz-select style="width: 100%;"
                                [nzSize]="'small'"
                                [nzShowSearch]="true"
                                [(ngModel)]="editCache[item.id].question_type">
@@ -110,7 +110,7 @@
                   </ng-container>
 
                   <ng-container *ngIf="editCache[item.id].edit">
-                    <nz-select style="width: 150px;"
+                    <nz-select style="width: 100%;"
                                [nzSize]="'small'"
                                [nzShowSearch]="true"
                                [(ngModel)]="editCache[item.id].areaId">
@@ -120,7 +120,7 @@
                   </ng-container>
                 </td>
 
-                <td>
+                <td text-right>
                   <ng-container *ngIf="!editCache[item.id].edit">
                     <a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">
                       <i nz-icon type="folder-add" [theme]="'twotone'"
@@ -180,7 +180,7 @@
               </tr>
               <tr [nzExpand]="item.expand">
                 <td></td>
-                <td colspan="8" no-padding>
+                <td colspan="7" style="padding: 0 10px;">
                   <nz-table #optionTable
                             [nzData]="item.optionsArray"
                             [nzSize]="'middle'"
@@ -188,11 +188,13 @@
                             [nzFooter]="addOptionBtn">
                     <thead>
                       <tr>
-                        <th>{{"ORDER" | translate}}</th>
+                        <th nzWidth="85px">{{"ORDER" | translate}}</th>
                         <th>{{"LABEL" | translate}}</th>
-                        <th>{{"POINTS" | translate}}</th>
-                        <th>{{"PREVIEW" | translate}}</th>
-                        <th></th>
+                        <th nzWidth="150px">{{"POINTS" | translate}}</th>
+                        <th nzWidth="150px">{{"PREVIEW" | translate}}</th>
+                        <th nzWidth="95px"></th>
+                        <th nzWidth="130px"></th>
+                        <th nzWidth="140px"></th>
                       </tr>
                     </thead>
 
@@ -270,7 +272,10 @@
                           </ng-container>
                         </td>
 
-                        <td>
+                        <td></td>
+                        <td></td>
+
+                        <td text-right>
                           <ng-container *ngIf="!editCacheOption[option.id].edit">
                             <i *ngIf="indexOption != 0"
                                nz-icon type="up-circle" [theme]="'twotone'"
@@ -325,7 +330,7 @@
                     </tbody>
 
                     <ng-template #addOptionBtn>
-                      <div style="text-align: center">
+                      <div text-center>
                         <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addOption(item)">
                           {{"ADD_OPTION" | translate}}
                         </button>

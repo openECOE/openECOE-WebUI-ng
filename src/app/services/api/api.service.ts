@@ -80,7 +80,11 @@ export class ApiService {
   }
 
   updateResource(ref: string, body: any): Observable<any> {
-    return this.http.patch(environment.API_ROUTE + ref, body);
+    return this.http.patch(environment.API_ROUTE + ref, body)
+      .pipe(map(response => {
+        const itemId = this.getIdFromRef(response['$uri']);
+        return {id: itemId, ...response};
+      }));
   }
 
   getIdFromRef(ref: string): number {

@@ -154,6 +154,7 @@ export class QuestionsComponent implements OnInit {
         return {
           areaId: area.id,
           areaName: area.name,
+          optionsArray: question.optionsArray,
           ...response
         };
       })
