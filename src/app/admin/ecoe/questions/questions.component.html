@@ -1,326 +1,12 @@
 <nz-content *ngIf="stations">
   <div *ngFor="let station of stations; let indexStation = index">
-    <div *ngFor="let qblock of station.qblocks; let indexQblock = index">
-      <nz-table #table
-                [nzData]="qblock.questions"
-                [nzShowPagination]="false"
-                [nzTitle]="addButton">
-        <thead>
-          <tr>
-            <th [nzExpand]="true">
-              <a (click)="loadQuestions()">
-                <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
-              </a>
-            </th>
-            <th>{{"ORDER" | translate}}</th>
-            <th [nzWidth]="'30%'">{{"DESCRIPTION" | translate}}</th>
-            <th>{{"REFERENCE" | translate}}</th>
-            <th>{{"QUESTION_TYPE" | translate}}</th>
-            <th>{{"OPTIONS" | translate}}</th>
-            <th>{{"AREA" | translate}}</th>
-            <th>
-              <button nz-button [nzType]="'primary'" class="margin-left"
-                      [nz-tooltip] [nzTitle]="'ADD_QUESTION' | translate"
-                      (click)="addQuestion(qblock)">
-                <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
-              </button>
-            </th>
-          </tr>
-        </thead>
+    <nz-collapse>
+      <nz-collapse-panel *ngFor="let qblock of station.qblocks; let indexQblock = index"
+                         [nzHeader]="panelHeader"
+                         [nzActive]="qblock.show">
 
-        <tbody>
-          <ng-template ngFor let-item [ngForOf]="table.data">
-            <tr>
-              <td [nzShowExpand]="true"
-                  [(nzExpand)]="item.expand"
-                  (nzExpandChange)="loadOptionsByQuestion($event, item)">
-              </td>
-
-              <td>
-                <ng-container *ngIf="!editCache[item.id].edit">
-                  {{item.order || "-"}}
-                </ng-container>
-
-                <ng-container *ngIf="editCache[item.id].edit">
-                  <input type="number" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].order">
-                </ng-container>
-              </td>
-
-              <td>
-                <ng-container *ngIf="!editCache[item.id].edit">
-                  {{item.description}}
-                </ng-container>
-
-                <ng-container *ngIf="editCache[item.id].edit">
-                  <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].description">
-                </ng-container>
-              </td>
-
-              <td>
-                <ng-container *ngIf="!editCache[item.id].edit">
-                  {{item.reference}}
-                </ng-container>
-
-                <ng-container *ngIf="editCache[item.id].edit">
-                  <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].reference">
-                </ng-container>
-              </td>
-
-              <td>
-                <ng-container *ngIf="!editCache[item.id].edit">
-                  {{getQuestionTypeLabel(item.question_type) | translate}}
-                </ng-container>
-
-                <ng-container *ngIf="editCache[item.id].edit">
-                  <nz-select style="width: 150px;"
-                             [nzSize]="'small'"
-                             [nzShowSearch]="true"
-                             [(ngModel)]="editCache[item.id].question_type">
-                    <nz-option *ngFor="let option of question_type_options"
-                               [nzLabel]="option.label | translate"
-                               [nzValue]="option.type">
-                    </nz-option>
-                  </nz-select>
-                </ng-container>
-              </td>
-
-              <td>{{item.options.length}}</td>
-
-              <td>
-                <ng-container *ngIf="!editCache[item.id].edit">
-                  {{item.areaName}}
-                </ng-container>
-
-                <ng-container *ngIf="editCache[item.id].edit">
-                  <nz-select style="width: 150px;"
-                             [nzSize]="'small'"
-                             [nzShowSearch]="true"
-                             [(ngModel)]="editCache[item.id].areaId">
-                    <nz-option *ngFor="let area of areas" [nzLabel]="area.name" [nzValue]="area.id">
-                    </nz-option>
-                  </nz-select>
-                </ng-container>
-              </td>
-
-              <td>
-                <ng-container *ngIf="!editCache[item.id].edit">
-                  <a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">
-                    <i nz-icon type="folder-add" [theme]="'twotone'"
-                       nz-popover
-                       [(nzVisible)]="questionShowQblocks[item.id].show"
-                       (click)="loadQblocksByStation(station.id)"
-                       [nzTrigger]="'click'"
-                       [nzPlacement]="'left'"
-                       [nzContent]="qblocksList">
-                    </i>
-                  </a>
-
-                  <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                  <i nz-icon type="edit" [theme]="'outline'"
-                     [nz-tooltip] [nzTitle]="'EDIT' | translate"
-                     (click)="startEdit(item.id)" tappable success-color>
-                  </i>
-
-                  <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                  <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
-                     (nzOnConfirm)="deleteItem(item, indexStation, indexQblock)">
-                    <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
-                  </a>
-                </ng-container>
-
-                <ng-container *ngIf="editCache[item.id].edit">
-                  <i nz-icon type="save"
-                     [nz-tooltip] [nzTitle]="(editCache[item.id].new_item ? 'SAVE' : 'UPDATE') | translate"
-                     (click)="saveItem(item, indexStation, indexQblock, editCache[item.id].new_item)"
-                     success-color tappable>
-                  </i>
-
-                  <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                  <i nz-icon type="close-circle"
-                     [nz-tooltip] [nzTitle]="'CANCEL' | translate"
-                     (click)="cancelEdit(item, indexStation, indexQblock)"
-                     danger-color tappable>
-                  </i>
-                </ng-container>
-              </td>
-
-              <ng-template #qblocksList>
-                <nz-list [nzDataSource]="qblocks" [nzSize]="'small'" [nzRenderItem]="qb">
-                  <ng-template #qb let-qb>
-                    <nz-list-item [nzContent]="qb.name" [nzActions]="[moveAction]" tappable
-                                  (click)="moveQuestion(item.id, qblock.id, qb.id)">
-                      <ng-template #moveAction>
-                        <i nz-icon type="right-circle" theme="twotone"></i>
-                      </ng-template>
-                    </nz-list-item>
-                  </ng-template>
-                </nz-list>
-              </ng-template>
-            </tr>
-            <tr [nzExpand]="item.expand">
-              <td></td>
-              <td colspan="8">
-                <nz-table #optionTable
-                          [nzData]="item.optionsArray"
-                          [nzSize]="'middle'"
-                          [nzShowPagination]="false"
-                          [nzFooter]="addOptionBtn">
-                  <thead>
-                    <tr>
-                      <th>{{"ORDER" | translate}}</th>
-                      <th>{{"LABEL" | translate}}</th>
-                      <th>{{"POINTS" | translate}}</th>
-                      <th>{{"PREVIEW" | translate}}</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <tr *ngFor="let option of optionTable.data; let indexOption = index">
-                      <td>
-                        <ng-container *ngIf="!editCacheOption[option.id].edit">
-                          {{option.order}}
-                        </ng-container>
-
-                        <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <input type="number"
-                                 nz-input
-                                 [nzSize]="'small'"
-                                 required
-                                 [(ngModel)]="editCacheOption[option.id].order">
-                        </ng-container>
-                      </td>
-
-                      <td>
-                        <ng-container *ngIf="!editCacheOption[option.id].edit">
-                          {{option.label}}
-                        </ng-container>
-
-                        <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <input type="text"
-                                 nz-input
-                                 [nzSize]="'small'"
-                                 required
-                                 [(ngModel)]="editCacheOption[option.id].label">
-                        </ng-container>
-                      </td>
-
-                      <td>
-                        <ng-container *ngIf="!editCacheOption[option.id].edit">
-                          {{option.points}}
-                        </ng-container>
-
-                        <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <input type="number"
-                                 nz-input
-                                 [nzSize]="'small'"
-                                 required
-                                 [(ngModel)]="editCacheOption[option.id].points">
-                        </ng-container>
-                      </td>
-
-                      <td *ngIf="((item.question_type == 'RS') && indexOption == 0)
-                      || item.question_type == 'CH' || item.question_type == 'RB'"
-                          [attr.rowspan]="(item.question_type == 'RS') ? item.optionsArray.length : 1">
-                        <ng-container *ngIf="item.question_type == 'CH'">
-                          <nz-switch [ngModel]="!editCacheOption[option.id].edit"
-                                     [nzCheckedChildren]="editCacheOption[option.id].edit ?
-                                       editCacheOption[option.id].label :
-                                       option.label"
-                                     [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
-                                       editCacheOption[option.id].label :
-                                       option.label"
-                                     [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
-                          </nz-switch>
-                        </ng-container>
-
-                        <ng-container *ngIf="item.question_type == 'RB'">
-                          <nz-radio-group [(ngModel)]="option.id">
-                            <label nz-radio [nzValue]="option.id"
-                                   [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
-                              {{editCacheOption[option.id].label}}
-                            </label>
-                          </nz-radio-group>
-                        </ng-container>
-
-                        <ng-container *ngIf="item.question_type == 'RS'">
-                          <nz-rate [(ngModel)]="valueopt" [nzCount]="item.optionsArray.length"></nz-rate>
-                          <span class="ant-rate-text">{{valueopt}}</span>
-                        </ng-container>
-                      </td>
-
-                      <td>
-                        <ng-container *ngIf="!editCacheOption[option.id].edit">
-                          <i *ngIf="indexOption != 0"
-                             nz-icon type="up-circle" [theme]="'twotone'"
-                             [nz-tooltip] [nzTitle]="'MOVE_UP' | translate"
-                             (click)="changeOptionOrder('up', option, indexOption, item)"
-                             tappable>
-                          </i>
-
-                          <nz-divider *ngIf="indexOption != 0" [nzType]="'vertical'"></nz-divider>
-
-                          <i *ngIf="indexOption != (optionTable.data.length - 1)"
-                             nz-icon type="down-circle" [theme]="'twotone'"
-                             [nz-tooltip] [nzTitle]="'MOVE_DOWN' | translate"
-                             (click)="changeOptionOrder('down', option, indexOption, item)"
-                             tappable>
-                          </i>
-
-                          <nz-divider *ngIf="indexOption != (optionTable.data.length - 1)"
-                                      [nzType]="'vertical'">
-                          </nz-divider>
-
-                          <i nz-icon type="edit" [theme]="'outline'"
-                             [nz-tooltip] [nzTitle]="'EDIT' | translate"
-                             (click)="startEditOption(option.id)" tappable success-color>
-                          </i>
-
-                          <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                          <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
-                             (nzOnConfirm)="deleteOption(option, item)">
-                            <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
-                          </a>
-                        </ng-container>
-
-                        <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <i nz-icon type="save"
-                             [nz-tooltip] [nzTitle]="(editCacheOption[option.id].new_item ? 'SAVE' : 'UPDATE') | translate"
-                             (click)="saveOption(option, item, editCacheOption[option.id].new_item)"
-                             success-color tappable>
-                          </i>
-
-                          <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                          <i nz-icon type="close-circle"
-                             [nz-tooltip] [nzTitle]="'CANCEL' | translate"
-                             (click)="cancelEditOption(option, item)"
-                             danger-color tappable>
-                          </i>
-                        </ng-container>
-                      </td>
-                    </tr>
-                  </tbody>
-
-                  <ng-template #addOptionBtn>
-                    <div style="text-align: center">
-                      <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addOption(item)">
-                        {{"ADD_OPTION" | translate}}
-                      </button>
-                    </div>
-                  </ng-template>
-                </nz-table>
-              </td>
-            </tr>
-          </ng-template>
-        </tbody>
-
-        <ng-template #addButton>
-          <nz-breadcrumb class="margin-left">
+        <ng-template #panelHeader>
+          <nz-breadcrumb>
             <nz-breadcrumb-item>
               {{station.name}}
             </nz-breadcrumb-item>
@@ -333,7 +19,325 @@
             </nz-breadcrumb-item>
           </nz-breadcrumb>
         </ng-template>
-      </nz-table>
-    </div>
+
+        <nz-table *ngIf="qblock.show" #table
+                  [nzData]="qblock.questions"
+                  [nzShowPagination]="false">
+          <thead>
+            <tr>
+              <th [nzExpand]="true">
+                <a (click)="loadQuestions()">
+                  <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+                </a>
+              </th>
+              <th>{{"ORDER" | translate}}</th>
+              <th [nzWidth]="'30%'">{{"DESCRIPTION" | translate}}</th>
+              <th>{{"REFERENCE" | translate}}</th>
+              <th>{{"QUESTION_TYPE" | translate}}</th>
+              <th>{{"OPTIONS" | translate}}</th>
+              <th>{{"AREA" | translate}}</th>
+              <th>
+                <button nz-button [nzType]="'primary'" class="margin-left"
+                        [nz-tooltip] [nzTitle]="'ADD_QUESTION' | translate"
+                        (click)="addQuestion(qblock)">
+                  <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+                </button>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <ng-template ngFor let-item [ngForOf]="table.data">
+              <tr>
+                <td [nzShowExpand]="true"
+                    [(nzExpand)]="item.expand"
+                    (nzExpandChange)="loadOptionsByQuestion($event, item)">
+                </td>
+
+                <td>
+                  <ng-container *ngIf="!editCache[item.id].edit">
+                    {{item.order || "-"}}
+                  </ng-container>
+
+                  <ng-container *ngIf="editCache[item.id].edit">
+                    <input type="number" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].order">
+                  </ng-container>
+                </td>
+
+                <td>
+                  <ng-container *ngIf="!editCache[item.id].edit">
+                    {{item.description}}
+                  </ng-container>
+
+                  <ng-container *ngIf="editCache[item.id].edit">
+                    <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].description">
+                  </ng-container>
+                </td>
+
+                <td>
+                  <ng-container *ngIf="!editCache[item.id].edit">
+                    {{item.reference}}
+                  </ng-container>
+
+                  <ng-container *ngIf="editCache[item.id].edit">
+                    <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].reference">
+                  </ng-container>
+                </td>
+
+                <td>
+                  <ng-container *ngIf="!editCache[item.id].edit">
+                    {{getQuestionTypeLabel(item.question_type) | translate}}
+                  </ng-container>
+
+                  <ng-container *ngIf="editCache[item.id].edit">
+                    <nz-select style="width: 150px;"
+                               [nzSize]="'small'"
+                               [nzShowSearch]="true"
+                               [(ngModel)]="editCache[item.id].question_type">
+                      <nz-option *ngFor="let option of question_type_options"
+                                 [nzLabel]="option.label | translate"
+                                 [nzValue]="option.type">
+                      </nz-option>
+                    </nz-select>
+                  </ng-container>
+                </td>
+
+                <td>{{item.options.length}}</td>
+
+                <td>
+                  <ng-container *ngIf="!editCache[item.id].edit">
+                    {{item.areaName}}
+                  </ng-container>
+
+                  <ng-container *ngIf="editCache[item.id].edit">
+                    <nz-select style="width: 150px;"
+                               [nzSize]="'small'"
+                               [nzShowSearch]="true"
+                               [(ngModel)]="editCache[item.id].areaId">
+                      <nz-option *ngFor="let area of areas" [nzLabel]="area.name" [nzValue]="area.id">
+                      </nz-option>
+                    </nz-select>
+                  </ng-container>
+                </td>
+
+                <td>
+                  <ng-container *ngIf="!editCache[item.id].edit">
+                    <a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">
+                      <i nz-icon type="folder-add" [theme]="'twotone'"
+                         nz-popover
+                         [(nzVisible)]="questionShowQblocks[item.id].show"
+                         (click)="loadQblocksByStation(station.id)"
+                         [nzTrigger]="'click'"
+                         [nzPlacement]="'left'"
+                         [nzContent]="qblocksList">
+                      </i>
+                    </a>
+
+                    <nz-divider [nzType]="'vertical'"></nz-divider>
+
+                    <i nz-icon type="edit" [theme]="'outline'"
+                       [nz-tooltip] [nzTitle]="'EDIT' | translate"
+                       (click)="startEdit(item.id)" tappable success-color>
+                    </i>
+
+                    <nz-divider [nzType]="'vertical'"></nz-divider>
+
+                    <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+                       (nzOnConfirm)="deleteItem(item, indexStation, indexQblock)">
+                      <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
+                    </a>
+                  </ng-container>
+
+                  <ng-container *ngIf="editCache[item.id].edit">
+                    <i nz-icon type="save"
+                       [nz-tooltip] [nzTitle]="(editCache[item.id].new_item ? 'SAVE' : 'UPDATE') | translate"
+                       (click)="saveItem(item, indexStation, indexQblock, editCache[item.id].new_item)"
+                       success-color tappable>
+                    </i>
+
+                    <nz-divider [nzType]="'vertical'"></nz-divider>
+
+                    <i nz-icon type="close-circle"
+                       [nz-tooltip] [nzTitle]="'CANCEL' | translate"
+                       (click)="cancelEdit(item, indexStation, indexQblock)"
+                       danger-color tappable>
+                    </i>
+                  </ng-container>
+                </td>
+
+                <ng-template #qblocksList>
+                  <nz-list [nzDataSource]="qblocks" [nzSize]="'small'" [nzRenderItem]="qb">
+                    <ng-template #qb let-qb>
+                      <nz-list-item [nzContent]="qb.name" [nzActions]="[moveAction]" tappable
+                                    (click)="moveQuestion(item.id, qblock.id, qb.id)">
+                        <ng-template #moveAction>
+                          <i nz-icon type="right-circle" [theme]="'twotone'"></i>
+                        </ng-template>
+                      </nz-list-item>
+                    </ng-template>
+                  </nz-list>
+                </ng-template>
+              </tr>
+              <tr [nzExpand]="item.expand">
+                <td></td>
+                <td colspan="8" no-padding>
+                  <nz-table #optionTable
+                            [nzData]="item.optionsArray"
+                            [nzSize]="'middle'"
+                            [nzShowPagination]="false"
+                            [nzFooter]="addOptionBtn">
+                    <thead>
+                      <tr>
+                        <th>{{"ORDER" | translate}}</th>
+                        <th>{{"LABEL" | translate}}</th>
+                        <th>{{"POINTS" | translate}}</th>
+                        <th>{{"PREVIEW" | translate}}</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr *ngFor="let option of optionTable.data; let indexOption = index">
+                        <td>
+                          <ng-container *ngIf="!editCacheOption[option.id].edit">
+                            {{option.order}}
+                          </ng-container>
+
+                          <ng-container *ngIf="editCacheOption[option.id].edit">
+                            <input type="number"
+                                   nz-input
+                                   [nzSize]="'small'"
+                                   required
+                                   [(ngModel)]="editCacheOption[option.id].order">
+                          </ng-container>
+                        </td>
+
+                        <td>
+                          <ng-container *ngIf="!editCacheOption[option.id].edit">
+                            {{option.label}}
+                          </ng-container>
+
+                          <ng-container *ngIf="editCacheOption[option.id].edit">
+                            <input type="text"
+                                   nz-input
+                                   [nzSize]="'small'"
+                                   required
+                                   [(ngModel)]="editCacheOption[option.id].label">
+                          </ng-container>
+                        </td>
+
+                        <td>
+                          <ng-container *ngIf="!editCacheOption[option.id].edit">
+                            {{option.points}}
+                          </ng-container>
+
+                          <ng-container *ngIf="editCacheOption[option.id].edit">
+                            <input type="number"
+                                   nz-input
+                                   [nzSize]="'small'"
+                                   required
+                                   [(ngModel)]="editCacheOption[option.id].points">
+                          </ng-container>
+                        </td>
+
+                        <td *ngIf="((item.question_type == 'RS') && indexOption == 0)
+                        || item.question_type == 'CH' || item.question_type == 'RB'"
+                            [attr.rowspan]="(item.question_type == 'RS') ? item.optionsArray.length : 1">
+                          <ng-container *ngIf="item.question_type == 'CH'">
+                            <nz-switch [ngModel]="!editCacheOption[option.id].edit"
+                                       [nzCheckedChildren]="editCacheOption[option.id].edit ?
+                                         editCacheOption[option.id].label :
+                                         option.label"
+                                       [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
+                                         editCacheOption[option.id].label :
+                                         option.label"
+                                       [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
+                            </nz-switch>
+                          </ng-container>
+
+                          <ng-container *ngIf="item.question_type == 'RB'">
+                            <nz-radio-group [(ngModel)]="option.id">
+                              <label nz-radio [nzValue]="option.id"
+                                     [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
+                                {{editCacheOption[option.id].label}}
+                              </label>
+                            </nz-radio-group>
+                          </ng-container>
+
+                          <ng-container *ngIf="item.question_type == 'RS'">
+                            <nz-rate [(ngModel)]="valueopt" [nzCount]="item.optionsArray.length"></nz-rate>
+                            <span class="ant-rate-text">{{valueopt}}</span>
+                          </ng-container>
+                        </td>
+
+                        <td>
+                          <ng-container *ngIf="!editCacheOption[option.id].edit">
+                            <i *ngIf="indexOption != 0"
+                               nz-icon type="up-circle" [theme]="'twotone'"
+                               [nz-tooltip] [nzTitle]="'MOVE_UP' | translate"
+                               (click)="changeOptionOrder('up', option, indexOption, item)"
+                               tappable>
+                            </i>
+
+                            <nz-divider *ngIf="indexOption != 0" [nzType]="'vertical'"></nz-divider>
+
+                            <i *ngIf="indexOption != (optionTable.data.length - 1)"
+                               nz-icon type="down-circle" [theme]="'twotone'"
+                               [nz-tooltip] [nzTitle]="'MOVE_DOWN' | translate"
+                               (click)="changeOptionOrder('down', option, indexOption, item)"
+                               tappable>
+                            </i>
+
+                            <nz-divider *ngIf="indexOption != (optionTable.data.length - 1)"
+                                        [nzType]="'vertical'">
+                            </nz-divider>
+
+                            <i nz-icon type="edit" [theme]="'outline'"
+                               [nz-tooltip] [nzTitle]="'EDIT' | translate"
+                               (click)="startEditOption(option.id)" tappable success-color>
+                            </i>
+
+                            <nz-divider [nzType]="'vertical'"></nz-divider>
+
+                            <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+                               (nzOnConfirm)="deleteOption(option, item)">
+                              <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
+                            </a>
+                          </ng-container>
+
+                          <ng-container *ngIf="editCacheOption[option.id].edit">
+                            <i nz-icon type="save"
+                               [nz-tooltip] [nzTitle]="(editCacheOption[option.id].new_item ? 'SAVE' : 'UPDATE') | translate"
+                               (click)="saveOption(option, item, editCacheOption[option.id].new_item)"
+                               success-color tappable>
+                            </i>
+
+                            <nz-divider [nzType]="'vertical'"></nz-divider>
+
+                            <i nz-icon type="close-circle"
+                               [nz-tooltip] [nzTitle]="'CANCEL' | translate"
+                               (click)="cancelEditOption(option, item)"
+                               danger-color tappable>
+                            </i>
+                          </ng-container>
+                        </td>
+                      </tr>
+                    </tbody>
+
+                    <ng-template #addOptionBtn>
+                      <div style="text-align: center">
+                        <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addOption(item)">
+                          {{"ADD_OPTION" | translate}}
+                        </button>
+                      </div>
+                    </ng-template>
+                  </nz-table>
+                </td>
+              </tr>
+            </ng-template>
+          </tbody>
+        </nz-table>
+      </nz-collapse-panel>
+    </nz-collapse>
   </div>
 </nz-content>

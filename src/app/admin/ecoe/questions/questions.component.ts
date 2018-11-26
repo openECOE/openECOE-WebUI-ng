@@ -74,6 +74,7 @@ export class QuestionsComponent implements OnInit {
                         return q;
                       });
 
+                      qblock.show = true;
                       return [{...qblock, questions}];
                     }));
                   }));
