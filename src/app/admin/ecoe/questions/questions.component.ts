@@ -182,7 +182,7 @@ export class QuestionsComponent implements OnInit {
   cancelEdit(question: any, station: number, qblock: number) {
     this.editCache[question.id].edit = false;
     if (this.editCache[question.id].new_item) {
-      this.updateArray(question.id, station, qblock);
+      this.updateArrayQuestions(question.id, station, qblock);
 
     } else {
       this.editCache[question.id] = {
@@ -193,7 +193,7 @@ export class QuestionsComponent implements OnInit {
 
   deleteItem(question: any, station: number, qblock: number) {
     this.apiService.deleteResource(question['$uri']).subscribe(() => {
-      this.updateArray(question.id, station, qblock);
+      this.updateArrayQuestions(question.id, station, qblock);
     });
   }
 
@@ -247,7 +247,7 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
-  updateArray(questionId: number, station: number, qblock: number) {
+  updateArrayQuestions(questionId: number, station: number, qblock: number) {
     delete this.editCache[questionId];
     delete this.questionShowQblocks[questionId];
     this.stations[station].qblocks[qblock].questions =
@@ -337,7 +337,7 @@ export class QuestionsComponent implements OnInit {
 
         const newItem = {
           id: this.indexOpt,
-          order: 0,
+          order: '',
           label: '',
           points: 0,
           question: question.id
@@ -362,13 +362,9 @@ export class QuestionsComponent implements OnInit {
       itemToMove = question.optionsArray[index + 1];
     }
 
-    const actualItemOrder = option.order;
-    option.order = itemToMove.order;
-    itemToMove.order = actualItemOrder;
-
     forkJoin(
-      this.apiService.updateResource(option['$uri'], {order: option.order}),
-      this.apiService.updateResource(itemToMove['$uri'], {order: itemToMove.order})
+      this.apiService.updateResource(option['$uri'], {order: itemToMove.order}),
+      this.apiService.updateResource(itemToMove['$uri'], {order: option.order})
     ).subscribe(response => {
       response.forEach(res => {
         this.editCacheOption[res['id']] = res;
@@ -381,12 +377,18 @@ export class QuestionsComponent implements OnInit {
   }
 
   sortArray(first, second) {
-    if (first.order < second.order) {
-      return -1;
-    } else if (first.order > second.order) {
-      return 1;
-    } else {
+    if (!first.order) {
       return 0;
     }
+
+    if (first.order < second.order) {
+      return -1;
+    }
+
+    if (first.order > second.order) {
+      return 1;
+    }
+
+    return 0;
   }
 }
