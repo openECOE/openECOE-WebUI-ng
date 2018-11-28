@@ -40,7 +40,7 @@ export class QuestionsComponent implements OnInit {
     this.ecoeId = +this.route.snapshot.params.id;
 
     this.route.queryParamMap.subscribe((params: ParamMap) => {
-      this.qblockId = +params.get('qblock');
+      this.qblockId = params.get('qblock') ? +params.get('qblock') : null;
       this.stationId = params.get('station') ? +params.get('station') : null;
       this.loadQuestions();
     });

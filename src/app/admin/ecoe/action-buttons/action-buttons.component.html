@@ -1,0 +1,49 @@
+<ng-container *ngIf="!isEditing">
+  <i *ngIf="showOrderButtons && index != 0"
+     nz-icon type="up-circle" [theme]="'twotone'"
+     [nz-tooltip] [nzTitle]="'MOVE_UP' | translate"
+     (click)="changeOrder.emit('up')"
+     tappable>
+  </i>
+
+  <nz-divider *ngIf="showOrderButtons && index != 0" [nzType]="'vertical'"></nz-divider>
+
+  <i *ngIf="showOrderButtons && index != (itemsLength - 1)"
+     nz-icon type="down-circle" [theme]="'twotone'"
+     [nz-tooltip] [nzTitle]="'MOVE_DOWN' | translate"
+     (click)="changeOrder.emit('down')"
+     tappable>
+  </i>
+
+  <nz-divider *ngIf="showOrderButtons && index != (itemsLength - 1)"
+              [nzType]="'vertical'">
+  </nz-divider>
+
+  <i nz-icon type="edit" [theme]="'outline'"
+     [nz-tooltip] [nzTitle]="'EDIT' | translate"
+     (click)="startEdit.emit()" tappable success-color>
+  </i>
+
+  <nz-divider [nzType]="'vertical'"></nz-divider>
+
+  <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+     (nzOnConfirm)="delete.emit()">
+    <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
+  </a>
+</ng-container>
+
+<ng-container *ngIf="isEditing">
+  <i nz-icon type="save"
+     [nz-tooltip] [nzTitle]="(isNewItem ? 'SAVE' : 'UPDATE') | translate"
+     (click)="save.emit()"
+     success-color tappable>
+  </i>
+
+  <nz-divider [nzType]="'vertical'"></nz-divider>
+
+  <i nz-icon type="close-circle"
+     [nz-tooltip] [nzTitle]="'CANCEL' | translate"
+     (click)="cancelEdit.emit()"
+     danger-color tappable>
+  </i>
+</ng-container>

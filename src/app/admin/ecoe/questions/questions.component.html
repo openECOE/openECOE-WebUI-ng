@@ -134,49 +134,29 @@
                     </a>
 
                     <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                    <i nz-icon type="edit" [theme]="'outline'"
-                       [nz-tooltip] [nzTitle]="'EDIT' | translate"
-                       (click)="startEdit(item.id)" tappable success-color>
-                    </i>
-
-                    <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                    <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
-                       (nzOnConfirm)="deleteItem(item, indexStation, indexQblock)">
-                      <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
-                    </a>
                   </ng-container>
 
-                  <ng-container *ngIf="editCache[item.id].edit">
-                    <i nz-icon type="save"
-                       [nz-tooltip] [nzTitle]="(editCache[item.id].new_item ? 'SAVE' : 'UPDATE') | translate"
-                       (click)="saveItem(item, indexStation, indexQblock, editCache[item.id].new_item)"
-                       success-color tappable>
-                    </i>
+                  <ng-template #qblocksList>
+                    <nz-list [nzDataSource]="qblocks" [nzSize]="'small'" [nzRenderItem]="qb">
+                      <ng-template #qb let-qb>
+                        <nz-list-item [nzContent]="qb.name" [nzActions]="[moveAction]" tappable
+                                      (click)="moveQuestion(item.id, qblock.id, qb.id)">
+                          <ng-template #moveAction>
+                            <i nz-icon type="right-circle" [theme]="'twotone'"></i>
+                          </ng-template>
+                        </nz-list-item>
+                      </ng-template>
+                    </nz-list>
+                  </ng-template>
 
-                    <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                    <i nz-icon type="close-circle"
-                       [nz-tooltip] [nzTitle]="'CANCEL' | translate"
-                       (click)="cancelEdit(item, indexStation, indexQblock)"
-                       danger-color tappable>
-                    </i>
-                  </ng-container>
+                  <app-action-buttons [isEditing]="editCache[item.id].edit"
+                                      [isNewItem]="editCache[item.id].new_item"
+                                      (startEdit)="startEdit(item.id)"
+                                      (delete)="deleteItem(item, indexStation, indexQblock)"
+                                      (save)="saveItem(item, indexStation, indexQblock, editCache[item.id].new_item)"
+                                      (cancelEdit)="cancelEdit(item, indexStation, indexQblock)">
+                  </app-action-buttons>
                 </td>
-
-                <ng-template #qblocksList>
-                  <nz-list [nzDataSource]="qblocks" [nzSize]="'small'" [nzRenderItem]="qb">
-                    <ng-template #qb let-qb>
-                      <nz-list-item [nzContent]="qb.name" [nzActions]="[moveAction]" tappable
-                                    (click)="moveQuestion(item.id, qblock.id, qb.id)">
-                        <ng-template #moveAction>
-                          <i nz-icon type="right-circle" [theme]="'twotone'"></i>
-                        </ng-template>
-                      </nz-list-item>
-                    </ng-template>
-                  </nz-list>
-                </ng-template>
               </tr>
               <tr [nzExpand]="item.expand">
                 <td></td>
@@ -276,55 +256,17 @@
                         <td></td>
 
                         <td text-right>
-                          <ng-container *ngIf="!editCacheOption[option.id].edit">
-                            <i *ngIf="indexOption != 0"
-                               nz-icon type="up-circle" [theme]="'twotone'"
-                               [nz-tooltip] [nzTitle]="'MOVE_UP' | translate"
-                               (click)="changeOptionOrder('up', option, indexOption, item)"
-                               tappable>
-                            </i>
-
-                            <nz-divider *ngIf="indexOption != 0" [nzType]="'vertical'"></nz-divider>
-
-                            <i *ngIf="indexOption != (optionTable.data.length - 1)"
-                               nz-icon type="down-circle" [theme]="'twotone'"
-                               [nz-tooltip] [nzTitle]="'MOVE_DOWN' | translate"
-                               (click)="changeOptionOrder('down', option, indexOption, item)"
-                               tappable>
-                            </i>
-
-                            <nz-divider *ngIf="indexOption != (optionTable.data.length - 1)"
-                                        [nzType]="'vertical'">
-                            </nz-divider>
-
-                            <i nz-icon type="edit" [theme]="'outline'"
-                               [nz-tooltip] [nzTitle]="'EDIT' | translate"
-                               (click)="startEditOption(option.id)" tappable success-color>
-                            </i>
-
-                            <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                            <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
-                               (nzOnConfirm)="deleteOption(option, item)">
-                              <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
-                            </a>
-                          </ng-container>
-
-                          <ng-container *ngIf="editCacheOption[option.id].edit">
-                            <i nz-icon type="save"
-                               [nz-tooltip] [nzTitle]="(editCacheOption[option.id].new_item ? 'SAVE' : 'UPDATE') | translate"
-                               (click)="saveOption(option, item, editCacheOption[option.id].new_item)"
-                               success-color tappable>
-                            </i>
-
-                            <nz-divider [nzType]="'vertical'"></nz-divider>
-
-                            <i nz-icon type="close-circle"
-                               [nz-tooltip] [nzTitle]="'CANCEL' | translate"
-                               (click)="cancelEditOption(option, item)"
-                               danger-color tappable>
-                            </i>
-                          </ng-container>
+                          <app-action-buttons [isEditing]="editCacheOption[option.id].edit"
+                                              [isNewItem]="editCacheOption[option.id].new_item"
+                                              [index]="indexOption"
+                                              [itemsLength]="optionTable.data.length"
+                                              [showOrderButtons]="true"
+                                              (changeOrder)="changeOptionOrder($event, option, indexOption, item)"
+                                              (startEdit)="startEditOption(option.id)"
+                                              (delete)="deleteOption(option, item)"
+                                              (save)="saveOption(option, item, editCacheOption[option.id].new_item)"
+                                              (cancelEdit)="cancelEditOption(option, item)">
+                          </app-action-buttons>
                         </td>
                       </tr>
                     </tbody>
