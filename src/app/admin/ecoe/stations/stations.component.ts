@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
-import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-stations',
@@ -13,6 +12,9 @@ export class StationsComponent implements OnInit {
   stations: any[] = [];
   ecoeId: number;
   editCache = {};
+  editCacheQblock = {};
+  index: number = 1;
+  indexQblock: number = 1;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -35,64 +37,56 @@ export class StationsComponent implements OnInit {
     });
   }
 
-  loadQblocksByStation(expandOpen: boolean, stationId: number) {
+  loadQblocksByStation(expandOpen: boolean, station: any) {
     if (expandOpen) {
       this.apiService.getResources('qblock', {
-        where: `{"station":${stationId}}`,
+        where: `{"station":${station.id}}`,
         sort: '{"order":false}'
-      }).pipe(
-        map(qblocks => {
-          return qblocks.map(qblock => {
-            return {stationId, questionsArray: [], ...qblock};
-          });
-        })
-      ).subscribe(qblocks => {
-        this.stations = this.stations.map(station => {
-          if (station.id === stationId) {
-            station.qblocksArray = qblocks;
-          }
+      }).subscribe(qblocks => {
+        station.qblocksArray = qblocks;
 
-          return station;
+        station.qblocksArray.forEach(qblock => {
+          this.editCacheQblock[qblock.id] = {
+            edit: this.editCacheQblock[qblock.id] ? this.editCacheQblock[qblock.id].edit : false,
+            ...qblock
+          };
         });
-
-        this.updateEditCache();
       });
     }
   }
 
-  loadQuestionsByQblock(expandOpen: boolean, stationId: number, qblockId: number) {
-    if (expandOpen) {
-      this.apiService.getResources('question', {
-        where: `{"qblocks":{"$contains":${qblockId}}}`,
-        sort: '{"order":false}'
-      }).pipe(
-        map(questions => {
-          return questions.map(question => {
-            return {qblockId, ...question};
-          });
-        })
-      ).subscribe(questions => {
-        this.stations = this.stations.map(station => {
-          if (station.id === stationId) {
-            station.qblocksArray = station.qblocksArray.map(qblock => {
-              if (qblock.id === qblockId) {
-                qblock.questionsArray = questions;
-              }
+  addStation() {
+    this.apiService.getResources('station')
+      .subscribe(stations => {
+        this.index += stations.reduce((max, p) => p.id > max ? p.id : max, stations[0].id);
 
-              return qblock;
-            });
-          }
+        const newItem = {
+          id: this.index,
+          order: '',
+          name: '',
+          ecoe: this.ecoeId,
+          children_stations: [],
+          parent_station: null
+        };
 
-          return station;
-        });
+        this.stations = [...this.stations, newItem];
 
-        this.updateEditCache();
+        this.editCache[this.index] = {
+          edit: true,
+          new_item: true,
+          ...newItem
+        };
       });
-    }
   }
 
-  deleteItem(ref: string) {
-    this.apiService.deleteResource(ref);
+  startEdit(id: number) {
+    this.editCache[id].edit = true;
+  }
+
+  deleteItem(station: any) {
+    this.apiService.deleteResource(station['$uri']).subscribe(() => {
+      this.updateArrayStations(station.id);
+    });
   }
 
   updateEditCache(): void {
@@ -104,10 +98,121 @@ export class StationsComponent implements OnInit {
     });
   }
 
+  saveItem(station: any, newItem: boolean): void {
+    const item = this.editCache[station.id];
+
+    if (!item.order || !item.name) {
+      return;
+    }
+
+    const body = {
+      order: +item.order,
+      name: item.name,
+      ecoe: item.ecoe
+    };
+
+    const request = (
+      newItem ?
+        this.apiService.createResource('station', body) :
+        this.apiService.updateResource(item['$uri'], body)
+    );
+
+    request.subscribe(response => {
+      delete this.editCache[station.id];
+      delete this.editCache[response['id']];
+
+      this.editCache[response['id']] = {
+        edit: false,
+        ...response
+      };
+
+      this.stations = this.stations.map(x => (x.id === station.id) ? response : x);
+    });
+  }
+
+  cancelEdit(station: any): void {
+    this.editCache[station.id].edit = false;
+
+    if (this.editCache[station.id].new_item) {
+      this.updateArrayStations(station.id);
+    } else {
+      this.editCache[station.id] = station;
+    }
+  }
+
+  updateArrayStations(station: number) {
+    delete this.editCache[station];
+    this.stations = this.stations.filter(x => x.id !== station);
+  }
+
   navigateQuestions(stationId: number, qblockId: number) {
     this.router.navigate(['../questions'], {
       relativeTo: this.route,
       queryParams: {station: stationId, qblock: qblockId}
     });
+  }
+
+  addQblock(station: any) {
+    this.apiService.getResources('qblock')
+      .subscribe(qblocks => {
+        this.indexQblock += qblocks.reduce((max, p) => p.id > max ? p.id : max, qblocks[0].id);
+
+        const newItem = {
+          id: this.indexQblock,
+          order: '',
+          name: '',
+          questions: [],
+          station: station.id
+        };
+
+        station.qblocksArray = [...station.qblocksArray, newItem];
+
+        this.editCacheQblock[this.indexQblock] = {
+          edit: true,
+          new_item: true,
+          ...newItem
+        };
+      });
+  }
+
+  startEditQblock(qblockId: number) {
+    this.editCacheQblock[qblockId].edit = true;
+  }
+
+  deleteQblock(qblock: any, station: any) {
+    this.apiService.deleteResource(qblock['$uri']).subscribe(() => {
+      this.updateArrayQblocks(qblock.id, station);
+    });
+  }
+
+  saveQblock(qblock: any, station: any, newItem: boolean) {
+
+  }
+
+  cancelEditQblock(qblock: any, station: any) {
+
+  }
+
+  updateArrayQblocks(qblock: number, station: any) {
+    delete this.editCacheQblock[qblock];
+    station.qblocksArray = station.qblocksArray
+      .filter(x => x.id !== qblock)
+      .sort(this.sortArray);
+  }
+
+  sortArray(first, second) {
+    if (!first.order) {
+      return 0;
+    }
+
+    if (first.order < second.order) {
+      return -1;
+    }
+
+    if (first.order > second.order) {
+      return 1;
+    }
+
+    return 0;
   }
 }

@@ -17,6 +17,7 @@
   "ADD_STATION": "Añadir estación",
   "STATION_NAME": "Nombre de la estación",
   "PARENT_STATION": "Estación padre",
+  "CHILD_STATIONS": "Subestaciones",
 
   "INFORMATION": "Información",
 
@@ -57,7 +58,7 @@
   "QBLOCKS": "Bloques",
   "ASSIGN_QBLOCKS": "Asignar bloque",
   "SELECT_QBLOCKS": "Selecciona los bloques:",
-  "ADD_QBLOCKS": "Añadir bloque",
+  "ADD_QBLOCK": "Añadir bloque",
   "QBLOCK": "Bloque",
 
   "CHRONOMETERS": "Cronómetros",

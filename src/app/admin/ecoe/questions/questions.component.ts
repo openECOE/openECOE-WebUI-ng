@@ -26,7 +26,7 @@ export class QuestionsComponent implements OnInit {
   index: number = 1;
   indexOpt: number = 1;
 
-  question_type_options: Array<{type: string, label: string}> = [
+  question_type_options: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
     {type: 'CH', label: 'MULTI_ANSWER'},
     {type: 'RS', label: 'VALUE_RANGE'}

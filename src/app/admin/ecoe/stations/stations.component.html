@@ -10,11 +10,17 @@
             <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
           </a>
         </th>
-        <th [nzWidth]="'10%'">{{"ORDER" | translate}}</th>
-        <th [nzWidth]="'25%'">{{"NAME" | translate}}</th>
-        <th [nzWidth]="'25%'">{{"PARENT_STATION" | translate}}</th>
-        <th>{{"CHILDREN_STATIONS" | translate}}</th>
-        <th>{{"ACTION" | translate}}</th>
+        <th nzWidth="85px">{{"ORDER" | translate}}</th>
+        <th>{{"NAME" | translate}}</th>
+        <th nzWidth="140px">{{"PARENT_STATION" | translate}}</th>
+        <th nzWidth="140px">{{"CHILD_STATIONS" | translate}}</th>
+        <th nzWidth="140px">
+          <button nz-button [nzType]="'primary'" class="margin-left"
+                  [nz-tooltip] [nzTitle]="'ADD_STATION' | translate"
+                  (click)="addStation()">
+            <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+          </button>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -22,12 +28,12 @@
         <tr>
           <td [nzShowExpand]="true"
               [(nzExpand)]="item.expand"
-              (nzExpandChange)="loadQblocksByStation($event, item.id)">
+              (nzExpandChange)="loadQblocksByStation($event, item)">
           </td>
 
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.order}}
+              {{item.order || "-"}}
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
@@ -46,79 +52,65 @@
           </td>
 
           <td>
-            <!--<ng-container *ngIf="!editCache[item.id].edit">-->
-              <!--{{item.code}}-->
-            <!--</ng-container>-->
-
-            <!--<ng-container *ngIf="editCache[item.id].edit">-->
-              <!--<input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].code">-->
-            <!--</ng-container>-->
+            TEST
           </td>
 
           <td>{{item.children_stations.length}}</td>
 
-          <td>
-            <ng-container *ngIf="!editCache[item.id].edit">
-              <a (click)="startEdit(item.id)">
-                <i nz-icon type="edit" [nz-tooltip] [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
-              </a>
-              <nz-divider [nzType]="'vertical'"></nz-divider>
-              <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(item['$uri'])">
-                <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
-              </a>
-            </ng-container>
-
-            <ng-container *ngIf="editCache[item.id].edit">
-              <a (click)="saveEditItem(item.id)">
-                <i nz-icon type="save" [nz-tooltip] [nzTitle]="'UPDATE' | translate" [theme]="'twotone'"></i>
-              </a>
-              <nz-divider [nzType]="'vertical'"></nz-divider>
-              <a (click)="cancelEdit(item.id)">
-                <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" [theme]="'twotone'"></i>
-              </a>
-            </ng-container>
+          <td text-right>
+            <app-action-buttons [isEditing]="editCache[item.id].edit"
+                                [isNewItem]="editCache[item.id].new_item"
+                                (startEdit)="startEdit(item.id)"
+                                (delete)="deleteItem(item)"
+                                (save)="saveItem(item, editCache[item.id].new_item)"
+                                (cancelEdit)="cancelEdit(item)">
+            </app-action-buttons>
           </td>
         </tr>
         <tr [nzExpand]="item.expand">
           <td></td>
-          <td colspan="5">
-            <nz-table #qblockTable [nzData]="item.qblocksArray" [nzSize]="'middle'" [nzShowPagination]="false">
+          <td colspan="5" inner-table>
+            <nz-table #qblockTable
+                      [nzData]="item.qblocksArray"
+                      [nzSize]="'middle'"
+                      [nzShowPagination]="false"
+                      [nzFooter]="addQblockBtn">
               <thead>
                 <tr>
-                  <th [nzWidth]="'10%'">{{"ORDER" | translate}}</th>
-                  <th [nzWidth]="'30%'">{{"NAME" | translate}}</th>
-                  <th>{{"QUESTIONS" | translate}}</th>
-                  <th>{{"ACTION" | translate}}</th>
+                  <th nzWidth="85px">{{"ORDER" | translate}}</th>
+                  <th>{{"NAME" | translate}}</th>
+                  <th nzWidth="85px">{{"QUESTIONS" | translate}}</th>
+                  <th nzWidth="140px"></th>
                 </tr>
               </thead>
 
               <tbody>
                 <tr *ngFor="let qblock of qblockTable.data; let i = index">
                   <td>
-                    <ng-container *ngIf="!editCache[item.id].edit">
-                      {{qblock.order}}
+                    <ng-container *ngIf="!editCacheQblock[qblock.id].edit">
+                      {{qblock.order || "-"}}
                     </ng-container>
 
-                    <ng-container *ngIf="editCache[item.id].edit">
+                    <ng-container *ngIf="editCacheQblock[qblock.id].edit">
                       <input type="number"
                              nz-input
                              [nzSize]="'small'"
                              required
-                             [(ngModel)]="editCache[item.id].qblocksArray[i].order">
+                             [(ngModel)]="editCacheQblock[qblock.id].order">
                     </ng-container>
                   </td>
 
                   <td>
-                    <ng-container *ngIf="!editCache[item.id].edit">
+                    <ng-container *ngIf="!editCacheQblock[qblock.id].edit">
                       {{qblock.name}}
                     </ng-container>
 
-                    <ng-container *ngIf="editCache[item.id].edit">
+                    <ng-container *ngIf="editCacheQblock[qblock.id].edit">
                       <input type="text"
                              nz-input
                              [nzSize]="'small'"
                              required
-                             [(ngModel)]="editCache[item.id].qblocksArray[i].name">
+                             [(ngModel)]="editCacheQblock[qblock.id].name">
                     </ng-container>
                   </td>
 
@@ -131,29 +123,25 @@
                     </ng-container>
                   </td>
 
-                  <td>
-                    <ng-container *ngIf="!editCache[item.id].edit">
-                      <a (click)="startEdit(item.id)">
-                        <i nz-icon type="edit" [nz-tooltip] [nzTitle]="'EDIT' | translate" [theme]="'twotone'"></i>
-                      </a>
-                      <nz-divider [nzType]="'vertical'"></nz-divider>
-                      <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(item['$uri'])">
-                        <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" [theme]="'twotone'"></i>
-                      </a>
-                    </ng-container>
-
-                    <ng-container *ngIf="editCache[item.id].edit">
-                      <a (click)="saveEditItem(item.id)">
-                        <i nz-icon type="save" [nz-tooltip] [nzTitle]="'UPDATE' | translate" [theme]="'twotone'"></i>
-                      </a>
-                      <nz-divider [nzType]="'vertical'"></nz-divider>
-                      <a (click)="cancelEdit(item.id)">
-                        <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" [theme]="'twotone'"></i>
-                      </a>
-                    </ng-container>
+                  <td text-right>
+                    <app-action-buttons [isEditing]="editCacheQblock[qblock.id].edit"
+                                        [isNewItem]="editCacheQblock[qblock.id].new_item"
+                                        (startEdit)="startEditQblock(qblock.id)"
+                                        (delete)="deleteQblock(qblock, item)"
+                                        (save)="saveQblock(qblock, item, editCacheQblock[qblock.id].new_item)"
+                                        (cancelEdit)="cancelEditQblock(qblock, item)">
+                    </app-action-buttons>
                   </td>
                 </tr>
               </tbody>
+
+              <ng-template #addQblockBtn>
+                <div text-center>
+                  <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addQblock(item)">
+                    {{"ADD_QBLOCK" | translate}}
+                  </button>
+                </div>
+              </ng-template>
             </nz-table>
           </td>
         </tr>
