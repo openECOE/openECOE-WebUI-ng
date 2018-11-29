@@ -1,5 +1,4 @@
 <nz-content>
-
   <nz-select style="width: 50%;"
              [nzShowSearch]="true"
              (ngModelChange)="deleteFilter($event)"
@@ -161,7 +160,7 @@
             </tr>
             <tr [nzExpand]="item.expand">
               <td></td>
-              <td colspan="7" style="padding: 0 10px;">
+              <td colspan="7" inner-table>
                 <nz-table #optionTable
                           [nzData]="item.optionsArray"
                           [nzSize]="'middle'"

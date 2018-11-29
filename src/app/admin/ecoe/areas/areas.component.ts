@@ -14,6 +14,7 @@ export class AreasComponent implements OnInit {
   areas: any[] = [];
   ecoeId: number;
   editCache = {};
+  index: number = 1;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute) {
@@ -157,23 +158,27 @@ export class AreasComponent implements OnInit {
     });
   }
 
-  addItem() {
-    const index = this.areas.reduce((max, p) => p.id > max ? p.id : max, this.areas[0].id) + 1;
-    const newArea = {
-      id: index,
-      name: '',
-      code: '',
-      questions: [],
-      ecoe: this.ecoeId
-    };
+  addArea() {
+    this.apiService.getResources('area')
+      .subscribe(areas => {
+        this.index += areas.reduce((max, p) => p.id > max ? p.id : max, areas[0].id);
 
-    this.areas = [...this.areas, newArea];
+        const newItem = {
+          id: this.index,
+          name: '',
+          code: '',
+          questions: [],
+          ecoe: this.ecoeId
+        };
 
-    this.editCache[index] = {
-      edit: true,
-      new_item: true,
-      ...newArea
-    };
+        this.areas = [...this.areas, newItem];
+
+        this.editCache[this.index] = {
+          edit: true,
+          new_item: true,
+          ...newItem
+        };
+      });
   }
 
   updateArray(key: number, response: any) {
