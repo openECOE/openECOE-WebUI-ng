@@ -59,31 +59,23 @@ export class AreasComponent implements OnInit {
     }
   }
 
-  deleteItem(ref: string) {
-    const areaId = this.areas.find(a => a['$uri'] === ref).id;
-
-    this.apiService.deleteResource(ref)
-      .subscribe(() => {
-        this.areas = this.areas.filter(item => item.id !== areaId);
-        delete this.editCache[areaId];
-      });
+  deleteItem(area: any) {
+    this.apiService.deleteResource(area['$uri']).subscribe(() => {
+      this.updateArrayAreas(area.id);
+    });
   }
 
   startEdit(id: number): void {
     this.editCache[id].edit = true;
   }
 
-  cancelEdit(id: number): void {
-    let area = this.editCache[id];
-    area.edit = false;
+  cancelEdit(area: any): void {
+    this.editCache[area.id].edit = false;
 
-    if (area.new_area) {
-      delete this.editCache[id];
-      this.areas = this.areas.filter(a => a.id !== area.id);
+    if (this.editCache[area.id].new_item) {
+      this.updateArrayAreas(area.id);
     } else {
-      area = {
-        ...this.areas.find(a => a.id === id)
-      };
+      this.editCache[area.id] = area;
     }
   }
 
@@ -124,21 +116,35 @@ export class AreasComponent implements OnInit {
     });
   }
 
-  saveItem(key: number): void {
-    const area = this.editCache[key];
+  saveItem(area: any, newItem: boolean): void {
+    const item = this.editCache[area.id];
+
+    if (!item.name || !item.code || !item.ecoe) {
+      return;
+    }
+
     const body = {
-      name: area.name,
-      code: area.code,
-      ecoe: area.ecoe
+      name: item.name,
+      code: item.code,
+      ecoe: +item.ecoe
     };
 
-    this.apiService.createResource('area', body)
-      .pipe(
-        map(res => {
-          return {questionsArray: [], ...res};
-        })
-      ).subscribe(res => {
-        this.updateArray(key, res);
+    const request = (
+      newItem ?
+        this.apiService.createResource('area', body) :
+        this.apiService.updateResource(item['$uri'], body)
+    );
+
+    request.subscribe(response => {
+      delete this.editCache[area.id];
+      delete this.editCache[response['id']];
+
+      this.editCache[response['id']] = {
+        edit: false,
+        ...response
+      };
+
+      this.areas = this.areas.map(x => (x.id === area.id) ? response : x);
     });
   }
 
@@ -165,7 +171,7 @@ export class AreasComponent implements OnInit {
 
     this.editCache[index] = {
       edit: true,
-      new_area: true,
+      new_item: true,
       ...newArea
     };
   }
@@ -178,5 +184,10 @@ export class AreasComponent implements OnInit {
     };
 
     this.areas = this.areas.map(a => (a.id === key ? response : a));
+  }
+
+  updateArrayAreas(areaId: number) {
+    delete this.editCache[areaId];
+    this.areas = this.areas.filter(x => x.id !== areaId);
   }
 }

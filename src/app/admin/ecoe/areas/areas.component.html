@@ -23,23 +23,13 @@
               [(nzExpand)]="item.expand"
               (nzExpandChange)="loadQuestionsByArea($event, item.id)">
           </td>
-          <td class="editable-cell">
+          <td>
             <ng-container *ngIf="!editCache[item.id].edit">
               {{item.name}}
-              <i nz-icon type="edit" [theme]="'twotone'"
-                 [nz-tooltip] [nzTitle]="'EDIT' | translate"
-                 (click)="startEdit(item.id)"
-                 class="editable-cell-icon" padding-top>
-              </i>
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
               <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].name">
-              <i nz-icon type="save" success-color
-                 [nz-tooltip] [nzTitle]="(editCache[item.id].new_area ? 'SAVE' : 'UPDATE') | translate"
-                 (click)="editCache[item.id].new_area ? saveItem(item.id) : saveEditItem(item.id)"
-                 class="editable-cell-icon-check" padding-top>
-              </i>
             </ng-container>
           </td>
 
@@ -56,17 +46,13 @@
           <td>{{item.questions.length}}</td>
 
           <td>
-            <ng-container *ngIf="!editCache[item.id].edit">
-              <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteItem(item['$uri'])">
-                <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
-              </a>
-            </ng-container>
-
-            <ng-container *ngIf="editCache[item.id].edit">
-              <a (click)="cancelEdit(item.id)">
-                <i nz-icon type="close-circle" [nz-tooltip] [nzTitle]="'CANCEL' | translate" danger-color></i>
-              </a>
-            </ng-container>
+            <app-action-buttons [isEditing]="editCache[item.id].edit"
+                                [isNewItem]="editCache[item.id].new_item"
+                                (startEdit)="startEdit(item.id)"
+                                (delete)="deleteItem(item)"
+                                (save)="saveItem(item, editCache[item.id].new_item)"
+                                (cancelEdit)="cancelEdit(item)">
+            </app-action-buttons>
           </td>
         </tr>
         <tr [nzExpand]="item.expand">

@@ -126,10 +126,10 @@ export class QuestionsComponent implements OnInit {
     this.editCache[id].edit = true;
   }
 
-  saveItem(question: any, station: number, qblock: number, newItem: boolean) {
+  saveItem(question: any, qblock: any, newItem: boolean) {
     const item = this.editCache[question.id];
 
-    if (!item.description || !item.reference || !item.question_type || !item.areaId || !this.stations[station].qblocks[qblock].id) {
+    if (!item.description || !item.reference || !item.question_type || !item.areaId || !qblock.id) {
       return;
     }
 
@@ -139,7 +139,7 @@ export class QuestionsComponent implements OnInit {
       reference: item.reference,
       question_type: item.question_type,
       area: item.areaId,
-      qblocks: [this.stations[station].qblocks[qblock].id]
+      qblocks: [qblock.id]
     };
 
     const request = (
@@ -174,26 +174,23 @@ export class QuestionsComponent implements OnInit {
         show: false
       };
 
-      this.stations[station].qblocks[qblock].questions =
-        this.stations[station].qblocks[qblock].questions.map(x => (x.id === question.id) ? response : x);
+      qblock.questions = qblock.questions.map(x => (x.id === question.id) ? response : x);
     });
   }
 
-  cancelEdit(question: any, station: number, qblock: number) {
+  cancelEdit(question: any, qblock: any) {
     this.editCache[question.id].edit = false;
-    if (this.editCache[question.id].new_item) {
-      this.updateArrayQuestions(question.id, station, qblock);
 
+    if (this.editCache[question.id].new_item) {
+      this.updateArrayQuestions(question.id, qblock);
     } else {
-      this.editCache[question.id] = {
-        ...question
-      };
+      this.editCache[question.id] = question;
     }
   }
 
-  deleteItem(question: any, station: number, qblock: number) {
+  deleteItem(question: any, qblock: any) {
     this.apiService.deleteResource(question['$uri']).subscribe(() => {
-      this.updateArrayQuestions(question.id, station, qblock);
+      this.updateArrayQuestions(question.id, qblock);
     });
   }
 
@@ -247,11 +244,10 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
-  updateArrayQuestions(questionId: number, station: number, qblock: number) {
+  updateArrayQuestions(questionId: number, qblock: any) {
     delete this.editCache[questionId];
     delete this.questionShowQblocks[questionId];
-    this.stations[station].qblocks[qblock].questions =
-      this.stations[station].qblocks[qblock].questions.filter(x => x.id !== questionId);
+    qblock.questions = qblock.questions.filter(x => x.id !== questionId);
   }
 
   moveQuestion(questionId: number, qblockPrevId: number, qblockNextId: number) {

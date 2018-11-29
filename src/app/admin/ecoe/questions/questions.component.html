@@ -152,9 +152,9 @@
                   <app-action-buttons [isEditing]="editCache[item.id].edit"
                                       [isNewItem]="editCache[item.id].new_item"
                                       (startEdit)="startEdit(item.id)"
-                                      (delete)="deleteItem(item, indexStation, indexQblock)"
-                                      (save)="saveItem(item, indexStation, indexQblock, editCache[item.id].new_item)"
-                                      (cancelEdit)="cancelEdit(item, indexStation, indexQblock)">
+                                      (delete)="deleteItem(item, qblock)"
+                                      (save)="saveItem(item, qblock, editCache[item.id].new_item)"
+                                      (cancelEdit)="cancelEdit(item, qblock)">
                   </app-action-buttons>
                 </td>
               </tr>
