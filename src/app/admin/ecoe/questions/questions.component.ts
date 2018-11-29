@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {forkJoin, Observable} from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-questions',
@@ -12,6 +12,7 @@ import {map, mergeMap} from 'rxjs/operators';
 export class QuestionsComponent implements OnInit {
 
   stations: any[] = [];
+  stationSelected: any;
   areas: any[] = [];
   qblocks: any[] = [];
   editCache = {};
@@ -47,53 +48,48 @@ export class QuestionsComponent implements OnInit {
   }
 
   loadQuestions() {
+    this.stationSelected = {};
     this.apiService.getResources('area', {
       where: `{"ecoe":${this.ecoeId}}`
     }).pipe(
       mergeMap(areas => {
         this.areas = areas;
         return this.apiService.getResources('station', {
-          where: this.stationId ? `{"$uri":"/api/station/${this.stationId}"}` : `{"ecoe":${this.ecoeId}}`
+          where: `{"ecoe":${this.ecoeId}}`
         }).pipe(
+          tap(stations => this.stations = stations),
           mergeMap(stations => {
-            const requests = [];
+            const station = this.stationId ? stations.find(st => st.id === this.stationId) : stations[0];
+            return this.apiService.getResources('qblock', {
+              where: (this.stationId && this.qblockId) ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${station.id}}`
+            }).pipe(
+              mergeMap(qblocks => {
+                this.stationId = station.id;
+                return <Observable<any[]>>forkJoin(...qblocks.map(qblock => {
+                  return this.apiService.getResources('question', {
+                    where: `{"qblocks":{"$contains":${qblock.id}}}`
+                  }).pipe(map(questions => {
+                    questions = questions.map(q => {
+                      const area = areas.find(a => a['$uri'] === q.area['$ref']);
+                      q.areaName = area.name;
+                      q.areaId = area.id;
+                      return q;
+                    });
 
-            stations.forEach(station => {
-              const request = this.apiService.getResources('qblock', {
-                where: this.qblockId ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${station.id}}`
-              }).pipe(
-                mergeMap(qblocks => {
-                  return <Observable<any[]>>forkJoin(...qblocks.map(qblock => {
-                    return this.apiService.getResources('question', {
-                      where: `{"qblocks":{"$contains":${qblock.id}}}`
-                    }).pipe(map(questions => {
-                      questions = questions.map(q => {
-                        const area = areas.find(a => a['$uri'] === q.area['$ref']);
-                        q.areaName = area.name;
-                        q.areaId = area.id;
-                        return q;
-                      });
-
-                      qblock.show = true;
-                      return [{...qblock, questions}];
-                    }));
+                    qblock.show = true;
+                    return [{...qblock, questions}];
                   }));
-                }),
-                map(qblocks => {
-                  return [{...station, qblocks: [].concat.apply([], qblocks)}];
-                })
-              );
-
-              requests.push(request);
-            });
-
-            return forkJoin(requests);
+                }));
+              }),
+              map(qblocks => {
+                return [{...station, qblocks: [].concat.apply([], qblocks)}];
+              })
+            );
           })
         );
       })
     ).subscribe(response => {
-      this.editCache = {};
-      this.stations = response[0];
+      this.stationSelected = response[0];
       this.updateEditCache();
     });
   }
@@ -221,26 +217,17 @@ export class QuestionsComponent implements OnInit {
   }
 
   updateEditCache(): void {
-    this.stations.forEach(st => {
-      st.qblocks.forEach(qb => {
-        qb.questions.forEach(item => {
-          this.questionShowQblocks[item.id] = {
-            show: false
-          };
-          this.editCache[item.id] = {
-            edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
-            ...item
-          };
-        });
+    this.editCache = {};
+    this.stationSelected.qblocks.forEach(qb => {
+      qb.questions.forEach(item => {
+        this.questionShowQblocks[item.id] = {
+          show: false
+        };
+        this.editCache[item.id] = {
+          edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
+          ...item
+        };
       });
-    });
-  }
-
-  deleteFilter() {
-    this.router.navigate(['../questions'], {
-      relativeTo: this.route,
-      replaceUrl: true,
-      queryParams: {station: this.stationId}
     });
   }
 
@@ -386,5 +373,13 @@ export class QuestionsComponent implements OnInit {
     }
 
     return 0;
+  }
+
+  deleteFilter(station: number) {
+    this.router.navigate(['../questions'], {
+      relativeTo: this.route,
+      replaceUrl: true,
+      queryParams: {station: station}
+    });
   }
 }
