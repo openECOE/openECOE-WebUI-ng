@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {SharedService} from '../../../services/shared/shared.service';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-stations',
@@ -119,7 +120,11 @@ export class StationsComponent implements OnInit {
         this.apiService.updateResource(item['$uri'], body)
     );
 
-    request.subscribe(response => {
+    request.pipe(
+      map(res => {
+        return {...res, expand: true};
+      })
+    ).subscribe(response => {
       delete this.editCache[station.id];
       delete this.editCache[response['id']];
 
@@ -129,6 +134,12 @@ export class StationsComponent implements OnInit {
       };
 
       this.stations = this.stations.map(x => (x.id === station.id) ? response : x);
+
+      if (newItem) {
+        const newStation = this.stations.find(x => x.id === response.id);
+        newStation.qblocksArray = [];
+        this.addQblock(newStation, 'Preguntas Generales');
+      }
     });
   }
 
@@ -154,7 +165,7 @@ export class StationsComponent implements OnInit {
     });
   }
 
-  addQblock(station: any) {
+  addQblock(station: any, name?: string) {
     this.apiService.getResources('qblock')
       .subscribe(qblocks => {
         this.indexQblock += qblocks.reduce((max, p) => p.id > max ? p.id : max, qblocks[0].id);
@@ -162,7 +173,7 @@ export class StationsComponent implements OnInit {
         const newItem = {
           id: this.indexQblock,
           order: '',
-          name: '',
+          name: name || '',
           questions: [],
           station: station.id
         };

@@ -1,8 +1,7 @@
 <nz-content *ngIf="stations">
   <nz-table #table
             [nzData]="stations"
-            [nzPageSize]="8"
-            [nzTitle]="addButton">
+            [nzPageSize]="8">
     <thead>
       <tr>
         <th [nzExpand]="true">
@@ -148,11 +147,4 @@
       </ng-template>
     </tbody>
   </nz-table>
-
-  <ng-template #addButton>
-    <button nz-button [nzType]="'primary'" class="margin-left" (click)="addItem()">
-      <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
-      {{"ADD_STATION" | translate}}
-    </button>
-  </ng-template>
 </nz-content>

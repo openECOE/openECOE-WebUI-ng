@@ -73,9 +73,7 @@ export class QuestionsComponent implements OnInit {
                   }).pipe(map(questions => {
                     questions = questions.map(q => {
                       const area = areas.find(a => a['$uri'] === q.area['$ref']);
-                      q.areaName = area.name;
-                      q.areaId = area.id;
-                      return q;
+                      return {...q, areaName: area.name, areaId: area.id};
                     });
 
                     qblock.show = true;
