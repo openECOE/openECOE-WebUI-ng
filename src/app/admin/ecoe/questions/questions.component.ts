@@ -3,6 +3,7 @@ import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {forkJoin, Observable} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
+import {SharedService} from '../../../services/shared/shared.service';
 
 @Component({
   selector: 'app-questions',
@@ -34,7 +35,8 @@ export class QuestionsComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private sharedService: SharedService) {
   }
 
   ngOnInit() {
@@ -286,7 +288,7 @@ export class QuestionsComponent implements OnInit {
 
       question.optionsArray = question.optionsArray
         .map(x => (x.id === option.id ? response : x))
-        .sort(this.sortArray);
+        .sort(this.sharedService.sortArray);
     });
   }
 
@@ -310,7 +312,7 @@ export class QuestionsComponent implements OnInit {
     delete this.editCacheOption[option];
     question.optionsArray = question.optionsArray
       .filter(x => x.id !== option)
-      .sort(this.sortArray);
+      .sort(this.sharedService.sortArray);
   }
 
   addOption(question: any) {
@@ -354,25 +356,9 @@ export class QuestionsComponent implements OnInit {
 
         question.optionsArray = question.optionsArray
           .map(x => (x.id === res.id ? res : x))
-          .sort(this.sortArray);
+          .sort(this.sharedService.sortArray);
       });
     });
-  }
-
-  sortArray(first, second) {
-    if (!first.order) {
-      return 0;
-    }
-
-    if (first.order < second.order) {
-      return -1;
-    }
-
-    if (first.order > second.order) {
-      return 1;
-    }
-
-    return 0;
   }
 
   deleteFilter(station: number) {

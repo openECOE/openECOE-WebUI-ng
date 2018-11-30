@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
+import {SharedService} from '../../../services/shared/shared.service';
 
 @Component({
   selector: 'app-stations',
@@ -18,7 +19,8 @@ export class StationsComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private sharedService: SharedService) {
   }
 
   ngOnInit() {
@@ -186,33 +188,53 @@ export class StationsComponent implements OnInit {
   }
 
   saveQblock(qblock: any, station: any, newItem: boolean) {
+    const item = this.editCacheQblock[qblock.id];
 
+    if (!item.order || !item.name) {
+      return;
+    }
+
+    const body = {
+      order: +item.order,
+      name: item.name,
+      station: station.id
+    };
+
+    const request = (
+      newItem ?
+        this.apiService.createResource('qblock', body) :
+        this.apiService.updateResource(item['$uri'], body)
+    );
+
+    request.subscribe(response => {
+      delete this.editCacheQblock[qblock.id];
+      delete this.editCacheQblock[response['id']];
+
+      this.editCacheQblock[response['id']] = {
+        edit: false,
+        ...response
+      };
+
+      station.qblocksArray = station.qblocksArray
+        .map(x => (x.id === qblock.id ? response : x))
+        .sort(this.sharedService.sortArray);
+    });
   }
 
   cancelEditQblock(qblock: any, station: any) {
+    this.editCacheQblock[qblock.id].edit = false;
+    if (this.editCacheQblock[qblock.id].new_item) {
+      this.updateArrayQblocks(qblock.id, station);
 
+    } else {
+      this.editCacheQblock[qblock.id] = qblock;
+    }
   }
 
   updateArrayQblocks(qblock: number, station: any) {
     delete this.editCacheQblock[qblock];
     station.qblocksArray = station.qblocksArray
       .filter(x => x.id !== qblock)
-      .sort(this.sortArray);
-  }
-
-  sortArray(first, second) {
-    if (!first.order) {
-      return 0;
-    }
-
-    if (first.order < second.order) {
-      return -1;
-    }
-
-    if (first.order > second.order) {
-      return 1;
-    }
-
-    return 0;
+      .sort(this.sharedService.sortArray);
   }
 }

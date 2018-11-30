@@ -19,4 +19,20 @@ export class SharedService {
   getPageChanged(): BehaviorSubject<string> {
     return this.pageChanged;
   }
+
+  sortArray(first, second) {
+    if (!first.order) {
+      return 0;
+    }
+
+    if (first.order < second.order) {
+      return -1;
+    }
+
+    if (first.order > second.order) {
+      return 1;
+    }
+
+    return 0;
+  }
 }
