@@ -12,6 +12,9 @@ import { ItemInfoComponent } from './information/item-info/item-info.component';
 import { QuestionsComponent } from './questions/questions.component';
 import { ActionButtonsComponent } from './action-buttons/action-buttons.component';
 import { ExamComponent } from './exam/exam.component';
+import { ScheduleComponent } from './schedule/schedule.component';
+import { StudentsComponent } from './students/students.component';
+import { PlannerComponent } from './planner/planner.component';
 
 @NgModule({
   imports: [
@@ -30,7 +33,10 @@ import { ExamComponent } from './exam/exam.component';
     ItemInfoComponent,
     QuestionsComponent,
     ActionButtonsComponent,
-    ExamComponent
+    ExamComponent,
+    ScheduleComponent,
+    StudentsComponent,
+    PlannerComponent
   ]
 })
 export class EcoeModule { }

@@ -36,7 +36,7 @@
             </ng-container>
 
             <ng-container *ngIf="editCache[item.id].edit">
-              <input type="number" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].order">
+              <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].order"></nz-input-number>
             </ng-container>
           </td>
 
@@ -91,11 +91,10 @@
                     </ng-container>
 
                     <ng-container *ngIf="editCacheQblock[qblock.id].edit">
-                      <input type="number"
-                             nz-input
+                      <nz-input-number [nzMin]="0"
                              [nzSize]="'small'"
-                             required
                              [(ngModel)]="editCacheQblock[qblock.id].order">
+                      </nz-input-number>
                     </ng-container>
                   </td>
 

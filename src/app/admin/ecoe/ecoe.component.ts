@@ -38,24 +38,24 @@ export class EcoeComponent implements OnInit {
       icon: ResourceIcons.questionIcon
     },
     // {
-    //   title: 'QBLOCKS',
-    //   path: './qblocks',
-    //   icon: ''
+    //   title: 'CHRONOMETERS',
+    //   path: '',
+    //   icon: ResourceIcons.chronometerIcon
+    // },
+    // {
+    //   title: 'SCHEDULE',
+    //   path: '',
+    //   icon: ResourceIcons.scheduleIcon
     // },
     {
-      title: 'CHRONOMETERS',
-      path: '',
-      icon: ''
-    },
-    {
       title: 'STUDENTS',
-      path: '',
+      path: './students',
       icon: ResourceIcons.studentIcon
     },
     {
-      title: 'GROUPS',
-      path: '',
-      icon: ResourceIcons.groupIcon
+      title: 'PLANNER',
+      path: './planner',
+      icon: ResourceIcons.plannerIcon
     }
   ];
 

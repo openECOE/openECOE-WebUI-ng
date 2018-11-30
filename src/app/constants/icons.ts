@@ -3,9 +3,9 @@ export const ResourceIcons = {
   infoIcon: 'info-circle',
   areaIcon: 'tags',
   stationIcon: 'project',
-  studentIcon: '',
+  studentIcon: 'team',
   questionIcon: 'bulb',
-  groupIcon: '',
-  roundIcon: '',
-  shiftIcon: ''
+  chronometerIcon: 'clock-circle',
+  scheduleIcon: '',
+  plannerIcon: 'calendar'
 };

@@ -62,7 +62,10 @@
                 </ng-container>
 
                 <ng-container *ngIf="editCache[item.id].edit">
-                  <input type="number" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].order">
+                  <nz-input-number [nzMin]="0"
+                                   [nzSize]="'small'"
+                                   [(ngModel)]="editCache[item.id].order">
+                  </nz-input-number>
                 </ng-container>
               </td>
 
@@ -188,11 +191,10 @@
                         </ng-container>
 
                         <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <input type="number"
-                                 nz-input
-                                 [nzSize]="'small'"
-                                 required
-                                 [(ngModel)]="editCacheOption[option.id].order">
+                          <nz-input-number [nzMin]="0"
+                                           [nzSize]="'small'"
+                                           [(ngModel)]="editCacheOption[option.id].order">
+                          </nz-input-number>
                         </ng-container>
                       </td>
 
@@ -216,11 +218,8 @@
                         </ng-container>
 
                         <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <input type="number"
-                                 nz-input
-                                 [nzSize]="'small'"
-                                 required
-                                 [(ngModel)]="editCacheOption[option.id].points">
+                          <nz-input-number [nzSize]="'small'" [(ngModel)]="editCacheOption[option.id].points">
+                          </nz-input-number>
                         </ng-container>
                       </td>
 
