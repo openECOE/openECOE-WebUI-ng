@@ -113,22 +113,17 @@
                     </ng-container>
                   </td>
 
-                  <td>
-                    <ng-container>
-                      <a (click)="navigateQuestions(item.id, qblock.id)">
-                        {{qblock.questions.length}}
-                        <i nz-icon type="select"></i>
-                      </a>
-                    </ng-container>
-                  </td>
+                  <td>{{qblock.questions.length}}</td>
 
                   <td text-right>
                     <app-action-buttons [isEditing]="editCacheQblock[qblock.id].edit"
                                         [isNewItem]="editCacheQblock[qblock.id].new_item"
+                                        [showNavigateQuestions]="true"
                                         (startEdit)="startEditQblock(qblock.id)"
                                         (delete)="deleteQblock(qblock, item)"
                                         (save)="saveQblock(qblock, item, editCacheQblock[qblock.id].new_item)"
-                                        (cancelEdit)="cancelEditQblock(qblock, item)">
+                                        (cancelEdit)="cancelEditQblock(qblock, item)"
+                                        (navigateQuestions)="navigateQuestions(item.id, qblock.id)">
                     </app-action-buttons>
                   </td>
                 </tr>

@@ -1,4 +1,16 @@
 <ng-container *ngIf="!isEditing">
+  <i *ngIf="showNavigateQuestions"
+     (click)="navigateQuestions.emit()"
+     nz-icon
+     type="select"
+     [nz-tooltip]
+     [nzPlacement]="'top'"
+     [nzTitle]="'GO_TO_QUESTIONS' | translate"
+     tappable>
+  </i>
+
+  <nz-divider *ngIf="showNavigateQuestions" [nzType]="'vertical'"></nz-divider>
+
   <i *ngIf="showOrderButtons && index != 0"
      nz-icon type="up-circle" [theme]="'twotone'"
      [nz-tooltip] [nzTitle]="'MOVE_UP' | translate"
