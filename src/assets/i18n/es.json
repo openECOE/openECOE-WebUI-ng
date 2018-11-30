@@ -90,6 +90,8 @@
   "MOVE_UP": "Subir posición",
   "MOVE_DOWN": "Bajar posición",
 
+  "PREVIEW_EXAM": "Previsualizar examen",
+
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
   "ACTION": "Acción",
   "DELETE": "Eliminar",

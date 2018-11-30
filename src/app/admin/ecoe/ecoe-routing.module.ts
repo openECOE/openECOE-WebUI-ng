@@ -5,6 +5,7 @@ import {InformationComponent} from './information/information.component';
 import {StationsComponent} from './stations/stations.component';
 import {AreasComponent} from './areas/areas.component';
 import {QuestionsComponent} from './questions/questions.component';
+import {ExamComponent} from './exam/exam.component';
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
           {path: 'areas', component: AreasComponent},
           {path: 'stations', component: StationsComponent},
           {path: 'questions', component: QuestionsComponent},
+          {path: 'exam', component: ExamComponent},
           {path: '', component: InformationComponent},
           {path: '**', redirectTo: ''}
         ]

@@ -11,6 +11,7 @@ import { InformationComponent } from './information/information.component';
 import { ItemInfoComponent } from './information/item-info/item-info.component';
 import { QuestionsComponent } from './questions/questions.component';
 import { ActionButtonsComponent } from './action-buttons/action-buttons.component';
+import { ExamComponent } from './exam/exam.component';
 
 @NgModule({
   imports: [
@@ -28,7 +29,8 @@ import { ActionButtonsComponent } from './action-buttons/action-buttons.componen
     InformationComponent,
     ItemInfoComponent,
     QuestionsComponent,
-    ActionButtonsComponent
+    ActionButtonsComponent,
+    ExamComponent
   ]
 })
 export class EcoeModule { }

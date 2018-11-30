@@ -8,6 +8,8 @@
     <nz-option *ngFor="let st of stations" [nzLabel]="st.name" [nzValue]="st.id"></nz-option>
   </nz-select>
 
+  <button nz-button nzType="primary">{{"PREVIEW_EXAM" | translate}}</button>
+
   <nz-collapse *ngIf="stationSelected">
     <nz-collapse-panel *ngFor="let qblock of stationSelected.qblocks"
                        [nzHeader]="panelHeader"
