@@ -35,26 +35,13 @@ export class AreasComponent implements OnInit {
     });
   }
 
-  loadQuestionsByArea(expandOpen: boolean, areaId: number) {
+  loadQuestionsByArea(expandOpen: boolean, area: any) {
     if (expandOpen) {
       this.apiService.getResources('question', {
-        where: `{"area":${areaId}}`,
+        where: `{"area":${area.id}}`,
         sort: '{"order":false}'
-      }).pipe(
-        map(questions => {
-          return questions.map(question => {
-            return {areaId, ...question};
-          });
-        })
-      ).subscribe(questions => {
-        this.areas = this.areas.map(area => {
-          if (area.id === areaId) {
-            area.questionsArray = questions;
-          }
-
-          return area;
-        });
-
+      }).subscribe(questions => {
+        area.questionsArray = questions;
         this.updateEditCache();
       });
     }
@@ -127,7 +114,7 @@ export class AreasComponent implements OnInit {
     const body = {
       name: item.name,
       code: item.code,
-      ecoe: +item.ecoe
+      ecoe: this.ecoeId
     };
 
     const request = (

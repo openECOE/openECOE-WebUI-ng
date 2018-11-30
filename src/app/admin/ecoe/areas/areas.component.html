@@ -26,10 +26,10 @@
         <tr>
           <td [nzShowExpand]="item.questions.length > 0"
               [(nzExpand)]="item.expand"
-              (nzExpandChange)="loadQuestionsByArea($event, item.id)">
+              (nzExpandChange)="loadQuestionsByArea($event, item)">
           </td>
           <td>
-            <ng-container>
+            <ng-container *ngIf="!editCache[item.id].edit">
               {{item.name}}
             </ng-container>
 
@@ -68,52 +68,20 @@
                 <tr>
                   <th>{{"DESCRIPTION" | translate}}</th>
                   <th nzWidth="300px">{{"REFERENCE" | translate}}</th>
-                  <th nzWidth="150px">{{"AREA" | translate}}</th>
                 </tr>
               </thead>
 
               <tbody>
                 <tr *ngFor="let question of questionTable.data; let i = index">
                   <td>
-                    <ng-container *ngIf="!editCache[item.id].edit">
+                    <ng-container>
                       {{question.description}}
                     </ng-container>
-
-                    <ng-container *ngIf="editCache[item.id].edit">
-                      <input type="text"
-                             nz-input
-                             [nzSize]="'small'"
-                             required
-                             [(ngModel)]="editCache[item.id].questionsArray[i].description">
-                    </ng-container>
                   </td>
 
                   <td>
-                    <ng-container *ngIf="!editCache[item.id].edit">
+                    <ng-container>
                       {{question.reference}}
-                    </ng-container>
-
-                    <ng-container *ngIf="editCache[item.id].edit">
-                      <input type="text"
-                             nz-input
-                             [nzSize]="'small'"
-                             required
-                             [(ngModel)]="editCache[item.id].questionsArray[i].reference">
-                    </ng-container>
-
-                  </td>
-                  <td>
-                    <ng-container *ngIf="!editCache[item.id].edit">
-                      {{item.name}}
-                    </ng-container>
-
-                    <ng-container *ngIf="editCache[item.id].edit">
-                      <nz-select style="width: 150px;"
-                                 [nzSize]="'small'"
-                                 [nzShowSearch]="true"
-                                 [(ngModel)]="editCache[item.id].questionsArray[i].areaId">
-                        <nz-option *ngFor="let a of areas" [nzLabel]="a.name" [nzValue]="a.id"></nz-option>
-                      </nz-select>
                     </ng-container>
                   </td>
                 </tr>
