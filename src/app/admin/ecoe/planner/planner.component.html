@@ -1,3 +1,61 @@
-<p>
-  planner works!
-</p>
+<nz-content>
+  <nz-table #table
+            nzBordered
+            [nzData]="planners"
+            [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th nzLeft="0px"></th>
+        <th *ngFor="let shift of shifts">
+          {{shift.time_start['$date'] | date: 'medium'}}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <ng-template ngFor let-item [ngForOf]="table.data">
+        <tr>
+          <td>{{item.description}}</td>
+          <td *ngFor="let plan of item.shifts" text-center
+              [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
+             (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
+             plan.planner_assigned ? 'complete' : ''">
+            <app-action-buttons *ngIf="plan.planner_assigned"
+                                [isEditing]="false"
+                                [isNewItem]="false">
+            </app-action-buttons>
+            <i nz-icon type="plus-circle" [theme]="'fill'" *ngIf="!plan.planner_assigned"></i>
+        </tr>
+      </ng-template>
+    </tbody>
+  </nz-table>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th *ngFor="let shift of shifts" bordered>
+          {{shift.time_start['$date'] | date: 'medium'}}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of planners">
+        <th bordered>
+          {{item.description}}
+        </th>
+        <td *ngFor="let plan of item.shifts" bordered text-center
+            [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
+             (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
+             plan.planner_assigned ? 'complete' : ''">
+          <app-action-buttons *ngIf="plan.planner_assigned"
+                              [isEditing]="false"
+                              [isNewItem]="false">
+          </app-action-buttons>
+          <i nz-icon type="plus-circle" [theme]="'fill'" *ngIf="!plan.planner_assigned"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</nz-content>

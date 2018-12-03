@@ -7,5 +7,7 @@ export const ResourceIcons = {
   questionIcon: 'bulb',
   chronometerIcon: 'clock-circle',
   scheduleIcon: '',
-  plannerIcon: 'calendar'
+  plannerIcon: 'calendar',
+  roundIcon: '',
+  shiftIcon: ''
 };

@@ -1,0 +1,41 @@
+
+.complete {
+  background: greenyellow;
+}
+
+.incomplete {
+  background: yellow;
+}
+
+.empty {
+  background: orange;
+}
+
+[bordered] {
+  border: 2px solid black;
+}
+
+.ant-table {
+  &-tbody > tr {
+
+    transition: all .3s ease;
+
+    &.ant-table-row-hover,
+    &:hover {
+      & > td {
+        background: none;
+      }
+    }
+
+    & > td {
+      &:hover {
+        background: blue;
+      }
+    }
+  }
+
+  //&-thead > tr:hover {
+  //  background: none;
+  //}
+}
+
