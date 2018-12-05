@@ -17,26 +17,25 @@
 
 .ant-table {
   &-tbody > tr {
-
     transition: all .3s ease;
 
     &.ant-table-row-hover,
     &:hover {
       & > td {
-        background: none;
+        background: transparent;
+      }
+
+      & > td:first-child {
+        background: #fafafa;
       }
     }
 
     & > td {
       &:hover {
-        background: blue;
+        background: #bfc9ff;
       }
     }
   }
-
-  //&-thead > tr:hover {
-  //  background: none;
-  //}
 }
 
 [white-bg] {

@@ -137,11 +137,20 @@ export class PlannerComponent implements OnInit {
   }
 
   assignPlanner() {
+    const students = this.students.filter(student => student.selected).map(student => student.id);
+
+    if (students.length === 0) {
+      return;
+    }
+
     const body = {
       ...this.plannerSelected,
-      students: this.students.filter(student => student.selected).map(student => student.id)
+      students
     };
 
-    this.apiService.createResource('planner', body).subscribe(() => this.loadPlanner());
+    this.apiService.createResource('planner', body).subscribe(() => {
+      this.loadPlanner();
+      this.showStudentsSelector = false;
+    });
   }
 }

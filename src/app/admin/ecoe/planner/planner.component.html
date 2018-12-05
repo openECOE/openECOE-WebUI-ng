@@ -43,35 +43,6 @@
       </tr>
     </tbody>
   </nz-table>
-
-  <table>
-    <thead>
-      <tr>
-        <th></th>
-        <th *ngFor="let shift of shifts" bordered>
-          {{shift.time_start['$date'] | date: 'medium'}}
-        </th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let item of planners">
-        <th bordered>
-          {{item.description}}
-        </th>
-        <td *ngFor="let plan of item.shifts" bordered text-center
-            [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
-             (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
-             plan.planner_assigned ? 'complete' : ''">
-          <app-action-buttons *ngIf="plan.planner_assigned"
-                              [isEditing]="false"
-                              [isNewItem]="false">
-          </app-action-buttons>
-          <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 </nz-content>
 
 <nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
@@ -139,7 +110,7 @@
 </nz-drawer>
 
 <nz-modal [(nzVisible)]="showStudentsSelector"
-          nzTitle="Modal Title"
+          [nzTitle]="'SELECT_STUDENTS' | translate"
           (nzOnCancel)="showStudentsSelector = false"
           (nzOnOk)="assignPlanner()">
   <nz-checkbox-wrapper>
