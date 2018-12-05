@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {forkJoin} from 'rxjs';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-planner',
@@ -16,20 +17,29 @@ export class PlannerComponent implements OnInit {
   planners: any[];
   stations: any[];
 
+  showAddShift: boolean = false;
+  showAddRound: boolean = false;
+  shiftForm: FormGroup;
+  roundForm: FormGroup;
+
   constructor(private apiService: ApiService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private formBuilder: FormBuilder) {
+
+    this.shiftForm = this.formBuilder.group({
+      shift_code: ['', Validators.required],
+      '$date': ['', Validators.required]
+    });
+
+    this.roundForm = this.formBuilder.group({
+      description: ['', Validators.required],
+      round_code: ['', Validators.required]
+    });
   }
 
   ngOnInit() {
     this.ecoeId = +this.route.snapshot.params.id;
     this.loadPlanner();
-    this.loadStations();
-  }
-
-  loadStations() {
-    this.apiService.getResources('station', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).subscribe(response => this.stations = response);
   }
 
   loadPlanner() {
@@ -39,14 +49,16 @@ export class PlannerComponent implements OnInit {
       }),
       this.apiService.getResources('shift', {
         where: `{"ecoe":${this.ecoeId}}`
+      }),
+      this.apiService.getResources('station', {
+        where: `{"ecoe":${this.ecoeId}}`
       })
     ).subscribe(response => {
       this.rounds = response[0];
       this.shifts = response[1];
-
+      this.stations = response[2];
       this.buildPlanner();
     });
-
   }
 
   buildPlanner() {
@@ -58,7 +70,6 @@ export class PlannerComponent implements OnInit {
         this.apiService.getResources('planner', {
           where: `{"round":${round.id},"shift":${shift.id}}`
         }).subscribe(res => {
-          // console.log(round.id, shift.id, res);
           shiftsPlanner.push({
             ...shift,
             planner_assigned: res.length > 0,
@@ -73,6 +84,41 @@ export class PlannerComponent implements OnInit {
       });
     });
 
-    console.log(this.planners)
+    console.log(this.planners);
+  }
+
+  submitFormShift() {
+    const body = {
+      shift_code: this.shiftForm.controls['shift_code'].value,
+      time_start: {'$date': +this.shiftForm.controls['$date'].value},
+      ecoe: this.ecoeId
+    };
+
+    this.apiService.createResource('shift', body).subscribe(() => {
+      this.loadPlanner();
+      this.closeDrawerShift();
+    });
+  }
+
+  closeDrawerShift() {
+    this.showAddShift = false;
+    this.shiftForm.reset();
+  }
+
+  submitFormRound() {
+    const body = {
+      ...this.roundForm.value,
+      ecoe: this.ecoeId
+    };
+
+    this.apiService.createResource('round', body).subscribe(() => {
+      this.loadPlanner();
+      this.closeDrawerRound();
+    });
+  }
+
+  closeDrawerRound() {
+    this.showAddRound = false;
+    this.roundForm.reset();
   }
 }

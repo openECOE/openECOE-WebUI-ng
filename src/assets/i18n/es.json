@@ -23,9 +23,11 @@
 
   "ROUNDS": "Rondas",
   "NO_ROUNDS": "No hay rondas",
+  "ADD_ROUND": "Añadir ronda",
 
   "SHIFTS": "Turnos",
   "NO_SHIFTS": "No hay turnos",
+  "ADD_SHIFT": "Añadir turno",
 
   "AREAS": "Areas",
   "AREA": "Area",

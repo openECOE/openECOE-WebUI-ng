@@ -9,13 +9,17 @@
         <th *ngFor="let shift of shifts">
           {{shift.time_start['$date'] | date: 'medium'}}
         </th>
+        <th (click)="showAddShift = true">
+          <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
+          {{"ADD_SHIFT" | translate}}
+        </th>
       </tr>
     </thead>
 
     <tbody>
       <ng-template ngFor let-item [ngForOf]="table.data">
         <tr>
-          <td>{{item.description}}</td>
+          <td white-bg>{{item.round_code}}</td>
           <td *ngFor="let plan of item.shifts" text-center
               [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
              (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
@@ -24,9 +28,16 @@
                                 [isEditing]="false"
                                 [isNewItem]="false">
             </app-action-buttons>
-            <i nz-icon type="plus-circle" [theme]="'fill'" *ngIf="!plan.planner_assigned"></i>
+            <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
         </tr>
       </ng-template>
+
+      <tr (click)="showAddRound = true">
+        <td white-bg>
+          <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
+          {{"ADD_ROUND" | translate}}
+        </td>
+      </tr>
     </tbody>
   </nz-table>
 
@@ -53,9 +64,73 @@
                               [isEditing]="false"
                               [isNewItem]="false">
           </app-action-buttons>
-          <i nz-icon type="plus-circle" [theme]="'fill'" *ngIf="!plan.planner_assigned"></i>
+          <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
         </td>
       </tr>
     </tbody>
   </table>
 </nz-content>
+
+<nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
+           [nzMaskClosable]="true"
+           [nzVisible]="showAddShift"
+           [nzTitle]="'ADD_SHIFT' | translate"
+           (nzOnClose)="closeDrawerShift()"
+           [nzPlacement]="'right'">
+  <form nz-form [formGroup]="shiftForm" (ngSubmit)="submitFormShift()">
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" [nzFor]="'shift_code'">{{"CODE" | translate}}</nz-form-label>
+      <nz-form-control>
+        <input nz-input id="shift_code" [formControlName]="'shift_code'" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" [nzFor]="'$date'">{{"DATE" | translate}}</nz-form-label>
+      <nz-form-control>
+        <nz-date-picker id="$date"
+                        [formControlName]="'$date'"
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd HH:mm:ss"
+                        [nzPlaceHolder]="'SELECT_DATE' | translate">
+        </nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+
+    <button type="button" nz-button (click)="closeDrawerShift()" class="margin-right">
+      <span>{{"CANCEL" | translate}}</span>
+    </button>
+    <button type="submit" nz-button [nzType]="'primary'" [disabled]="!shiftForm.valid">
+      <span>{{"ACCEPT" | translate}}</span>
+    </button>
+  </form>
+</nz-drawer>
+
+<nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
+           [nzMaskClosable]="true"
+           [nzVisible]="showAddRound"
+           [nzTitle]="'ADD_ROUND' | translate"
+           (nzOnClose)="closeDrawerRound()"
+           [nzPlacement]="'left'">
+  <form nz-form [formGroup]="roundForm" (submit)="submitFormRound()">
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" [nzFor]="'description'">{{"DESCRIPTION" | translate}}</nz-form-label>
+      <nz-form-control>
+        <input nz-input id="description" [formControlName]="'description'" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" [nzFor]="'round_code'">{{"CODE" | translate}}</nz-form-label>
+      <nz-form-control>
+        <input nz-input id="round_code" [formControlName]="'round_code'" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <button type="button" nz-button (click)="closeDrawerRound()" class="margin-right">
+      <span>{{"CANCEL" | translate}}</span>
+    </button>
+    <button type="submit" nz-button [nzType]="'primary'" [disabled]="!roundForm.valid">
+      <span>{{"ACCEPT" | translate}}</span>
+    </button>
+  </form>
+</nz-drawer>

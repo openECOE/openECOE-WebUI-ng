@@ -30,4 +30,8 @@ export class InformationComponent implements OnInit {
   deleteEcoe() {
     this.apiService.deleteResource(this.ecoe['$uri']).subscribe(() => this.router.navigate(['/admin']));
   }
+
+  handleChange(event) {
+
+  }
 }
