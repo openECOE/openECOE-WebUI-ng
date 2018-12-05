@@ -21,6 +21,8 @@
         <tr>
           <td white-bg>{{item.round_code}}</td>
           <td *ngFor="let plan of item.shifts" text-center
+              [style.cursor]="!plan.planner_assigned ? 'pointer' : 'default'"
+              (click)="loadStudents(plan, item)"
               [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
              (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
              plan.planner_assigned ? 'complete' : ''">
@@ -29,6 +31,7 @@
                                 [isNewItem]="false">
             </app-action-buttons>
             <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
+          </td>
         </tr>
       </ng-template>
 
@@ -134,3 +137,18 @@
     </button>
   </form>
 </nz-drawer>
+
+<nz-modal [(nzVisible)]="showStudentsSelector"
+          nzTitle="Modal Title"
+          (nzOnCancel)="showStudentsSelector = false"
+          (nzOnOk)="assignPlanner()">
+  <nz-checkbox-wrapper>
+    <div *ngFor="let student of students">
+      <label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected">
+        {{student.dni}} <nz-divider [nzType]="'vertical'"></nz-divider> {{student.surnames}}, {{student.name}}
+      </label>
+      <br/>
+      <br/>
+    </div>
+  </nz-checkbox-wrapper>
+</nz-modal>

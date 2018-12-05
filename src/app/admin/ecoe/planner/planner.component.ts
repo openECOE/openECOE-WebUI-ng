@@ -16,7 +16,11 @@ export class PlannerComponent implements OnInit {
   rounds: any[];
   planners: any[];
   stations: any[];
+  students: any[];
 
+  plannerSelected: { shift: number, round: number };
+
+  showStudentsSelector: boolean = false;
   showAddShift: boolean = false;
   showAddRound: boolean = false;
   shiftForm: FormGroup;
@@ -120,5 +124,24 @@ export class PlannerComponent implements OnInit {
   closeDrawerRound() {
     this.showAddRound = false;
     this.roundForm.reset();
+  }
+
+  loadStudents(shift, round) {
+    this.apiService.getResources('student', {
+      where: `{"ecoe":${this.ecoeId}}`
+    }).subscribe(students => {
+      this.students = students;
+      this.plannerSelected = {shift: shift.id, round: round.id};
+      this.showStudentsSelector = true;
+    });
+  }
+
+  assignPlanner() {
+    const body = {
+      ...this.plannerSelected,
+      students: this.students.filter(student => student.selected).map(student => student.id)
+    };
+
+    this.apiService.createResource('planner', body).subscribe(() => this.loadPlanner());
   }
 }

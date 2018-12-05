@@ -28,6 +28,8 @@
   "SHIFTS": "Turnos",
   "NO_SHIFTS": "No hay turnos",
   "ADD_SHIFT": "Añadir turno",
+  "SELECT_DATE": "Seleccionar fecha...",
+  "DATE": "Fecha",
 
   "AREAS": "Areas",
   "AREA": "Area",
