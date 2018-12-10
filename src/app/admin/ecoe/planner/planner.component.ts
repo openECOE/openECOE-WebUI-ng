@@ -45,6 +45,13 @@ export class PlannerComponent implements OnInit {
   ngOnInit() {
     this.ecoeId = +this.route.snapshot.params.id;
     this.loadPlanner();
+    this.loadStations();
+  }
+
+  loadStations() {
+    this.apiService.getResources('station', {
+      where: `{"ecoe":${this.ecoeId}}`
+    }).subscribe(stations => this.stations = stations);
   }
 
   loadPlanner() {
@@ -56,14 +63,10 @@ export class PlannerComponent implements OnInit {
       this.apiService.getResources('shift', {
         where: `{"ecoe":${this.ecoeId}}`,
         sort: '{"time_start":false}'
-      }),
-      this.apiService.getResources('station', {
-        where: `{"ecoe":${this.ecoeId}}`
       })
     ).subscribe(response => {
       this.rounds = response[0];
       this.shifts = response[1];
-      this.stations = response[2];
       this.buildPlanner();
     });
   }
@@ -155,6 +158,8 @@ export class PlannerComponent implements OnInit {
       this.students = students;
       this.plannerSelected = {shift: shift.id, round: round.id, planner};
       this.showStudentsSelector = true;
+
+      this.checkStudentsSelected(this.students);
     });
   }
 
@@ -173,8 +178,8 @@ export class PlannerComponent implements OnInit {
 
     const request = (
       this.plannerSelected.planner ?
-      this.apiService.updateResource(this.plannerSelected.planner, body) :
-      this.apiService.createResource('planner', body)
+        this.apiService.updateResource(this.plannerSelected.planner, body) :
+        this.apiService.createResource('planner', body)
     );
 
     request.subscribe(() => {
@@ -186,4 +191,14 @@ export class PlannerComponent implements OnInit {
   deletePlanner(planner: string) {
     this.apiService.deleteResource(planner).subscribe(() => this.loadPlanner());
   }
+
+  checkStudentsSelected(selection) {
+    this.students = this.students.map(student => {
+      return {
+        ...student,
+        disabled: (selection.length >= this.stations.length && !student.selected)
+      };
+    });
+  }
+
 }

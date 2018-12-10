@@ -120,9 +120,9 @@
           [nzTitle]="'SELECT_STUDENTS' | translate"
           (nzOnCancel)="showStudentsSelector = false"
           (nzOnOk)="assignPlanner()">
-  <nz-checkbox-wrapper>
+  <nz-checkbox-wrapper (nzOnChange)="checkStudentsSelected($event)">
     <div *ngFor="let student of students">
-      <label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected">
+      <label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected" [nzDisabled]="student.disabled">
         {{student.dni}} <nz-divider [nzType]="'vertical'"></nz-divider> {{student.surnames}}, {{student.name}}
       </label>
       <br/>
