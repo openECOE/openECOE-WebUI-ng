@@ -3,6 +3,7 @@ import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {forkJoin} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-planner',
@@ -77,6 +78,7 @@ export class PlannerComponent implements OnInit {
           shiftsPlanner.push({
             ...shift,
             planner_assigned: res.length > 0,
+            plannerRef: res.length > 0 ? res[0]['$uri'] : null,
             students: res.length > 0 ? res[0].students : []
           });
         });
@@ -87,8 +89,6 @@ export class PlannerComponent implements OnInit {
         shifts: shiftsPlanner
       });
     });
-
-    console.log(this.planners);
   }
 
   submitFormShift() {
@@ -127,9 +127,25 @@ export class PlannerComponent implements OnInit {
   }
 
   loadStudents(shift, round) {
+    let studentsSelected = 0;
     this.apiService.getResources('student', {
       where: `{"ecoe":${this.ecoeId}}`
-    }).subscribe(students => {
+    }).pipe(
+     map(students => {
+       return students.map((student, index) => {
+         const isSelected = !student.planner && studentsSelected < this.stations.length;
+
+         if (isSelected) {
+           studentsSelected++;
+         }
+
+         return {
+           ...student,
+           selected: isSelected
+         };
+       });
+     })
+    ).subscribe(students => {
       this.students = students;
       this.plannerSelected = {shift: shift.id, round: round.id};
       this.showStudentsSelector = true;
@@ -152,5 +168,13 @@ export class PlannerComponent implements OnInit {
       this.loadPlanner();
       this.showStudentsSelector = false;
     });
+  }
+
+  deletePlanner(planner: string) {
+    this.apiService.deleteResource(planner).subscribe(() => this.loadPlanner());
+  }
+
+  editPlanner(planner) {
+    console.log(planner)
   }
 }
