@@ -50,10 +50,12 @@ export class PlannerComponent implements OnInit {
   loadPlanner() {
     forkJoin(
       this.apiService.getResources('round', {
-        where: `{"ecoe":${this.ecoeId}}`
+        where: `{"ecoe":${this.ecoeId}}`,
+        sort: '{"round_code":false}'
       }),
       this.apiService.getResources('shift', {
-        where: `{"ecoe":${this.ecoeId}}`
+        where: `{"ecoe":${this.ecoeId}}`,
+        sort: '{"time_start":false}'
       }),
       this.apiService.getResources('station', {
         where: `{"ecoe":${this.ecoeId}}`

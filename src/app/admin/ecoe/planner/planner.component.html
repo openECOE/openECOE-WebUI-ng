@@ -2,14 +2,14 @@
   <nz-table #table
             nzBordered
             [nzData]="planners"
-            [nzShowPagination]="false">
+            [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
       <tr>
-        <th nzLeft="0px"></th>
-        <th *ngFor="let shift of shifts">
+        <th nzWidth="100px" nzLeft="0px"></th>
+        <th *ngFor="let shift of shifts" nzWidth="100px">
           {{shift.time_start['$date'] | date: 'medium'}}
         </th>
-        <th (click)="showAddShift = true">
+        <th (click)="showAddShift = true" nzWidth="100px" nzRight="0px" tappable>
           <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
           {{"ADD_SHIFT" | translate}}
         </th>
@@ -19,13 +19,14 @@
     <tbody>
       <ng-template ngFor let-item [ngForOf]="table.data">
         <tr>
-          <td white-bg>{{item.round_code}}</td>
+          <td white-bg nzLeft="0px">{{item.round_code}}</td>
           <td *ngFor="let plan of item.shifts" text-center
               [style.cursor]="!plan.planner_assigned ? 'pointer' : 'default'"
               (click)="!plan.planner_assigned ? loadStudents(plan, item) : null"
               [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
              (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
              plan.planner_assigned ? 'complete' : ''">
+
             <app-action-buttons *ngIf="plan.planner_assigned"
                                 [isEditing]="false"
                                 [isNewItem]="false"
@@ -34,14 +35,18 @@
             </app-action-buttons>
             <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
           </td>
+
+          <td nzRight="0px" style="border: none;"></td>
         </tr>
       </ng-template>
 
-      <tr (click)="showAddRound = true">
-        <td white-bg>
+      <tr>
+        <td white-bg tappable nzLeft="0px" (click)="showAddRound = true">
           <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
           {{"ADD_ROUND" | translate}}
         </td>
+
+        <td *ngFor="let x of shifts" style="border: none; background: none;"></td>
       </tr>
     </tbody>
   </nz-table>
