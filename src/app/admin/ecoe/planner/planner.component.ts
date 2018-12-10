@@ -19,7 +19,7 @@ export class PlannerComponent implements OnInit {
   stations: any[];
   students: any[];
 
-  plannerSelected: { shift: number, round: number };
+  plannerSelected: { shift: number, round: number, planner: string };
 
   showStudentsSelector: boolean = false;
   showAddShift: boolean = false;
@@ -126,28 +126,32 @@ export class PlannerComponent implements OnInit {
     this.roundForm.reset();
   }
 
-  loadStudents(shift, round) {
+  loadStudents(shift, round, planner?: string) {
     let studentsSelected = 0;
     this.apiService.getResources('student', {
       where: `{"ecoe":${this.ecoeId}}`
     }).pipe(
-     map(students => {
-       return students.map((student, index) => {
-         const isSelected = !student.planner && studentsSelected < this.stations.length;
+      map(students => {
+        return students.map(student => {
+          const isSelected = (
+            planner ?
+              (student.planner && student.planner['$ref'] === planner) :
+              (!student.planner && studentsSelected < this.stations.length)
+          );
 
-         if (isSelected) {
-           studentsSelected++;
-         }
+          if (!planner && isSelected) {
+            studentsSelected++;
+          }
 
-         return {
-           ...student,
-           selected: isSelected
-         };
-       });
-     })
+          return {
+            ...student,
+            selected: isSelected
+          };
+        });
+      })
     ).subscribe(students => {
       this.students = students;
-      this.plannerSelected = {shift: shift.id, round: round.id};
+      this.plannerSelected = {shift: shift.id, round: round.id, planner};
       this.showStudentsSelector = true;
     });
   }
@@ -160,11 +164,18 @@ export class PlannerComponent implements OnInit {
     }
 
     const body = {
-      ...this.plannerSelected,
+      shift: this.plannerSelected.shift,
+      round: this.plannerSelected.round,
       students
     };
 
-    this.apiService.createResource('planner', body).subscribe(() => {
+    const request = (
+      this.plannerSelected.planner ?
+      this.apiService.updateResource(this.plannerSelected.planner, body) :
+      this.apiService.createResource('planner', body)
+    );
+
+    request.subscribe(() => {
       this.loadPlanner();
       this.showStudentsSelector = false;
     });
@@ -172,9 +183,5 @@ export class PlannerComponent implements OnInit {
 
   deletePlanner(planner: string) {
     this.apiService.deleteResource(planner).subscribe(() => this.loadPlanner());
-  }
-
-  editPlanner(planner) {
-    console.log(planner)
   }
 }

@@ -30,7 +30,7 @@
                                 [isEditing]="false"
                                 [isNewItem]="false"
                                 (delete)="deletePlanner(plan.plannerRef)"
-                                (startEdit)="editPlanner(plan.plannerRef)">
+                                (startEdit)="loadStudents(plan, item, plan.plannerRef)">
             </app-action-buttons>
             <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
           </td>
