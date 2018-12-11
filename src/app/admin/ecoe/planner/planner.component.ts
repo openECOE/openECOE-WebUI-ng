@@ -24,6 +24,8 @@ export class PlannerComponent implements OnInit {
   showStudentsSelector: boolean = false;
   showAddShift: boolean = false;
   showAddRound: boolean = false;
+  isEditing: { itemRef: string, edit: boolean };
+
   shiftForm: FormGroup;
   roundForm: FormGroup;
 
@@ -96,41 +98,6 @@ export class PlannerComponent implements OnInit {
     });
   }
 
-  submitFormShift() {
-    const body = {
-      shift_code: this.shiftForm.controls['shift_code'].value,
-      time_start: {'$date': +this.shiftForm.controls['$date'].value},
-      ecoe: this.ecoeId
-    };
-
-    this.apiService.createResource('shift', body).subscribe(() => {
-      this.loadPlanner();
-      this.closeDrawerShift();
-    });
-  }
-
-  closeDrawerShift() {
-    this.showAddShift = false;
-    this.shiftForm.reset();
-  }
-
-  submitFormRound() {
-    const body = {
-      ...this.roundForm.value,
-      ecoe: this.ecoeId
-    };
-
-    this.apiService.createResource('round', body).subscribe(() => {
-      this.loadPlanner();
-      this.closeDrawerRound();
-    });
-  }
-
-  closeDrawerRound() {
-    this.showAddRound = false;
-    this.roundForm.reset();
-  }
-
   loadStudents(shift, round, planner?: string) {
     let studentsSelected = 0;
     this.apiService.getResources('student', {
@@ -199,5 +166,86 @@ export class PlannerComponent implements OnInit {
         disabled: (selection.length >= this.stations.length && !student.selected) || (student.planner && !student.selected)
       };
     });
+  }
+
+  submitFormShift() {
+    const body = {
+      shift_code: this.shiftForm.controls['shift_code'].value,
+      time_start: {'$date': +this.shiftForm.controls['$date'].value},
+      ecoe: this.ecoeId
+    };
+
+    const request = (
+      this.isEditing.edit ?
+        this.apiService.updateResource(this.isEditing.itemRef, body) :
+        this.apiService.createResource('shift', body)
+    );
+
+    request.subscribe(() => {
+      this.loadPlanner();
+      this.closeDrawerShift();
+    });
+  }
+
+  closeDrawerShift() {
+    this.showAddShift = false;
+    this.shiftForm.reset();
+  }
+
+  deleteShift(shift: string) {
+    this.apiService.deleteResource(shift).subscribe(() => this.loadPlanner());
+  }
+
+  addShift(shift?: any) {
+    this.showAddShift = true;
+
+    if (shift) {
+      this.shiftForm.setValue({shift_code: shift.shift_code, '$date': new Date(shift.time_start['$date'])});
+    }
+
+    this.isEditing = {
+      itemRef: shift ? shift['$uri'] : '',
+      edit: (typeof shift !== 'undefined')
+    };
+  }
+
+  submitFormRound() {
+    const body = {
+      ...this.roundForm.value,
+      ecoe: this.ecoeId
+    };
+
+    const request = (
+      this.isEditing.edit ?
+        this.apiService.updateResource(this.isEditing.itemRef, body) :
+        this.apiService.createResource('round', body)
+    );
+
+    request.subscribe(() => {
+      this.loadPlanner();
+      this.closeDrawerRound();
+    });
+  }
+
+  closeDrawerRound() {
+    this.showAddRound = false;
+    this.roundForm.reset();
+  }
+
+  deleteRound(round: string) {
+    this.apiService.deleteResource(round).subscribe(() => this.loadPlanner());
+  }
+
+  addRound(round?: any) {
+    this.showAddRound = true;
+
+    if (round) {
+      this.roundForm.setValue({description: round.description, round_code: round.round_code});
+    }
+
+    this.isEditing = {
+      itemRef: round ? round['$uri'] : '',
+      edit: (typeof round !== 'undefined')
+    };
   }
 }

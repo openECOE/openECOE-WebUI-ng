@@ -6,10 +6,17 @@
     <thead>
       <tr>
         <th nzWidth="100px" nzLeft="0px"></th>
-        <th *ngFor="let shift of shifts" nzWidth="100px">
+        <th *ngFor="let shift of shifts" nzWidth="100px" class="display-action-buttons">
           {{shift.time_start['$date'] | date: 'medium'}}
+
+            <app-action-buttons class="action-buttons" [isEditing]="false"
+                                [isNewItem]="false"
+                                (delete)="deleteShift(shift['$uri'])"
+                                (startEdit)="addShift(shift)">
+            </app-action-buttons>
+
         </th>
-        <th (click)="showAddShift = true" nzWidth="100px" nzRight="0px" tappable>
+        <th (click)="addShift()" nzWidth="100px" nzRight="0px" tappable>
           <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
           {{"ADD_SHIFT" | translate}}
         </th>
@@ -41,12 +48,12 @@
       </ng-template>
 
       <tr>
-        <td white-bg tappable nzLeft="0px" (click)="showAddRound = true">
+        <td white-bg tappable nzLeft="0px" (click)="addRound()">
           <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
           {{"ADD_ROUND" | translate}}
         </td>
 
-        <td *ngFor="let x of shifts" style="border: none; background: none;"></td>
+        <!--<td *ngFor="let x of shifts" style="border: none;"></td>-->
       </tr>
     </tbody>
   </nz-table>
