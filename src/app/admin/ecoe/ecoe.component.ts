@@ -11,7 +11,7 @@ export class EcoeComponent implements OnInit {
 
   isCollapsed: boolean = false;
 
-  ecoe_menu: Array<{title: string, path: string, icon: string}> = [
+  ecoe_menu: Array<{title: string, path: string, icon: string, theme?: string}> = [
     {
       title: 'BACK',
       path: '/admin',
@@ -37,6 +37,17 @@ export class EcoeComponent implements OnInit {
       path: './questions',
       icon: ResourceIcons.questionIcon
     },
+    {
+      title: 'STUDENTS',
+      path: './students',
+      icon: ResourceIcons.studentIcon,
+      theme: 'outline'
+    },
+    {
+      title: 'PLANNER',
+      path: './planner',
+      icon: ResourceIcons.plannerIcon
+    }
     // {
     //   title: 'CHRONOMETERS',
     //   path: '',
@@ -46,17 +57,7 @@ export class EcoeComponent implements OnInit {
     //   title: 'SCHEDULE',
     //   path: '',
     //   icon: ResourceIcons.scheduleIcon
-    // },
-    {
-      title: 'STUDENTS',
-      path: './students',
-      icon: ResourceIcons.studentIcon
-    },
-    {
-      title: 'PLANNER',
-      path: './planner',
-      icon: ResourceIcons.plannerIcon
-    }
+    // }
   ];
 
   constructor(public sharedService: SharedService) {

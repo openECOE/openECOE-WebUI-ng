@@ -22,7 +22,6 @@ export class AdminComponent implements OnInit {
 
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
-
     this.loadEcoes();
   }
 

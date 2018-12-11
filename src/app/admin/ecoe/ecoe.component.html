@@ -11,7 +11,7 @@
       </li>
 
       <li nz-menu-item *ngFor="let item of ecoe_menu" [routerLink]="item.path">
-        <i nz-icon [type]="item.icon" [theme]="'fill'"></i>
+        <i nz-icon [type]="item.icon" [theme]="item.theme ? item.theme : 'fill'"></i>
         <span class="nav-text">{{item.title | translate}}</span>
       </li>
     </ul>
