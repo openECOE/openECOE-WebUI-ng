@@ -12,4 +12,5 @@ export class ItemInfoComponent {
   @Input() no_items: string;
   @Input() itemsArray: any[];
   @Input() icon: string;
+  @Input() theme: string = 'fill';
 }

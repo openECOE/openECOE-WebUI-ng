@@ -2,7 +2,7 @@
   <div nz-row [nzGutter]="16">
     <div nz-col [nzSpan]="12">
       <nz-card [nzTitle]="ecoe[0].name" [nzExtra]="headerExtra">
-        <nz-list [nzBordered]="true" [nzDataSource]="ecoe" [nzRenderItem]="item">
+        <nz-list [nzDataSource]="ecoe" [nzRenderItem]="item">
           <ng-template #item let-item>
             <app-item-info [link]="'areas'"
                            [title]="'AREAS'"
@@ -22,7 +22,8 @@
                            [title]="'STUDENTS'"
                            [no_items]="'NO_STUDENTS'"
                            [itemsArray]="item.students"
-                           [icon]="studentIcon">
+                           [icon]="studentIcon"
+                           [theme]="'outline'">
             </app-item-info>
 
             <app-item-info [link]="'rounds'"
