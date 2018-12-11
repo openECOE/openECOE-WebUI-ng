@@ -192,13 +192,12 @@ export class PlannerComponent implements OnInit {
     this.apiService.deleteResource(planner).subscribe(() => this.loadPlanner());
   }
 
-  checkStudentsSelected(selection) {
+  checkStudentsSelected(selection: any[]) {
     this.students = this.students.map(student => {
       return {
         ...student,
-        disabled: (selection.length >= this.stations.length && !student.selected)
+        disabled: (selection.length >= this.stations.length && !student.selected) || (student.planner && !student.selected)
       };
     });
   }
-
 }
