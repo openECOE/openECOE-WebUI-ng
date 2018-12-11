@@ -9,7 +9,8 @@
         <th *ngFor="let shift of shifts" nzWidth="100px" class="display-action-buttons">
           {{shift.time_start['$date'] | date: 'medium'}}
 
-            <app-action-buttons class="action-buttons" [isEditing]="false"
+            <app-action-buttons class="action-buttons"
+                                [isEditing]="false"
                                 [isNewItem]="false"
                                 (delete)="deleteShift(shift['$uri'])"
                                 (startEdit)="addShift(shift)">
@@ -26,7 +27,16 @@
     <tbody>
       <ng-template ngFor let-item [ngForOf]="table.data">
         <tr>
-          <td white-bg nzLeft="0px">{{item.round_code}}</td>
+          <td white-bg nzLeft="0px" class="display-action-buttons">
+            {{item.round_code}}
+
+            <app-action-buttons class="action-buttons"
+                                [isEditing]="false"
+                                [isNewItem]="false"
+                                (delete)="deleteRound(item['$uri'])"
+                                (startEdit)="addRound(item)">
+            </app-action-buttons>
+          </td>
           <td *ngFor="let plan of item.shifts" text-center
               [style.cursor]="!plan.planner_assigned ? 'pointer' : 'default'"
               (click)="!plan.planner_assigned ? loadStudents(plan, item) : null"
