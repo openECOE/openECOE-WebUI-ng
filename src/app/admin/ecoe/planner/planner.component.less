@@ -42,14 +42,28 @@
   background-color: #fafafa;
 }
 
-.display-action-buttons {
+.container {
   position: relative;
+  text-align: center;
 }
 
 .action-buttons {
   display: none;
+  position: absolute;
 }
 
-.display-action-buttons:hover .action-buttons {
-  display: inline-block;
+.container:hover {
+  span {
+    opacity: 0.1;
+    transition: 0.2s;
+  }
+
+  .action-buttons {
+    top: 35%;
+    left: 25%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+  }
 }

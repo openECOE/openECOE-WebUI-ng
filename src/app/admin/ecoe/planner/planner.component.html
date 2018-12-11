@@ -6,8 +6,8 @@
     <thead>
       <tr>
         <th nzWidth="100px" nzLeft="0px"></th>
-        <th *ngFor="let shift of shifts" nzWidth="100px" class="display-action-buttons">
-          {{shift.time_start['$date'] | date: 'medium'}}
+        <th *ngFor="let shift of shifts" nzWidth="100px" class="container">
+          <span>{{shift.time_start['$date'] | date: 'medium'}}</span>
 
             <app-action-buttons class="action-buttons"
                                 [isEditing]="false"
@@ -27,8 +27,8 @@
     <tbody>
       <ng-template ngFor let-item [ngForOf]="table.data">
         <tr>
-          <td white-bg nzLeft="0px" class="display-action-buttons">
-            {{item.round_code}}
+          <td white-bg nzLeft="0px" class="container">
+            <span>{{item.round_code}}</span>
 
             <app-action-buttons class="action-buttons"
                                 [isEditing]="false"
