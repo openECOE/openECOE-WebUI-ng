@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {forkJoin} from 'rxjs';
+import {SharedService} from '../../../services/shared/shared.service';
 
 @Component({
   selector: 'app-areas',
@@ -16,7 +17,8 @@ export class AreasComponent implements OnInit {
   index: number = 1;
 
   constructor(private apiService: ApiService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private sharedService: SharedService) {
   }
 
   ngOnInit() {
@@ -147,7 +149,7 @@ export class AreasComponent implements OnInit {
   addArea() {
     this.apiService.getResources('area')
       .subscribe(areas => {
-        this.index += areas.reduce((max, p) => p.id > max ? p.id : max, areas[0].id);
+        this.index += this.sharedService.getLastIndex(areas);
 
         const newItem = {
           id: this.index,

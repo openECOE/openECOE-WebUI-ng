@@ -35,4 +35,8 @@ export class SharedService {
 
     return 0;
   }
+
+  getLastIndex(items: any[]) {
+    return items.reduce((max, p) => p.id > max ? p.id : max, items[0].id);
+  }
 }

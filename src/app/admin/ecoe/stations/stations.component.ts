@@ -61,7 +61,7 @@ export class StationsComponent implements OnInit {
   addStation() {
     this.apiService.getResources('station')
       .subscribe(stations => {
-        this.index += stations.reduce((max, p) => p.id > max ? p.id : max, stations[0].id);
+        this.index += this.sharedService.getLastIndex(stations);
 
         const newItem = {
           id: this.index,
@@ -168,7 +168,7 @@ export class StationsComponent implements OnInit {
   addQblock(station: any, name?: string) {
     this.apiService.getResources('qblock')
       .subscribe(qblocks => {
-        this.indexQblock += qblocks.reduce((max, p) => p.id > max ? p.id : max, qblocks[0].id);
+        this.indexQblock += this.sharedService.getLastIndex(qblocks);
 
         const newItem = {
           id: this.indexQblock,

@@ -193,7 +193,7 @@ export class QuestionsComponent implements OnInit {
   addQuestion(qblock) {
     this.apiService.getResources('question')
       .subscribe(questions => {
-        this.index += questions.reduce((max, p) => p.id > max ? p.id : max, questions[0].id);
+        this.index += this.sharedService.getLastIndex(questions);
 
         const newItem = {
           id: this.index,
@@ -316,7 +316,7 @@ export class QuestionsComponent implements OnInit {
   addOption(question: any) {
     this.apiService.getResources('option')
       .subscribe(options => {
-        this.indexOpt += options.reduce((max, p) => p.id > max ? p.id : max, options[0].id);
+        this.indexOpt += this.sharedService.getLastIndex(options);
 
         const newItem = {
           id: this.indexOpt,
