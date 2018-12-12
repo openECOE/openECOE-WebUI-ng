@@ -15,6 +15,15 @@ export class StudentsComponent implements OnInit {
   editCache = {};
   index: number = 1;
 
+  handleUpload = (file: any) => {
+    const fr = new FileReader();
+    fr.onload = (e) => {
+      file.onSuccess({}, file.file, 'success');
+      this.handleFile(JSON.parse(fr.result.toString()));
+    };
+    fr.readAsText(file.file);
+  }
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private sharedService: SharedService) {
@@ -123,5 +132,9 @@ export class StudentsComponent implements OnInit {
   updateArrayStudents(studentId: number) {
     delete this.editCache[studentId];
     this.students = this.students.filter(x => x.id !== studentId);
+  }
+
+  handleFile(file) {
+    console.log(file);
   }
 }

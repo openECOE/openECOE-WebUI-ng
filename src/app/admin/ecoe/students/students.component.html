@@ -69,4 +69,15 @@
       </ng-template>
     </tbody>
   </nz-table>
+
+  <nz-upload nzType="drag"
+             [nzMultiple]="false"
+             [nzFileType]="'application/json'"
+             [nzCustomRequest]="handleUpload">
+    <p class="ant-upload-drag-icon">
+      <i nz-icon type="cloud-upload"></i>
+    </p>
+    <p class="ant-upload-text">Click or drag file to this area to upload</p>
+    <p class="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p>
+  </nz-upload>
 </nz-content>
