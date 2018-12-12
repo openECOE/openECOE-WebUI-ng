@@ -23,6 +23,9 @@ export class AppComponent {
       .subscribe((event: NavigationEnd) => this.sharedService.setPageChanged(event.url));
   }
 
+  /**
+   * Initializes the browser language
+   */
   initializeTranslate() {
     this.translate.setDefaultLang(this.language);
     this.translate.use(this.translate.getBrowserLang() || this.language);

@@ -1,35 +1,33 @@
 import { Injectable } from '@angular/core';
-import {forkJoin, Observable, Subject} from 'rxjs';
+import {Observable} from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {map} from 'rxjs/operators';
 
+/**
+ * Service with the HTTP requests to the backend
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
+  /**
+  * Constant with the 'api' path
+  */
   apiUrl: string = 'api';
-  ecoesSubject: Subject<any[]> = new Subject<any[]>();
 
   constructor(private http: HttpClient) {
 
   }
 
-  // TODO: eliminar estos metodos y utilziar los getResources()
-  loadEcoe(id: number): Observable<any> {
-    return this.getResource(`/${this.apiUrl}/ecoe/${id}`);
-  }
-
-  getEcoes() {
-    return this.ecoesSubject;
-  }
-
-  // TODO: cargar ecoes de la organizacion del usuario que ha iniciado sesion
-  setEcoes() {
-    this.getResources('ecoe').subscribe(ecoes => this.ecoesSubject.next(ecoes));
-  }
-
+  /**
+   * Makes a HTTP GET request to the backend and gets a list of items
+   *
+   * @param {string} resource Name of the resource
+   * @param {{}} requestParams? Optional params object
+   * @returns {Observable<any[]>} The array of items of the requested resource
+   */
   getResources(resource: string, requestParams?: {}): Observable<any[]> {
     const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}`;
     const params: HttpParams = new HttpParams({fromObject: requestParams});
@@ -45,6 +43,12 @@ export class ApiService {
       }));
   }
 
+  /**
+   * Makes a HTTP GET request to the backend and gets an item
+   *
+   * @param {string} ref Reference path of the resource
+   * @returns {Observable<any>} The object of the reference passed
+   */
   getResource(ref: string): Observable<any> {
     return this.http.get<any>(environment.API_ROUTE + ref)
       .pipe(map(response => {
@@ -53,15 +57,13 @@ export class ApiService {
       }));
   }
 
-  getResourcesArray(references: Array<{ '$ref': string }>): Observable<any[]> {
-    const observablesArray = [];
-    references.forEach(ref => {
-      observablesArray.push(this.getResource(ref['$ref']));
-    });
-
-    return forkJoin(observablesArray);
-  }
-
+  /**
+   * Makes a HTTP POST request to the backend
+   *
+   * @param {string} resource Name of the resource
+   * @param {any} body Object with the elements of the resource
+   * @returns {Observable<any>} The object of the item created
+   */
   createResource(resource: string, body: any): Observable<any> {
     return this.http.post(`${environment.API_ROUTE}/${this.apiUrl}/${resource}`, body)
       .pipe(map(response => {
@@ -71,6 +73,14 @@ export class ApiService {
       }));
   }
 
+  /**
+   * Makes a HTTP DELETE request to the backend
+   * To remove relations of tables a body must be passed with the id of the resource
+   *
+   * @param {string} ref Reference path of the resource
+   * @param {any} body? Id of the resource
+   * @returns {Observable<any>} An empty response
+   */
   deleteResource(ref: string, body?: any): Observable<any> {
     if (body) {
       return this.http.request('delete', environment.API_ROUTE + ref, {body: body});
@@ -79,6 +89,13 @@ export class ApiService {
     return this.http.delete(environment.API_ROUTE + ref);
   }
 
+  /**
+   * Makes a HTTP PATCH request to the backend
+   *
+   * @param {string} ref Reference path of the resource
+   * @param {any} body Object with the elements of the resource
+   * @returns {Observable<any>} The object of the item updated
+   */
   updateResource(ref: string, body: any): Observable<any> {
     return this.http.patch(environment.API_ROUTE + ref, body)
       .pipe(map(response => {
@@ -87,6 +104,12 @@ export class ApiService {
       }));
   }
 
+  /**
+   * Gets the id of the reference passed
+   *
+   * @param {string} ref Reference path of the resource
+   * @returns {number} The id obtained
+   */
   getIdFromRef(ref: string): number {
     return +ref.substr(ref.lastIndexOf('/') + 1);
   }
