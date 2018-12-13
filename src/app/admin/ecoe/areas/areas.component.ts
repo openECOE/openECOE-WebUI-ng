@@ -1,9 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
-import {forkJoin} from 'rxjs';
 import {SharedService} from '../../../services/shared/shared.service';
 
+/**
+ * Component with areas and questions by area.
+ */
 @Component({
   selector: 'app-areas',
   templateUrl: './areas.component.html',
@@ -26,6 +28,10 @@ export class AreasComponent implements OnInit {
     this.loadAreas();
   }
 
+  /**
+   * Load areas by the passed ECOE.
+   * Then calls [updateEditCache]{@link #updateEditCache} function.
+   */
   loadAreas() {
     this.apiService.getResources('area', {
       where: `{"ecoe":${this.ecoeId}}`
@@ -36,6 +42,13 @@ export class AreasComponent implements OnInit {
     });
   }
 
+  /**
+   * Adds to the resource passed its array of questions as a new key object.
+   * Then calls [updateEditCache]{@link #updateEditCache} function.
+   *
+   * @param {boolean} expandOpen State of the expanded sub-table
+   * @param {any} area Resource selected to show its questions
+   */
   loadQuestionsByArea(expandOpen: boolean, area: any) {
     if (expandOpen) {
       this.apiService.getResources('question', {
@@ -48,16 +61,35 @@ export class AreasComponent implements OnInit {
     }
   }
 
+  /**
+   * Calls ApiService to delete the resource passed.
+   * Then calls [updateArrayAreas]{@link #updateArrayAreas} function.
+   *
+   * @param {any} area Resource selected
+   */
   deleteItem(area: any) {
     this.apiService.deleteResource(area['$uri']).subscribe(() => {
       this.updateArrayAreas(area.id);
     });
   }
 
+  /**
+   * Sets the editCache variable to true.
+   * Changes text-view tags by input tags.
+   *
+   * @param {number} id Id of the selected resource
+   */
   startEdit(id: number): void {
     this.editCache[id].edit = true;
   }
 
+  /**
+   * Sets the editCache variable to false.
+   * If resource is not already saved, calls [updateArrayAreas]{@link #updateArrayAreas} function.
+   * Else resets editCache to the previous value.
+   *
+   * @param {any} area Resource selected
+   */
   cancelEdit(area: any): void {
     this.editCache[area.id].edit = false;
 
@@ -68,43 +100,13 @@ export class AreasComponent implements OnInit {
     }
   }
 
-  saveEditItem(key: number): void {
-    const area = this.editCache[key];
-    const arrayObservables = [];
-    let questionsEdit = false;
-
-    const bodyArea = {
-      name: area.name,
-      code: area.code
-    };
-
-    arrayObservables.push(this.apiService.updateResource(area['$uri'], bodyArea));
-
-    const questions = area.questionsArray;
-
-    if (questions && questions.length > 0) {
-      questionsEdit = true;
-      questions.forEach(question => {
-        const body = {
-          description: question.description,
-          reference: question.reference,
-          area: question.areaId
-        };
-
-        arrayObservables.push(this.apiService.updateResource(question['$uri'], body));
-      });
-    }
-
-    forkJoin(arrayObservables).subscribe(res => {
-      area.edit = false;
-      if (!questionsEdit) {
-        this.updateArray(key, res[0]);
-      } else {
-        this.loadAreas();
-      }
-    });
-  }
-
+  /**
+   * Creates or updates the resource passed.
+   * Then updates the variables to avoid calling the backend again.
+   *
+   * @param {any} area Resource selected
+   * @param {boolean} newItem determines if the resource is already saved
+   */
   saveItem(area: any, newItem: boolean): void {
     const item = this.editCache[area.id];
 
@@ -137,6 +139,9 @@ export class AreasComponent implements OnInit {
     });
   }
 
+  /**
+   * Updates editCache variable with the same values of the resources array and adds a 'edit' key.
+   */
   updateEditCache(): void {
     this.areas.forEach(item => {
       this.editCache[item.id] = {
@@ -146,6 +151,10 @@ export class AreasComponent implements OnInit {
     });
   }
 
+  /**
+   * Adds a new empty field to the resources array.
+   * Then updates editCache with the new resource.
+   */
   addArea() {
     this.apiService.getResources('area')
       .subscribe(areas => {
@@ -169,16 +178,11 @@ export class AreasComponent implements OnInit {
       });
   }
 
-  updateArray(key: number, response: any) {
-    delete this.editCache[key];
-    this.editCache[response['id']] = {
-      edit: false,
-      ...response
-    };
-
-    this.areas = this.areas.map(a => (a.id === key ? response : a));
-  }
-
+  /**
+   * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
+   *
+   * @param {number} areaId Id of the resource passed
+   */
   updateArrayAreas(areaId: number) {
     delete this.editCache[areaId];
     this.areas = this.areas.filter(x => x.id !== areaId);

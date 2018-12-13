@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {NzMessageService} from 'ng-zorro-antd';
 
 /**
- * Service with the NzMessageService methods
+ * Service with the NzMessageService methods.
  */
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class ActionMessagesService {
   }
 
   /**
-   * Generates a success alert message
+   * Generates a success alert message.
    *
    * @param {string} message Message to show on the alert
    */
@@ -22,7 +22,7 @@ export class ActionMessagesService {
   }
 
   /**
-   * Generates an error alert message
+   * Generates an error alert message.
    *
    * @param {string} message Message to show on the alert
    */

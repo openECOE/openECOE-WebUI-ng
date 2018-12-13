@@ -1,5 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
+/**
+ * Generic component with actions (EDIT, DELETE, CANCEL...)
+ */
 @Component({
   selector: 'app-action-buttons',
   templateUrl: './action-buttons.component.html',

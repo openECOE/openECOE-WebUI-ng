@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
 /**
- * Service with shared methods used around the app
+ * Service with shared methods used around the app.
  */
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ import {BehaviorSubject} from 'rxjs';
 export class SharedService {
 
   /**
-   * Observable used to control if the current page changed and get it state on other component
+   * Observable used to control if the current page changed and get it state on other component.
    */
   pageChanged: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
@@ -19,7 +19,7 @@ export class SharedService {
   }
 
   /**
-   * Emits a new value of pageChanged BehaviourSubject
+   * Emits a new value of pageChanged BehaviourSubject.
    *
    * @param {string} actualUrl Url path
    */
@@ -28,7 +28,7 @@ export class SharedService {
   }
 
   /**
-   * Gets the current page path
+   * Gets the current page path.
    *
    * @returns {BehaviorSubject<string>} The state of pageChanged
    */
@@ -37,7 +37,7 @@ export class SharedService {
   }
 
   /**
-   * Sorts an array of objects by its order keys
+   * Sorts an array of objects by its order keys.
    *
    * @param {any} first First item
    * @param {any} second Second second
@@ -60,7 +60,7 @@ export class SharedService {
   }
 
   /**
-   * Gets the last id of the passed array of objects
+   * Gets the last id of the passed array of objects.
    *
    * @param {any[]} items Array of items
    * @returns {number} The last id

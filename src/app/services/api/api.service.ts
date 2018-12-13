@@ -5,7 +5,7 @@ import {environment} from '../../../environments/environment';
 import {map} from 'rxjs/operators';
 
 /**
- * Service with the HTTP requests to the backend
+ * Service with the HTTP requests to the backend.
  */
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ import {map} from 'rxjs/operators';
 export class ApiService {
 
   /**
-  * Constant with the 'api' path
+  * Constant with the 'api' path.
   */
   apiUrl: string = 'api';
 
@@ -22,7 +22,7 @@ export class ApiService {
   }
 
   /**
-   * Makes a HTTP GET request to the backend and gets a list of items
+   * Makes a HTTP GET request to the backend and gets a list of items.
    *
    * @param {string} resource Name of the resource
    * @param {{}} requestParams? Optional params object
@@ -44,7 +44,7 @@ export class ApiService {
   }
 
   /**
-   * Makes a HTTP GET request to the backend and gets an item
+   * Makes a HTTP GET request to the backend and gets an item.
    *
    * @param {string} ref Reference path of the resource
    * @returns {Observable<any>} The object of the reference passed
@@ -58,7 +58,7 @@ export class ApiService {
   }
 
   /**
-   * Makes a HTTP POST request to the backend
+   * Makes a HTTP POST request to the backend.
    *
    * @param {string} resource Name of the resource
    * @param {any} body Object with the elements of the resource
@@ -74,8 +74,8 @@ export class ApiService {
   }
 
   /**
-   * Makes a HTTP DELETE request to the backend
-   * To remove relations of tables a body must be passed with the id of the resource
+   * Makes a HTTP DELETE request to the backend.
+   * To remove relations of tables a body must be passed with the id of the resource.
    *
    * @param {string} ref Reference path of the resource
    * @param {any} body? Id of the resource
@@ -90,7 +90,7 @@ export class ApiService {
   }
 
   /**
-   * Makes a HTTP PATCH request to the backend
+   * Makes a HTTP PATCH request to the backend.
    *
    * @param {string} ref Reference path of the resource
    * @param {any} body Object with the elements of the resource
@@ -105,7 +105,7 @@ export class ApiService {
   }
 
   /**
-   * Gets the id of the reference passed
+   * Gets the id of the reference passed.
    *
    * @param {string} ref Reference path of the resource
    * @returns {number} The id obtained

@@ -24,7 +24,7 @@ export class AppComponent {
   }
 
   /**
-   * Initializes the browser language
+   * Initializes the browser language.
    */
   initializeTranslate() {
     this.translate.setDefaultLang(this.language);
