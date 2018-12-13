@@ -50,12 +50,19 @@ export class PlannerComponent implements OnInit {
     this.loadStations();
   }
 
+  /**
+   * Load stations by the passed ECOE.
+   */
   loadStations() {
     this.apiService.getResources('station', {
       where: `{"ecoe":${this.ecoeId}}`
     }).subscribe(stations => this.stations = stations);
   }
 
+  /**
+   * Load shifts and rounds by the passed ECOE.
+   * Then calls [buildPlanner]{@link #buildPlanner} function.
+   */
   loadPlanner() {
     forkJoin(
       this.apiService.getResources('round', {
@@ -73,6 +80,10 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  /**
+   * Builds the planner matrix structure.
+   * For each round, creates an array of shifts, then loads the planner by shift and round if exists.
+   */
   buildPlanner() {
     this.planners = [];
 
@@ -98,7 +109,16 @@ export class PlannerComponent implements OnInit {
     });
   }
 
-  loadStudents(shift, round, planner?: string) {
+  /**
+   * Load students by the passed ECOE.
+   * Maps the response and sets selected key to true if it has planner assigned and the reference is the same as the passed.
+   * Then calls [checkStudentsSelected]{@link #checkStudentsSelected} function.
+   *
+   * @param {number} shiftId Id of the selected shift
+   * @param {number} roundId Id of the selected round
+   * @param {string} planner? Reference of the selected planner
+   */
+  loadStudents(shiftId: number, roundId: number, planner?: string) {
     let studentsSelected = 0;
     this.apiService.getResources('student', {
       where: `{"ecoe":${this.ecoeId}}`
@@ -123,7 +143,7 @@ export class PlannerComponent implements OnInit {
       })
     ).subscribe(students => {
       this.students = students;
-      this.plannerSelected = {shift: shift.id, round: round.id, planner};
+      this.plannerSelected = {shift: shiftId, round: roundId, planner};
       this.showStudentsSelector = true;
 
       this.checkStudentsSelected(this.students);

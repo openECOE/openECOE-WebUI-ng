@@ -39,7 +39,7 @@
           </td>
           <td *ngFor="let plan of item.shifts" text-center
               [style.cursor]="!plan.planner_assigned ? 'pointer' : 'default'"
-              (click)="!plan.planner_assigned ? loadStudents(plan, item) : null"
+              (click)="!plan.planner_assigned ? loadStudents(plan.id, item.id) : null"
               [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
              (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
              plan.planner_assigned ? 'complete' : ''">
@@ -48,7 +48,7 @@
                                 [isEditing]="false"
                                 [isNewItem]="false"
                                 (delete)="deletePlanner(plan.plannerRef)"
-                                (startEdit)="loadStudents(plan, item, plan.plannerRef)">
+                                (startEdit)="loadStudents(plan.id, item.id, plan.plannerRef)">
             </app-action-buttons>
             <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
           </td>

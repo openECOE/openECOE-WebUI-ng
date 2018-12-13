@@ -22,11 +22,18 @@ export class InformationComponent implements OnInit {
               private router: Router) {
   }
 
+  /**
+   * Loads the ECOE data and parses the response as an array to use it on the nz-list component.
+   */
   ngOnInit() {
     const ecoeId = +this.route.snapshot.params.id;
     this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => this.ecoe = [ecoe]);
   }
 
+  /**
+   * Calls ApiService to delete the actual ECOE.
+   * Then navigates to /admin page.
+   */
   deleteEcoe() {
     this.apiService.deleteResource(this.ecoe['$uri']).subscribe(() => this.router.navigate(['/admin']));
   }
