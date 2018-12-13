@@ -69,13 +69,11 @@
   </nz-table>
 </nz-content>
 
-<nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
-           [nzMaskClosable]="true"
-           [nzVisible]="showAddShift"
-           [nzTitle]="'ADD_SHIFT' | translate"
-           (nzOnClose)="closeDrawerShift()"
-           [nzPlacement]="'right'">
-  <form nz-form [formGroup]="shiftForm" (ngSubmit)="submitFormShift()">
+<nz-modal [(nzVisible)]="showAddShift"
+          [nzTitle]="'ADD_SHIFT' | translate"
+          (nzOnCancel)="closeModalShift()"
+          (nzOnOk)="submitFormShift()">
+  <form nz-form [formGroup]="shiftForm">
     <nz-form-item>
       <nz-form-label [nzRequired]="true" [nzFor]="'shift_code'">{{"CODE" | translate}}</nz-form-label>
       <nz-form-control>
@@ -94,23 +92,14 @@
         </nz-date-picker>
       </nz-form-control>
     </nz-form-item>
-
-    <button type="button" nz-button (click)="closeDrawerShift()" class="margin-right">
-      <span>{{"CANCEL" | translate}}</span>
-    </button>
-    <button type="submit" nz-button [nzType]="'primary'" [disabled]="!shiftForm.valid">
-      <span>{{"ACCEPT" | translate}}</span>
-    </button>
   </form>
-</nz-drawer>
+</nz-modal>
 
-<nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
-           [nzMaskClosable]="true"
-           [nzVisible]="showAddRound"
-           [nzTitle]="'ADD_ROUND' | translate"
-           (nzOnClose)="closeDrawerRound()"
-           [nzPlacement]="'left'">
-  <form nz-form [formGroup]="roundForm" (submit)="submitFormRound()">
+<nz-modal [(nzVisible)]="showAddRound"
+          [nzTitle]="'ADD_ROUND' | translate"
+          (nzOnCancel)="closeModalRound()"
+          (nzOnOk)="submitFormRound()">
+  <form nz-form [formGroup]="roundForm">
     <nz-form-item>
       <nz-form-label [nzRequired]="true" [nzFor]="'description'">{{"DESCRIPTION" | translate}}</nz-form-label>
       <nz-form-control>
@@ -123,15 +112,8 @@
         <input nz-input id="round_code" [formControlName]="'round_code'" />
       </nz-form-control>
     </nz-form-item>
-
-    <button type="button" nz-button (click)="closeDrawerRound()" class="margin-right">
-      <span>{{"CANCEL" | translate}}</span>
-    </button>
-    <button type="submit" nz-button [nzType]="'primary'" [disabled]="!roundForm.valid">
-      <span>{{"ACCEPT" | translate}}</span>
-    </button>
   </form>
-</nz-drawer>
+</nz-modal>
 
 <nz-modal [(nzVisible)]="showStudentsSelector"
           [nzTitle]="'SELECT_STUDENTS' | translate"

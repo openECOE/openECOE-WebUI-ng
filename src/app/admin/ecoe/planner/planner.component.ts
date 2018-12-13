@@ -189,6 +189,10 @@ export class PlannerComponent implements OnInit {
   }
 
   submitFormShift() {
+    if (!this.shiftForm.valid) {
+      return;
+    }
+
     const body = {
       shift_code: this.shiftForm.controls['shift_code'].value,
       time_start: {'$date': +this.shiftForm.controls['$date'].value},
@@ -203,11 +207,11 @@ export class PlannerComponent implements OnInit {
 
     request.subscribe(() => {
       this.loadPlanner();
-      this.closeDrawerShift();
+      this.closeModalShift();
     });
   }
 
-  closeDrawerShift() {
+  closeModalShift() {
     this.showAddShift = false;
     this.shiftForm.reset();
   }
@@ -230,6 +234,10 @@ export class PlannerComponent implements OnInit {
   }
 
   submitFormRound() {
+    if (!this.roundForm.valid) {
+      return;
+    }
+
     const body = {
       ...this.roundForm.value,
       ecoe: this.ecoeId
@@ -243,11 +251,11 @@ export class PlannerComponent implements OnInit {
 
     request.subscribe(() => {
       this.loadPlanner();
-      this.closeDrawerRound();
+      this.closeModalRound();
     });
   }
 
-  closeDrawerRound() {
+  closeModalRound() {
     this.showAddRound = false;
     this.roundForm.reset();
   }
