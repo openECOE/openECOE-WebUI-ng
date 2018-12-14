@@ -146,6 +146,11 @@ export class PlannerComponent implements OnInit {
       this.plannerSelected = {shift: shiftId, round: roundId, planner};
       this.showStudentsSelector = true;
 
+      this.isEditing = {
+        itemRef: planner ? planner : '',
+        edit: (typeof planner !== 'undefined')
+      };
+
       this.checkStudentsSelected(this.students);
     });
   }
@@ -176,7 +181,10 @@ export class PlannerComponent implements OnInit {
   }
 
   deletePlanner(planner: string) {
-    this.apiService.deleteResource(planner).subscribe(() => this.loadPlanner());
+    this.apiService.deleteResource(planner).subscribe(() => {
+      this.loadPlanner();
+      this.showStudentsSelector = false;
+    });
   }
 
   checkStudentsSelected(selection: any[]) {
@@ -217,7 +225,10 @@ export class PlannerComponent implements OnInit {
   }
 
   deleteShift(shift: string) {
-    this.apiService.deleteResource(shift).subscribe(() => this.loadPlanner());
+    this.apiService.deleteResource(shift).subscribe(() => {
+      this.loadPlanner();
+      this.closeModalShift();
+    });
   }
 
   addShift(shift?: any) {
@@ -261,7 +272,10 @@ export class PlannerComponent implements OnInit {
   }
 
   deleteRound(round: string) {
-    this.apiService.deleteResource(round).subscribe(() => this.loadPlanner());
+    this.apiService.deleteResource(round).subscribe(() => {
+      this.loadPlanner();
+      this.closeModalRound();
+    });
   }
 
   addRound(round?: any) {

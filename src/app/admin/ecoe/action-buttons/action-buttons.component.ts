@@ -14,6 +14,7 @@ export class ActionButtonsComponent implements OnInit {
   @Input() isNewItem: boolean;
   @Input() index: number;
   @Input() itemsLength: number;
+  @Input() showDeleteButton: boolean = true;
   @Input() showOrderButtons: boolean = false;
   @Input() showNavigateQuestions: boolean = false;
 

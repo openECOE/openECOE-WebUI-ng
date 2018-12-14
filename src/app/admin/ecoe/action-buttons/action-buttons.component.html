@@ -36,9 +36,10 @@
      (click)="startEdit.emit()" tappable success-color>
   </i>
 
-  <nz-divider [nzType]="'vertical'"></nz-divider>
+  <nz-divider [nzType]="'vertical'" *ngIf="showDeleteButton"></nz-divider>
 
-  <a nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+  <a *ngIf="showDeleteButton"
+     nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
      (nzOnConfirm)="delete.emit()">
     <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
   </a>
