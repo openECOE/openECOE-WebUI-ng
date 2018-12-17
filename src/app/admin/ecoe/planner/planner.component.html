@@ -145,8 +145,7 @@
 <nz-modal [(nzVisible)]="showStudentsSelector"
           [nzTitle]="'SELECT_STUDENTS' | translate"
           (nzOnCancel)="showStudentsSelector = false"
-          [nzFooter]="modalFooterPlanner"
-          (nzOnOk)="assignPlanner()">
+          [nzFooter]="modalFooterPlanner">
   <nz-checkbox-wrapper (nzOnChange)="checkStudentsSelected($event)">
     <div *ngFor="let student of students">
       <label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected" [nzDisabled]="student.disabled">

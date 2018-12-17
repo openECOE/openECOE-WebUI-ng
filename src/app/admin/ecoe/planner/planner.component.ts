@@ -156,6 +156,10 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  /**
+   * Creates or updates the planner selected.
+   * Then reloads all planners and hides the modal.
+   */
   assignPlanner() {
     const students = this.students.filter(student => student.selected).map(student => student.id);
 
@@ -181,6 +185,12 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  /**
+   * Calls ApiService to delete the planner passed.
+   * Then reloads all planners and hides the modal.
+   *
+   * @param {string} planner Reference of the selected planner
+   */
   deletePlanner(planner: string) {
     this.apiService.deleteResource(planner).subscribe(() => {
       this.loadPlanner();
@@ -188,16 +198,26 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  /**
+   * Modifies the students array and sets the disabled property to true if the selection length is equal or higher
+   * than the number of stations and the student is not selected,
+   * or if the student has a planner assigned and this planner is not the same as the selected.
+   * @param {any[]} selection Array of students currently selected
+   */
   checkStudentsSelected(selection: any[]) {
     this.students = this.students.map(student => {
       return {
         ...student,
         disabled: (selection.length >= this.stations.length && !student.selected) ||
-          (student.planner && !(student.planner['$ref'] === this.plannerSelected.planner))
+          (student.planner && student.planner['$ref'] !== this.plannerSelected.planner)
       };
     });
   }
 
+  /**
+   * Creates or updates the shift selected.
+   * Then reloads all planners and hides the modal.
+   */
   submitFormShift() {
     if (!this.shiftForm.valid) {
       return;
@@ -221,11 +241,20 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  /**
+   * Hides the shift modal and resets the form.
+   */
   closeModalShift() {
     this.showAddShift = false;
     this.shiftForm.reset();
   }
 
+  /**
+   * Calls ApiService to delete the shift selected.
+   * Then reloads all planners and hides the modal.
+   *
+   * @param {string} shift Reference of the selected shift
+   */
   deleteShift(shift: string) {
     this.apiService.deleteResource(shift).subscribe(() => {
       this.loadPlanner();
@@ -233,6 +262,11 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  /**
+   * Shows the shift modal, then fills the form inputs with the shift if passed.
+   *
+   * @param {any} shift? Resource selected
+   */
   addShift(shift?: any) {
     this.showAddShift = true;
 
@@ -246,6 +280,10 @@ export class PlannerComponent implements OnInit {
     };
   }
 
+  /**
+   * Creates or updates the round selected.
+   * Then reloads all planners and hides the modal.
+   */
   submitFormRound() {
     if (!this.roundForm.valid) {
       return;
@@ -268,11 +306,20 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  /**
+   * Hides the round modal and resets the form.
+   */
   closeModalRound() {
     this.showAddRound = false;
     this.roundForm.reset();
   }
 
+  /**
+   * Calls ApiService to delete the round selected.
+   * Then reloads all planners and hides the modal.
+   *
+   * @param {string} round Reference of the selected shift
+   */
   deleteRound(round: string) {
     this.apiService.deleteResource(round).subscribe(() => {
       this.loadPlanner();
@@ -280,6 +327,11 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  /**
+   * Shows the round modal, then fills the form inputs with the round if passed.
+   *
+   * @param {any} round? Resource selected
+   */
   addRound(round?: any) {
     this.showAddRound = true;
 

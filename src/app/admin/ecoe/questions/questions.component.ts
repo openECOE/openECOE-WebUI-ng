@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {forkJoin, Observable} from 'rxjs';
-import {map, mergeMap, tap} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 import {SharedService} from '../../../services/shared/shared.service';
 
 @Component({
@@ -59,8 +59,8 @@ export class QuestionsComponent implements OnInit {
         return this.apiService.getResources('station', {
           where: `{"ecoe":${this.ecoeId}}`
         }).pipe(
-          tap(stations => this.stations = stations),
           mergeMap(stations => {
+            this.stations = stations;
             const station = this.stationId ? stations.find(st => st.id === this.stationId) : stations[0];
             return this.apiService.getResources('qblock', {
               where: (this.stationId && this.qblockId) ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${station.id}}`
