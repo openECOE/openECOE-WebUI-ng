@@ -37,20 +37,19 @@
                                 (startEdit)="addRound(item)">
             </app-action-buttons>
           </td>
-          <td *ngFor="let plan of item.shifts" text-center
-              [style.cursor]="!plan.planner_assigned ? 'pointer' : 'default'"
-              (click)="!plan.planner_assigned ? loadStudents(plan.id, item.id) : null"
+          <td *ngFor="let plan of item.shifts" tappable
+              (click)="!plan.planner_assigned ? loadStudents(plan.id, item.id) : loadStudents(plan.id, item.id, plan.plannerRef)"
               [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
              (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
-             plan.planner_assigned ? 'complete' : ''">
+             plan.planner_assigned ? 'complete' : ''" class="container">
 
             <span *ngIf="plan.planner_assigned">{{plan.students.length}}/{{stations.length}}</span>
 
             <app-action-buttons *ngIf="plan.planner_assigned"
+                                class="action-buttons"
                                 [isEditing]="false"
                                 [isNewItem]="false"
-                                [showDeleteButton]="false"
-                                (startEdit)="loadStudents(plan.id, item.id, plan.plannerRef)">
+                                [showDeleteButton]="false">
             </app-action-buttons>
             <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
           </td>

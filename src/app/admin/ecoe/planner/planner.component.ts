@@ -119,6 +119,7 @@ export class PlannerComponent implements OnInit {
    * @param {string} planner? Reference of the selected planner
    */
   loadStudents(shiftId: number, roundId: number, planner?: string) {
+    this.students = [];
     let studentsSelected = 0;
     this.apiService.getResources('student', {
       where: `{"ecoe":${this.ecoeId}}`
@@ -151,7 +152,7 @@ export class PlannerComponent implements OnInit {
         edit: (typeof planner !== 'undefined')
       };
 
-      this.checkStudentsSelected(this.students);
+      this.checkStudentsSelected(this.students.filter(student => student.selected));
     });
   }
 
@@ -191,7 +192,8 @@ export class PlannerComponent implements OnInit {
     this.students = this.students.map(student => {
       return {
         ...student,
-        disabled: (selection.length >= this.stations.length && !student.selected) || (student.planner && !student.selected)
+        disabled: (selection.length >= this.stations.length && !student.selected) ||
+          (student.planner && !(student.planner['$ref'] === this.plannerSelected.planner))
       };
     });
   }
