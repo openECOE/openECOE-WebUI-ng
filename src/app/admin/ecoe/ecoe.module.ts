@@ -15,6 +15,7 @@ import { ExamComponent } from './exam/exam.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { StudentsComponent } from './students/students.component';
 import { PlannerComponent } from './planner/planner.component';
+import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
 
 @NgModule({
   imports: [
@@ -36,7 +37,8 @@ import { PlannerComponent } from './planner/planner.component';
     ExamComponent,
     ScheduleComponent,
     StudentsComponent,
-    PlannerComponent
+    PlannerComponent,
+    UploadAndParseComponent
   ]
 })
 export class EcoeModule { }
