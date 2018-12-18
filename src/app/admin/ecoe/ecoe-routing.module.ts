@@ -8,16 +8,16 @@ import {QuestionsComponent} from './questions/questions.component';
 import {ExamComponent} from './exam/exam.component';
 import {PlannerComponent} from './planner/planner.component';
 import {StudentsComponent} from './students/students.component';
+import {AuthenticationGuard} from '../../guards/authentication/authentication.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: EcoeComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [AuthenticationGuard],
     children: [
       {
         path: '',
-        // canActivateChild: [AuthGuard],
         children: [
           {path: 'areas', component: AreasComponent},
           {path: 'stations', component: StationsComponent},
