@@ -36,8 +36,7 @@ export class LoginComponent implements OnInit {
 
     if (this.validateForm.valid) {
       this.authService.loginUser(this.validateForm.value)
-        .subscribe(response => this.router.navigate([this.returnUrl]),
-          error1 => console.log(error1));
+        .subscribe(() => this.router.navigate([this.returnUrl]));
     }
   }
 }

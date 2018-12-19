@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
+import {ApiService} from '../api/api.service';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +12,11 @@ import {catchError, map} from 'rxjs/operators';
 export class AuthenticationService {
 
   authUrl: string = '/auth/tokens';
+  userData: any;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private apiService: ApiService,
+              private router: Router) {
   }
 
   loginUser(userData: { email: string, password: string }): Observable<any> {
@@ -22,22 +27,32 @@ export class AuthenticationService {
       map((data: any) => {
         if (data) {
           localStorage.setItem('userLogged', JSON.stringify(data));
+          this.loadUserData();
         }
 
         return data;
       }),
       catchError(err => {
-        this.logout();
-        return err;
+        if (err.status === 401) {
+          localStorage.removeItem('userLogged');
+        }
+
+        return throwError(err);
       })
     );
   }
 
   logout() {
     localStorage.removeItem('userLogged');
+    this.userData = null;
+    this.router.navigate(['/']);
   }
 
   get userLogged(): any {
     return JSON.parse(localStorage.getItem('userLogged'));
+  }
+
+  loadUserData() {
+    this.apiService.getResource('/api/user/me').subscribe(data => this.userData = data);
   }
 }

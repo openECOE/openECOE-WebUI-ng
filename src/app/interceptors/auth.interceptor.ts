@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor} from '@angular/common/http';
-import {Observable, throwError} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 import {AuthenticationService} from '../services/authentication/authentication.service';
 
 @Injectable()
@@ -11,7 +10,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const currentUser = this.authService.userLogged;
-    const authHeader = currentUser.token ? `Bearer ${currentUser.token}` : currentUser.authData ? `Basic ${currentUser.authData}` : '';
+    const authHeader = currentUser && currentUser.token ? `Bearer ${currentUser.token}` :
+      currentUser && currentUser.authData ? `Basic ${currentUser.authData}` : '';
 
     request = request.clone({
       setHeaders: {
@@ -20,16 +20,6 @@ export class AuthInterceptor implements HttpInterceptor {
       }
     });
 
-    return next.handle(request).pipe(
-      catchError(error => {
-
-        if (error.status === 401) {
-          this.authService.logout();
-          location.reload(true);
-        }
-
-        return throwError(error);
-      })
-    );
+    return next.handle(request);
   }
 }

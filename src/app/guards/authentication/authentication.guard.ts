@@ -13,7 +13,7 @@ export class AuthenticationGuard implements CanActivate {
   }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    if (!this.authService.userLogged.token) {
+    if (!this.authService.userLogged) {
       this.router.navigate(['/login'], {queryParams: {returnUrl: state.url}});
       return false;
     }
