@@ -55,4 +55,8 @@ export class AuthenticationService {
   loadUserData() {
     this.apiService.getResource('/api/user/me').subscribe(data => this.userData = data);
   }
+
+  getUserData() {
+    return this.apiService.getResource('/api/user/me');
+  }
 }
