@@ -42,10 +42,10 @@ export class AuthenticationService {
     );
   }
 
-  logout() {
+  logout(route: string = '/') {
     localStorage.removeItem('userLogged');
     this.userData = null;
-    this.router.navigate(['/']);
+    this.router.navigate([route]);
   }
 
   get userLogged(): any {
@@ -53,7 +53,14 @@ export class AuthenticationService {
   }
 
   loadUserData() {
-    this.apiService.getResource('/api/user/me').subscribe(data => this.userData = data);
+    this.apiService.getResource('/api/user/me').subscribe(
+      data => this.userData = data,
+      err => {
+        if (err.status === 401) {
+          this.logout('/login');
+        }
+      }
+    );
   }
 
   getUserData() {
