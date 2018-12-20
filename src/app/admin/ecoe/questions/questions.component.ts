@@ -5,6 +5,9 @@ import {forkJoin, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {SharedService} from '../../../services/shared/shared.service';
 
+/**
+ * Component with questions and options by question.
+ */
 @Component({
   selector: 'app-questions',
   templateUrl: './questions.component.html',
@@ -39,6 +42,9 @@ export class QuestionsComponent implements OnInit {
               private sharedService: SharedService) {
   }
 
+  /**
+   * Listens for URL changes to filter the questions by station and Qblock.
+   */
   ngOnInit() {
     this.ecoeId = +this.route.snapshot.params.id;
 
@@ -49,6 +55,11 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Load questions by the passed Station and ECOE.
+   * Loads all the stations, then filters by the station passed on the URL and loads their qblocks.
+   * Finally, loads the questions for each Qblock and creates the multi-level array.
+   */
   loadQuestions() {
     this.stationSelected = {};
     this.apiService.getResources('area', {
@@ -94,6 +105,13 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Adds to the resource passed its array of options as a new key object.
+   * Then updates the options cache.
+   *
+   * @param {boolean} expand State of the expanded sub-table
+   * @param {any} question Resource selected to show its options
+   */
   loadOptionsByQuestion(expand: boolean, question: any) {
     if (expand) {
       this.apiService.getResources('option', {
@@ -112,16 +130,35 @@ export class QuestionsComponent implements OnInit {
     }
   }
 
+  /**
+   * Load qblocks by the passed station.
+   *
+   * @param {number} stationId Id of the parent resource
+   */
   loadQblocksByStation(stationId: number) {
     this.apiService.getResources('qblock', {
       where: `{"station":${stationId}}`
     }).subscribe(qblocks => this.qblocks = qblocks);
   }
 
+  /**
+   * Sets the editCache variable to true.
+   * Changes text-view tags by input tags.
+   *
+   * @param {number} id Id of the selected resource
+   */
   startEdit(id: number) {
     this.editCache[id].edit = true;
   }
 
+  /**
+   * Creates or updates the resource passed.
+   * Then updates the variables to avoid calling the backend again.
+   *
+   * @param {any} question Resource selected
+   * @param {any} qblock Parent resource passed
+   * @param {boolean} newItem determines if the resource is already saved
+   */
   saveItem(question: any, qblock: any, newItem: boolean) {
     const item = this.editCache[question.id];
 
@@ -174,6 +211,14 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Sets the editCache variable to false.
+   * If resource is not already saved, calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
+   * Else resets editCache to the previous value.
+   *
+   * @param {any} question Resource selected
+   * @param {any} qblock Parent resource passed
+   */
   cancelEdit(question: any, qblock: any) {
     this.editCache[question.id].edit = false;
 
@@ -184,12 +229,23 @@ export class QuestionsComponent implements OnInit {
     }
   }
 
+  /**
+   * Calls ApiService to delete the resource passed.
+   * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
+   *
+   * @param {any} question Resource selected
+   * @param {any} qblock Parent resource passed
+   */
   deleteItem(question: any, qblock: any) {
     this.apiService.deleteResource(question['$uri']).subscribe(() => {
       this.updateArrayQuestions(question.id, qblock);
     });
   }
 
+  /**
+   * Adds a new empty field to the resources array.
+   * Then updates editCache with the new resource.
+   */
   addQuestion(qblock) {
     this.apiService.getResources('question')
       .subscribe(questions => {
@@ -216,6 +272,9 @@ export class QuestionsComponent implements OnInit {
       });
   }
 
+  /**
+   * Updates editCache variable with the same values of the resources array and adds a 'edit' key.
+   */
   updateEditCache(): void {
     this.editCache = {};
     this.stationSelected.qblocks.forEach(qb => {
@@ -231,12 +290,26 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
+   *
+   * @param {number} questionId Id of the resource passed
+   * @param {any} qblock Parent resource passed
+   */
   updateArrayQuestions(questionId: number, qblock: any) {
     delete this.editCache[questionId];
     delete this.questionShowQblocks[questionId];
     qblock.questions = qblock.questions.filter(x => x.id !== questionId);
   }
 
+  /**
+   * Moves the passed question to the selected Qblock.
+   * Then reloads the questions array.
+   *
+   * @param {number} questionId Id of the resource passed
+   * @param {number} qblockPrevId Id of the actual Qblock
+   * @param {number} qblockNextId Id of the Qblock to move in
+   */
   moveQuestion(questionId: number, qblockPrevId: number, qblockNextId: number) {
     forkJoin(
       this.apiService.deleteResource(`/api/qblock/${qblockPrevId}/questions`, questionId),
@@ -251,10 +324,24 @@ export class QuestionsComponent implements OnInit {
     return this.question_type_options.find(x => x.type === questionType).label;
   }
 
+  /**
+   * Sets the editCacheOption variable to true.
+   * Changes text-view tags by input tags.
+   *
+   * @param {number} id Id of the selected resource
+   */
   startEditOption(id: number) {
     this.editCacheOption[id].edit = true;
   }
 
+  /**
+   * Creates or updates the resource passed.
+   * Then updates the variables to avoid calling the backend again and sorts the array.
+   *
+   * @param {any} option Resource selected
+   * @param {any} question Parent resource passed
+   * @param {boolean} newItem determines if the resource is already saved
+   */
   saveOption(option: any, question: any, newItem: boolean) {
     const item = this.editCacheOption[option.id];
 
@@ -290,22 +377,43 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Sets the editCacheOption variable to false.
+   * If resource is not already saved, calls [updateArrayOptions]{@link #updateArrayOptions} function.
+   * Else resets editCache to the previous value.
+   *
+   * @param {any} option Resource selected
+   * @param {any} question Parent resource passed
+   */
   cancelEditOption(option: any, question: any) {
     this.editCacheOption[option.id].edit = false;
+
     if (this.editCacheOption[option.id].new_item) {
       this.updateArrayOptions(option.id, question);
-
     } else {
       this.editCacheOption[option.id] = option;
     }
   }
 
+  /**
+   * Calls ApiService to delete the resource passed.
+   * Then calls [updateArrayOptions]{@link #updateArrayOptions} function.
+   *
+   * @param {any} option Resource selected
+   * @param {any} question Parent resource passed
+   */
   deleteOption(option: any, question: any) {
     this.apiService.deleteResource(option['$uri']).subscribe(() => {
       this.updateArrayOptions(option.id, question);
     });
   }
 
+  /**
+   * Deletes the editCacheOption key assigned to the resource id passed, filters out the item from the resources array and sorts the array.
+   *
+   * @param {number} option Id of the resource passed
+   * @param {any} question Parent resource passed
+   */
   updateArrayOptions(option: number, question: any) {
     delete this.editCacheOption[option];
     question.optionsArray = question.optionsArray
@@ -313,6 +421,12 @@ export class QuestionsComponent implements OnInit {
       .sort(this.sharedService.sortArray);
   }
 
+  /**
+   * Adds a new empty field to the resources array.
+   * Then updates editCacheOption with the new resource.
+   *
+   * @param {any} question Parent resource passed
+   */
   addOption(question: any) {
     this.apiService.getResources('option')
       .subscribe(options => {
@@ -336,14 +450,18 @@ export class QuestionsComponent implements OnInit {
       });
   }
 
+  /**
+   * Moves the option one position above or down.
+   * Updates the order key of the resource passed and the next to it.
+   * Then updates the variables to avoid calling the backend again and sorts the array.
+   *
+   * @param {string} direction 'up' or 'down'
+   * @param {any} option Resource passed
+   * @param {number} index Current index of the selected resource
+   * @param {any} question Parent resource passed
+   */
   changeOptionOrder(direction: string, option: any, index: number, question: any) {
-    let itemToMove;
-
-    if (direction === 'up') {
-      itemToMove = question.optionsArray[index - 1];
-    } else {
-      itemToMove = question.optionsArray[index + 1];
-    }
+    const itemToMove = (direction === 'up') ? question.optionsArray[index - 1] : question.optionsArray[index + 1];
 
     forkJoin(
       this.apiService.updateResource(option['$uri'], {order: itemToMove.order}),
@@ -359,6 +477,11 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Removes the Qblock filter and reloads the page by updating the URL.
+   *
+   * @param {number} station Id of the station passed
+   */
   deleteFilter(station: number) {
     this.router.navigate(['../questions'], {
       relativeTo: this.route,

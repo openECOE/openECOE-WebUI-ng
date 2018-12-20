@@ -2,6 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Papa} from 'ngx-papaparse';
 import {ApiService} from '../../../services/api/api.service';
 
+/**
+ * Component with the upload files component and FileReader functionality.
+ */
 @Component({
   selector: 'app-upload-and-parse',
   templateUrl: './upload-and-parse.component.html',
@@ -12,6 +15,10 @@ export class UploadAndParseComponent implements OnInit {
   @Input() ecoeId: number;
   @Input() resource: string;
 
+  /**
+   * Event handler on file upload.
+   * Reads the file data and then calls [handleFile]{@link #handleFile} function.
+   */
   handleUpload = (file: any) => {
     const fr = new FileReader();
     fr.onload = (e) => {
@@ -27,6 +34,11 @@ export class UploadAndParseComponent implements OnInit {
   ngOnInit() {
   }
 
+  /**
+   * Parses the data string (CSV) to JSON and then creates the resources for each element.
+   *
+   * @param {string} fileString File data as string
+   */
   handleFile(fileString: string) {
     this.papaParser.parse(fileString, {
       header: true,
@@ -36,7 +48,7 @@ export class UploadAndParseComponent implements OnInit {
           ...results.data[0],
           ecoe: this.ecoeId
         };
-        this.apiService.createResource('student', body).subscribe();
+        this.apiService.createResource(this.resource, body).subscribe();
       }
     });
   }
