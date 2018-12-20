@@ -3,6 +3,9 @@ import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {SharedService} from '../../../services/shared/shared.service';
 
+/**
+ * Component with students.
+ */
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
@@ -25,6 +28,10 @@ export class StudentsComponent implements OnInit {
     this.loadStudents();
   }
 
+  /**
+   * Load students by the passed ECOE.
+   * Then calls [updateEditCache]{@link #updateEditCache} function.
+   */
   loadStudents() {
     this.apiService.getResources('student', {
       where: `{"ecoe":${this.ecoeId}}`
@@ -35,16 +42,35 @@ export class StudentsComponent implements OnInit {
     });
   }
 
+  /**
+   * Calls ApiService to delete the resource passed.
+   * Then calls [updateArrayStudents]{@link #updateArrayStudents} function.
+   *
+   * @param {any} student Resource selected
+   */
   deleteItem(student: any) {
     this.apiService.deleteResource(student['$uri']).subscribe(() => {
       this.updateArrayStudents(student.id);
     });
   }
 
+  /**
+   * Sets the editCache variable to true.
+   * Changes text-view tags by input tags.
+   *
+   * @param {number} id Id of the selected resource
+   */
   startEdit(id: number): void {
     this.editCache[id].edit = true;
   }
 
+  /**
+   * Sets the editCache variable to false.
+   * If resource is not already saved, calls [updateArrayStudents]{@link #updateArrayStudents} function.
+   * Else resets editCache to the previous value.
+   *
+   * @param {any} student Resource selected
+   */
   cancelEdit(student: any): void {
     this.editCache[student.id].edit = false;
 
@@ -55,6 +81,13 @@ export class StudentsComponent implements OnInit {
     }
   }
 
+  /**
+   * Creates or updates the resource passed.
+   * Then updates the variables to avoid calling the backend again.
+   *
+   * @param {any} student Resource selected
+   * @param {boolean} newItem determines if the resource is already saved
+   */
   saveItem(student: any, newItem: boolean) {
     const item = this.editCache[student.id];
 
@@ -88,6 +121,10 @@ export class StudentsComponent implements OnInit {
     });
   }
 
+  /**
+   * Adds a new empty field to the resources array.
+   * Then updates editCache with the new resource.
+   */
   addStudent() {
     this.apiService.getResources('student')
       .subscribe(students => {
@@ -111,6 +148,9 @@ export class StudentsComponent implements OnInit {
       });
   }
 
+  /**
+   * Updates editCache variable with the same values of the resources array and adds a 'edit' key.
+   */
   updateEditCache(): void {
     this.students.forEach(item => {
       this.editCache[item.id] = {
@@ -120,6 +160,11 @@ export class StudentsComponent implements OnInit {
     });
   }
 
+  /**
+   * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
+   *
+   * @param {number} studentId Id of the resource passed
+   */
   updateArrayStudents(studentId: number) {
     delete this.editCache[studentId];
     this.students = this.students.filter(x => x.id !== studentId);
