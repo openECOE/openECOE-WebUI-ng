@@ -28,7 +28,9 @@ export class MessagesInterceptor implements HttpInterceptor {
     return next.handle(request)
       .pipe(
         tap(() => {
-          if (requestMethod) {
+          if (request.url.endsWith('/auth/tokens')) {
+            this.actionMessagesService.createSuccessMsg(this.translate.instant('LOG_IN_SUCCESS'));
+          } else if (requestMethod) {
             this.actionMessagesService.createSuccessMsg(
               this.translate.instant('ITEM_ACTION_SUCCESSFUL', {
                 action: this.translate.instant(requestMethod.actionOk)
@@ -37,7 +39,9 @@ export class MessagesInterceptor implements HttpInterceptor {
           }
         }),
         catchError((err: HttpErrorResponse) => {
-          if (requestMethod) {
+          if (request.url.endsWith('/auth/tokens')) {
+            this.actionMessagesService.createErrorMsg(this.translate.instant('LOG_IN_ERROR'));
+          } else if (requestMethod) {
             // if (err.status === 409) {
             //    CONFLICT
             // }

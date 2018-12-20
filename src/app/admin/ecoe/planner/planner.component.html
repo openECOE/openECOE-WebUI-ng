@@ -95,7 +95,9 @@
     </nz-form-item>
 
     <ng-template #modalFooterShift>
-      <button *ngIf="isEditing && isEditing.edit" nz-button [nzType]="'danger'" (click)="deleteShift(isEditing.itemRef)" style="float: left;">
+      <button *ngIf="isEditing && isEditing.edit" nz-button [nzType]="'danger'"
+              nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteShift(isEditing.itemRef)"
+              style="float: left;">
         <span>{{"DELETE" | translate}}</span>
       </button>
       
@@ -128,7 +130,9 @@
     </nz-form-item>
 
     <ng-template #modalFooterRound>
-      <button *ngIf="isEditing && isEditing.edit" nz-button [nzType]="'danger'" (click)="deleteRound(isEditing.itemRef)" style="float: left;">
+      <button *ngIf="isEditing && isEditing.edit" nz-button [nzType]="'danger'"
+              nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deleteRound(isEditing.itemRef)"
+              style="float: left;">
         <span>{{"DELETE" | translate}}</span>
       </button>
 
@@ -160,9 +164,9 @@
     <button *ngIf="isEditing && isEditing.edit"
             nz-button
             [nzType]="'danger'"
-            (click)="deletePlanner(isEditing.itemRef)"
+            nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deletePlanner(isEditing.itemRef)"
             style="float: left;">
-      <span>{{"DELETE" | translate}}</span>
+      <span>{{"DELETE_PLANNER" | translate}}</span>
     </button>
 
     <button nz-button (click)="showStudentsSelector = false" class="margin-right">

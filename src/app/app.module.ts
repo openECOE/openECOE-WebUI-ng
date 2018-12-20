@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
 import {NgZorroAntdModule, NZ_I18N, es_ES, NZ_MESSAGE_CONFIG} from 'ng-zorro-antd';
 import { registerLocaleData } from '@angular/common';
@@ -33,6 +33,7 @@ export function createTranslateLoader(http: HttpClient) {
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     NgZorroAntdModule,
     TranslateModule.forRoot({

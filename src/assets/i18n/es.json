@@ -75,6 +75,7 @@
   "SURNAMES": "Apellidos",
 
   "PLANNER": "Planificador",
+  "DELETE_PLANNER": "Eliminar planificador",
 
   "GROUPS": "Grupos",
 
@@ -113,5 +114,10 @@
   "CANCEL": "Cancelar",
   "CLOSE": "Cerrar",
   "REFRESH": "Refrescar",
-  "BACK": "Volver"
+  "BACK": "Volver",
+
+  "LOG_IN": "Iniciar sesión",
+  "LOG_OUT": "Cerrar sesión",
+  "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",
+  "LOG_IN_ERROR": "Error al iniciar sesión"
 }
