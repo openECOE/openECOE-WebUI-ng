@@ -3,6 +3,9 @@ import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ResourceIcons} from '../../../constants/icons';
 
+/**
+ * Component with general information of the ECOE.
+ */
 @Component({
   selector: 'app-information',
   templateUrl: './information.component.html',

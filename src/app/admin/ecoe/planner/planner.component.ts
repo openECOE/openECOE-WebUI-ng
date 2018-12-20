@@ -5,6 +5,9 @@ import {forkJoin} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {map} from 'rxjs/operators';
 
+/**
+ * Component with the relations of rounds and shifts to create planners.
+ */
 @Component({
   selector: 'app-planner',
   templateUrl: './planner.component.html',
