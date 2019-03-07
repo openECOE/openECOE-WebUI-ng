@@ -8,7 +8,8 @@ import {QuestionsComponent} from './questions/questions.component';
 import {ExamComponent} from './exam/exam.component';
 import {PlannerComponent} from './planner/planner.component';
 import {StudentsComponent} from './students/students.component';
-import {AuthenticationGuard} from '../../guards/authentication/authentication.guard';
+import {AuthenticationGuard} from '../../../guards/authentication/authentication.guard';
+import {ScheduleComponent} from './schedule/schedule.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,7 @@ const routes: Routes = [
           {path: 'exam', component: ExamComponent},
           {path: 'planner', component: PlannerComponent},
           {path: 'students', component: StudentsComponent},
+          {path: 'schedule', component: ScheduleComponent},
           {path: '', component: InformationComponent},
           {path: '**', redirectTo: ''}
         ]

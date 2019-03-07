@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService} from '../../../services/api/api.service';
+import {ApiService} from '../../../../services/api/api.service';
 import {ActivatedRoute} from '@angular/router';
-import {SharedService} from '../../../services/shared/shared.service';
+import {SharedService} from '../../../../services/shared/shared.service';
 
 /**
  * Component with students.

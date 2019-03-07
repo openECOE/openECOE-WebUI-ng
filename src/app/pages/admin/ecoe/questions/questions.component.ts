@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
-import {ApiService} from '../../../services/api/api.service';
+import {ApiService} from '../../../../services/api/api.service';
 import {forkJoin, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {SharedService} from '../../../services/shared/shared.service';
+import {SharedService} from '../../../../services/shared/shared.service';
 
 /**
  * Component with questions and options by question.

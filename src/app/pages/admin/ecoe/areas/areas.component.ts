@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {ApiService} from '../../../services/api/api.service';
-import {SharedService} from '../../../services/shared/shared.service';
+import {ApiService} from '../../../../services/api/api.service';
+import {SharedService} from '../../../../services/shared/shared.service';
 
 /**
  * Component with areas and questions by area.

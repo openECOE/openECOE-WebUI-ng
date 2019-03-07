@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Papa} from 'ngx-papaparse';
-import {ApiService} from '../../../services/api/api.service';
+import {ApiService} from '../../../../services/api/api.service';
 
 /**
  * Component with the upload files component and FileReader functionality.

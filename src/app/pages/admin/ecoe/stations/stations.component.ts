@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ApiService} from '../../../services/api/api.service';
-import {SharedService} from '../../../services/shared/shared.service';
+import {ApiService} from '../../../../services/api/api.service';
+import {SharedService} from '../../../../services/shared/shared.service';
 import {map} from 'rxjs/operators';
 
 /**

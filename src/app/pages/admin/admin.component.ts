@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService} from '../services/api/api.service';
+import {ApiService} from '../../services/api/api.service';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
-import {SharedService} from '../services/shared/shared.service';
-import {AuthenticationService} from '../services/authentication/authentication.service';
+import {SharedService} from '../../services/shared/shared.service';
+import {AuthenticationService} from '../../services/authentication/authentication.service';
 import {mergeMap} from 'rxjs/operators';
 
 @Component({

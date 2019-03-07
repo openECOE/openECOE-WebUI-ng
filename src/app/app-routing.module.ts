@@ -7,8 +7,8 @@ const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full'},
   { path: 'home', component: HomeComponent},
   { path: 'login', component: LoginComponent },
-  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' },
-  { path: 'evaluation', loadChildren: './evaluation/evaluation.module#EvaluationModule' },
+  { path: 'admin', loadChildren: './pages/admin/admin.module#AdminModule' },
+  { path: 'evaluation', loadChildren: './pages/evaluation/evaluation.module#EvaluationModule' },
   { path: '**', redirectTo: 'home'},
 ];
 

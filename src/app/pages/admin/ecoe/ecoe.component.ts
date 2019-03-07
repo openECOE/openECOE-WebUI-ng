@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import {SharedService} from '../../services/shared/shared.service';
-import {ResourceIcons} from '../../constants/icons';
+import {Component, OnInit} from '@angular/core';
+import {SharedService} from '../../../services/shared/shared.service';
+import {ResourceIcons} from '../../../constants/icons';
+import {ApiService} from '../../../services/api/api.service';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-ecoe',
@@ -9,14 +11,10 @@ import {ResourceIcons} from '../../constants/icons';
 })
 export class EcoeComponent implements OnInit {
 
+  ecoe: any;
   isCollapsed: boolean = false;
 
   ecoe_menu: Array<{title: string, path: string, icon: string, theme?: string}> = [
-    {
-      title: 'BACK',
-      path: '/admin',
-      icon: 'left-square'
-    },
     {
       title: 'INFORMATION',
       path: './',
@@ -47,6 +45,11 @@ export class EcoeComponent implements OnInit {
       title: 'PLANNER',
       path: './planner',
       icon: ResourceIcons.plannerIcon
+    },
+    {
+      title: 'BACK',
+      path: '/admin',
+      icon: 'left-square'
     }
     // {
     //   title: 'CHRONOMETERS',
@@ -60,7 +63,16 @@ export class EcoeComponent implements OnInit {
     // }
   ];
 
-  constructor(public sharedService: SharedService) {
+  constructor(public sharedService: SharedService,
+              private apiService: ApiService,
+              private route: ActivatedRoute,
+              private router: Router
+  ) {
+    const ecoeId = +this.route.snapshot.params.id;
+    this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => {
+      this.ecoe = [ecoe];
+      this.ecoe_menu[0].title = this.ecoe[0].name;
+    });
   }
 
   ngOnInit() {

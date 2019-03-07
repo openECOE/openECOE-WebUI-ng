@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService} from '../../../services/api/api.service';
+import {ApiService} from '../../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ResourceIcons} from '../../../constants/icons';
+import {ResourceIcons} from '../../../../constants/icons';
 
 /**
  * Component with general information of the ECOE.
