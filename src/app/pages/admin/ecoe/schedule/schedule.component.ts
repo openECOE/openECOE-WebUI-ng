@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {Subscription} from 'rxjs';
+import {Schedule} from '../../../../models/schedule';
 
 /**
  * Component schedule to configure stages and events.
@@ -15,9 +16,7 @@ export class ScheduleComponent implements OnInit {
 
   private ecoeId: number;
   private subscriptions: Subscription [] = [];
-  private stages: any[];
   private schedules: any[];
-  private events: any[];
 
   private editCache = {};
 
@@ -33,11 +32,15 @@ export class ScheduleComponent implements OnInit {
   }
 
   getSchedules(): void {
-    this.api.getResources('schedule', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).subscribe(response => {
-      this.stages = response;
-    });
+    const query = {
+      where: {'ecoe': this.ecoeId}
+    };
+
+    Schedule.query(query)
+      .then((schedule) => {
+        this.schedules = schedule;
+        console.log(this.schedules);
+      });
   }
 
   createSchedule(): void {
@@ -53,11 +56,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   getStages(): void {
-    this.api.getResources('stage', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).subscribe(response => {
-      this.stages = response;
-    });
+
   }
 
   createStage(): void {

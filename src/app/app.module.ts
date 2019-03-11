@@ -15,6 +15,11 @@ import {AuthInterceptor} from './interceptors/auth.interceptor';
 import {MessagesInterceptor} from './interceptors/messages.interceptor';
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
+import {environment} from '../environments/environment';
+
+import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@infarm/potion-client';
+
+import {resources} from './app.resources';
 
 registerLocaleData(es);
 
@@ -43,6 +48,7 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
+    PotionModule,
   ],
   providers: [
     {
@@ -63,6 +69,18 @@ export function createTranslateLoader(http: HttpClient) {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MessagesInterceptor,
+      multi: true
+    },
+    {
+      provide: POTION_CONFIG,
+      useValue: {
+        host: environment.API_ROUTE,
+        prefix: '/api'
+      }
+    },
+    {
+      provide: POTION_RESOURCES,
+      useValue: resources,
       multi: true
     }
   ],
