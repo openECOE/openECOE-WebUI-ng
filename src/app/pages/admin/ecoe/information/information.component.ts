@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ResourceIcons} from '../../../../constants/icons';
+import {EcoeComponent} from '../ecoe.component';
+import {ECOE} from '../../../../models/ecoe';
 
 /**
  * Component with general information of the ECOE.
@@ -14,15 +16,12 @@ import {ResourceIcons} from '../../../../constants/icons';
 export class InformationComponent implements OnInit {
 
   ecoe: any;
-  areaIcon: string = ResourceIcons.areaIcon;
-  stationIcon: string = ResourceIcons.stationIcon;
-  studentIcon: string = ResourceIcons.studentIcon;
-  roundIcon: string = ResourceIcons.roundIcon;
-  shiftIcon: string = ResourceIcons.shiftIcon;
+  icons: any = ResourceIcons;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private ecoeComp: EcoeComponent) {
   }
 
   /**
@@ -30,7 +29,12 @@ export class InformationComponent implements OnInit {
    */
   ngOnInit() {
     const ecoeId = +this.route.snapshot.params.id;
-    this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => this.ecoe = [ecoe]);
+    // this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => this.ecoe = [ecoe]);
+
+    ECOE.fetch(ecoeId, {cache: false})
+      .then(ecoe => {
+        this.ecoe = [ecoe];
+      });
   }
 
   /**

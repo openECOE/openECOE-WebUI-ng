@@ -1,7 +1,8 @@
-<nz-content *ngIf="schedules">
+<nz-content>
   <nz-table #table
             [nzData]="schedules"
-            [nzShowPagination]="false">
+            [nzShowPagination]="false"
+            [nzLoading]="loading">
     <thead>
     <tr>
       <th [nzExpand]="true">
@@ -10,49 +11,80 @@
         </a>
       </th>
       <th>{{"NAME" | translate}}</th>
-      <th nzWidth="300px">{{"CODE" | translate}}</th>
-      <th nzWidth="100px">{{"QUESTIONS" | translate}}</th>
-      <!--<th nzWidth="140px">-->
-      <!--<button nz-button [nzType]="'primary'" class="margin-left"-->
-      <!--[nz-tooltip] [nzTitle]="'ADD_AREA' | translate"-->
-      <!--(click)="addArea()">-->
-      <!--<i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>-->
-      <!--</button>-->
-      <!--</th>-->
+      <th>{{"DURATION" | translate}}</th>
+      <th>
+        <button nz-button [nzType]="'primary'" class="margin-left"
+                [nz-tooltip] [nzTitle]="'ADD_AREA' | translate"
+                [disabled]="new_item"
+                (click)="createSchedule()">
+          <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+        </button>
+      </th>
     </tr>
     </thead>
     <tbody>
     <ng-template ngFor let-item [ngForOf]="table.data">
       <tr>
         <td>
-          <ng-container>
-            {{item.stage.id}}
-          </ng-container>
         </td>
-
         <td>
-          <ng-container>
+          <ng-container *ngIf="!editCache[item.id].edit; else editName">
             {{item.stage.name}}
           </ng-container>
+
+          <ng-template #editName>
+            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="item.stage.name">
+          </ng-template>
         </td>
 
         <td>
-          <ng-container>
+          <ng-container *ngIf="!editCache[item.id].edit; else editDuration">
             {{item.stage.duration}}
           </ng-container>
+
+          <ng-template #editDuration>
+            <input type="number" nz-input [nzSize]="'small'" [(ngModel)]="item.stage.duration">
+          </ng-template>
         </td>
 
-        <!--<td>{{item.events.length}}</td>-->
+        <td text-right>
+          <app-action-buttons [isEditing]="editCache[item.id].edit"
+                              [isNewItem]="editCache[item.id].new_item"
+                              (startEdit)="startEdit(item)"
+                              (delete)="deleteSchedule(item)"
+                              (save)="saveSchedule(item)"
+                              (cancelEdit)="cancelEdit(item)">
+          </app-action-buttons>
+        </td>
+      </tr>
+      <tr [nzExpand]="item.expand">
+        <td></td>
+        <td colspan="4" inner-table>
+          <nz-table #questionTable [nzData]="item.questionsArray" [nzSize]="'middle'" [nzShowPagination]="false">
+            <thead>
+            <tr>
+              <th>{{"DESCRIPTION" | translate}}</th>
+              <th nzWidth="300px">{{"REFERENCE" | translate}}</th>
+            </tr>
+            </thead>
 
-        <!--<td text-right>-->
-          <!--<app-action-buttons [isEditing]="editCache[item.id].edit"-->
-                              <!--[isNewItem]="editCache[item.id].new_item"-->
-                              <!--(startEdit)="startEdit(item.id)"-->
-                              <!--(delete)="deleteItem(item)"-->
-                              <!--(save)="saveItem(item, editCache[item.id].new_item)"-->
-                              <!--(cancelEdit)="cancelEdit(item)">-->
-          <!--</app-action-buttons>-->
-        <!--</td>-->
+            <tbody>
+            <tr *ngFor="let question of questionTable.data; let i = index">
+              <td>
+                <ng-container>
+                  {{question.description}}
+                </ng-container>
+              </td>
+
+              <td>
+                <ng-container>
+                  {{question.reference}}
+                </ng-container>
+              </td>
+            </tr>
+            </tbody>
+          </nz-table>
+        </td>
       </tr>
     </ng-template>
     </tbody>

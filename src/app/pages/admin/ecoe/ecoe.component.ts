@@ -3,6 +3,7 @@ import {SharedService} from '../../../services/shared/shared.service';
 import {ResourceIcons} from '../../../constants/icons';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ECOE} from '../../../models/ecoe';
 
 @Component({
   selector: 'app-ecoe',
@@ -14,7 +15,7 @@ export class EcoeComponent implements OnInit {
   ecoe: any;
   isCollapsed: boolean = false;
 
-  ecoe_menu: Array<{title: string, path: string, icon: string, theme?: string}> = [
+  ecoe_menu: Array<{ title: string, path: string, icon: string, theme?: string }> = [
     {
       title: 'INFORMATION',
       path: './',
@@ -47,20 +48,16 @@ export class EcoeComponent implements OnInit {
       icon: ResourceIcons.plannerIcon
     },
     {
+      title: 'SCHEDULE',
+      path: './schedule',
+      icon: ResourceIcons.scheduleIcon,
+      theme: 'outline'
+    },
+    {
       title: 'BACK',
       path: '/admin',
       icon: 'left-square'
     }
-    // {
-    //   title: 'CHRONOMETERS',
-    //   path: '',
-    //   icon: ResourceIcons.chronometerIcon
-    // },
-    // {
-    //   title: 'SCHEDULE',
-    //   path: '',
-    //   icon: ResourceIcons.scheduleIcon
-    // }
   ];
 
   constructor(public sharedService: SharedService,
@@ -69,10 +66,17 @@ export class EcoeComponent implements OnInit {
               private router: Router
   ) {
     const ecoeId = +this.route.snapshot.params.id;
-    this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => {
-      this.ecoe = [ecoe];
-      this.ecoe_menu[0].title = this.ecoe[0].name;
-    });
+    // this.apiService.getResource(`/api/ecoe/${ecoeId}`)
+    //   .subscribe(ecoe => {
+    //     this.ecoe = [ecoe];
+    //     this.ecoe_menu[0].title = this.ecoe[0].name;
+    //   });
+
+    ECOE.fetch(ecoeId)
+      .then(ecoe => {
+        this.ecoe = ecoe;
+        this.ecoe_menu[0].title = this.ecoe.name;
+      });
   }
 
   ngOnInit() {

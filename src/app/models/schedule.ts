@@ -1,10 +1,12 @@
 import {Item} from '@infarm/potion-client';
+import {ECOE, Station} from './ecoe';
 
 export class Schedule extends Item {
   id: number;
-  id_ecoe: number;
-  id_stage: number;
-  id_station: number;
+  ecoe: ECOE;
+  stage: Stage;
+  events: Event[];
+  station: Station;
 }
 
 export class Stage extends Item {

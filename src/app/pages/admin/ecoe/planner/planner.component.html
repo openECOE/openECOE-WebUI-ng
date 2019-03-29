@@ -4,68 +4,67 @@
             [nzData]="planners"
             [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
-      <tr>
-        <th nzWidth="100px" nzLeft="0px"></th>
-        <th *ngFor="let shift of shifts" nzWidth="100px" class="container">
-          <span>{{shift.time_start['$date'] | date: 'medium'}}</span>
+    <tr>
+      <th nzWidth="100px" nzLeft="0px"></th>
+      <th *ngFor="let shift of shifts" nzWidth="100px" class="container">
+        <span>{{shift.time_start['$date'] | date: 'medium'}}</span>
 
-            <app-action-buttons class="action-buttons"
-                                [isEditing]="false"
-                                [isNewItem]="false"
-                                [showDeleteButton]="false"
-                                (startEdit)="addShift(shift)">
-            </app-action-buttons>
+        <app-action-buttons class="action-buttons"
+                            [isEditing]="false"
+                            [isNewItem]="false"
+                            [showDeleteButton]="false"
+                            (startEdit)="addShift(shift)">
+        </app-action-buttons>
 
-        </th>
-        <th (click)="addShift()" nzWidth="100px" nzRight="0px" tappable>
-          <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
-          {{"ADD_SHIFT" | translate}}
-        </th>
-      </tr>
+      </th>
+      <th (click)="addShift()" nzWidth="100px" nzRight="0px" tappable>
+        <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
+        {{"ADD_SHIFT" | translate}}
+      </th>
+    </tr>
     </thead>
 
     <tbody>
-      <ng-template ngFor let-item [ngForOf]="table.data">
-        <tr>
-          <td white-bg nzLeft="0px" class="container">
-            <span>{{item.round_code}}</span>
-
-            <app-action-buttons class="action-buttons"
-                                [isEditing]="false"
-                                [isNewItem]="false"
-                                [showDeleteButton]="false"
-                                (startEdit)="addRound(item)">
-            </app-action-buttons>
-          </td>
-          <td *ngFor="let plan of item.shifts" tappable
-              (click)="!plan.planner_assigned ? loadStudents(plan.id, item.id) : loadStudents(plan.id, item.id, plan.plannerRef)"
-              [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
+    <ng-template ngFor let-item [ngForOf]="table.data">
+      <tr>
+        <td white-bg nzLeft="0px" class="container">
+          <span>{{item.round_code}}</span>
+          <app-action-buttons class="action-buttons"
+                              [isEditing]="false"
+                              [isNewItem]="false"
+                              [showDeleteButton]="false"
+                              (startEdit)="addRound(item)">
+          </app-action-buttons>
+        </td>
+        <td *ngFor="let plan of item.shifts" tappable
+            (click)="!plan.planner_assigned ? loadStudents(plan.id, item.id) : loadStudents(plan.id, item.id, plan.plannerRef)"
+            [ngClass]="(plan.planner_assigned && plan.students.length == 0) ? 'empty' :
              (plan.planner_assigned && plan.students.length < stations.length) ? 'incomplete' :
              plan.planner_assigned ? 'complete' : ''" class="container">
 
-            <span *ngIf="plan.planner_assigned">{{plan.students.length}}/{{stations.length}}</span>
+          <span *ngIf="plan.planner_assigned">{{plan.students.length}}/{{stations.length}}</span>
 
-            <app-action-buttons *ngIf="plan.planner_assigned"
-                                class="action-buttons"
-                                [isEditing]="false"
-                                [isNewItem]="false"
-                                [showDeleteButton]="false">
-            </app-action-buttons>
-            <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
-          </td>
-
-          <td nzRight="0px" style="border: none;"></td>
-        </tr>
-      </ng-template>
-
-      <tr>
-        <td white-bg tappable nzLeft="0px" (click)="addRound()">
-          <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
-          {{"ADD_ROUND" | translate}}
+          <app-action-buttons *ngIf="plan.planner_assigned"
+                              class="action-buttons"
+                              [isEditing]="false"
+                              [isNewItem]="false"
+                              [showDeleteButton]="false">
+          </app-action-buttons>
+          <i nz-icon type="plus-circle" [theme]="'twotone'" *ngIf="!plan.planner_assigned"></i>
         </td>
 
-        <!--<td *ngFor="let x of shifts" style="border: none;"></td>-->
+        <td nzRight="0px" style="border: none;"></td>
       </tr>
+    </ng-template>
+
+    <tr>
+      <td white-bg tappable nzLeft="0px" (click)="addRound()">
+        <i nz-icon type="plus-circle" [theme]="'twotone'" class="margin-right"></i>
+        {{"ADD_ROUND" | translate}}
+      </td>
+
+      <!--<td *ngFor="let x of shifts" style="border: none;"></td>-->
+    </tr>
     </tbody>
   </nz-table>
 </nz-content>
@@ -78,7 +77,7 @@
     <nz-form-item>
       <nz-form-label [nzRequired]="true" [nzFor]="'shift_code'">{{"CODE" | translate}}</nz-form-label>
       <nz-form-control>
-        <input nz-input id="shift_code" [formControlName]="'shift_code'" />
+        <input nz-input id="shift_code" [formControlName]="'shift_code'"/>
       </nz-form-control>
     </nz-form-item>
 
@@ -100,7 +99,7 @@
               style="float: left;">
         <span>{{"DELETE" | translate}}</span>
       </button>
-      
+
       <button nz-button (click)="closeModalShift()" class="margin-right">
         <span>{{"CANCEL" | translate}}</span>
       </button>
@@ -119,13 +118,13 @@
     <nz-form-item>
       <nz-form-label [nzRequired]="true" [nzFor]="'description'">{{"DESCRIPTION" | translate}}</nz-form-label>
       <nz-form-control>
-        <input nz-input id="description" [formControlName]="'description'" />
+        <input nz-input id="description" [formControlName]="'description'"/>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
       <nz-form-label [nzRequired]="true" [nzFor]="'round_code'">{{"CODE" | translate}}</nz-form-label>
       <nz-form-control>
-        <input nz-input id="round_code" [formControlName]="'round_code'" />
+        <input nz-input id="round_code" [formControlName]="'round_code'"/>
       </nz-form-control>
     </nz-form-item>
 
@@ -153,7 +152,9 @@
   <nz-checkbox-wrapper (nzOnChange)="checkStudentsSelected($event)">
     <div *ngFor="let student of students">
       <label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected" [nzDisabled]="student.disabled">
-        {{student.dni}} <nz-divider [nzType]="'vertical'"></nz-divider> {{student.surnames}}, {{student.name}}
+        {{student.dni}}
+        <nz-divider [nzType]="'vertical'"></nz-divider>
+        {{student.surnames}}, {{student.name}}
       </label>
       <br/>
       <br/>

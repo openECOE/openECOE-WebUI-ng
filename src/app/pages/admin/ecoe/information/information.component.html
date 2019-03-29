@@ -8,21 +8,21 @@
                            [title]="'AREAS'"
                            [no_items]="'NO_AREAS'"
                            [itemsArray]="item.areas"
-                           [icon]="areaIcon">
+                           [icon]="icons.areaIcon">
             </app-item-info>
 
             <app-item-info [link]="'stations'"
                            [title]="'STATIONS'"
                            [no_items]="'NO_STATIONS'"
                            [itemsArray]="item.stations"
-                           [icon]="stationIcon">
+                           [icon]="icons.stationIcon">
             </app-item-info>
 
             <app-item-info [link]="'students'"
                            [title]="'STUDENTS'"
                            [no_items]="'NO_STUDENTS'"
                            [itemsArray]="item.students"
-                           [icon]="studentIcon"
+                           [icon]="icons.studentIcon"
                            [theme]="'outline'">
             </app-item-info>
 
@@ -30,14 +30,22 @@
                            [title]="'ROUNDS'"
                            [no_items]="'NO_ROUNDS'"
                            [itemsArray]="item.rounds"
-                           [icon]="roundIcon">
+                           [icon]="icons.roundIcon">
             </app-item-info>
 
             <app-item-info [link]="'planner'"
                            [title]="'SHIFTS'"
                            [no_items]="'NO_SHIFTS'"
                            [itemsArray]="item.shifts"
-                           [icon]="shiftIcon">
+                           [icon]="icons.shiftIcon">
+            </app-item-info>
+
+            <app-item-info [link]="'schedule'"
+                           [title]="'SCHEDULE'"
+                           [no_items]="'NO_SCHEDULE'"
+                           [itemsArray]="item.schedules"
+                           [icon]="icons.scheduleIcon"
+                           [theme]="'outline'">
             </app-item-info>
           </ng-template>
         </nz-list>
