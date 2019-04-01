@@ -67,8 +67,13 @@
   "QBLOCK": "Bloque",
 
   "SCHEDULE":  "Cronómetros",
+  "ADD_STAGE": "Añadir Fase",
+  "STAGE_INFO": "Información de la Fase",
   "NO_SCHEDULE":  "No hay Cronómetros",
   "DURATION": "Duración",
+  "DURATION_PLACEHOLDER": "Introduzca la duración de la Fase",
+  "MINUTES": "minutos",
+  "SECONDS": "segundos",
 
   "ADD_STUDENT": "Añadir estudiante",
   "STUDENTS": "Alumnos",
@@ -89,6 +94,7 @@
   "CREATED": "creado",
   "TO_DELETE": "eliminar",
   "DELETED": "eliminado",
+  "VALIDATING": "Validando...",
 
   "MULTI_ANSWER": "Respuesta múltiple",
   "ONE_ANSWER": "Respuesta única",
@@ -98,6 +104,7 @@
   "ITEM_ACTION_ERROR": "Error al {{action}} el elemento",
 
   "NAME": "Nombre",
+  "NAME_PLACEHOLDER": "Introduzca el nombre...",
 
   "MOVE_UP": "Subir posición",
   "MOVE_DOWN": "Bajar posición",

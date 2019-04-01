@@ -16,6 +16,8 @@ import { ScheduleComponent } from './schedule/schedule.component';
 import { StudentsComponent } from './students/students.component';
 import { PlannerComponent } from './planner/planner.component';
 import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
+import { EventsComponent } from './schedule/events/events.component';
+import {PipesModule} from '../../../pipes/pipes.module';
 
 @NgModule({
   imports: [
@@ -24,7 +26,8 @@ import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.com
     FormsModule,
     ReactiveFormsModule,
     NgZorroAntdModule,
-    TranslateModule
+    TranslateModule,
+    PipesModule
   ],
   declarations: [
     EcoeComponent,
@@ -38,7 +41,8 @@ import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.com
     ScheduleComponent,
     StudentsComponent,
     PlannerComponent,
-    UploadAndParseComponent
+    UploadAndParseComponent,
+    EventsComponent
   ]
 })
 export class EcoeModule { }

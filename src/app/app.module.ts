@@ -20,6 +20,7 @@ import {environment} from '../environments/environment';
 import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@infarm/potion-client';
 
 import {resources} from './app.resources';
+import {PipesModule} from './pipes/pipes.module';
 
 registerLocaleData(es);
 
@@ -31,7 +32,7 @@ export function createTranslateLoader(http: HttpClient) {
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginComponent
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,6 +50,7 @@ export function createTranslateLoader(http: HttpClient) {
       }
     }),
     PotionModule,
+    PipesModule,
   ],
   providers: [
     {
