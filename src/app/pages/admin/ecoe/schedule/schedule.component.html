@@ -1,27 +1,38 @@
 <nz-content>
   <button nz-button [nzType]="'dashed'"
-          [nz-tooltip] [nzTitle]="'ADD_STAGE' | translate"
-          (click)="showStageModal()"
+          [title]="(loading ? 'LOADING' : 'ADD_STAGE') | translate"
+          (click)="showModalStage()"
           [nzBlock]="true"
-          [nzSize]="'large'">
+          [nzSize]="'large'"
+          [nzLoading]="loading">
     <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
-    {{'ADD_STAGE' | translate}}
+    {{(loading ? 'LOADING' : 'ADD_STAGE') | translate}}
   </button>
   <nz-tabset
     [nzTabPosition]="'left'"
-    [nzSelectedIndex]="tabIndex"
-    (nzSelectChange)="log([$event])"
-
+    [(nzSelectedIndex)]="tabIndex"
   >
     <nz-tab
-      *ngFor="let schedule of schedules"
+      *ngFor="let schedule of schedules ; first as isFirst; last as isLast; let i = index;"
       [nzTitle]="schedule.stage.name"
-      (nzSelect)="log(['select', tab])"
-      (nzClick)="log(['click', tab])"
-      (nzDeselect)="onDeselectTabStage()"
+      (nzDeselect)="onDeselectTabStage(schedule)"
     >
       <nz-card>
         <nz-row [nzGutter]="16">
+          <nz-col [nzSpan]="2">
+            <nz-row>
+              <nz-col>
+                <button nz-button nzType="default" nzSize="small" style="width: 40px" [disabled]="isFirst" (click)="interchangeOrder(schedule, schedules[i-1])"><i nz-icon type="caret-up"></i>
+                </button>
+              </nz-col>
+            </nz-row>
+            <nz-row>
+              <nz-col>
+                <button nz-button nzType="default" nzSize="small" style="width: 40px" [disabled]="isLast" (click)="interchangeOrder(schedule, schedules[i+1])"><i nz-icon type="caret-down"></i>
+                </button>
+              </nz-col>
+            </nz-row>
+          </nz-col>
           <nz-col [nzSpan]="8">
             <nz-statistic [nzValue]="schedule.stage.name"
                           [nzPrefix]="prefixStageName"
@@ -79,36 +90,38 @@
             <ng-template #prefixStageDuration><i nz-icon nzType="clock-circle"></i></ng-template>
 
           </nz-col>
-          <nz-col [nzSpan]="8" text-right>
-            <button nz-button
-                    [nzType]="'primary'"
-                    (click)="cancelEditStage(schedule)"
-                    *ngIf="editStage">
-              <span><i nz-icon type="save"></i>{{"SAVE" | translate}}</span>
-            </button>
-            <button nz-button
-                    [nzType]="'default'"
-                    (click) = "startEditStage(schedule)"
-                    *ngIf="!editStage">
-              <span><i nz-icon type="edit"></i>{{"EDIT" | translate}}</span>
-            </button>
-            <button nz-popconfirm
-                    [nzTitle]="'DELETE_CONFIRMATION' | translate"
-                    (nzOnConfirm)="deleteSchedule(schedule)"
-                    [nzPlacement]="'top'"
-                    [nzOkText]="'DELETE' | translate" [nzCancelText]="'CANCEL' | translate"
-                    nz-button
-                    [nzType]="'danger'">
-              <span><i nz-icon type="delete"></i>{{"DELETE" | translate}}</span>
-            </button>
+          <nz-col [nzSpan]="6" text-right>
+            <nz-button-group>
+              <button nz-button
+                      [nzType]="'primary'"
+                      (click)="cancelEditStage(schedule)"
+                      *ngIf="editStage">
+                <span><i nz-icon type="save"></i> {{"SAVE" | translate}}</span>
+              </button>
+              <button nz-button
+                      [nzType]="'default'"
+                      (click)="startEditStage(schedule)"
+                      *ngIf="!editStage"
+              >
+                <span><i nz-icon type="edit"></i> {{"EDIT" | translate}}</span>
+              </button>
+              <button nz-popconfirm
+                      [nzTitle]="'DELETE_CONFIRMATION' | translate"
+                      (nzOnConfirm)="deleteSchedule(schedule)"
+                      [nzPlacement]="'top'"
+                      [nzOkText]="'DELETE' | translate" [nzCancelText]="'CANCEL' | translate"
+                      nz-button
+                      [nzType]="'danger'">
+                <span><i nz-icon type="delete"></i> {{"DELETE" | translate}}</span>
+              </button>
+            </nz-button-group>
           </nz-col>
         </nz-row>
       </nz-card>
 
-      <app-events></app-events>
+      <app-events [schedule]="schedule"></app-events>
 
     </nz-tab>
-
   </nz-tabset>
 </nz-content>
 

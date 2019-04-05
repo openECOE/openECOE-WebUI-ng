@@ -75,6 +75,17 @@
   "MINUTES": "minutos",
   "SECONDS": "segundos",
 
+  "ADD_EVENT": "Añadir Evento",
+  "TEXT": "Texto",
+  "TEXT_PLACEHOLDER": "Introduzca el texto...",
+  "TIME": "Tiempo",
+  "TIME_INFO": "Indique el tiempo de activación del evento",
+  "SOUND": "Sonido",
+  "SOUND_PLACEHOLDER": "Seleccione el sonido...",
+  "NO_SOUND": "Sin sonido",
+  "IS_COUNTDOWN": "Cuenta atrás",
+  "IS_COUNTDOWN_INFO": "¿Desea que el cronómetro sea de cuenta atrás?",
+
   "ADD_STUDENT": "Añadir estudiante",
   "STUDENTS": "Alumnos",
   "NO_STUDENTS": "No hay alumnos",
@@ -111,6 +122,8 @@
 
   "PREVIEW_EXAM": "Previsualizar examen",
 
+  "LOADING": "Cargando",
+  "ACTIONS": "Acciones",
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
   "ACTION": "Acción",
   "DELETE": "Eliminar",
@@ -124,6 +137,9 @@
   "CLOSE": "Cerrar",
   "REFRESH": "Refrescar",
   "BACK": "Volver",
+  "CLOSE_EDITION": "Cerrar edición",
+
+  "SELECT": "Seleccionar...",
 
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",

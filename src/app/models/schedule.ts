@@ -22,5 +22,5 @@ export class Event extends Item {
   sound: string;
   text: string;
   schedule: Schedule;
-  is_countdown: boolean;
+  isCountdown: boolean;
 }

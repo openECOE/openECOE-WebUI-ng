@@ -6,6 +6,7 @@ import {Stage, Event} from '../../../../models/schedule';
 import {ECOE} from '../../../../models/ecoe';
 import {FormGroup, FormControl, ValidationErrors, Validators, FormBuilder} from '@angular/forms';
 import {Observable, Observer} from 'rxjs';
+import {SharedService} from '../../../../services/shared/shared.service';
 
 /**
  * Component schedule to configure stages and events.
@@ -38,6 +39,203 @@ export class ScheduleComponent implements OnInit {
 
   validateFormStage: FormGroup;
 
+  constructor(
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
+    private shared: SharedService
+  ) {
+
+    this.validateFormStage = this.fb.group({
+      stageName: ['', [Validators.required]],
+      stageDurationMin: ['', [Validators.required]],
+      stageDurationSec: ['', [Validators.required]],
+    });
+  }
+
+  ngOnInit() {
+    this.loading = true;
+    this.ecoeId = +this.route.snapshot.params.id;
+    ECOE.fetch(this.ecoeId)
+      .then(value => {
+        this.ecoe = value;
+        this.getSchedules();
+      })
+      .catch(reason => console.log(reason))
+      .finally(() => this.loading = false);
+  }
+
+  updateEditCache() {
+    this.schedules.map(item => {
+      this.editCache[item.id] = {edit: this.editCache[item.id] ? this.editCache[item.id].edit : false, ...item};
+    });
+  }
+
+  startEditStage(item: any): void {
+    const duration = this.shared.toMinutesSeconds(item.stage.duration);
+    this.editStageMin = duration.minutes;
+    this.editStageSec = duration.seconds;
+
+    this.editStage = true;
+  }
+
+  /**
+   * Sets the edit variable to false.
+   *
+   * @param {any} item Resource selected
+   */
+  cancelEditStage(item: Schedule): void {
+    item.stage.save()
+      .catch(reason => console.log('delete Stage error:', reason));
+    this.editStage = false;
+  }
+
+  interchangeOrder(sched1: Schedule, sched2: Schedule): void {
+    const order1 = sched1.stage.order;
+    const order2 = sched2.stage.order;
+
+    sched1.stage.order = order2;
+    sched2.stage.order = order1;
+
+    sched1.stage.save()
+      .then(() => {
+        sched2.stage.save()
+          .then(() => {
+            this.schedules = this.orderSchedules(this.schedules);
+          });
+      });
+  }
+
+  getSchedules(): void {
+    this.loading = true;
+    const query = {
+      where: {'ecoe': this.ecoeId, 'station': null}
+    };
+
+    Schedule.query(query)
+      .then((schedule) => {
+        // @ts-ignore
+        this.schedules = this.orderSchedules(schedule);
+        console.log(this.schedules);
+        this.loading = false;
+      })
+      .catch((err) => {
+        console.log('error', err);
+        this.loading = false;
+      });
+  }
+
+  orderSchedules(schedules: Schedule[]): Schedule[] {
+    // @ts-ignore
+    return schedules.sort((a, b) => a.stage.order > b.stage.order);
+  }
+
+  createSchedule(name: string, duration: number) {
+
+    const stage = new Stage();
+    stage.duration = duration;
+    stage.name = name;
+    this.schedules.length === 0 ? stage.order = 0 : stage.order = (this.schedules[this.schedules.length - 1].stage.order) + 1;
+    stage.save()
+      .then(new_stage => {
+        console.log('stage save', new_stage);
+        const schedule = new Schedule();
+        schedule.stage = new_stage;
+        schedule.ecoe = this.ecoe;
+        schedule.save()
+          .then(ret_schedule => {
+            console.log('schedule save', ret_schedule);
+            // Create Start and Finish Events
+            this.createDefaultEvents(ret_schedule)
+              .then(value => {
+                this.schedules = [...this.schedules, ret_schedule];
+                this.tabIndex = this.schedules.length;
+              });
+          })
+          .catch(reason => {
+            console.log('error', reason);
+            new_stage.destroy().catch(reason1 => console.log('delete Stage error:', reason1));
+          });
+      })
+      .catch(reason => console.log('error', reason));
+  }
+
+  createDefaultEvents(schedule: Schedule): Promise<any> {
+    const eventStart = new Event();
+    eventStart.schedule = schedule;
+    eventStart.time = 0;
+    eventStart.isCountdown = false;
+    eventStart.sound = null;
+    eventStart.text = 'Inicio';
+
+    const eventFinish = new Event();
+    eventFinish.schedule = schedule;
+    eventFinish.time = schedule.stage.duration;
+    eventFinish.isCountdown = true;
+    eventFinish.sound = null;
+    eventFinish.text = 'Fin';
+
+    const saveStart = eventStart.save()
+      .then(value => {
+        console.log('eventStart Created', value);
+        schedule.events = [...schedule.events, value];
+      })
+      .catch(reason => console.error(reason));
+
+    const saveFinish = eventFinish.save()
+      .then(value => {
+        console.log('eventFinish Created', value);
+        schedule.events = [...schedule.events, value];
+      })
+      .catch(reason => console.error(reason));
+
+    return Promise.all([saveStart, saveFinish]);
+  }
+
+  deleteSchedule(item: Schedule): void {
+    if (item.events) {
+      item.events.map(event => event.destroy()
+        .then(value => console.log('[DELETE] Event', event))
+        .catch(reason => console.error('delete Event error:', reason))
+      );
+    }
+    item.destroy()
+      .then(() => {
+        console.log('[DELETE] Schedule', item);
+        item.stage.destroy()
+          .then(() => {
+            console.log('[DELETE] Stage', item.stage);
+            this.schedules = this.schedules.filter(x => x.id !== item.id);
+          })
+          .catch(reason => console.log('delete Stage error:', reason));
+      })
+      .catch(reason => console.log('delete Schedule error:', reason));
+  }
+
+  onDeselectTabStage(schedule: Schedule): void {
+    if (this.editStage) {
+      this.cancelEditStage(schedule);
+    }
+  }
+
+  showModalStage(): void {
+    this.modalStage = true;
+  }
+
+  handleStageOk(): void {
+    console.log('Button ok clicked!');
+    this.modalStage = false;
+  }
+
+  handleStageCancel(): void {
+    console.log('Button cancel clicked!');
+    this.modalStage = false;
+    this.cleanForm(this.validateFormStage);
+  }
+
+  inputToSeconds(schedule: Schedule): void {
+    schedule.stage.duration = this.shared.toSeconds(this.editStageMin, this.editStageSec);
+  }
+
   submitFormStage = ($event: any, value: any) => {
     $event.preventDefault();
     for (const key in this.validateFormStage.controls) {
@@ -46,7 +244,7 @@ export class ScheduleComponent implements OnInit {
     }
     console.log(value);
 
-    const stageDuration = this.toSeconds(value.stageDurationMin, value.stageDurationSec);
+    const stageDuration = this.shared.toSeconds(value.stageDurationMin, value.stageDurationSec);
 
     this.createSchedule(value.stageName, stageDuration);
     this.handleStageCancel();
@@ -63,186 +261,6 @@ export class ScheduleComponent implements OnInit {
       form.controls[key].markAsPristine();
       form.controls[key].updateValueAndValidity();
     }
-  }
-
-  constructor(
-    private route: ActivatedRoute,
-    private fb: FormBuilder,
-  ) {
-
-    this.validateFormStage = this.fb.group({
-      stageName: ['', [Validators.required]],
-      stageDurationMin: ['', [Validators.required]],
-      stageDurationSec: ['', [Validators.required]],
-    });
-  }
-
-  ngOnInit() {
-    this.ecoeId = +this.route.snapshot.params.id;
-    ECOE.fetch(this.ecoeId)
-      .then(value => {
-        this.ecoe = value;
-        this.getSchedules();
-      })
-      .catch(reason => console.log(reason));
-  }
-
-  updateEditCache() {
-    this.schedules.map(item => {
-      this.editCache[item.id] = {edit: this.editCache[item.id] ? this.editCache[item.id].edit : false, ...item};
-    });
-  }
-
-  startEditStage(item: any): void {
-    const duration = this.toMinutesSeconds(item.stage.duration);
-    this.editStageMin = duration.minutes;
-    this.editStageSec = duration.seconds;
-
-    this.editStage = true;
-  }
-
-  /**
-   * Sets the edit variable to false.
-   *
-   * @param {any} item Resource selected
-   */
-  cancelEditStage(): void {
-    this.editStage = false;
-  }
-
-  getSchedules(): void {
-    this.loading = true;
-    const query = {
-      where: {'ecoe': this.ecoeId}
-    };
-
-    Schedule.query(query)
-      .then((schedule) => {
-        this.schedules = schedule;
-        console.log(this.schedules);
-        this.loading = false;
-      })
-      .catch((err) => {
-        console.log('error', err);
-        this.loading = false;
-      });
-  }
-
-  createSchedule(name: string, duration: number) {
-
-    const stage = new Stage();
-    stage.duration = duration;
-    stage.name = name;
-    stage.order = this.schedules.length;
-    stage.save()
-      .then(new_stage => {
-        console.log('stage save', new_stage);
-        const schedule = new Schedule();
-        schedule.stage = new_stage;
-        schedule.ecoe = this.ecoe;
-        schedule.save()
-          .then(ret_schedule => {
-            console.log('schedule save', ret_schedule);
-            this.schedules = [...this.schedules, ret_schedule];
-          })
-          .catch(reason => {
-            console.log('error', reason);
-            new_stage.destroy().catch(reason1 => console.log('delete Stage error:', reason1));
-          });
-      })
-      .catch(reason => console.log('error', reason));
-  }
-
-  deleteSchedule(item: Schedule): void {
-    if (item.events) {
-      item.events.map(event => event.destroy()
-        .catch(reason => console.log('delete Event error:', reason)));
-    }
-    item.destroy()
-      .then(() => {
-        item.stage.destroy()
-          .then(() => this.schedules = this.schedules.filter(x => x.id !== item.id))
-          .catch(reason => console.log('delete Stage error:', reason));
-      })
-      .catch(reason => console.log('delete Schedule error:', reason));
-
-
-  }
-
-  /* tslint:disable-next-line:no-any */
-  log(args: any[]): void {
-    console.log(args);
-  }
-
-  onDeselectTabStage(): void {
-    this.cancelEditStage();
-  }
-
-  createStage(): void {
-
-  }
-
-  updateStage(): void {
-
-  }
-
-  deleteStage(): void {
-
-  }
-
-  createEvent(schedule: Schedule,
-              time: number,
-              is_countdown: boolean,
-              text: string,
-              sound: string,
-  ): void {
-    const event = new Event();
-    event.schedule = schedule;
-    event.time = time;
-    event.is_countdown = is_countdown;
-    event.text = text;
-    event.sound = sound;
-    event.save()
-      .then(value => console.log('create event:', event))
-      .catch(reason => console.log('error event:', reason));
-  }
-
-  updateEvent(): void {
-
-  }
-
-  deleteEvent(): void {
-
-  }
-
-  showStageModal(): void {
-    this.modalStage = true;
-  }
-
-  handleStageOk(): void {
-    console.log('Button ok clicked!');
-
-    this.modalStage = false;
-  }
-
-  handleStageCancel(): void {
-    console.log('Button cancel clicked!');
-    this.modalStage = false;
-    this.cleanForm(this.validateFormStage);
-  }
-
-  inputToSeconds(schedule: Schedule): void {
-    schedule.stage.duration = this.toSeconds(this.editStageMin, this.editStageSec);
-  }
-
-  toSeconds(minutes: number, seconds: number): number {
-    return (minutes * 60) + seconds;
-  }
-
-  toMinutesSeconds(seconds: number): {minutes: number, seconds: number} {
-    const min: number = Math.floor(seconds / 60);
-    const sec: number = (seconds - min * 60);
-    return {minutes: min, seconds: sec};
   }
 
 }

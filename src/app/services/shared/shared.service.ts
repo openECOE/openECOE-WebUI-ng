@@ -72,4 +72,27 @@ export class SharedService {
 
     return items.reduce((max, p) => p.id > max ? p.id : max, items[0].id);
   }
+
+  /**
+   * Return minutes and seconds converted to only seconds.
+   *
+   * @param {number} Number of minutes
+   * @param {number} Number of seconds
+   * @returns {number} Sum of minutes and seconds in seconds
+   */
+  toSeconds(minutes: number, seconds: number): number {
+    return (minutes * 60) + seconds;
+  }
+
+  /**
+   * Get an array of minutes and seconds with an input of seconds.
+   *
+   * @param {number} Number of seconds
+   * @returns { minutes: number, seconds: number } Dictionary with values minutes and seconds
+   */
+  toMinutesSeconds(seconds: number): { minutes: number, seconds: number } {
+    const min: number = Math.floor(seconds / 60);
+    const sec: number = (seconds - min * 60);
+    return {minutes: min, seconds: sec};
+  }
 }
