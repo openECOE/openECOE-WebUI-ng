@@ -1,8 +1,10 @@
 import {Component, Input, Output, OnInit, EventEmitter} from '@angular/core';
 import {Event, Schedule} from '../../../../../models/schedule';
+import {Station} from '../../../../../models/ecoe';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SharedService} from '../../../../../services/shared/shared.service';
 import {subscriptionLogsToBeFn} from 'rxjs/internal/testing/TestScheduler';
+import {Item} from '@infarm/potion-client';
 
 @Component({
   selector: 'app-events',
@@ -20,6 +22,7 @@ export class EventsComponent implements OnInit {
 
   modalEvent: boolean = false;
 
+
   editCache: { [key: number]: any } = {};
 
   mapOfSort: { [key: string]: any } = {
@@ -30,8 +33,10 @@ export class EventsComponent implements OnInit {
   sortName: string | null = 'time';
   sortValue: string | null = 'ascend';
 
-  listOfData: Array<Event>;
-  listOfDisplayData: Array<Event>;
+  listOfData: Array<Event> = [];
+  listOfDisplayData: Array<Event> = [];
+
+  listOfStation: Array<Station>;
 
   soundsLocation: string = 'assets/sounds/';
   audioType: string = 'audio/mpeg';
@@ -57,6 +62,7 @@ export class EventsComponent implements OnInit {
       eventCountdown: [false, [Validators.required]],
       eventText: [null],
       eventSound: [null],
+      eventStation: [null]
     });
   }
 
@@ -70,13 +76,23 @@ export class EventsComponent implements OnInit {
     this.listOfData = [
       ...this.schedule.events
     ];
-    this.listOfDisplayData = [
-      ...this.listOfData
-    ];
 
-    this.reorderEvents();
-    this.updateEditCache();
-    this.loading = false;
+    this.getStationEvents()
+      .then(stageSchedules => {
+        this.listOfData = [
+          ...this.schedule.events, ...stageSchedules
+        ];
+
+        this.listOfDisplayData = [
+          ...this.listOfData
+        ];
+
+        this.reorderEvents();
+        this.updateEditCache();
+        this.loading = false;
+      });
+
+    console.log('Init Finish');
   }
 
   refreshEvents(): void {
@@ -94,6 +110,45 @@ export class EventsComponent implements OnInit {
       .finally(() => this.loading = false);
 
 
+  }
+
+  getStationEvents(): Promise<any> {
+    const query = {
+      where: {stage: this.schedule.stage.id}
+    };
+
+    const promise = new Promise((resolve, reject) => {
+      Schedule.query(query)
+        .then(schedules => {
+          let stationEvents: Array<Event> = [];
+          schedules.filter((value) => value.station)
+            .forEach(itemSchedule => {
+              itemSchedule.events.forEach(event => {
+                stationEvents = [...stationEvents, event];
+              });
+            });
+          console.log('Events Station', stationEvents);
+          resolve(stationEvents);
+        })
+        .catch(reason => reject(reason));
+    });
+
+    return promise;
+
+
+  }
+
+  getStations(): Promise<any> {
+    const query = {
+      where: {ecoe: this.schedule.ecoe},
+      sort: {order: false, name: false}
+    };
+
+    return Station.query(query)
+      .then(stations => {
+        // @ts-ignore
+        this.listOfStation = stations;
+      });
   }
 
   createEvent(schedule: Schedule,
@@ -114,6 +169,43 @@ export class EventsComponent implements OnInit {
         this.reorderEvents();
         this.updateEditCache();
         console.log('create event:', value);
+      });
+  }
+
+  createEventStation(schedule: Item,
+                     idStation: number,
+                     time: number,
+                     is_countdown: boolean,
+                     text: string,
+                     sound: string,
+  ): void {
+    const query = {
+      where: {stage: this.schedule.stage.id, station: idStation}
+    };
+
+    Schedule.first(query)
+      .then(firstSchedule => {
+
+        if (firstSchedule) {
+          // @ts-ignore
+          this.createEvent(firstSchedule, time, is_countdown, text, sound);
+        } else {
+          const itemSchedule = new Schedule();
+
+          itemSchedule.stage = this.schedule.stage;
+          itemSchedule.ecoe = this.schedule.ecoe;
+          itemSchedule.station = idStation;
+          itemSchedule.save()
+            .then(newSchedule => {
+              this.createEvent(newSchedule, time, is_countdown, text, sound);
+            })
+            .catch(reason => {
+              console.error(reason);
+            });
+        }
+      })
+      .catch(reason => {
+        console.log(reason);
       });
   }
 
@@ -146,8 +238,7 @@ export class EventsComponent implements OnInit {
   }
 
   showModalEvent(): void {
-
-    this.modalEvent = true;
+    this.getStations().then(() => this.modalEvent = true);
   }
 
   handleStageCancel(): void {
@@ -231,7 +322,7 @@ export class EventsComponent implements OnInit {
 
   submitFormStage($event: any, value: any) {
     $event.preventDefault();
-    for (const key in this.validateFormEvent.controls) {
+    for (const key of Object.keys(this.validateFormEvent.controls)) {
       this.validateFormEvent.controls[key].markAsDirty();
       this.validateFormEvent.controls[key].updateValueAndValidity();
     }
@@ -239,7 +330,14 @@ export class EventsComponent implements OnInit {
 
     const eventSeconds = this.shared.toSeconds(value.eventTimeMin, value.eventTimeSec);
 
-    this.createEvent(this.schedule, eventSeconds, value.eventCountdown, value.eventText, value.eventSound);
+    if (value.eventStation) {
+      value.eventStation.forEach(idStation => {
+        this.createEventStation(this.schedule, idStation, eventSeconds, value.eventCountdown, value.eventText, value.eventSound);
+      });
+    } else {
+      this.createEvent(this.schedule, eventSeconds, value.eventCountdown, value.eventText, value.eventSound);
+    }
+
     this.handleStageCancel();
   }
 
@@ -250,7 +348,7 @@ export class EventsComponent implements OnInit {
 
   cleanForm(form: FormGroup): void {
     form.reset();
-    for (const key in form.controls) {
+    for (const key of Object.keys(form.controls)) {
       form.controls[key].markAsPristine();
       form.controls[key].updateValueAndValidity();
     }
@@ -261,6 +359,7 @@ export class EventsComponent implements OnInit {
     this.sortValue = sort.value;
     this.search();
   }
+
 
   search(): void {
     const data = [...this.listOfData];

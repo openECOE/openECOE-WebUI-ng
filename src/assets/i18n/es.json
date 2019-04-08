@@ -18,6 +18,8 @@
   "STATION_NAME": "Nombre de la estación",
   "PARENT_STATION": "Estación padre",
   "CHILD_STATIONS": "Subestaciones",
+  "STATION_SELECT": "Seleccione estación",
+  "ALL_STATIONS": "Todas Estaciones",
 
   "INFORMATION": "Información",
 
@@ -136,6 +138,7 @@
   "CANCEL": "Cancelar",
   "CLOSE": "Cerrar",
   "REFRESH": "Refrescar",
+  "RESET": "Reiniciar",
   "BACK": "Volver",
   "CLOSE_EDITION": "Cerrar edición",
 

@@ -107,7 +107,7 @@
               </button>
               <button nz-popconfirm
                       [nzTitle]="'DELETE_CONFIRMATION' | translate"
-                      (nzOnConfirm)="deleteSchedule(schedule)"
+                      (nzOnConfirm)="deleteStage(schedule)"
                       [nzPlacement]="'top'"
                       [nzOkText]="'DELETE' | translate" [nzCancelText]="'CANCEL' | translate"
                       nz-button
@@ -171,8 +171,8 @@
     </nz-form-item>
     <nz-form-item>
       <nz-form-control [nzOffset]="7" [nzSpan]="12">
-        <button nz-button nzType="primary" [disabled]="!validateFormStage.valid">Submit</button>
-        <button nz-button (click)="resetForm($event, validateFormStage)">Reset</button>
+        <button nz-button nzType="primary" [disabled]="!validateFormStage.valid">{{'SAVE' | translate}}</button>
+        <button nz-button (click)="resetForm($event, validateFormStage)">{{'RESET' | translate}}</button>
       </nz-form-control>
     </nz-form-item>
   </form>

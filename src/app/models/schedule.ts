@@ -6,7 +6,7 @@ export class Schedule extends Item {
   ecoe: ECOE;
   stage: Stage;
   events: Event[];
-  station: Station;
+  station: Station | number;
 }
 
 export class Stage extends Item {

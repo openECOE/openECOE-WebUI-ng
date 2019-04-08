@@ -81,7 +81,7 @@ export class ScheduleComponent implements OnInit {
   /**
    * Sets the edit variable to false.
    *
-   * @param {any} item Resource selected
+   * @param item Resource selected
    */
   cancelEditStage(item: Schedule): void {
     item.stage.save()
@@ -191,22 +191,44 @@ export class ScheduleComponent implements OnInit {
     return Promise.all([saveStart, saveFinish]);
   }
 
-  deleteSchedule(item: Schedule): void {
-    if (item.events) {
-      item.events.map(event => event.destroy()
+
+  deleteStage(item: Schedule): void {
+    const query = {
+      where: {stage: item.stage.id}
+    };
+
+    let promises = [];
+
+    Schedule.query(query)
+      .then(itemsSchedule => {
+        itemsSchedule.forEach(retSchedule => {
+          // @ts-ignore
+          promises = [...promises, this.deleteSchedule(retSchedule)];
+        });
+
+        Promise.all(promises)
+          .then(() => {
+            item.stage.destroy()
+              .then(() => {
+                console.log('[DELETE] Stage', item.stage);
+                this.schedules = this.schedules.filter(x => x.id !== item.id);
+              })
+              .catch(reason => console.log('delete Stage error:', reason));
+          });
+      });
+  }
+
+  deleteSchedule(schedule: Schedule): Promise<any> {
+    if (schedule.events) {
+      schedule.events.forEach(event => event.destroy()
         .then(value => console.log('[DELETE] Event', event))
         .catch(reason => console.error('delete Event error:', reason))
       );
     }
-    item.destroy()
+
+    return schedule.destroy()
       .then(() => {
-        console.log('[DELETE] Schedule', item);
-        item.stage.destroy()
-          .then(() => {
-            console.log('[DELETE] Stage', item.stage);
-            this.schedules = this.schedules.filter(x => x.id !== item.id);
-          })
-          .catch(reason => console.log('delete Stage error:', reason));
+        console.log('[DELETE] Schedule', schedule);
       })
       .catch(reason => console.log('delete Schedule error:', reason));
   }
@@ -238,7 +260,7 @@ export class ScheduleComponent implements OnInit {
 
   submitFormStage = ($event: any, value: any) => {
     $event.preventDefault();
-    for (const key in this.validateFormStage.controls) {
+    for (const key of Object.keys(this.validateFormStage.controls)) {
       this.validateFormStage.controls[key].markAsDirty();
       this.validateFormStage.controls[key].updateValueAndValidity();
     }
@@ -248,7 +270,7 @@ export class ScheduleComponent implements OnInit {
 
     this.createSchedule(value.stageName, stageDuration);
     this.handleStageCancel();
-  };
+  }
 
   resetForm(e: MouseEvent, form: FormGroup): void {
     e.preventDefault();
@@ -257,7 +279,7 @@ export class ScheduleComponent implements OnInit {
 
   cleanForm(form: FormGroup): void {
     form.reset();
-    for (const key in form.controls) {
+    for (const key of Object.keys(form.controls) ) {
       form.controls[key].markAsPristine();
       form.controls[key].updateValueAndValidity();
     }
