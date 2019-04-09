@@ -51,7 +51,7 @@ export class EventsComponent implements OnInit {
     this.noSound
   ];
 
-  private loading: boolean = false;
+  loading: boolean = false;
 
   constructor(private shared: SharedService,
               private fb: FormBuilder,

@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "ng serve",
+    "prod": "ng serve --prod",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -24,7 +25,7 @@
     "@infarm/potion-client": "^4.0.6",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "core-js": "^2.5.4",
+    "core-js": "^2.6.5",
     "ng-zorro-antd": "^7.2.0",
     "ngx-papaparse": "^3.0.2",
     "reflect-metadata": "^0.1.13",

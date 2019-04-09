@@ -18,24 +18,24 @@ import {SharedService} from '../../../../services/shared/shared.service';
 })
 export class ScheduleComponent implements OnInit {
 
-  private ecoeId: number;
-  private ecoe: any;
-  private subscriptions: Subscription [] = [];
-  public schedules: any[];
-  public loading: boolean = false;
-  public new_item: boolean = false;
+  ecoeId: number;
+  ecoe: any;
+  subscriptions: Subscription [] = [];
+  schedules: any[];
+  loading: boolean = false;
+  new_item: boolean = false;
 
-  private modalStage: boolean = false;
-  private modalEvent: boolean = false;
+  modalStage: boolean = false;
+  modalEvent: boolean = false;
 
-  private editStage: boolean = false;
+  editStage: boolean = false;
 
-  private editStageMin: number = 0;
-  private editStageSec: number = 0;
+  editStageMin: number = 0;
+  editStageSec: number = 0;
 
-  private tabIndex: number;
+  tabIndex: number;
 
-  public editCache = {};
+  editCache = {};
 
   validateFormStage: FormGroup;
 
