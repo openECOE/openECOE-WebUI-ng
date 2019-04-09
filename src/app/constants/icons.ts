@@ -6,7 +6,7 @@ export const ResourceIcons = {
   studentIcon: 'team',
   questionIcon: 'bulb',
   chronometerIcon: 'clock-circle',
-  scheduleIcon: '',
+  scheduleIcon: 'hourglass',
   plannerIcon: 'calendar',
   roundIcon: '',
   shiftIcon: ''

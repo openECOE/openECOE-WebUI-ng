@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
 /**
@@ -21,7 +21,7 @@ export class SharedService {
   /**
    * Emits a new value of pageChanged BehaviourSubject.
    *
-   * @param {string} actualUrl Url path
+   * @param actualUrl Url path
    */
   setPageChanged(actualUrl: string) {
     this.pageChanged.next(actualUrl);
@@ -30,7 +30,7 @@ export class SharedService {
   /**
    * Gets the current page path.
    *
-   * @returns {BehaviorSubject<string>} The state of pageChanged
+   * @returns The state of pageChanged
    */
   getPageChanged(): BehaviorSubject<string> {
     return this.pageChanged;
@@ -39,9 +39,9 @@ export class SharedService {
   /**
    * Sorts an array of objects by its order keys.
    *
-   * @param {any} first First item
-   * @param {any} second Second second
-   * @returns {number} If the current item must be positioned before, after or on same position
+   * @param first First item
+   * @param second Second second
+   * @returns If the current item must be positioned before, after or on same position
    */
   sortArray(first: any, second: any): number {
     if (!first.order) {
@@ -62,10 +62,60 @@ export class SharedService {
   /**
    * Gets the last id of the passed array of objects.
    *
-   * @param {any[]} items Array of items
-   * @returns {number} The last id
+   * @param items Array of items
+   * @returns The last id
    */
   getLastIndex(items: any[]): number {
+    if (!items[0]) {
+      return 0;
+    }
+
     return items.reduce((max, p) => p.id > max ? p.id : max, items[0].id);
   }
+
+  /**
+   * Return minutes and seconds converted to only seconds.
+   *
+   * @param Number of minutes
+   * @param Number of seconds
+   * @returns Sum of minutes and seconds in seconds
+   */
+  toSeconds(minutes: number, seconds: number): number {
+    return (minutes * 60) + seconds;
+  }
+
+  /**
+   * Get an array of minutes and seconds with an input of seconds.
+   *
+   * @param Number of seconds
+   * @returns Dictionary with values minutes and seconds
+   */
+  toMinutesSeconds(seconds: number): { minutes: number, seconds: number } {
+    const min: number = Math.floor(seconds / 60);
+    const sec: number = (seconds - min * 60);
+    return {minutes: min, seconds: sec};
+  }
+
+  /**
+   * Generate an hexadecimal color from any string
+   *
+   * @param String from we generate color to
+   * @returns Hexadecimal color string
+   */
+  stringToColour(str: string): string {
+
+    let hash = 0;
+    const randStr = (str.slice(str.length / 2, str.length) + str.slice(0, str.length / 2)).replace(/\s/g, '').toLowerCase();
+
+    for (let i = 0; i < randStr.length; i++) {
+      hash = randStr.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let colour = '#';
+    for (let i = 0; i < 3; i++) {
+      const value = (hash >> (i * 8)) & 0xFF;
+      colour += ('00' + value.toString(16)).substr(-2);
+    }
+    return colour;
+  }
+
 }

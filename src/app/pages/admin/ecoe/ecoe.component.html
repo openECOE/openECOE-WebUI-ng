@@ -1,0 +1,21 @@
+<nz-layout>
+  <nz-sider [nzCollapsible]="true"
+            [(nzCollapsed)]="isCollapsed"
+            [nzTrigger]="null"
+            *ngIf="(sharedService.getPageChanged() | async) != '/admin'">
+    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+      <li nz-menu-item *ngFor="let item of ecoe_menu" [routerLink]="item.path">
+        <i nz-icon [type]="item.icon" [theme]="item.theme ? item.theme : 'fill'"></i>
+        <span class="nav-text">{{item.title | translate}}</span>
+      </li>
+      <li (click)="isCollapsed = !isCollapsed">
+        <button nz-button [nzType]="'primary'" [nzBlock]="true">
+          <i nz-icon [type]="isCollapsed ? 'menu-unfold' : 'menu-fold'" icon-25></i>
+        </button>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <router-outlet></router-outlet>
+  </nz-layout>
+</nz-layout>

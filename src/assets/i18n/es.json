@@ -18,6 +18,8 @@
   "STATION_NAME": "Nombre de la estación",
   "PARENT_STATION": "Estación padre",
   "CHILD_STATIONS": "Subestaciones",
+  "STATION_SELECT": "Seleccione estación",
+  "ALL_STATIONS": "Todas Estaciones",
 
   "INFORMATION": "Información",
 
@@ -66,7 +68,25 @@
   "ADD_QBLOCK": "Añadir bloque",
   "QBLOCK": "Bloque",
 
-  "CHRONOMETERS": "Cronómetros",
+  "SCHEDULE":  "Cronómetros",
+  "ADD_STAGE": "Añadir Fase",
+  "STAGE_INFO": "Información de la Fase",
+  "NO_SCHEDULE":  "No hay Cronómetros",
+  "DURATION": "Duración",
+  "DURATION_PLACEHOLDER": "Introduzca la duración de la Fase",
+  "MINUTES": "minutos",
+  "SECONDS": "segundos",
+
+  "ADD_EVENT": "Añadir Evento",
+  "TEXT": "Texto",
+  "TEXT_PLACEHOLDER": "Introduzca el texto...",
+  "TIME": "Tiempo",
+  "TIME_INFO": "Indique el tiempo de activación del evento",
+  "SOUND": "Sonido",
+  "SOUND_PLACEHOLDER": "Seleccione el sonido...",
+  "NO_SOUND": "Sin sonido",
+  "IS_COUNTDOWN": "Cuenta atrás",
+  "IS_COUNTDOWN_INFO": "¿Desea que el cronómetro sea de cuenta atrás?",
 
   "ADD_STUDENT": "Añadir estudiante",
   "STUDENTS": "Alumnos",
@@ -87,6 +107,7 @@
   "CREATED": "creado",
   "TO_DELETE": "eliminar",
   "DELETED": "eliminado",
+  "VALIDATING": "Validando...",
 
   "MULTI_ANSWER": "Respuesta múltiple",
   "ONE_ANSWER": "Respuesta única",
@@ -96,12 +117,15 @@
   "ITEM_ACTION_ERROR": "Error al {{action}} el elemento",
 
   "NAME": "Nombre",
+  "NAME_PLACEHOLDER": "Introduzca el nombre...",
 
   "MOVE_UP": "Subir posición",
   "MOVE_DOWN": "Bajar posición",
 
   "PREVIEW_EXAM": "Previsualizar examen",
 
+  "LOADING": "Cargando",
+  "ACTIONS": "Acciones",
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
   "ACTION": "Acción",
   "DELETE": "Eliminar",
@@ -114,7 +138,11 @@
   "CANCEL": "Cancelar",
   "CLOSE": "Cerrar",
   "REFRESH": "Refrescar",
+  "RESET": "Reiniciar",
   "BACK": "Volver",
+  "CLOSE_EDITION": "Cerrar edición",
+
+  "SELECT": "Seleccionar...",
 
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",
