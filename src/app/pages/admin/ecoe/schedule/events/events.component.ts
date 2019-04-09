@@ -53,7 +53,7 @@ export class EventsComponent implements OnInit {
 
   loading: boolean = false;
 
-  constructor(private shared: SharedService,
+  constructor(public shared: SharedService,
               private fb: FormBuilder,
   ) {
     this.validateFormEvent = this.fb.group({

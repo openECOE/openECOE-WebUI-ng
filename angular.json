@@ -61,6 +61,14 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "test": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.test.ts"
+                }
+              ]
             }
           }
         },
@@ -72,6 +80,9 @@
           "configurations": {
             "production": {
               "browserTarget": "openECOE-WebUI-ng:build:production"
+            },
+            "test": {
+              "browserTarget": "openECOE-WebUI-ng:build:test"
             }
           }
         },
@@ -127,6 +138,9 @@
           "configurations": {
             "production": {
               "devServerTarget": "openECOE-WebUI-ng:serve:production"
+            },
+            "test": {
+              "devServerTarget": "openECOE-WebUI-ng:serve:test"
             }
           }
         },
