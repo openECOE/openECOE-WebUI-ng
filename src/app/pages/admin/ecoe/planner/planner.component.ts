@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../../services/api/api.service';
 import {ActivatedRoute} from '@angular/router';
-import {forkJoin} from 'rxjs';
+import {forkJoin, from} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {map} from 'rxjs/operators';
+import {ECOE, Station, Student} from '../../../../models/ecoe';
+import {Planner, Round, Shift} from '../../../../models/planner';
+import {Item} from '@infarm/potion-client';
 
 /**
- * Component with the relations of rounds and shifts to create planners.
+ * Component with the relations of rounds and shifts to create plannersMatrix.
  */
 @Component({
   selector: 'app-planner',
@@ -16,21 +19,29 @@ import {map} from 'rxjs/operators';
 export class PlannerComponent implements OnInit {
 
   ecoeId: number;
-  shifts: any[];
-  rounds: any[];
-  planners: any[];
-  stations: any[];
-  students: any[];
+  ecoe: ECOE | Item;
 
-  plannerSelected: { shift: number, round: number, planner: string };
+  shifts: any[] = [];
+  rounds: any[] = [];
+  plannerRounds: any[] = [];
+  stations: any[] = [];
+  listStudents: any[] = [];
+
+  displayRoundData: { round: Round, shiftPlanners: Planner[] };
+
+  plannerSelected: { shift: Shift, round: Round, planner: Planner };
+
+  plannerMatrix: any[][];
 
   showStudentsSelector: boolean = false;
   showAddShift: boolean = false;
   showAddRound: boolean = false;
-  isEditing: { itemRef: string, edit: boolean };
+  isEditing: { itemRef: any, edit: boolean };
 
   shiftForm: FormGroup;
   roundForm: FormGroup;
+
+  loading: boolean = false;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -38,7 +49,7 @@ export class PlannerComponent implements OnInit {
 
     this.shiftForm = this.formBuilder.group({
       shift_code: ['', Validators.required],
-      '$date': ['', Validators.required]
+      time_start: ['', Validators.required]
     });
 
     this.roundForm = this.formBuilder.group({
@@ -48,18 +59,174 @@ export class PlannerComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loading = true;
+
     this.ecoeId = +this.route.snapshot.params.id;
-    this.loadPlanner();
-    this.loadStations();
+    ECOE.fetch(this.ecoeId)
+      .then(value => {
+        this.ecoe = value;
+        this.loadPlanner();
+        this.loadStations();
+      })
+      .finally(() => this.loading = false);
+  }
+
+  /**
+   * Save the planner passed and fill student planner_order.
+   *
+   * @param planner Reference of the Planner
+   */
+  savePlanner(planner: Planner | Item): Promise<any> {
+    return planner.save()
+      .then(savedPlanner => {
+        console.log('Planner created', savedPlanner);
+
+        // planner.students.forEach((student, index) => {
+        //   student.plannerOrder = index + 1;
+        //   student.save()
+        //     .then(value => console.log('Student assigned to planner', value, savedPlanner)
+        //     );
+        // });
+      })
+      .catch(reason => console.error('Planner create error', reason));
+  }
+
+  /**
+   * Create the planner for round and shift.
+   * Optionally you can pass a listStudents Array to load
+   *
+   * @param round Reference of the round
+   * @param shift Reference of the shift
+   * @param students Array of listStudents to link with the planner
+   */
+  createPlanner(round: any, shift: any, students?: Student[]): Promise<any> {
+    return this.updatePlanner(new Planner(), round, shift, students);
+  }
+
+  /**
+   * Update the planner passed.
+   *
+   * @param planner Reference of the selected planner
+   * @param round Reference of the round
+   * @param shift Reference of the shift
+   * @param students Array of listStudents to link with the planner
+   */
+  updatePlanner(planner: any, round: any, shift: any, students?: Student[]): Promise<void> {
+    planner.round = round.$id;
+    planner.shift = shift.$id;
+    planner.students = students;
+
+    return this.savePlanner(planner);
+  }
+
+  /**
+   * Delete the planner passed.
+   * Then reloads all plannersMatrix and hides the modal.
+   *
+   * @param planner Reference of the selected planner
+   */
+  deletePlanner(planner: Planner): Promise<any> {
+    return planner.destroy()
+      .then(value => {
+        this.loadPlanner();
+        this.showStudentsSelector = false;
+        console.log('Planner deleted', value);
+      });
+  }
+
+  saveRound(round: Round | Item): Promise<any> {
+    return round.save()
+      .then(value => console.log('Round Saved', value))
+      .catch(reason => console.error('Round Saving Error', reason));
+  }
+
+  createRound(round_code: string, description: string): Promise<void> {
+    return this.updateRound(new Round(), round_code, description);
+  }
+
+  updateRound(round: Round, round_code: string, description: string): Promise<void> {
+    round.ecoe = this.ecoeId;
+    round.round_code = round_code;
+    round.description = description;
+
+    return this.saveRound(round);
+  }
+
+  /**
+   * Delete the round passed and all Planners linked.
+   *
+   * @param round Reference of the selected round
+   */
+  deleteRound(round: Round): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const promises = [];
+
+      // Delete all planners linked
+      round.planners.forEach(planner => {
+        promises.push(this.deletePlanner(planner));
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          round.destroy()
+            .then(value => {console.log('Round deleted', value); resolve(value); })
+            .catch(reason => reject(reason));
+        });
+    });
+
+
+  }
+
+  saveShift(shift: Shift | Item): Promise<any> {
+    return shift.save()
+      .then(value => console.log('Shift Saved', value))
+      .catch(reason => console.error('Shift Saving Error', reason));
+  }
+
+  createShift(shift_code: string, time_start: Date): Promise<void> {
+    return this.updateShift(new Shift(), shift_code, time_start);
+  }
+
+  updateShift(shift: Shift, shift_code: string, time_start: Date): Promise<void> {
+    shift.ecoe = this.ecoeId;
+    shift.shift_code = shift_code;
+    shift.timeStart = time_start;
+
+    return this.saveShift(shift);
+  }
+
+  /**
+   * Delete the shift passed and all Planners linked.
+   *
+   * @param shift Reference of the selected Shift
+   */
+  deleteShift(shift: Shift): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const promises = [];
+
+      // Delete all planners linked
+      shift.planners.forEach(planner => {
+        promises.push(this.deletePlanner(planner));
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          shift.destroy()
+            .then(value => {console.log('Shift deleted', value); resolve(value); })
+            .catch(reason => reject(reason));
+        });
+    });
+
+
   }
 
   /**
    * Load stations by the passed ECOE.
    */
   loadStations() {
-    this.apiService.getResources('station', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).subscribe(stations => this.stations = stations);
+    Station.query(
+      {where: {ecoe: this.ecoeId}}
+    ).then(stations => this.stations = stations);
   }
 
   /**
@@ -68,14 +235,16 @@ export class PlannerComponent implements OnInit {
    */
   loadPlanner() {
     forkJoin(
-      this.apiService.getResources('round', {
-        where: `{"ecoe":${this.ecoeId}}`,
-        sort: '{"round_code":false}'
-      }),
-      this.apiService.getResources('shift', {
-        where: `{"ecoe":${this.ecoeId}}`,
-        sort: '{"time_start":false}'
-      })
+      from(Round.query({
+          where: {'ecoe': this.ecoeId},
+          sort: {'round_code': false}
+        })
+      ),
+      from(Shift.query({
+          where: {'ecoe': this.ecoeId},
+          sort: {'time_start': false}
+        })
+      )
     ).subscribe(response => {
       this.rounds = response[0];
       this.shifts = response[1];
@@ -88,157 +257,144 @@ export class PlannerComponent implements OnInit {
    * For each round, creates an array of shifts, then loads the planner by shift and round if exists.
    */
   buildPlanner() {
-    this.planners = [];
+    this.plannerRounds = [];
 
     this.rounds.forEach(round => {
       const shiftsPlanner = [];
       this.shifts.forEach(shift => {
-        this.apiService.getResources('planner', {
-          where: `{"round":${round.id},"shift":${shift.id}}`
-        }).subscribe(res => {
+        Planner.first({
+          where: {'round': round, 'shift': shift}
+        }).then(planner => {
+          const plannerValues = planner ?
+            {planner_assigned: true, plannerRef: planner, students: planner.students} :
+            {planner_assigned: false, plannerRef: null, students: null};
+
           shiftsPlanner.push({
-            ...shift,
-            planner_assigned: res.length > 0,
-            plannerRef: res.length > 0 ? res[0]['$uri'] : null,
-            students: res.length > 0 ? res[0].students : []
+            data: shift,
+            ...plannerValues
           });
         });
       });
 
-      this.planners.push({
-        ...round,
+      this.plannerRounds.push({
+        round: round,
         shifts: shiftsPlanner
       });
     });
   }
 
   /**
-   * Load students by the passed ECOE.
+   * Load listStudents by the passed ECOE.
    * Maps the response and sets selected key to true if it has planner assigned and the reference is the same as the passed.
    * Then calls [checkStudentsSelected]{@link #checkStudentsSelected} function.
    *
-   * @param {number} shiftId Id of the selected shift
-   * @param {number} roundId Id of the selected round
-   * @param {string} planner? Reference of the selected planner
+   * @param shift Id of the selected shift
+   * @param round Id of the selected round
+   * @param planner? Reference of the selected planner
    */
-  loadStudents(shiftId: number, roundId: number, planner?: string) {
-    this.students = [];
+  loadStudents(shift: Shift, round: Round, planner?: Planner) {
+    this.listStudents = [];
     let studentsSelected = 0;
-    this.apiService.getResources('student', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).pipe(
-      map(students => {
-        return students.map(student => {
-          const isSelected = (
-            planner ?
-              (student.planner && student.planner['$ref'] === planner) :
-              (!student.planner && studentsSelected < this.stations.length)
-          );
 
-          if (!planner && isSelected) {
-            studentsSelected++;
-          }
+    from(Student.query({where: {'ecoe': this.ecoeId}}))
+      .pipe(
+        map(students => {
+          return students.map(student => {
+            const isSelected = (
+              planner ?
+                (student.planner && student.planner === planner) :
+                (!student.planner && studentsSelected < this.stations.length)
+            );
 
-          return {
-            ...student,
-            selected: isSelected
-          };
-        });
-      })
-    ).subscribe(students => {
-      this.students = students;
-      this.plannerSelected = {shift: shiftId, round: roundId, planner};
+            if (!planner && isSelected) {
+              studentsSelected++;
+            }
+
+            return {
+              data: student,
+              selected: isSelected
+            };
+          });
+        })
+      ).subscribe(students => {
+      this.listStudents = students;
+      this.plannerSelected = {shift: shift, round: round, planner: planner};
       this.showStudentsSelector = true;
 
       this.isEditing = {
-        itemRef: planner ? planner : '',
+        itemRef: planner ? planner : null,
         edit: (typeof planner !== 'undefined')
       };
 
-      this.checkStudentsSelected(this.students.filter(student => student.selected));
+      this.checkStudentsSelected(this.listStudents.filter(student => student.selected));
     });
   }
 
   /**
    * Creates or updates the planner selected.
-   * Then reloads all planners and hides the modal.
+   * Then reloads all plannersMatrix and hides the modal.
    */
   assignPlanner() {
-    const students = this.students.filter(student => student.selected).map(student => student.id);
+    const students = this.listStudents
+      .filter(student => student.selected)
+      .map(student => student.data);
 
     if (students.length === 0) {
       return;
     }
 
-    const body = {
-      shift: this.plannerSelected.shift,
-      round: this.plannerSelected.round,
-      students
-    };
-
     const request = (
       this.plannerSelected.planner ?
-        this.apiService.updateResource(this.plannerSelected.planner, body) :
-        this.apiService.createResource('planner', body)
+        this.updatePlanner(
+          this.plannerSelected.planner,
+          this.plannerSelected.round,
+          this.plannerSelected.shift,
+          students)
+        :
+        this.createPlanner(this.plannerSelected.round, this.plannerSelected.shift, students)
     );
 
-    request.subscribe(() => {
+    request.then(() => {
       this.loadPlanner();
       this.showStudentsSelector = false;
     });
+
   }
 
   /**
-   * Calls ApiService to delete the planner passed.
-   * Then reloads all planners and hides the modal.
-   *
-   * @param {string} planner Reference of the selected planner
-   */
-  deletePlanner(planner: string) {
-    this.apiService.deleteResource(planner).subscribe(() => {
-      this.loadPlanner();
-      this.showStudentsSelector = false;
-    });
-  }
-
-  /**
-   * Modifies the students array and sets the disabled property to true if the selection length is equal or higher
+   * Modifies the listStudents array and sets the disabled property to true if the selection length is equal or higher
    * than the number of stations and the student is not selected,
    * or if the student has a planner assigned and this planner is not the same as the selected.
-   * @param {any[]} selection Array of students currently selected
+   * @param selection Array of listStudents currently selected
    */
   checkStudentsSelected(selection: any[]) {
-    this.students = this.students.map(student => {
+    this.listStudents = this.listStudents.map(student => {
       return {
         ...student,
         disabled: (selection.length >= this.stations.length && !student.selected) ||
-          (student.planner && student.planner['$ref'] !== this.plannerSelected.planner)
+          (student.planner && student.planner !== this.plannerSelected.planner)
       };
     });
   }
 
+
+
   /**
    * Creates or updates the shift selected.
-   * Then reloads all planners and hides the modal.
+   * Then reloads all plannersMatrix and hides the modal.
    */
-  submitFormShift() {
+  submitFormShift($event: any, value: any) {
     if (!this.shiftForm.valid) {
       return;
     }
 
-    const body = {
-      shift_code: this.shiftForm.controls['shift_code'].value,
-      time_start: {'$date': +this.shiftForm.controls['$date'].value},
-      ecoe: this.ecoeId
-    };
-
     const request = (
       this.isEditing.edit ?
-        this.apiService.updateResource(this.isEditing.itemRef, body) :
-        this.apiService.createResource('shift', body)
+        this.updateShift(this.isEditing.itemRef, value.shift_code, value.time_start) :
+        this.createShift(value.shift_code, value.time_start)
     );
 
-    request.subscribe(() => {
+    request.then(() => {
       this.loadPlanner();
       this.closeModalShift();
     });
@@ -254,56 +410,52 @@ export class PlannerComponent implements OnInit {
 
   /**
    * Calls ApiService to delete the shift selected.
-   * Then reloads all planners and hides the modal.
+   * Then reloads all plannersMatrix and hides the modal.
    *
-   * @param {string} shift Reference of the selected shift
+   * @param shift Reference of the selected shift
    */
-  deleteShift(shift: string) {
-    this.apiService.deleteResource(shift).subscribe(() => {
-      this.loadPlanner();
-      this.closeModalShift();
-    });
+  modalDeleteShift(shift: Shift) {
+    this.deleteShift(shift)
+      .then( () => {
+        this.loadPlanner();
+        this.closeModalShift();
+      });
   }
 
   /**
    * Shows the shift modal, then fills the form inputs with the shift if passed.
    *
-   * @param {any} shift? Resource selected
+   * @param shift? Resource selected
    */
   addShift(shift?: any) {
     this.showAddShift = true;
 
     if (shift) {
-      this.shiftForm.setValue({shift_code: shift.shift_code, '$date': new Date(shift.time_start['$date'])});
+      this.shiftForm.setValue({shift_code: shift.shiftCode, 'time_start': shift.timeStart});
     }
 
     this.isEditing = {
-      itemRef: shift ? shift['$uri'] : '',
+      itemRef: shift ? shift : null,
       edit: (typeof shift !== 'undefined')
     };
   }
 
   /**
    * Creates or updates the round selected.
-   * Then reloads all planners and hides the modal.
+   * Then reloads all plannersMatrix and hides the modal.
    */
-  submitFormRound() {
+  submitFormRound($event: any, value: any) {
     if (!this.roundForm.valid) {
       return;
     }
 
-    const body = {
-      ...this.roundForm.value,
-      ecoe: this.ecoeId
-    };
-
     const request = (
       this.isEditing.edit ?
-        this.apiService.updateResource(this.isEditing.itemRef, body) :
-        this.apiService.createResource('round', body)
+        this.updateRound(this.isEditing.itemRef, value.round_code, value.description) :
+        this.createRound(value.round_code, value.description)
     );
 
-    request.subscribe(() => {
+    request.then(() => {
       this.loadPlanner();
       this.closeModalRound();
     });
@@ -319,31 +471,32 @@ export class PlannerComponent implements OnInit {
 
   /**
    * Calls ApiService to delete the round selected.
-   * Then reloads all planners and hides the modal.
+   * Then reloads all plannersMatrix and hides the modal.
    *
-   * @param {string} round Reference of the selected shift
+   * @param round Reference of the selected round
    */
-  deleteRound(round: string) {
-    this.apiService.deleteResource(round).subscribe(() => {
-      this.loadPlanner();
-      this.closeModalRound();
-    });
+  modalDeleteRound(round: any) {
+    this.deleteRound(round)
+      .then(() => {
+        this.loadPlanner();
+        this.closeModalRound();
+      });
   }
 
   /**
    * Shows the round modal, then fills the form inputs with the round if passed.
    *
-   * @param {any} round? Resource selected
+   * @param round? Resource selected
    */
-  addRound(round?: any) {
+  addRound(round?: Round) {
     this.showAddRound = true;
 
     if (round) {
-      this.roundForm.setValue({description: round.description, round_code: round.round_code});
+      this.roundForm.setValue({description: round.description, round_code: round.roundCode});
     }
 
     this.isEditing = {
-      itemRef: round ? round['$uri'] : '',
+      itemRef: round ? round : null,
       edit: (typeof round !== 'undefined')
     };
   }

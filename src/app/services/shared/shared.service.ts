@@ -76,8 +76,8 @@ export class SharedService {
   /**
    * Return minutes and seconds converted to only seconds.
    *
-   * @param Number of minutes
-   * @param Number of seconds
+   * @param minutes Number of minutes
+   * @param seconds Number of seconds
    * @returns Sum of minutes and seconds in seconds
    */
   toSeconds(minutes: number, seconds: number): number {
@@ -87,7 +87,7 @@ export class SharedService {
   /**
    * Get an array of minutes and seconds with an input of seconds.
    *
-   * @param Number of seconds
+   * @param seconds Number of seconds
    * @returns Dictionary with values minutes and seconds
    */
   toMinutesSeconds(seconds: number): { minutes: number, seconds: number } {
@@ -99,7 +99,7 @@ export class SharedService {
   /**
    * Generate an hexadecimal color from any string
    *
-   * @param String from we generate color to
+   * @param str String from we generate color to
    * @returns Hexadecimal color string
    */
   stringToColour(str: string): string {

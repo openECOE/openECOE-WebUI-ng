@@ -1,9 +1,19 @@
 import {Item} from '@infarm/potion-client';
+import {Planner, Round, Shift} from './planner';
+import {Schedule} from './schedule';
 
 export class ECOE extends Item {
   id: number;
   name: string;
   id_organization: number;
+
+
+  areas: Area[];
+  stations: Station[];
+  schedules: Schedule[];
+  students: Student[];
+  rounds: Round[];
+  shifts: Shift[];
 }
 
 export class Area extends Item {
@@ -51,7 +61,9 @@ export class Student extends Item {
   surnames: string;
   dni: string;
 
-  id_ecoe: number;
-  id_planner: number;
-  planner_order: number;
+  ecoe: ECOE;
+  planner: Planner | Item;
+  plannerOrder: number;
+
+
 }
