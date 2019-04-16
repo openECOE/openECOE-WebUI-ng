@@ -1,0 +1,32 @@
+<!--<nz-checkbox-wrapper>-->
+  <!--<div *ngFor="let student of students">-->
+    <!--<label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected" [nzDisabled]="student.disabled">-->
+      <!--{{student.dni}}-->
+      <!--<nz-divider [nzType]="'vertical'"></nz-divider>-->
+      <!--{{student.surnames}}, {{student.name}}-->
+    <!--</label>-->
+    <!--<br/>-->
+    <!--<br/>-->
+  <!--</div>-->
+<!--</nz-checkbox-wrapper>-->
+
+<nz-transfer
+  [nzDataSource]="students"
+  nzShowSearch
+  [nzRender]="render"
+  [nzListStyle]="{ 'width.px': modalWidth/2.3, 'height.px': modalWidth/2.5 }"
+  [nzFilterOption]="filterOption"
+  (nzSearchChange)="search($event)"
+  (nzSelectChange)="select($event)"
+  (nzChange)="change($event)"
+>
+</nz-transfer>
+<!--TODO: Add buttons to select Students and clean Planner-->
+<ng-template #render let-item>
+  {{item.student.surnames}}, {{item.student.name}}
+  <nz-tag *ngIf="item.student.planner" [nzColor]="shared.stringToColour(item.student.planner.shift.shiftCode + item.student.planner.round.roundCode)">
+    {{item.student.planner.shift.shiftCode}}{{item.student.planner.round.roundCode}}{{item.student.plannerOrder}}
+  </nz-tag>
+</ng-template>
+
+

@@ -1,0 +1,42 @@
+<ng-container *ngIf="planner; else noPlanner">
+  <nz-statistic [nzValue]="planner?.students?.length" [nzSuffix]="sufixPlanner"
+                [ngClass]="planner?.students?.length == 0 ? 'empty' :
+                  planner.students?.length < stations.length ? 'incomplete' : 'complete'">
+
+  </nz-statistic>
+  <ng-template #sufixPlanner>
+    <span>/ {{stations?.length}}</span>
+    <app-action-buttons class="action-buttons"
+                        [isEditing]="false"
+                        [isNewItem]="false"
+                        (startEdit)="createComponentModal(modalFooterPlanner)"
+                        [showDeleteButton]="false">
+    </app-action-buttons>
+  </ng-template>
+</ng-container>
+
+<ng-template #noPlanner>
+  <button nz-button [nzType]="'dashed'"
+          (click)="createComponentModal(modalFooterPlanner)"
+          [nzBlock]="true"
+          [nzLoading]="loading">
+    <i nz-icon [type]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
+  </button>
+</ng-template>
+
+<ng-template #modalFooterPlanner>
+  <button *ngIf="planner"
+          nz-button
+          [nzType]="'danger'"
+          nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deletePlanner(planner)"
+          style="float: left;">
+    <span>{{"DELETE_PLANNER" | translate}}</span>
+  </button>
+
+  <button nz-button (click)="destroyModal()" class="margin-right">
+    <span>{{"CANCEL" | translate}}</span>
+  </button>
+  <button nz-button [nzType]="'primary'" (click)="assignPlanner()">
+    <span>{{"ACCEPT" | translate}}</span>
+  </button>
+</ng-template>
