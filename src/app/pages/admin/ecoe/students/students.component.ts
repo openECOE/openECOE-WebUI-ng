@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../../../services/api/api.service';
 import {ActivatedRoute} from '@angular/router';
 import {SharedService} from '../../../../services/shared/shared.service';
+import {Student} from 'src/app/models/ecoe';
 
 /**
  * Component with students.
@@ -20,7 +21,7 @@ export class StudentsComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private sharedService: SharedService) {
+              private shared: SharedService) {
   }
 
   ngOnInit() {
@@ -33,9 +34,10 @@ export class StudentsComponent implements OnInit {
    * Then calls [updateEditCache]{@link #updateEditCache} function.
    */
   loadStudents() {
-    this.apiService.getResources('student', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).subscribe(response => {
+    Student.query({
+      where: {ecoe: this.ecoeId},
+      sort: {surnames: false, name: false}
+    }).then(response => {
       this.editCache = {};
       this.students = response;
       this.updateEditCache();
@@ -128,7 +130,7 @@ export class StudentsComponent implements OnInit {
   addStudent() {
     this.apiService.getResources('student')
       .subscribe(students => {
-        this.index += this.sharedService.getLastIndex(students);
+        this.index += this.shared.getLastIndex(students);
 
         const newItem = {
           id: this.index,

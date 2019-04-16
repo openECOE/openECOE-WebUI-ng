@@ -57,6 +57,9 @@
           </td>
 
           <td text-right>
+            <nz-tag *ngIf="item.planner" [nzColor]="shared.stringToColour(item.planner.shift.shiftCode + item.planner.round.roundCode)">
+              {{item.planner.shift.shiftCode}}{{item.planner.round.roundCode}}{{item.plannerOrder}}
+            </nz-tag>
             <app-action-buttons [isEditing]="editCache[item.id].edit"
                                 [isNewItem]="editCache[item.id].new_item"
                                 (startEdit)="startEdit(item.id)"

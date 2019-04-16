@@ -8,7 +8,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
 import {NgZorroAntdModule, NZ_I18N, es_ES, NZ_MESSAGE_CONFIG} from 'ng-zorro-antd';
 import { registerLocaleData } from '@angular/common';
-import es from '@angular/common/locales/es';
+import localeEs from '@angular/common/locales/es';
+import localeEsExtra from '@angular/common/locales/extra/es';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AuthInterceptor} from './interceptors/auth.interceptor';
@@ -22,7 +23,7 @@ import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@infarm/potion-clie
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';
 
-registerLocaleData(es);
+registerLocaleData(localeEs, 'es', localeEsExtra);
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');

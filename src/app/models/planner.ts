@@ -12,14 +12,15 @@ export class Planner extends Item {
 export class Round extends Item {
   id: number;
   ecoe: ECOE | number;
-  round_code: string;
+  roundCode: string;
   description: string;
-  planners: Planner[];
+  planners: Array<Planner>;
 }
 
 export class Shift extends Item {
   id: number;
   ecoe: ECOE | number;
-  shift_code: string;
+  shiftCode: string;
   timeStart: Date;
+  planners: Array<Planner>;
 }

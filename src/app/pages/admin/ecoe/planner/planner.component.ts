@@ -27,15 +27,11 @@ export class PlannerComponent implements OnInit {
   stations: any[] = [];
   listStudents: any[] = [];
 
-  displayRoundData: { round: Round, shiftPlanners: Planner[] };
-
   plannerSelected: { shift: Shift, round: Round, planner: Planner };
 
-  plannerMatrix: any[][];
-
-  showStudentsSelector: boolean = false;
   showAddShift: boolean = false;
   showAddRound: boolean = false;
+
   isEditing: { itemRef: any, edit: boolean };
 
   shiftForm: FormGroup;
@@ -48,13 +44,14 @@ export class PlannerComponent implements OnInit {
               private formBuilder: FormBuilder) {
 
     this.shiftForm = this.formBuilder.group({
-      shift_code: ['', Validators.required],
-      time_start: ['', Validators.required]
+      shift_code: [null, Validators.required],
+      datePicker: [null, Validators.required],
+      timePicker: [null, Validators.required],
     });
 
     this.roundForm = this.formBuilder.group({
-      description: ['', Validators.required],
-      round_code: ['', Validators.required]
+      round_code: ['', Validators.required],
+      description: ['', Validators.required]
     });
   }
 
@@ -65,58 +62,9 @@ export class PlannerComponent implements OnInit {
     ECOE.fetch(this.ecoeId)
       .then(value => {
         this.ecoe = value;
-        this.loadPlanner();
-        this.loadStations();
+        this.loadRoundsShifts();
       })
       .finally(() => this.loading = false);
-  }
-
-  /**
-   * Save the planner passed and fill student planner_order.
-   *
-   * @param planner Reference of the Planner
-   */
-  savePlanner(planner: Planner | Item): Promise<any> {
-    return planner.save()
-      .then(savedPlanner => {
-        console.log('Planner created', savedPlanner);
-
-        // planner.students.forEach((student, index) => {
-        //   student.plannerOrder = index + 1;
-        //   student.save()
-        //     .then(value => console.log('Student assigned to planner', value, savedPlanner)
-        //     );
-        // });
-      })
-      .catch(reason => console.error('Planner create error', reason));
-  }
-
-  /**
-   * Create the planner for round and shift.
-   * Optionally you can pass a listStudents Array to load
-   *
-   * @param round Reference of the round
-   * @param shift Reference of the shift
-   * @param students Array of listStudents to link with the planner
-   */
-  createPlanner(round: any, shift: any, students?: Student[]): Promise<any> {
-    return this.updatePlanner(new Planner(), round, shift, students);
-  }
-
-  /**
-   * Update the planner passed.
-   *
-   * @param planner Reference of the selected planner
-   * @param round Reference of the round
-   * @param shift Reference of the shift
-   * @param students Array of listStudents to link with the planner
-   */
-  updatePlanner(planner: any, round: any, shift: any, students?: Student[]): Promise<void> {
-    planner.round = round.$id;
-    planner.shift = shift.$id;
-    planner.students = students;
-
-    return this.savePlanner(planner);
   }
 
   /**
@@ -128,8 +76,7 @@ export class PlannerComponent implements OnInit {
   deletePlanner(planner: Planner): Promise<any> {
     return planner.destroy()
       .then(value => {
-        this.loadPlanner();
-        this.showStudentsSelector = false;
+        this.loadRoundsShifts();
         console.log('Planner deleted', value);
       });
   }
@@ -169,24 +116,43 @@ export class PlannerComponent implements OnInit {
       Promise.all(promises)
         .then(() => {
           round.destroy()
-            .then(value => {console.log('Round deleted', value); resolve(value); })
+            .then(value => {
+              console.log('Round deleted', value);
+              resolve(value);
+            })
             .catch(reason => reject(reason));
         });
     });
-
-
   }
 
+  /**
+   * Invokes the method save() of the shift passed
+   *
+   * @param shift Reference of the selected Shift
+   */
   saveShift(shift: Shift | Item): Promise<any> {
     return shift.save()
       .then(value => console.log('Shift Saved', value))
       .catch(reason => console.error('Shift Saving Error', reason));
   }
 
+  /**
+   * Create the shift with the values passed
+   *
+   * @param shift_code Code of the shift created
+   * @param time_start Date and hour of the shift
+   */
   createShift(shift_code: string, time_start: Date): Promise<void> {
     return this.updateShift(new Shift(), shift_code, time_start);
   }
 
+  /**
+   * Update the shift with the values
+   *
+   * @param shift Reference of the selected Shift
+   * @param shift_code Code of the shift created
+   * @param time_start Date and hour of the shift
+   */
   updateShift(shift: Shift, shift_code: string, time_start: Date): Promise<void> {
     shift.ecoe = this.ecoeId;
     shift.shift_code = shift_code;
@@ -212,7 +178,10 @@ export class PlannerComponent implements OnInit {
       Promise.all(promises)
         .then(() => {
           shift.destroy()
-            .then(value => {console.log('Shift deleted', value); resolve(value); })
+            .then(value => {
+              console.log('Shift deleted', value);
+              resolve(value);
+            })
             .catch(reason => reject(reason));
         });
     });
@@ -221,19 +190,13 @@ export class PlannerComponent implements OnInit {
   }
 
   /**
-   * Load stations by the passed ECOE.
-   */
-  loadStations() {
-    Station.query(
-      {where: {ecoe: this.ecoeId}}
-    ).then(stations => this.stations = stations);
-  }
-
-  /**
    * Load shifts and rounds by the passed ECOE.
    * Then calls [buildPlanner]{@link #buildPlanner} function.
    */
-  loadPlanner() {
+  loadRoundsShifts() {
+    this.rounds = [];
+    this.shifts = [];
+
     forkJoin(
       from(Round.query({
           where: {'ecoe': this.ecoeId},
@@ -248,136 +211,8 @@ export class PlannerComponent implements OnInit {
     ).subscribe(response => {
       this.rounds = response[0];
       this.shifts = response[1];
-      this.buildPlanner();
     });
   }
-
-  /**
-   * Builds the planner matrix structure.
-   * For each round, creates an array of shifts, then loads the planner by shift and round if exists.
-   */
-  buildPlanner() {
-    this.plannerRounds = [];
-
-    this.rounds.forEach(round => {
-      const shiftsPlanner = [];
-      this.shifts.forEach(shift => {
-        Planner.first({
-          where: {'round': round, 'shift': shift}
-        }).then(planner => {
-          const plannerValues = planner ?
-            {planner_assigned: true, plannerRef: planner, students: planner.students} :
-            {planner_assigned: false, plannerRef: null, students: null};
-
-          shiftsPlanner.push({
-            data: shift,
-            ...plannerValues
-          });
-        });
-      });
-
-      this.plannerRounds.push({
-        round: round,
-        shifts: shiftsPlanner
-      });
-    });
-  }
-
-  /**
-   * Load listStudents by the passed ECOE.
-   * Maps the response and sets selected key to true if it has planner assigned and the reference is the same as the passed.
-   * Then calls [checkStudentsSelected]{@link #checkStudentsSelected} function.
-   *
-   * @param shift Id of the selected shift
-   * @param round Id of the selected round
-   * @param planner? Reference of the selected planner
-   */
-  loadStudents(shift: Shift, round: Round, planner?: Planner) {
-    this.listStudents = [];
-    let studentsSelected = 0;
-
-    from(Student.query({where: {'ecoe': this.ecoeId}}))
-      .pipe(
-        map(students => {
-          return students.map(student => {
-            const isSelected = (
-              planner ?
-                (student.planner && student.planner === planner) :
-                (!student.planner && studentsSelected < this.stations.length)
-            );
-
-            if (!planner && isSelected) {
-              studentsSelected++;
-            }
-
-            return {
-              data: student,
-              selected: isSelected
-            };
-          });
-        })
-      ).subscribe(students => {
-      this.listStudents = students;
-      this.plannerSelected = {shift: shift, round: round, planner: planner};
-      this.showStudentsSelector = true;
-
-      this.isEditing = {
-        itemRef: planner ? planner : null,
-        edit: (typeof planner !== 'undefined')
-      };
-
-      this.checkStudentsSelected(this.listStudents.filter(student => student.selected));
-    });
-  }
-
-  /**
-   * Creates or updates the planner selected.
-   * Then reloads all plannersMatrix and hides the modal.
-   */
-  assignPlanner() {
-    const students = this.listStudents
-      .filter(student => student.selected)
-      .map(student => student.data);
-
-    if (students.length === 0) {
-      return;
-    }
-
-    const request = (
-      this.plannerSelected.planner ?
-        this.updatePlanner(
-          this.plannerSelected.planner,
-          this.plannerSelected.round,
-          this.plannerSelected.shift,
-          students)
-        :
-        this.createPlanner(this.plannerSelected.round, this.plannerSelected.shift, students)
-    );
-
-    request.then(() => {
-      this.loadPlanner();
-      this.showStudentsSelector = false;
-    });
-
-  }
-
-  /**
-   * Modifies the listStudents array and sets the disabled property to true if the selection length is equal or higher
-   * than the number of stations and the student is not selected,
-   * or if the student has a planner assigned and this planner is not the same as the selected.
-   * @param selection Array of listStudents currently selected
-   */
-  checkStudentsSelected(selection: any[]) {
-    this.listStudents = this.listStudents.map(student => {
-      return {
-        ...student,
-        disabled: (selection.length >= this.stations.length && !student.selected) ||
-          (student.planner && student.planner !== this.plannerSelected.planner)
-      };
-    });
-  }
-
-
 
   /**
    * Creates or updates the shift selected.
@@ -387,15 +222,21 @@ export class PlannerComponent implements OnInit {
     if (!this.shiftForm.valid) {
       return;
     }
+    const time = value.timePicker;
+    const timeStart = value.datePicker;
+
+    timeStart.setHours(time.getHours());
+    timeStart.setMinutes(time.getMinutes());
+    timeStart.setSeconds(0);
 
     const request = (
       this.isEditing.edit ?
-        this.updateShift(this.isEditing.itemRef, value.shift_code, value.time_start) :
-        this.createShift(value.shift_code, value.time_start)
+        this.updateShift(this.isEditing.itemRef, value.shift_code, timeStart) :
+        this.createShift(value.shift_code, timeStart)
     );
 
     request.then(() => {
-      this.loadPlanner();
+      this.loadRoundsShifts();
       this.closeModalShift();
     });
   }
@@ -416,8 +257,8 @@ export class PlannerComponent implements OnInit {
    */
   modalDeleteShift(shift: Shift) {
     this.deleteShift(shift)
-      .then( () => {
-        this.loadPlanner();
+      .then(() => {
+        this.loadRoundsShifts();
         this.closeModalShift();
       });
   }
@@ -431,7 +272,7 @@ export class PlannerComponent implements OnInit {
     this.showAddShift = true;
 
     if (shift) {
-      this.shiftForm.setValue({shift_code: shift.shiftCode, 'time_start': shift.timeStart});
+      this.shiftForm.setValue({shift_code: shift.shiftCode, datePicker: shift.timeStart, timePicker: shift.timeStart});
     }
 
     this.isEditing = {
@@ -456,7 +297,7 @@ export class PlannerComponent implements OnInit {
     );
 
     request.then(() => {
-      this.loadPlanner();
+      this.loadRoundsShifts();
       this.closeModalRound();
     });
   }
@@ -478,7 +319,7 @@ export class PlannerComponent implements OnInit {
   modalDeleteRound(round: any) {
     this.deleteRound(round)
       .then(() => {
-        this.loadPlanner();
+        this.loadRoundsShifts();
         this.closeModalRound();
       });
   }
@@ -500,4 +341,80 @@ export class PlannerComponent implements OnInit {
       edit: (typeof round !== 'undefined')
     };
   }
+
+
+  autoCreatePlanners() {
+    this.loading = true;
+
+    forkJoin(
+      from(Student.query({
+        where: {ecoe: this.ecoeId, planner: null},
+        sort: {surnames: false, name: false}
+      })),
+      from(this.createAllPlanners()),
+      from(Station.query({where: {ecoe: this.ecoeId}}))
+    ).subscribe(response => {
+      const promises = [];
+
+      const listStudents: Array<any> = response[0];
+      const listPlanners: Array<any> = response[1];
+      const listStations: Array<any> = response[2];
+
+      // @ts-ignore
+      listStudents.forEach(student => {
+        const freePlanner = listPlanners.find(value => value.students.length < listStations.length);
+
+        if (freePlanner) {
+          promises.push(this.assignStudentToPlanner(student, freePlanner));
+        }
+      });
+
+      Promise.all(promises)
+        .then(value => this.loadRoundsShifts())
+        .finally(() => this.loading = false);
+    });
+  }
+
+  assignStudentToPlanner(itemStudent: Student, itemPlanner: Planner): Promise<any> {
+    itemStudent.planner = itemPlanner;
+    itemStudent.plannerOrder = itemPlanner.students.length + 1;
+    itemPlanner.students.push(itemStudent);
+    return itemStudent.save();
+  }
+
+  findPlanner(shift: Shift, round: Round): Promise<any> {
+    return new Promise((resolve) => {
+      Planner.first({where: {'round': round, 'shift': shift}})
+        .then(value => {
+          if (value) {
+            resolve(value);
+          } else {
+            const newPlanner = new Planner();
+            newPlanner.shift = shift;
+            newPlanner.round = round;
+            newPlanner.save()
+              .then(savedPlanner => {
+                shift.planners.push(newPlanner);
+                round.planners.push(newPlanner);
+                resolve(savedPlanner);
+              });
+          }
+        });
+    });
+  }
+
+  createAllPlanners(): Promise<any> {
+    const promises = [];
+
+    this.shifts.forEach(async (shift, shift_index) => {
+      this.rounds.forEach(async (round, round_index) => {
+
+        // Create all planners, if created catch error and ignore
+        promises.push(this.findPlanner(shift, round));
+      });
+    });
+
+    return Promise.all(promises);
+  }
+
 }

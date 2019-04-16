@@ -18,6 +18,7 @@ import { PlannerComponent } from './planner/planner.component';
 import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
 import { EventsComponent } from './schedule/events/events.component';
 import {PipesModule} from '../../../pipes/pipes.module';
+import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner/planner-selector/planner-selector.component';
 
 @NgModule({
   imports: [
@@ -42,7 +43,10 @@ import {PipesModule} from '../../../pipes/pipes.module';
     StudentsComponent,
     PlannerComponent,
     UploadAndParseComponent,
-    EventsComponent
-  ]
+    EventsComponent,
+    PlannerSelectorComponent,
+    AppStudentSelectorComponent
+  ],
+  entryComponents: [AppStudentSelectorComponent]
 })
 export class EcoeModule { }

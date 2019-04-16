@@ -23,15 +23,19 @@
 
   "INFORMATION": "Información",
 
+  "ROUND": "Ronda",
   "ROUNDS": "Rondas",
   "NO_ROUNDS": "No hay rondas",
   "ADD_ROUND": "Añadir ronda",
 
+  "SHIFT": "Turno",
   "SHIFTS": "Turnos",
   "NO_SHIFTS": "No hay turnos",
   "ADD_SHIFT": "Añadir turno",
   "SELECT_DATE": "Seleccionar fecha...",
   "DATE": "Fecha",
+  "SELECT_HOUR": "Elegir hora...",
+  "HOUR": "Hora",
 
   "AREAS": "Areas",
   "AREA": "Area",
@@ -96,6 +100,7 @@
 
   "PLANNER": "Planificador",
   "DELETE_PLANNER": "Eliminar planificador",
+  "AUTO_PLANNERS": "Autosignación de Alumnos",
 
   "GROUPS": "Grupos",
 
