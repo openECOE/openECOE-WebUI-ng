@@ -3,6 +3,9 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {map} from 'rxjs/operators';
+import {Item} from '@infarm/potion-client';
+import {Station} from '../../../../models/ecoe';
+import {from} from 'rxjs';
 
 /**
  * Component with stations and qblocks by station.
@@ -21,6 +24,8 @@ export class StationsComponent implements OnInit {
   index: number = 1;
   indexQblock: number = 1;
 
+  loading: boolean = false;
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
@@ -37,22 +42,23 @@ export class StationsComponent implements OnInit {
    * Then calls [updateEditCache]{@link #updateEditCache} function.
    */
   loadStations() {
-    this.apiService.getResources('station', {
-      where: `{"ecoe":${this.ecoeId}}`,
-      sort: '{"order":false}'
-    }).subscribe(response => {
+    this.loading = true;
+    Station.query({
+      where: {ecoe: this.ecoeId},
+      sort: {order: false}
+    }).then(response => {
       this.editCache = {};
       this.stations = response;
       this.updateEditCache();
-    });
+    }).finally(() => this.loading = false);
   }
 
   /**
    * Adds to the resource passed its array of qblocks as a new key object.
    * Then updates the qblocks cache.
    *
-   * @param {boolean} expandOpen State of the expanded sub-table
-   * @param {any} station Resource selected to show its qblocks
+   * @param expandOpen State of the expanded sub-table
+   * @param station Resource selected to show its qblocks
    */
   loadQblocksByStation(expandOpen: boolean, station: any) {
     if (expandOpen) {
@@ -77,34 +83,27 @@ export class StationsComponent implements OnInit {
    * Then updates editCache with the new resource.
    */
   addStation() {
-    this.apiService.getResources('station')
-      .subscribe(stations => {
-        this.index += this.sharedService.getLastIndex(stations);
+    const defaultStation = {
+      name: '',
+      ecoe: this.ecoeId,
+    };
 
-        const newItem = {
-          id: this.index,
-          order: '',
-          name: '',
-          ecoe: this.ecoeId,
-          children_stations: [],
-          parent_station: null
-        };
+    const newStation = new Station(defaultStation);
 
-        this.stations = [...this.stations, newItem];
+    this.stations = [...this.stations, newStation];
 
-        this.editCache[this.index] = {
-          edit: true,
-          new_item: true,
-          ...newItem
-        };
-      });
+    this.editCache[-1] = {
+      edit: true,
+      new_item: true,
+      ...newStation
+    };
   }
 
   /**
    * Sets the editCache variable to true.
    * Changes text-view tags by input tags.
    *
-   * @param {number} id Id of the selected resource
+   * @param id Id of the selected resource
    */
   startEdit(id: number) {
     this.editCache[id].edit = true;
@@ -114,12 +113,13 @@ export class StationsComponent implements OnInit {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayStations]{@link #updateArrayStations} function.
    *
-   * @param {any} station Resource selected
+   * @param station Resource selected
    */
-  deleteItem(station: any) {
-    this.apiService.deleteResource(station['$uri']).subscribe(() => {
-      this.updateArrayStations(station.id);
-    });
+  deleteItem(station: Station) {
+    const stationId: number = station.id;
+
+    station.destroy()
+      .then(() => this.updateArrayStations(stationId));
   }
 
   /**
@@ -139,33 +139,28 @@ export class StationsComponent implements OnInit {
    * Then updates the variables to avoid calling the backend again.
    * If the station is created, adds a Qblock by default
    *
-   * @param {any} station Resource selected
-   * @param {boolean} newItem determines if the resource is already saved
+   * @param station Resource selected
+   * @param newItem determines if the resource is already saved
    */
-  saveItem(station: any, newItem: boolean): void {
+  saveItem(station: Station, newItem: boolean): void {
     const item = this.editCache[station.id];
 
-    if (!item.order || !item.name) {
+    if (!item.name) {
       return;
     }
 
     const body = {
-      order: +item.order,
       name: item.name,
       ecoe: item.ecoe
     };
 
     const request = (
       newItem ?
-        this.apiService.createResource('station', body) :
-        this.apiService.updateResource(item['$uri'], body)
+        station.save() :
+        station.update(body)
     );
 
-    request.pipe(
-      map(res => {
-        return {...res, expand: true};
-      })
-    ).subscribe(response => {
+    from(request).subscribe(response => {
       delete this.editCache[station.id];
       delete this.editCache[response['id']];
 
@@ -189,7 +184,7 @@ export class StationsComponent implements OnInit {
    * If resource is not already saved, calls [updateArrayStations]{@link #updateArrayStations} function.
    * Else resets editCache to the previous value.
    *
-   * @param {any} station Resource selected
+   * @param station Resource selected
    */
   cancelEdit(station: any): void {
     this.editCache[station.id].edit = false;
@@ -204,7 +199,7 @@ export class StationsComponent implements OnInit {
   /**
    * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
    *
-   * @param {number} station Id of the resource passed
+   * @param station Id of the resource passed
    */
   updateArrayStations(station: number) {
     delete this.editCache[station];
@@ -214,8 +209,8 @@ export class StationsComponent implements OnInit {
   /**
    * Navigates to Questions page with the queryParams of the Station and Qblock for filtering.
    *
-   * @param {number} stationId Id of the station selected
-   * @param {number} qblockId Id of the qblock selected
+   * @param stationId Id of the station selected
+   * @param qblockId Id of the qblock selected
    */
   navigateQuestions(stationId: number, qblockId: number) {
     this.router.navigate(['../questions'], {
@@ -228,8 +223,8 @@ export class StationsComponent implements OnInit {
    * Adds a new empty field to the resources array.
    * Then updates editCache with the new resource.
    *
-   * @param {any} station Parent resource passed
-   * @param {string} name? Name of the Qblock
+   * @param station Parent resource passed
+   * @param name? Name of the Qblock
    */
   addQblock(station: any, name?: string) {
     this.apiService.getResources('qblock')
@@ -258,7 +253,7 @@ export class StationsComponent implements OnInit {
    * Sets the editCache variable to true.
    * Changes text-view tags by input tags.
    *
-   * @param {number} qblockId Id of the selected resource
+   * @param qblockId Id of the selected resource
    */
   startEditQblock(qblockId: number) {
     this.editCacheQblock[qblockId].edit = true;
@@ -268,8 +263,8 @@ export class StationsComponent implements OnInit {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayQblocks]{@link #updateArrayQblocks} function.
    *
-   * @param {any} qblock Resource selected
-   * @param {any} station Parent resource passed
+   * @param qblock Resource selected
+   * @param station Parent resource passed
    */
   deleteQblock(qblock: any, station: any) {
     this.apiService.deleteResource(qblock['$uri']).subscribe(() => {
@@ -281,9 +276,9 @@ export class StationsComponent implements OnInit {
    * Creates or updates the resource passed.
    * Then updates the variables to avoid calling the backend again.
    *
-   * @param {any} qblock Resource selected
-   * @param {number} station Parent resource passed
-   * @param {boolean} newItem determines if the resource is already saved
+   * @param qblock Resource selected
+   * @param station Parent resource passed
+   * @param newItem determines if the resource is already saved
    */
   saveQblock(qblock: any, station: any, newItem: boolean) {
     const item = this.editCacheQblock[qblock.id];
@@ -324,8 +319,8 @@ export class StationsComponent implements OnInit {
    * If resource is not already saved, calls [updateArrayQblocks]{@link #updateArrayQblocks} function.
    * Else resets editCache to the previous value.
    *
-   * @param {any} qblock Resource selected
-   * @param {any} station Parent resource passed
+   * @param qblock Resource selected
+   * @param station Parent resource passed
    */
   cancelEditQblock(qblock: any, station: any) {
     this.editCacheQblock[qblock.id].edit = false;
@@ -340,8 +335,8 @@ export class StationsComponent implements OnInit {
   /**
    * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
    *
-   * @param {number} qblock Id of the resource passed
-   * @param {any} station Parent resource passed
+   * @param qblock Id of the resource passed
+   * @param station Parent resource passed
    */
   updateArrayQblocks(qblock: number, station: any) {
     delete this.editCacheQblock[qblock];
@@ -349,4 +344,24 @@ export class StationsComponent implements OnInit {
       .filter(x => x.id !== qblock)
       .sort(this.sharedService.sortArray);
   }
+
+  importStations(parserResult: Array<any>) {
+    const savePromises = [];
+    parserResult.forEach(value => {
+      const body = {
+        ...value,
+        ecoe: this.ecoeId
+      };
+
+      const station = new Station(body);
+      savePromises.push(station.save()
+        .then(newStation => console.log('Station Imported', newStation))
+        .catch(reason => console.error('Station import ERROR', reason))
+      );
+    });
+
+    Promise.all(savePromises).then(() => this.loadStations());
+  }
+
+
 }

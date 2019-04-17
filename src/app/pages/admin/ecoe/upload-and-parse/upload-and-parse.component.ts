@@ -1,6 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Papa} from 'ngx-papaparse';
-import {ApiService} from '../../../../services/api/api.service';
 
 /**
  * Component with the upload files component and FileReader functionality.
@@ -11,9 +10,7 @@ import {ApiService} from '../../../../services/api/api.service';
   styleUrls: ['./upload-and-parse.component.less']
 })
 export class UploadAndParseComponent implements OnInit {
-
-  @Input() ecoeId: number;
-  @Input() resource: string;
+  @Output() parserResult = new EventEmitter();
 
   /**
    * Event handler on file upload.
@@ -28,8 +25,8 @@ export class UploadAndParseComponent implements OnInit {
     fr.readAsText(file.file);
   }
 
-  constructor(private papaParser: Papa,
-              private apiService: ApiService) { }
+  constructor(private papaParser: Papa) {
+  }
 
   ngOnInit() {
   }
@@ -37,18 +34,14 @@ export class UploadAndParseComponent implements OnInit {
   /**
    * Parses the data string (CSV) to JSON and then creates the resources for each element.
    *
-   * @param {string} fileString File data as string
+   * @param fileString File data as string
    */
   handleFile(fileString: string) {
     this.papaParser.parse(fileString, {
       header: true,
       dynamicTyping: true,
-      step: (results, parser) => {
-        const body = {
-          ...results.data[0],
-          ecoe: this.ecoeId
-        };
-        this.apiService.createResource(this.resource, body).subscribe();
+      complete: (results, file) => {
+        this.parserResult.emit(results.data);
       }
     });
   }
