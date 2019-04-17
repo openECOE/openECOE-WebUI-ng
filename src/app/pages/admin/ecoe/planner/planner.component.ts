@@ -59,12 +59,7 @@ export class PlannerComponent implements OnInit {
     this.loading = true;
 
     this.ecoeId = +this.route.snapshot.params.id;
-    ECOE.fetch(this.ecoeId)
-      .then(value => {
-        this.ecoe = value;
-        this.loadRoundsShifts();
-      })
-      .finally(() => this.loading = false);
+    this.loadRoundsShifts().then(() => this.loading = false);
   }
 
   /**
@@ -74,10 +69,11 @@ export class PlannerComponent implements OnInit {
    * @param planner Reference of the selected planner
    */
   deletePlanner(planner: Planner): Promise<any> {
+    this.loading = true;
     return planner.destroy()
       .then(value => {
-        this.loadRoundsShifts();
         console.log('Planner deleted', value);
+        this.loadRoundsShifts().then(() => this.loading = false);
       });
   }
 
@@ -193,24 +189,27 @@ export class PlannerComponent implements OnInit {
    * Load shifts and rounds by the passed ECOE.
    * Then calls [buildPlanner]{@link #buildPlanner} function.
    */
-  loadRoundsShifts() {
-    this.rounds = [];
-    this.shifts = [];
+  loadRoundsShifts(): Promise<any> {
+    return new Promise(resolve => {
+      this.rounds = [];
+      this.shifts = [];
 
-    forkJoin(
-      from(Round.query({
-          where: {'ecoe': this.ecoeId},
-          sort: {'round_code': false}
-        })
-      ),
-      from(Shift.query({
-          where: {'ecoe': this.ecoeId},
-          sort: {'time_start': false}
-        })
-      )
-    ).subscribe(response => {
-      this.rounds = response[0];
-      this.shifts = response[1];
+      forkJoin(
+        from(Round.query({
+            where: {'ecoe': this.ecoeId},
+            sort: {'round_code': false}
+          }, {cache: false})
+        ),
+        from(Shift.query({
+            where: {'ecoe': this.ecoeId},
+            sort: {'time_start': false}
+          }, {cache: false})
+        )
+      ).subscribe(response => {
+        this.rounds = response[0];
+        this.shifts = response[1];
+        resolve(response);
+      });
     });
   }
 

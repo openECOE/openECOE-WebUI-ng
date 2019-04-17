@@ -7,6 +7,7 @@ import {map} from 'rxjs/operators';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 import {SharedService} from '../../../../../services/shared/shared.service';
+import {formatDate} from '@angular/common';
 
 
 /**
@@ -263,12 +264,15 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
 
     promise.then(planner => {
       this.modalStudentSelector = this.modalService.create({
-        nzTitle: this.translate.instant('SELECT_STUDENTS'),
+        nzTitle: this.translate.instant('SELECT_STUDENTS') +
+          ' (' + formatDate(this.shift.timeStart, 'dd/MM/yyyy HH:mm', 'es') +
+          ' ' + this.round.description + ')',
         nzContent: AppStudentSelectorComponent,
         nzWidth: this.modalStudentSelectorWidth,
         nzComponentParams: {
           ecoeId: this.ecoeId,
           planner: planner,
+          maxStudents: this.stations.length,
           round: this.plannerRound,
           shift: this.plannerShift,
           modalWidth: this.modalStudentSelectorWidth
@@ -292,6 +296,7 @@ export class AppStudentSelectorComponent implements OnInit {
 
   @Input() ecoeId: number;
   @Input() planner: any;
+  @Input() maxStudents: number;
 
   @Output() roundChange = new EventEmitter();
 
@@ -323,6 +328,9 @@ export class AppStudentSelectorComponent implements OnInit {
   plannerShift: Shift;
 
   students: Array<any> = [];
+  groupName: string;
+
+  transferDisabled: boolean = false;
 
   loading: boolean = false;
 
@@ -332,9 +340,12 @@ export class AppStudentSelectorComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
+
+    this.groupName = this.shift.shiftCode + this.round.roundCode;
+
     Student.query({
-      where: {ecoe: this.ecoeId},
-      sort: {planner_order: false, surnames: false, name: false}
+        where: {ecoe: this.ecoeId},
+        sort: {planner_order: false, surnames: false, name: false}
     })
       .then(value => {
         this.students = value
@@ -345,29 +356,16 @@ export class AppStudentSelectorComponent implements OnInit {
             const disabled = direction === 'left' ? !!studentItem.planner : false;
 
             return {direction: direction, student: studentItem, disabled: disabled};
-          })
-          .sort((a, b) => a.disabled > b.disabled ? 1 : -1);
-
+          });
         this.loading = false;
       });
   }
 
-  plannerChanged(planner: Planner) {
-    if (planner) {
-      this.plannerRound.planners = this.updateItemPlanners(this.plannerRound.planners, planner);
-      this.plannerShift.planners = this.updateItemPlanners(this.plannerShift.planners, planner);
-    }
-  }
-
-  updateItemPlanners(plannerArray: Array<Planner>, plannerUpdate: Planner): Array<Planner> {
-    const updateItem = plannerArray.find(value => value.id === plannerUpdate.id);
-    const index = plannerArray.indexOf(updateItem);
-    if (index < 0) {
-      plannerArray.push(plannerUpdate);
-    } else {
-      plannerArray[index] = plannerUpdate;
-    }
-    return plannerArray;
+  orderStudents(listStudents: Array<any>) {
+    listStudents
+      .sort((a, b) => a.student.planner_order > b.student.planner_order ? 1 : -1)
+      .sort((a, b) => a.student.surnames > b.student.surnames ? 1 : -1)
+      .sort((a, b) => a.student.name > b.student.name ? 1 : -1);
   }
 
   // tslint:disable-next-line:no-any
@@ -381,8 +379,20 @@ export class AppStudentSelectorComponent implements OnInit {
     console.log('nzSearchChange', ret);
   }
 
-  select(ret: {}): void {
+
+  select(ret: { title: string, checked: boolean, direction: string, disabled: boolean, list: Array<any> }): void {
     console.log('nzSelectChange', ret);
+    if (ret.direction === 'left') {
+      const maxSelect = this.maxStudents - this.planner.students.length;
+
+      const transferDisabled = ret.list.length >= maxSelect;
+      if (transferDisabled) {
+        //  Limit the list to only the max select Students you can add to Planner
+        ret.list = ret.list.filter((value, index) => index < maxSelect);
+      }
+
+      this.disableStudents(this.getLeftStudentsNoPlanner(ret.list), transferDisabled);
+    }
   }
 
   change(ret: { from: string, to: string, list: Array<any> }): void {
@@ -391,6 +401,25 @@ export class AppStudentSelectorComponent implements OnInit {
       ret.to === 'right' ?
         this.addPlannerStudent(value.student) :
         this.removePlannerStudent(value.student);
+    });
+
+    this.orderStudents(this.students);
+  }
+
+  getLeftStudentsNoPlanner(excludeList?: Array<any>): Array<any> {
+    let leftStudents = this.students.filter(value => value.direction === 'left' && !value.student.planner);
+
+    if (excludeList) {
+      leftStudents = leftStudents.filter(value => !excludeList.map(x => x.student).includes(value.student));
+    }
+
+    return leftStudents;
+  }
+
+  disableStudents(studentsList: Array<any>, disabled: boolean) {
+    studentsList.forEach(value => {
+      value.disabled = disabled;
+      value.checked = false;
     });
   }
 
@@ -405,11 +434,13 @@ export class AppStudentSelectorComponent implements OnInit {
   }
 
   removePlannerStudent(itemStudent: Student) {
+    this.disableStudents(this.getLeftStudentsNoPlanner(), false);
     itemStudent.planner = null;
     itemStudent.plannerOrder = null;
     itemStudent.save()
       .then(saveStudent => {
         this.planner.students = this.planner.students.filter(value => value !== saveStudent);
+        // this.ngOnInit();
         this.planner.save();
       });
   }

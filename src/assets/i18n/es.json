@@ -99,9 +99,11 @@
   "SURNAMES": "Apellidos",
 
   "PLANNER": "Planificador",
-  "DELETE_PLANNER": "Eliminar planificador",
+  "PLANNERS": "Planificadores",
+  "DELETE_PLANNER": "Eliminar Grupo",
   "AUTO_PLANNERS": "Autosignación de Alumnos",
 
+  "GROUP": "Grupo",
   "GROUPS": "Grupos",
 
   "REPORTS_AND_STATISTICS": "Informes y estadísticas",

@@ -6,10 +6,9 @@
             [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
     <tr text-center>
-      <th nzWidth="100px" nzLeft="0px" class="container">
-
+      <th nzWidth="100px" nzLeft="0px">
       </th>
-      <th *ngFor="let shift of shifts" nzWidth="100px" nzLeft="100px" class="container">
+      <th *ngFor="let shift of shifts" nzWidth="100px" nzLeft="100px">
         <span><strong>{{shift.shiftCode}}</strong> {{shift.timeStart | date: 'dd/MM/yyyy HH:mm'}}</span>
 
         <app-action-buttons class="action-buttons"
@@ -30,7 +29,7 @@
     <tbody>
     <ng-template ngFor let-round [ngForOf]="table.data">
       <tr text-center>
-        <td nzLeft="0px" class="container">
+        <td nzLeft="0px">
           <span><strong>{{round.roundCode}}</strong> {{round.description}}</span>
           <app-action-buttons class="action-buttons"
                               [isEditing]="false"
@@ -39,7 +38,7 @@
                               (startEdit)="addRound(round)">
           </app-action-buttons>
         </td>
-        <td nzLeft="100px" *ngFor="let shift of shifts" class="container">
+        <td nzLeft="100px" *ngFor="let shift of shifts">
           <app-planner-selector [ecoeId]="ecoeId"
                                 [(round)]="round"
                                 [(shift)]="shift"
@@ -51,7 +50,7 @@
     </ng-template>
 
     <tr>
-      <td white-bg tappable nzLeft="0px" (click)="addRound()">
+      <td (click)="addRound()" nzLeft="100px" tappable>
         <i nz-icon type="plus-circle" nzTheme="twotone" class="margin-right"></i>
         {{"ADD_ROUND" | translate}}
       </td>

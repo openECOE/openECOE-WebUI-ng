@@ -13,6 +13,7 @@
 <nz-transfer
   [nzDataSource]="students"
   nzShowSearch
+  [nzTitles]="['STUDENTS' | translate, ('GROUP' | translate) + ' ' + groupName]"
   [nzRender]="render"
   [nzListStyle]="{ 'width.px': modalWidth/2.3, 'height.px': modalWidth/2.5 }"
   [nzFilterOption]="filterOption"

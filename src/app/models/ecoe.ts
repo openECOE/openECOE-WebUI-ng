@@ -1,11 +1,12 @@
 import {Item} from '@infarm/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule} from './schedule';
+import {Organization} from './organization';
 
 export class ECOE extends Item {
   id: number;
   name: string;
-  id_organization: number;
+  organization: Organization;
 
 
   areas: Area[];

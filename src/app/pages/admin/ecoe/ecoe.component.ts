@@ -72,7 +72,9 @@ export class EcoeComponent implements OnInit {
     //     this.ecoe_menu[0].title = this.ecoe[0].name;
     //   });
 
-    ECOE.fetch(ecoeId)
+    const excludeItems = ['areas', 'stations', 'schedules', 'students', 'rounds', 'shifts', 'organization'];
+
+    ECOE.fetch(ecoeId, {skip: excludeItems})
       .then(ecoe => {
         this.ecoe = ecoe;
         this.ecoe_menu[0].title = this.ecoe.name;

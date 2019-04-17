@@ -31,7 +31,9 @@ export class InformationComponent implements OnInit {
     const ecoeId = +this.route.snapshot.params.id;
     // this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => this.ecoe = [ecoe]);
 
-    ECOE.fetch(ecoeId, {cache: false})
+    const excludeItems = ['organization'];
+
+    ECOE.fetch(ecoeId, {cache: false, skip: excludeItems})
       .then(ecoe => {
         this.ecoe = [ecoe];
       });
