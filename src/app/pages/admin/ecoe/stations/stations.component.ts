@@ -5,7 +5,7 @@ import {SharedService} from '../../../../services/shared/shared.service';
 import {map} from 'rxjs/operators';
 import {Item} from '@infarm/potion-client';
 import {Station} from '../../../../models/ecoe';
-import {from} from 'rxjs';
+import {forkJoin, from} from 'rxjs';
 
 /**
  * Component with stations and qblocks by station.
@@ -29,7 +29,7 @@ export class StationsComponent implements OnInit {
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
-              private sharedService: SharedService) {
+              private shared: SharedService) {
   }
 
   ngOnInit() {
@@ -43,14 +43,18 @@ export class StationsComponent implements OnInit {
    */
   loadStations() {
     this.loading = true;
+    const excludeItems = ['ecoe', 'organization'];
+
     Station.query({
       where: {ecoe: this.ecoeId},
       sort: {order: false}
-    }).then(response => {
-      this.editCache = {};
-      this.stations = response;
-      this.updateEditCache();
-    }).finally(() => this.loading = false);
+    }, {skip: excludeItems})
+      .then(response => {
+        this.editCache = {};
+        this.stations = response;
+        this.updateEditCache();
+        console.log('Stations loaded', this.stations);
+      }).finally(() => this.loading = false);
   }
 
   /**
@@ -229,7 +233,7 @@ export class StationsComponent implements OnInit {
   addQblock(station: any, name?: string) {
     this.apiService.getResources('qblock')
       .subscribe(qblocks => {
-        this.indexQblock += this.sharedService.getLastIndex(qblocks);
+        this.indexQblock += this.shared.getLastIndex(qblocks);
 
         const newItem = {
           id: this.indexQblock,
@@ -310,7 +314,7 @@ export class StationsComponent implements OnInit {
 
       station.qblocksArray = station.qblocksArray
         .map(x => (x.id === qblock.id ? response : x))
-        .sort(this.sharedService.sortArray);
+        .sort(this.shared.sortArray);
     });
   }
 
@@ -342,25 +346,33 @@ export class StationsComponent implements OnInit {
     delete this.editCacheQblock[qblock];
     station.qblocksArray = station.qblocksArray
       .filter(x => x.id !== qblock)
-      .sort(this.sharedService.sortArray);
+      .sort(this.shared.sortArray);
   }
 
   importStations(parserResult: Array<any>) {
     const savePromises = [];
-    parserResult.forEach(value => {
+
+    for (let index = 0; index < parserResult.length; index++) {
+      const value = parserResult[index];
+
+      if (!value.order) {
+        value.order = index + 1;
+      }
+
       const body = {
         ...value,
         ecoe: this.ecoeId
       };
 
       const station = new Station(body);
-      savePromises.push(station.save()
-        .then(newStation => console.log('Station Imported', newStation))
-        .catch(reason => console.error('Station import ERROR', reason))
-      );
-    });
-
-    Promise.all(savePromises).then(() => this.loadStations());
+      savePromises.push(station.save());
+    }
+    // TODO: Review promises not resolved in some cases
+    Promise.all(savePromises)
+      .then(result => {
+      console.log('All Stations Imported', result);
+    })
+      .finally(() => this.loadStations());
   }
 
 

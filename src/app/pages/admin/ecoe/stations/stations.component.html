@@ -53,7 +53,7 @@
           </td>
 
           <td>
-            TEST
+            <nz-tag *ngIf="item.parentStation?.name" [nzColor]="shared.stringToColour(item.parentStation.name)">{{item.parentStation.name}}</nz-tag>
           </td>
 
           <td>{{item?.childrenStations?.length}}</td>
