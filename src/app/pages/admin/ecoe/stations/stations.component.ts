@@ -24,6 +24,11 @@ export class StationsComponent implements OnInit {
   index: number = 1;
   indexQblock: number = 1;
 
+  page: number = 1;
+  pagesNum: number = 0;
+  pagesTotal: number = 0;
+  perPage: number = 5;
+
   loading: boolean = false;
 
   constructor(private apiService: ApiService,
@@ -47,13 +52,16 @@ export class StationsComponent implements OnInit {
 
     Station.query({
       where: {ecoe: this.ecoeId},
-      sort: {order: false}
-    }, {skip: excludeItems})
+      sort: {order: false},
+      page: this.page,
+      perPage: this.perPage
+    }, {skip: excludeItems, paginate: true})
       .then(response => {
         this.editCache = {};
-        this.stations = response;
+        this.stations = response.items;
+        this.pagesTotal = response.total;
         this.updateEditCache();
-        console.log('Stations loaded', this.stations);
+        console.log(this.pagesTotal, 'Stations loaded', this.stations);
       }).finally(() => this.loading = false);
   }
 
@@ -365,13 +373,21 @@ export class StationsComponent implements OnInit {
       };
 
       const station = new Station(body);
-      savePromises.push(station.save());
+      savePromises.push(station.save()
+        .then(newStation => {
+          console.log('Station', value.name, 'Saved', newStation);
+          return newStation;
+        })
+        .catch(reason => {
+          console.log('Station', value.name, 'Not Saved', body, reason);
+          return reason;
+        }));
     }
     // TODO: Review promises not resolved in some cases
     Promise.all(savePromises)
       .then(result => {
-      console.log('All Stations Imported', result);
-    })
+        console.log('All Stations Imported', result);
+      })
       .finally(() => this.loadStations());
   }
 

@@ -81,6 +81,9 @@
   "MINUTES": "minutos",
   "SECONDS": "segundos",
 
+  "START": "Inicio",
+  "END": "Fin",
+
   "ADD_EVENT": "Añadir Evento",
   "TEXT": "Texto",
   "TEXT_PLACEHOLDER": "Introduzca el texto...",
@@ -150,7 +153,7 @@
   "CLOSE_EDITION": "Cerrar edición",
 
   "SELECT": "Seleccionar...",
-
+  "IMPORT_DATA": "Importar",
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",
   "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",
