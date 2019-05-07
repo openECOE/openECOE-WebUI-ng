@@ -194,16 +194,18 @@ export class PlannerComponent implements OnInit {
       this.rounds = [];
       this.shifts = [];
 
+      const excludeItems = ['ecoe', 'organization', 'planners'];
+
       forkJoin(
         from(Round.query({
             where: {'ecoe': this.ecoeId},
             sort: {'round_code': false}
-          }, {cache: false})
+          }, {cache: false, skip: excludeItems})
         ),
         from(Shift.query({
             where: {'ecoe': this.ecoeId},
             sort: {'time_start': false}
-          }, {cache: false})
+          }, {cache: false, skip: excludeItems})
         )
       ).subscribe(response => {
         this.rounds = response[0];

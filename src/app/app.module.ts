@@ -13,12 +13,12 @@ import localeEsExtra from '@angular/common/locales/extra/es';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AuthInterceptor} from './interceptors/auth.interceptor';
-// import {MessagesInterceptor} from './interceptors/messages.interceptor';
+import {MessagesInterceptor} from './interceptors/messages.interceptor';
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import {environment} from '../environments/environment';
 
-import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@infarm/potion-client';
+import {POTION_PROVIDER_FACTORY, POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@infarm/potion-client';
 
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';
@@ -69,11 +69,11 @@ export function createTranslateLoader(http: HttpClient) {
       useClass: AuthInterceptor,
       multi: true
     },
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: MessagesInterceptor,
-    //   multi: true
-    // },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MessagesInterceptor,
+      multi: true
+    },
     {
       provide: POTION_CONFIG,
       useValue: {

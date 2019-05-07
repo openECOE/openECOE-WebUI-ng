@@ -37,7 +37,8 @@ export class StudentsComponent implements OnInit {
     Student.query({
       where: {ecoe: this.ecoeId},
       sort: {surnames: false, name: false}
-    }).then(response => {
+    }, {cache: false})
+      .then(response => {
       this.editCache = {};
       this.students = response;
       this.updateEditCache();

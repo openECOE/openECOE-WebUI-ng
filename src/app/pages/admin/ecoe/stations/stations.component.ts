@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {map} from 'rxjs/operators';
-import {Item} from '@infarm/potion-client';
+import {Item, Pagination} from '@infarm/potion-client';
 import {Station} from '../../../../models/ecoe';
 import {forkJoin, from} from 'rxjs';
 
@@ -27,14 +27,16 @@ export class StationsComponent implements OnInit {
   page: number = 1;
   pagesNum: number = 0;
   pagesTotal: number = 0;
-  perPage: number = 5;
+  perPage: number = 10;
+
+  pagStations: any;
 
   loading: boolean = false;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
-              private shared: SharedService) {
+              public shared: SharedService) {
   }
 
   ngOnInit() {
@@ -55,11 +57,13 @@ export class StationsComponent implements OnInit {
       sort: {order: false},
       page: this.page,
       perPage: this.perPage
-    }, {skip: excludeItems, paginate: true})
+    }, {skip: excludeItems, paginate: true, cache: false})
       .then(response => {
         this.editCache = {};
-        this.stations = response.items;
-        this.pagesTotal = response.total;
+        this.pagStations = response;
+
+        this.stations = this.pagStations.items;
+        this.pagesTotal = this.pagStations.total;
         this.updateEditCache();
         console.log(this.pagesTotal, 'Stations loaded', this.stations);
       }).finally(() => this.loading = false);
@@ -391,5 +395,16 @@ export class StationsComponent implements OnInit {
       .finally(() => this.loadStations());
   }
 
+  pageChange(page: number) {
+    this.pagStations.page = page;
+    this.loadStations();
+    // this.pagStations.changePageTo(page)
+    //   .then(value => this.stations = value.items);
+  }
+
+  pageSizeChange(pageSize: number) {
+    this.perPage = pageSize;
+    this.loadStations();
+  }
 
 }
