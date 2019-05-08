@@ -34,30 +34,30 @@
     </tr>
     </thead>
     <tbody>
-    <ng-template ngFor let-item [ngForOf]="table.data">
+    <ng-template ngFor let-item let-i="index" [ngForOf]="table.data">
       <tr>
-        <td [nzShowExpand]="true"
+        <td [nzShowExpand]="false"
             [(nzExpand)]="item.expand"
             (nzExpandChange)="loadQblocksByStation($event, item)">
         </td>
 
         <td>
-          <ng-container *ngIf="!editCache[item.id].edit">
+          <ng-container *ngIf="!editCache[i].edit">
             {{item.order || "-"}}
           </ng-container>
 
-          <ng-container *ngIf="editCache[item.id].edit">
-            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].order"></nz-input-number>
+          <ng-container *ngIf="editCache[i].edit">
+            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[i].item.order"></nz-input-number>
           </ng-container>
         </td>
 
         <td>
-          <ng-container *ngIf="!editCache[item.id].edit">
+          <ng-container *ngIf="!editCache[i].edit">
             {{item.name}}
           </ng-container>
 
-          <ng-container *ngIf="editCache[item.id].edit">
-            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].name">
+          <ng-container *ngIf="editCache[i].edit">
+            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[i].item.name">
           </ng-container>
         </td>
 
@@ -69,12 +69,12 @@
         <td>{{item?.childrenStations?.length}}</td>
 
         <td text-right>
-          <app-action-buttons [isEditing]="editCache[item.id].edit"
-                              [isNewItem]="editCache[item.id].new_item"
-                              (startEdit)="startEdit(item.id)"
+          <app-action-buttons [isEditing]="editCache[i].edit"
+                              [isNewItem]="editCache[i].new_item"
+                              (startEdit)="startEdit(i)"
                               (delete)="deleteItem(item)"
-                              (save)="saveItem(item, editCache[item.id].new_item)"
-                              (cancelEdit)="cancelEdit(item)">
+                              (save)="saveItem(editCache[i])"
+                              (cancelEdit)="cancelEdit(editCache[i])">
           </app-action-buttons>
         </td>
       </tr>
