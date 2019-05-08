@@ -1,18 +1,20 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
 import {ApiService} from '../api/api.service';
 import {Router} from '@angular/router';
+import {UserLogged} from '../../models';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthenticationService {
 
   authUrl: string = '/auth/tokens';
-  userData: any;
+  userData: UserLogged;
 
   constructor(private http: HttpClient,
               private apiService: ApiService,
@@ -53,14 +55,15 @@ export class AuthenticationService {
   }
 
   loadUserData() {
-    this.apiService.getResource('/api/user/me').subscribe(
-      data => this.userData = data,
-      err => {
-        if (err.status === 401) {
-          this.logout('/login');
+    this.apiService.getResource('/api/user/me')
+      .subscribe(
+        data => this.userData = new UserLogged(data),
+        err => {
+          if (err.status === 401) {
+            this.logout('/login');
+          }
         }
-      }
-    );
+      );
   }
 
   getUserData() {
