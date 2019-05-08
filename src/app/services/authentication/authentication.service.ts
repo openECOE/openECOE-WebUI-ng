@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, throwError} from 'rxjs';
+import {Observable, Subscription, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
@@ -14,7 +14,6 @@ import {UserLogged} from '../../models';
 export class AuthenticationService {
 
   authUrl: string = '/auth/tokens';
-  userData: UserLogged;
 
   constructor(private http: HttpClient,
               private apiService: ApiService,
@@ -46,7 +45,7 @@ export class AuthenticationService {
 
   logout(route: string = '/') {
     localStorage.removeItem('userLogged');
-    this.userData = null;
+    localStorage.removeItem('userData');
     this.router.navigate([route]);
   }
 
@@ -54,10 +53,17 @@ export class AuthenticationService {
     return JSON.parse(localStorage.getItem('userLogged'));
   }
 
+  get userData(): any {
+    return JSON.parse(localStorage.getItem('userData'));
+  }
+
   loadUserData() {
     this.apiService.getResource('/api/user/me')
       .subscribe(
-        data => this.userData = new UserLogged(data),
+        data => {
+          const user = new UserLogged(data);
+          localStorage.setItem('userData', JSON.stringify(user));
+        },
         err => {
           if (err.status === 401) {
             this.logout('/login');
