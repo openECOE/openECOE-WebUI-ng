@@ -23,6 +23,14 @@
 
   "INFORMATION": "Información",
 
+  "USER": "Usuario",
+  "USERS": "Usuarios",
+  "USER_ADMIN": "Administrador",
+  "USERS_ADMIN": "Administradores",
+  "USER_EVAL": "Evaluador",
+  "USERS_EVAL": "Evaluadores",
+
+
   "ROUND": "Ronda",
   "ROUNDS": "Rondas",
   "NO_ROUNDS": "No hay rondas",

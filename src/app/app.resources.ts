@@ -1,8 +1,9 @@
 import {PotionResources} from '@infarm/potion-client';
-import {Schedule, Stage, Event} from './models/schedule';
-import {Area, ECOE, Question, Option, Station, Student, QBlock} from './models/ecoe';
-import {Organization} from './models/organization';
-import {Planner, Round, Shift} from './models/planner';
+import {
+  Organization, User, Planner, Round, Shift,
+  Area, ECOE, Question, Option, Station, Student, QBlock,
+  Schedule, Stage, Event
+} from './models';
 
 export const resources: PotionResources = {
   '/organization': Organization,
@@ -18,5 +19,6 @@ export const resources: PotionResources = {
   '/event': Event,
   '/planner': Planner,
   '/round': Round,
-  '/shift': Shift
+  '/shift': Shift,
+  '/user': User
 };

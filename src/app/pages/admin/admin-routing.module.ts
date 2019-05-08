@@ -4,7 +4,6 @@ import {AdminComponent} from './admin.component';
 import {HomeAdminComponent} from './home-admin/home-admin.component';
 import {AuthenticationGuard} from '../../guards/authentication/authentication.guard';
 import {Role} from '../../models';
-import {CpanelComponent} from './cpanel/cpanel.component';
 
 const routes: Routes = [
   {
@@ -17,7 +16,7 @@ const routes: Routes = [
         path: '',
         children: [
           {path: 'ecoe/:id', loadChildren: './ecoe/ecoe.module#EcoeModule'},
-          {path: 'cpanel', component: CpanelComponent},
+          {path: 'cpanel', loadChildren: './cpanel/cpanel.module#CpanelModule'},
           {path: '', component: HomeAdminComponent},
           {path: '**', redirectTo: ''}
         ]
