@@ -1,22 +1,23 @@
-<nz-content>
-  <nz-card style="width: 300px;margin-top: 16px" [nzActions]="[actionEdit]">
-    <nz-skeleton [nzActive]="true" [nzLoading]="loading" [nzAvatar]="{ size: 'large' }">
-      <nz-card-meta
-        [nzTitle]="'USERS' | translate"
-        [nzDescription]="cardContent"
-        [nzAvatar]="avatarTemplate"
-      ></nz-card-meta>
-    </nz-skeleton>
-  </nz-card>
-  <ng-template #avatarTemplate>
-    <i nz-icon nzType="user"></i>
-  </ng-template>
-  <ng-template #cardContent>
-    <nz-statistic [nzValue]="users.length"
-                  [nzSuffix]="'USERS' | translate"></nz-statistic>
-  </ng-template>
-  <ng-template #actionEdit>
-    <i nz-icon type="edit"></i>
-  </ng-template>
+<nz-layout>
+  <nz-sider [nzCollapsible]="true"
+            [(nzCollapsed)]="isCollapsed"
+            [nzTrigger]="null"
+            *ngIf="(shared.getPageChanged() | async) != '/admin'">
+    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+      <li nz-menu-item *ngFor="let item of menu" [routerLink]="item.path">
+        <i nz-icon [type]="item.icon" [theme]="item.theme ? item.theme : 'fill'"></i>
+        <span class="nav-text">{{item.title | translate}}</span>
+      </li>
+      <li (click)="isCollapsed = !isCollapsed">
+        <button nz-button [nzType]="'primary'" [nzBlock]="true">
+          <i nz-icon [type]="isCollapsed ? 'menu-unfold' : 'menu-fold'" icon-25></i>
+        </button>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <router-outlet></router-outlet>
+  </nz-layout>
+</nz-layout>
 
-</nz-content>
+

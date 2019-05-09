@@ -1,0 +1,18 @@
+<nz-content>
+  <nz-card style="width: 300px;margin-top: 16px" >
+    <nz-skeleton [nzActive]="true" [nzLoading]="loading" [nzAvatar]="{ size: 'large' }">
+      <nz-card-meta
+        [nzAvatar]="avatarTemplate"
+        [nzTitle]="'USERS' | translate"
+        [nzDescription]="cardContent"
+      ></nz-card-meta>
+    </nz-skeleton>
+  </nz-card>
+  <ng-template #avatarTemplate>
+    <i nz-icon nzType="user"></i>
+  </ng-template>
+  <ng-template #cardContent>
+    <nz-statistic [nzValue]="users.length"
+                  [nzSuffix]="'USERS' | translate"></nz-statistic>
+  </ng-template>
+</nz-content>

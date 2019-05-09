@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {User, UserLogged} from '../../../models';
 import {AuthenticationService} from '../../../services/authentication/authentication.service';
 import {Item} from '@infarm/potion-client';
+import {ResourceIcons} from '../../../constants/icons';
+import {SharedService} from '../../../services/shared/shared.service';
 
 @Component({
   selector: 'app-cpanel',
@@ -10,27 +12,32 @@ import {Item} from '@infarm/potion-client';
 })
 export class CpanelComponent implements OnInit {
 
-  userLogged: UserLogged;
-
-  users: User | Item[] = [];
-
   loading: boolean = false;
 
-  constructor(private authService: AuthenticationService) {
+  menu: Array<{ title: string, path: string, icon: string, theme?: string }> = [
+    {
+      title: 'CONTROL_PANEL',
+      path: './',
+      icon: ResourceIcons.infoIcon
+    },
+    {
+      title: 'USERS',
+      path: './areas',
+      icon: ResourceIcons.areaIcon
+    },
+    {
+      title: 'BACK',
+      path: '/admin',
+      icon: 'left-square'
+    }
+  ];
+
+  constructor(public shared: SharedService) {
   }
 
   ngOnInit() {
-    this.userLogged = this.authService.userData;
-    this.loadUsers();
+
   }
 
-  loadUsers() {
-    this.loading = true;
-    User.query({
-      where: {organization: this.userLogged.user.organization}
-    })
-      .then(users => this.users = users)
-      .finally(() => this.loading = false);
-  }
 
 }

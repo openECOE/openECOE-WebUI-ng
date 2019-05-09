@@ -164,7 +164,6 @@ export class StationsComponent implements OnInit {
    * If the station is created, adds a Qblock by default
    *
    * @param cacheItem Resource selected
-   * @param newItem determines if the resource is already saved
    */
   saveItem(cacheItem: any): void {
     if (!cacheItem.item.name) {
