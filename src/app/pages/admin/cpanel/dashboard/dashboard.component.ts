@@ -12,7 +12,7 @@ export class DashboardComponent implements OnInit {
 
   userLogged: UserLogged;
 
-  users: User | Item[] = [];
+  usersPage: any[] = [];
 
   loading: boolean = false;
 
@@ -28,8 +28,8 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
     User.query({
       where: {organization: this.userLogged.user.organization}
-    })
-      .then(users => this.users = users)
+    }, {paginate: true})
+      .then((page) => this.usersPage = page)
       .finally(() => this.loading = false);
   }
 }

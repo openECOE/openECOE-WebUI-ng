@@ -1,18 +1,32 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CpanelComponent } from './cpanel.component';
-import {CpanelRoutingModule} from './cpanel-routing.module';
-import {NgZorroAntdModule} from 'ng-zorro-antd';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
-import { DashboardComponent } from './dashboard/dashboard.component';
+
+import {NgZorroAntdModule} from 'ng-zorro-antd';
+
+import {CpanelComponent} from './cpanel.component';
+import {CpanelRoutingModule} from './cpanel-routing.module';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {UsersAdminComponent} from './users-admin/users-admin.component';
+import {UploadAndParseComponent} from '../../../components/upload-and-parse/upload-and-parse.component';
+import {ActionButtonsComponent} from '../../../components/action-buttons/action-buttons.component';
 
 @NgModule({
-  declarations: [CpanelComponent, DashboardComponent],
+  declarations: [
+    CpanelComponent,
+    DashboardComponent,
+    UsersAdminComponent,
+    UploadAndParseComponent,
+    ActionButtonsComponent
+  ],
   imports: [
     CommonModule,
     CpanelRoutingModule,
     NgZorroAntdModule,
-    TranslateModule
+    TranslateModule,
+    FormsModule
   ]
 })
-export class CpanelModule { }
+export class CpanelModule {
+}

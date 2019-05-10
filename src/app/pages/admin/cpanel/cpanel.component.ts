@@ -4,6 +4,7 @@ import {AuthenticationService} from '../../../services/authentication/authentica
 import {Item} from '@infarm/potion-client';
 import {ResourceIcons} from '../../../constants/icons';
 import {SharedService} from '../../../services/shared/shared.service';
+import {CpanelRoutingModule} from './cpanel-routing.module';
 
 @Component({
   selector: 'app-cpanel',
@@ -22,8 +23,8 @@ export class CpanelComponent implements OnInit {
     },
     {
       title: 'USERS',
-      path: './areas',
-      icon: ResourceIcons.areaIcon
+      path: './users',
+      icon: ResourceIcons.userIcon
     },
     {
       title: 'BACK',
@@ -36,7 +37,6 @@ export class CpanelComponent implements OnInit {
   }
 
   ngOnInit() {
-
   }
 
 
