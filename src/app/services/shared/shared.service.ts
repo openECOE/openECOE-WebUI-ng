@@ -103,17 +103,20 @@ export class SharedService {
    * @returns Hexadecimal color string
    */
   stringToColour(str: string): string {
-
-    let hash = 0;
-    const randStr = (str.slice(str.length / 2, str.length) + str.slice(0, str.length / 2)).replace(/\s/g, '').toLowerCase();
-
-    for (let i = 0; i < randStr.length; i++) {
-      hash = randStr.charCodeAt(i) + ((hash << 5) - hash);
-    }
     let colour = '#';
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xFF;
-      colour += ('00' + value.toString(16)).substr(-2);
+    if (str) {
+
+      let hash = 0;
+      const randStr = (str.slice(str.length / 2, str.length) + str.slice(0, str.length / 2)).replace(/\s/g, '').toLowerCase();
+
+      for (let i = 0; i < randStr.length; i++) {
+        hash = randStr.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      for (let i = 0; i < 3; i++) {
+        const value = (hash >> (i * 8)) & 0xFF;
+        colour += ('00' + value.toString(16)).substr(-2);
+      }
+
     }
     return colour;
   }

@@ -2,7 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
+import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
+import {Item, Pagination} from '@infarm/potion-client';
+import {Station} from '../../../../models/ecoe';
+import {forkJoin, from} from 'rxjs';
 
 /**
  * Component with stations and qblocks by station.
@@ -16,15 +20,25 @@ export class StationsComponent implements OnInit {
 
   stations: any[] = [];
   ecoeId: number;
-  editCache = {};
+  editCache: { edit: boolean, new_item: boolean, item: Station }[];
   editCacheQblock = {};
   index: number = 1;
   indexQblock: number = 1;
 
+  page: number = 1;
+  pagesNum: number = 0;
+  pagesTotal: number = 0;
+  perPage: number = 10;
+
+  pagStations: any;
+
+  loading: boolean = false;
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
-              private sharedService: SharedService) {
+              private translate: TranslateService,
+              public shared: SharedService) {
   }
 
   ngOnInit() {
@@ -37,22 +51,32 @@ export class StationsComponent implements OnInit {
    * Then calls [updateEditCache]{@link #updateEditCache} function.
    */
   loadStations() {
-    this.apiService.getResources('station', {
-      where: `{"ecoe":${this.ecoeId}}`,
-      sort: '{"order":false}'
-    }).subscribe(response => {
-      this.editCache = {};
-      this.stations = response;
-      this.updateEditCache();
-    });
+    this.loading = true;
+    const excludeItems = ['ecoe', 'organization'];
+
+    Station.query({
+      where: {ecoe: this.ecoeId},
+      sort: {order: false},
+      page: this.page,
+      perPage: this.perPage
+    }, {skip: excludeItems, paginate: true, cache: false})
+      .then(response => {
+        this.editCache = [];
+        this.pagStations = response;
+
+        this.stations = this.pagStations.items;
+        this.pagesTotal = this.pagStations.total;
+        this.updateEditCache();
+        console.log(this.pagesTotal, 'Stations loaded', this.stations);
+      }).finally(() => this.loading = false);
   }
 
   /**
    * Adds to the resource passed its array of qblocks as a new key object.
    * Then updates the qblocks cache.
    *
-   * @param {boolean} expandOpen State of the expanded sub-table
-   * @param {any} station Resource selected to show its qblocks
+   * @param expandOpen State of the expanded sub-table
+   * @param station Resource selected to show its qblocks
    */
   loadQblocksByStation(expandOpen: boolean, station: any) {
     if (expandOpen) {
@@ -72,64 +96,64 @@ export class StationsComponent implements OnInit {
     }
   }
 
+  // TODO: Redo add Station module for use a modal or another page with steps tutorial
+
   /**
    * Adds a new empty field to the resources array.
    * Then updates editCache with the new resource.
    */
   addStation() {
-    this.apiService.getResources('station')
-      .subscribe(stations => {
-        this.index += this.sharedService.getLastIndex(stations);
+    const index = this.stations.length;
+    const defaultStation = {
+      name: this.translate.instant('STATION') + ' ' + index,
+      ecoe: this.ecoeId,
+    };
 
-        const newItem = {
-          id: this.index,
-          order: '',
-          name: '',
-          ecoe: this.ecoeId,
-          children_stations: [],
-          parent_station: null
-        };
 
-        this.stations = [...this.stations, newItem];
+    const newStation = new Station(defaultStation);
 
-        this.editCache[this.index] = {
-          edit: true,
-          new_item: true,
-          ...newItem
-        };
-      });
+
+    this.stations = [...this.stations, newStation];
+
+    this.editCache[index] = {
+      edit: true,
+      new_item: true,
+      item: newStation
+    };
   }
 
   /**
    * Sets the editCache variable to true.
    * Changes text-view tags by input tags.
    *
-   * @param {number} id Id of the selected resource
+   * @param index of the selected resource
    */
-  startEdit(id: number) {
-    this.editCache[id].edit = true;
+  startEdit(index: number) {
+    this.editCache[index].edit = true;
   }
 
   /**
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayStations]{@link #updateArrayStations} function.
    *
-   * @param {any} station Resource selected
+   * @param station Resource selected
    */
-  deleteItem(station: any) {
-    this.apiService.deleteResource(station['$uri']).subscribe(() => {
-      this.updateArrayStations(station.id);
-    });
+  deleteItem(station: Station) {
+    const stationId: number = station.id;
+
+    station.destroy()
+      .then(() => this.updateEditCache());
   }
 
   /**
    * Updates editCache variable with the same values of the resources array and adds a 'edit' key.
    */
   updateEditCache(): void {
-    this.stations.forEach(item => {
-      this.editCache[item.id] = {
-        edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
-        ...item
+    this.stations.forEach((item, index) => {
+      this.editCache[index] = {
+        edit: this.editCache[index] ? this.editCache[index].edit : false,
+        new_item: false,
+        item: item
       };
     });
   }
@@ -139,48 +163,35 @@ export class StationsComponent implements OnInit {
    * Then updates the variables to avoid calling the backend again.
    * If the station is created, adds a Qblock by default
    *
-   * @param {any} station Resource selected
-   * @param {boolean} newItem determines if the resource is already saved
+   * @param cacheItem Resource selected
+   * @param newItem determines if the resource is already saved
    */
-  saveItem(station: any, newItem: boolean): void {
-    const item = this.editCache[station.id];
-
-    if (!item.order || !item.name) {
+  saveItem(cacheItem: any): void {
+    if (!cacheItem.item.name) {
       return;
     }
 
     const body = {
-      order: +item.order,
-      name: item.name,
-      ecoe: item.ecoe
+      name: cacheItem.item.name,
+      ecoe: cacheItem.item.ecoe
     };
 
     const request = (
-      newItem ?
-        this.apiService.createResource('station', body) :
-        this.apiService.updateResource(item['$uri'], body)
+      cacheItem.newItem ?
+        cacheItem.item.save() :
+        cacheItem.item.update(body)
     );
 
-    request.pipe(
-      map(res => {
-        return {...res, expand: true};
-      })
-    ).subscribe(response => {
-      delete this.editCache[station.id];
-      delete this.editCache[response['id']];
+    request.then(response => {
+      this.stations = this.stations.map(x => (x.id === cacheItem.item.id) ? response : x);
 
-      this.editCache[response['id']] = {
-        edit: false,
-        ...response
-      };
+      cacheItem.newItem = cacheItem.edit = false;
 
-      this.stations = this.stations.map(x => (x.id === station.id) ? response : x);
-
-      if (newItem) {
-        const newStation = this.stations.find(x => x.id === response.id);
-        newStation.qblocksArray = [];
-        this.addQblock(newStation, 'Preguntas Generales');
-      }
+      // if (newItem) {
+      //   const newStation = this.stations.find(x => x.id === response.id);
+      //   newStation.qblocksArray = [];
+      //   this.addQblock(newStation, 'Preguntas Generales');
+      // }
     });
   }
 
@@ -189,33 +200,35 @@ export class StationsComponent implements OnInit {
    * If resource is not already saved, calls [updateArrayStations]{@link #updateArrayStations} function.
    * Else resets editCache to the previous value.
    *
-   * @param {any} station Resource selected
+   * @param cacheItem Resource selected
    */
-  cancelEdit(station: any): void {
-    this.editCache[station.id].edit = false;
+  cancelEdit(cacheItem: any): void {
+    // TODO: Review cancelEdit
+    cacheItem.edit = false;
 
-    if (this.editCache[station.id].new_item) {
-      this.updateArrayStations(station.id);
+    if (cacheItem.new_item) {
+      this.updateArrayStations(cacheItem);
     } else {
-      this.editCache[station.id] = station;
+      cacheItem.item = this.stations.find(station => station.id === cacheItem.item.id);
     }
   }
 
   /**
    * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
    *
-   * @param {number} station Id of the resource passed
+   * @param cacheItem of the resource passed
    */
-  updateArrayStations(station: number) {
-    delete this.editCache[station];
-    this.stations = this.stations.filter(x => x.id !== station);
+  updateArrayStations(cacheItem: any) {
+    const stationId = cacheItem.item.id;
+    delete this.editCache[this.editCache.indexOf(cacheItem)];
+    this.stations = this.stations.filter(x => x.id !== stationId);
   }
 
   /**
    * Navigates to Questions page with the queryParams of the Station and Qblock for filtering.
    *
-   * @param {number} stationId Id of the station selected
-   * @param {number} qblockId Id of the qblock selected
+   * @param stationId Id of the station selected
+   * @param qblockId Id of the qblock selected
    */
   navigateQuestions(stationId: number, qblockId: number) {
     this.router.navigate(['../questions'], {
@@ -228,13 +241,13 @@ export class StationsComponent implements OnInit {
    * Adds a new empty field to the resources array.
    * Then updates editCache with the new resource.
    *
-   * @param {any} station Parent resource passed
-   * @param {string} name? Name of the Qblock
+   * @param station Parent resource passed
+   * @param name? Name of the Qblock
    */
   addQblock(station: any, name?: string) {
     this.apiService.getResources('qblock')
       .subscribe(qblocks => {
-        this.indexQblock += this.sharedService.getLastIndex(qblocks);
+        this.indexQblock += this.shared.getLastIndex(qblocks);
 
         const newItem = {
           id: this.indexQblock,
@@ -258,7 +271,7 @@ export class StationsComponent implements OnInit {
    * Sets the editCache variable to true.
    * Changes text-view tags by input tags.
    *
-   * @param {number} qblockId Id of the selected resource
+   * @param qblockId Id of the selected resource
    */
   startEditQblock(qblockId: number) {
     this.editCacheQblock[qblockId].edit = true;
@@ -268,8 +281,8 @@ export class StationsComponent implements OnInit {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayQblocks]{@link #updateArrayQblocks} function.
    *
-   * @param {any} qblock Resource selected
-   * @param {any} station Parent resource passed
+   * @param qblock Resource selected
+   * @param station Parent resource passed
    */
   deleteQblock(qblock: any, station: any) {
     this.apiService.deleteResource(qblock['$uri']).subscribe(() => {
@@ -281,9 +294,9 @@ export class StationsComponent implements OnInit {
    * Creates or updates the resource passed.
    * Then updates the variables to avoid calling the backend again.
    *
-   * @param {any} qblock Resource selected
-   * @param {number} station Parent resource passed
-   * @param {boolean} newItem determines if the resource is already saved
+   * @param qblock Resource selected
+   * @param station Parent resource passed
+   * @param newItem determines if the resource is already saved
    */
   saveQblock(qblock: any, station: any, newItem: boolean) {
     const item = this.editCacheQblock[qblock.id];
@@ -315,7 +328,7 @@ export class StationsComponent implements OnInit {
 
       station.qblocksArray = station.qblocksArray
         .map(x => (x.id === qblock.id ? response : x))
-        .sort(this.sharedService.sortArray);
+        .sort(this.shared.sortArray);
     });
   }
 
@@ -324,8 +337,8 @@ export class StationsComponent implements OnInit {
    * If resource is not already saved, calls [updateArrayQblocks]{@link #updateArrayQblocks} function.
    * Else resets editCache to the previous value.
    *
-   * @param {any} qblock Resource selected
-   * @param {any} station Parent resource passed
+   * @param qblock Resource selected
+   * @param station Parent resource passed
    */
   cancelEditQblock(qblock: any, station: any) {
     this.editCacheQblock[qblock.id].edit = false;
@@ -340,13 +353,60 @@ export class StationsComponent implements OnInit {
   /**
    * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
    *
-   * @param {number} qblock Id of the resource passed
-   * @param {any} station Parent resource passed
+   * @param qblock Id of the resource passed
+   * @param station Parent resource passed
    */
   updateArrayQblocks(qblock: number, station: any) {
     delete this.editCacheQblock[qblock];
     station.qblocksArray = station.qblocksArray
       .filter(x => x.id !== qblock)
-      .sort(this.sharedService.sortArray);
+      .sort(this.shared.sortArray);
   }
+
+  importStations(parserResult: Array<any>) {
+    const savePromises = [];
+
+    for (let index = 0; index < parserResult.length; index++) {
+      const value = parserResult[index];
+
+      if (!value.order) {
+        value.order = index + 1;
+      }
+
+      const body = {
+        ...value,
+        ecoe: this.ecoeId
+      };
+
+      const station = new Station(body);
+      savePromises.push(station.save()
+        .then(newStation => {
+          console.log('Station', value.name, 'Saved', newStation);
+          return newStation;
+        })
+        .catch(reason => {
+          console.log('Station', value.name, 'Not Saved', body, reason);
+          return reason;
+        }));
+    }
+    // TODO: Review promises not resolved in some cases
+    Promise.all(savePromises)
+      .then(result => {
+        console.log('All Stations Imported', result);
+      })
+      .finally(() => this.loadStations());
+  }
+
+  pageChange(page: number) {
+    this.pagStations.page = page;
+    this.loadStations();
+    // this.pagStations.changePageTo(page)
+    //   .then(value => this.stations = value.items);
+  }
+
+  pageSizeChange(pageSize: number) {
+    this.perPage = pageSize;
+    this.loadStations();
+  }
+
 }
