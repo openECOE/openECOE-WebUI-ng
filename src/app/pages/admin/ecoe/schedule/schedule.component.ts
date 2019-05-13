@@ -280,11 +280,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   cleanForm(form: FormGroup): void {
-    form.reset();
-    for (const key of Object.keys(form.controls)) {
-      form.controls[key].markAsPristine();
-      form.controls[key].updateValueAndValidity();
-    }
+    this.shared.cleanForm(form);
   }
 
 }

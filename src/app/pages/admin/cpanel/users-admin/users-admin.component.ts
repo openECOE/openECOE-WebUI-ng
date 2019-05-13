@@ -28,6 +28,7 @@ export class UsersAdminComponent implements OnInit {
 
   validateForm: FormGroup;
   showAddUser: boolean = false;
+  importErrors: {value: any, reason: any}[] = [];
 
   constructor(private authService: AuthenticationService,
               private shared: SharedService,
@@ -42,11 +43,13 @@ export class UsersAdminComponent implements OnInit {
   }
 
   getUserForm(): FormGroup {
+    // TODO: Validate if email exists
     return this.fb.group({
-      userEmail: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.email]],
       password: [null, [Validators.required]],
-      userName: [null, [Validators.required]],
-      userSurname: [null, [Validators.required]],
+      userName: [null],
+      userSurname: [null],
+      isSuperadmin: [false]
     });
   }
 
@@ -67,14 +70,14 @@ export class UsersAdminComponent implements OnInit {
   }
 
   pageChange(page: number) {
-    this.usersPage.page = page;
+    this.page = page;
     this.loadUsers();
     // this.pagStations.changePageTo(page)
     //   .then(value => this.stations = value.items);
   }
 
   pageSizeChange(pageSize: number) {
-    this.usersPage.perPage = pageSize;
+    this.perPage = pageSize;
     this.loadUsers();
   }
 
@@ -103,7 +106,7 @@ export class UsersAdminComponent implements OnInit {
           name: string = '',
           surname: string = '',
           superAdmin: boolean = false,
-          password: string = null) {
+          password: string = null): Promise<any> {
     // Go to last page
     // this.page = this.usersPage.pages;
     // this.loadUsers();
@@ -116,8 +119,7 @@ export class UsersAdminComponent implements OnInit {
       password: password ? password : this.shared.generateRandomPassword()
     });
 
-    this.users = [...this.users, newUser];
-    this.editCache.push(this.assignEditCache(newUser, true, true));
+    return newUser.save();
   }
 
   editUser(idx: number) {
@@ -155,15 +157,63 @@ export class UsersAdminComponent implements OnInit {
   }
 
   importUsers(parserResult: Array<any>) {
+    this.importErrors = [];
+    const respPromises = [];
 
+    parserResult.forEach((value, index) => {
+
+
+      const promise = this.addUser(
+        value.email.toString(),
+        value.name.toString(),
+        value.surname.toString(),
+        false,
+        value.password.toString()
+      )
+        .then(resp => {
+          console.log('User import', resp.email, resp);
+          return resp;
+        })
+        .catch(reason => {
+          console.warn('User import error', value, reason);
+          this.importErrors.push(
+            { value: value,
+              reason: reason
+            });
+          return reason;
+        });
+
+      respPromises.push(promise);
+    });
+
+    Promise.all(respPromises)
+      .finally(() => this.loadUsers());
+  }
+
+  cleanError(idx: number) {
   }
 
   showModal() {
     this.showAddUser = true;
   }
 
-  cancelModal() {
+  closeModal() {
     this.showAddUser = false;
+  }
+
+  submitFormUser(value: any) {
+    this.addUser(
+      value.email,
+      value.userName,
+      value.userSurname,
+      value.isSuperadmin,
+      value.password)
+      .then(user => {
+        this.users = [...this.users, user];
+        this.editCache.push(this.assignEditCache(user, false, true));
+        this.shared.cleanForm(this.validateForm);
+        this.closeModal();
+      });
   }
 
 
