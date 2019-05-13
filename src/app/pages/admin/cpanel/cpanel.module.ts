@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 
 import {NgZorroAntdModule} from 'ng-zorro-antd';
@@ -25,7 +25,8 @@ import {ActionButtonsComponent} from '../../../components/action-buttons/action-
     CpanelRoutingModule,
     NgZorroAntdModule,
     TranslateModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class CpanelModule {

@@ -1,39 +1,59 @@
 import {Component, OnInit} from '@angular/core';
 import {Station, User, UserLogged} from '../../../../models';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
-import {Pagination} from '@infarm/potion-client';
+import {Item, Pagination} from '@infarm/potion-client';
+import {SharedService} from '../../../../services/shared/shared.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-users-admin',
   templateUrl: './users-admin.component.html',
   styleUrls: ['./users-admin.component.less']
 })
+
 export class UsersAdminComponent implements OnInit {
 
   userLogged: UserLogged;
+  activeUser: User;
 
 
-  users: User[];
+  users: User[] = [];
   usersPage: any;
-  editCache: { edit: boolean, new_item: boolean, item: User }[] = [];
+  editCache: CacheItem[] = [];
 
   page: number = 1;
   perPage: number = 20;
   totalItems: number = 0;
   loading: boolean = false;
 
-  constructor(private authService: AuthenticationService) {
+  validateForm: FormGroup;
+  showAddUser: boolean = false;
+
+  constructor(private authService: AuthenticationService,
+              private shared: SharedService,
+              private fb: FormBuilder) {
   }
 
   ngOnInit() {
+    this.validateForm = this.getUserForm();
     this.userLogged = this.authService.userData;
+    this.activeUser = this.userLogged.user;
     this.loadUsers();
+  }
+
+  getUserForm(): FormGroup {
+    return this.fb.group({
+      userEmail: [null, [Validators.required]],
+      password: [null, [Validators.required]],
+      userName: [null, [Validators.required]],
+      userSurname: [null, [Validators.required]],
+    });
   }
 
   loadUsers() {
     this.loading = true;
     User.query({
-      where: {organization: this.userLogged.user.organization},
+      where: {organization: this.activeUser.organization},
       page: this.page,
       perPage: this.perPage
     }, {paginate: true})
@@ -41,7 +61,7 @@ export class UsersAdminComponent implements OnInit {
         this.usersPage = page;
         this.users = this.usersPage.items;
         this.totalItems = this.usersPage.total;
-        this.updateEditCache(this.usersPage.items, this.editCache);
+        this.updateEditCache(this.users, this.editCache);
       })
       .finally(() => this.loading = false);
   }
@@ -58,15 +78,20 @@ export class UsersAdminComponent implements OnInit {
     this.loadUsers();
   }
 
+  assignEditCache(item: Item, editItem: boolean = false, newItem: boolean = false) {
+    const cacheItem = new User;
+
+    return {
+      editItem: editItem,
+      newItem: newItem,
+      data: Object.assign(cacheItem, item)
+    };
+  }
+
   updateEditCache(listItems: any[], editCache: any[]) {
     listItems.forEach((item, index) => {
       const cacheItem = new User;
-
-      editCache[index] = {
-        edit: editCache[index] ? editCache[index].edit : false,
-        new_item: false,
-        item: Object.assign(cacheItem, item)
-      };
+      editCache[index] = this.assignEditCache(item, editCache[index] ? editCache[index].editItem : false, false);
     });
   }
 
@@ -74,52 +99,78 @@ export class UsersAdminComponent implements OnInit {
 
   }
 
-  addUser() {
+  addUser(email: string = '',
+          name: string = '',
+          surname: string = '',
+          superAdmin: boolean = false,
+          password: string = null) {
+    // Go to last page
+    // this.page = this.usersPage.pages;
+    // this.loadUsers();
+    const newUser = new User({
+      email: email,
+      name: name,
+      surname: surname,
+      organization: this.activeUser.organization,
+      isSuperadmin: superAdmin,
+      password: password ? password : this.shared.generateRandomPassword()
+    });
 
+    this.users = [...this.users, newUser];
+    this.editCache.push(this.assignEditCache(newUser, true, true));
   }
 
   editUser(idx: number) {
-    this.editCache[idx].edit = true;
+    this.editCache[idx].editItem = true;
   }
 
   saveUser(idx: number) {
-    this.editCache[idx].item.save()
+    this.editCache[idx].data.save()
       .then(userSaved => {
-        // If saved item proceed to assign users array
-        const idxUser = this.users.findIndex(item => item.id === this.editCache[idx].item.id);
-
-        idxUser > -1 ?
-          Object.assign(this.users[idxUser], this.editCache[idx].item)
-          :
-          this.users.push(userSaved);
-
-        this.editCache[idx].edit = false;
+        Object.assign(this.users[idx], Object.assign(this.editCache[idx].data, userSaved));
+        this.editCache[idx].editItem = false;
       });
   }
 
   delUser(idx: number) {
-    const idxUser = this.users.findIndex(item => item.id === this.editCache[idx].item.id);
-    this.users[idxUser].destroy()
+    this.users[idx].destroy()
       .then(() => {
-        delete this.users[idxUser];
-        delete this.editCache[idx];
+        this.removeUserList(idx);
       });
   }
 
+  removeUserList(idx: number) {
+    delete this.users[idx];
+    delete this.editCache[idx];
+    this.users = this.users.filter((value) => value !== this.users[idx]);
+  }
+
   cancelUser(idx: number) {
-    this.editCache[idx].edit = false;
+    this.editCache[idx].editItem = false;
 
-    const idxUser = this.users.findIndex(item => item.id === this.editCache[idx].item.id);
-
-    (idxUser > -1) ?
-      Object.assign(this.editCache[idx].item, this.users[idxUser])
+    this.editCache[idx].newItem ?
+      this.removeUserList(idx)
       :
-      delete this.editCache[idx];
+      Object.assign(this.editCache[idx].data, this.users[idx]);
   }
 
   importUsers(parserResult: Array<any>) {
 
   }
 
+  showModal() {
+    this.showAddUser = true;
+  }
 
+  cancelModal() {
+    this.showAddUser = false;
+  }
+
+
+}
+
+export class CacheItem {
+  data: any;
+  editItem: boolean;
+  newItem: boolean;
 }

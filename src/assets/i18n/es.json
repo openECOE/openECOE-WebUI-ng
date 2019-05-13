@@ -29,6 +29,11 @@
   "USERS_ADMIN": "Administradores",
   "USER_EVAL": "Evaluador",
   "USERS_EVAL": "Evaluadores",
+  "ADD_USER": "Añadir usuario",
+
+  "EMAIL": "Correo electrónico",
+  "PASSWORD": "Contraseña",
+
 
 
   "ROUND": "Ronda",

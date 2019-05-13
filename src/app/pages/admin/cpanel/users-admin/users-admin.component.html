@@ -1,5 +1,58 @@
+<nz-modal
+  [(nzVisible)]="showAddUser"
+  [nzTitle]="'ADD_USER' | translate"
+  [nzOkText]="'ACCEPT' | translate"
+  [nzCancelText]="'CANCEL' | translate"
+  (nzOnOk)="addUser()"
+  (nzOnCancel)="cancelModal()">
+
+  <ng-template #prefixEmail><i nz-icon type="mail"></i></ng-template>
+  <ng-template #prefixLock><i nz-icon type="lock"></i></ng-template>
+
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="addUser()">
+
+    <nz-form-item nzFlex>
+      <nz-form-control>
+        <nz-input-group [nzPrefix]="prefixEmail">
+          <input type="text" nz-input
+                 formControlName="userEmail"
+                 [placeholder]="'EMAIL' | translate">
+        </nz-input-group>
+        <nz-input-group>
+          <nz-tag formControlName="isSuperadmin" nzMode="checkable">{{'USER_ADMIN' | translate}}</nz-tag>
+        </nz-input-group>
+      </nz-form-control>
+
+    </nz-form-item>
+    <nz-form-item nzFlex>
+      <nz-form-control>
+        <nz-input-group [nzPrefix]="prefixLock">
+          <input type="text" nz-input
+                 formControlName="password"
+                 [placeholder]="'PASSWORD' | translate">
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item nzFlex>
+      <nz-form-control>
+        <nz-input-group>
+          <input type="text" nz-input
+                 formControlName="userName"
+                 placeholder="{{'NAME' | translate}}">
+        </nz-input-group>
+        <nz-input-group>
+          <input type="text" nz-input
+                 formControlName="userSurname"
+                 placeholder="{{'SURNAMES' | translate}}">
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+</nz-modal>
+
+
 <nz-table #table
-          [nzData]="users"
           [(nzPageIndex)]="page"
           [(nzPageSize)]="perPage"
           (nzPageIndexChange)="pageChange($event)"
@@ -7,6 +60,7 @@
           [nzLoading]="loading"
           [nzFrontPagination]="false"
           [nzTotal]="totalItems"
+          [nzData]="users"
           nzShowSizeChanger
           nzShowPagination>
   <thead>
@@ -18,12 +72,12 @@
     </th>
     <th>{{"EMAIL" | translate}}</th>
     <th>{{"NAME" | translate}}</th>
-    <th>{{"SURNAME" | translate}}</th>
+    <th>{{"SURNAMES" | translate}}</th>
     <th nzWidth="240px">
       <nz-button-group>
         <button nz-button [nzType]="'primary'" class="margin-left"
                 [nz-tooltip] [nzTitle]="'ADD_USER' | translate"
-                (click)="addUser()">
+                (click)="showModal()">
           <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
         </button>
         <app-upload-and-parse (parserResult)="importUsers($event)"></app-upload-and-parse>
@@ -31,8 +85,8 @@
     </th>
   </tr>
   </thead>
-
   <tbody>
+
   <ng-template ngFor let-item let-idx="index" [ngForOf]="table.data">
     <tr>
       <td>
@@ -42,7 +96,7 @@
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[idx].edit; else editEmail">
+        <ng-container *ngIf="!editCache[idx]?.editItem; else editEmail">
           {{item.email}}
           <nz-tag *ngIf="item.isSuperadmin"
                   nzColor="geekblue"
@@ -51,30 +105,32 @@
           </nz-tag>
         </ng-container>
         <ng-template #editEmail>
-          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx].item.email">
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx]?.data.email">
+          <input type="text" nz-input nzSize="small" [(ngModel)]="editCache[idx]?.data.password">
         </ng-template>
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[idx].edit; else editName">
+        <ng-container *ngIf="!editCache[idx]?.editItem; else editName">
           {{item.name}}
         </ng-container>
         <ng-template #editName>
-          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx].item.name">
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx]?.data.name">
         </ng-template>
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[idx].edit; else editSurname">
+        <ng-container *ngIf="!editCache[idx]?.editItem; else editSurname">
           {{item.surname}}
         </ng-container>
         <ng-template #editSurname>
-          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx].item.surname">
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx]?.data.surname">
         </ng-template>
       </td>
       <td text-right>
-        <app-action-buttons [isEditing]="editCache[idx].edit"
-                            [isNewItem]="editCache[idx].new_item"
+        <app-action-buttons [isEditing]="editCache[idx]?.editItem"
+                            [isNewItem]="editCache[idx]?.newItem"
+                            [showDeleteButton]="!(activeUser.id === item.id)"
                             (startEdit)="editUser(idx)"
                             (delete)="delUser(idx)"
                             (save)="saveUser(idx)"

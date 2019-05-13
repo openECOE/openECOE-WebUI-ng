@@ -64,6 +64,7 @@ export class StationsComponent implements OnInit {
         this.editCache = [];
         this.pagStations = response;
 
+
         this.stations = this.pagStations.items;
         this.pagesTotal = this.pagStations.total;
         this.updateEditCache();

@@ -121,4 +121,8 @@ export class SharedService {
     return colour;
   }
 
+  generateRandomPassword(): string {
+    return Math.random().toString(36).slice(-8);
+  }
+
 }

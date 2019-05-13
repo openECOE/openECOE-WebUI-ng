@@ -7,9 +7,10 @@ export class User extends Item {
   email: string;
   name: string;
   surname: string;
-  is_superadmin: boolean;
+  isSuperadmin: boolean;
   token_expiration: Date;
   organization: Organization;
+  password: string;
 }
 
 export class UserLogged {

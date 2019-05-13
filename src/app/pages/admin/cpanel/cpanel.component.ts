@@ -24,7 +24,8 @@ export class CpanelComponent implements OnInit {
     {
       title: 'USERS',
       path: './users',
-      icon: ResourceIcons.userIcon
+      icon: ResourceIcons.userIcon,
+      theme: 'outline'
     },
     {
       title: 'BACK',

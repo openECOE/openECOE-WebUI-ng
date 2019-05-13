@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse} from '@angular/common/http';
+import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse, HttpResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
 import {ActionMessagesService} from '../services/action-messages/action-messages.service';
 
@@ -27,16 +27,20 @@ export class MessagesInterceptor implements HttpInterceptor {
 
     return next.handle(request)
       .pipe(
-        tap(() => {
-          if (request.url.endsWith('/auth/tokens')) {
-            this.actionMessagesService.createSuccessMsg(this.translate.instant('LOG_IN_SUCCESS'));
-          } else if (requestMethod) {
-            this.actionMessagesService.createSuccessMsg(
-              this.translate.instant('ITEM_ACTION_SUCCESSFUL', {
-                action: this.translate.instant(requestMethod.actionOk)
-              })
-            );
+        map((event: HttpEvent<any>) => {
+          if (event instanceof HttpResponse) {
+            // do stuff with response and headers you want
+            if (request.url.endsWith('/auth/tokens')) {
+              this.actionMessagesService.createSuccessMsg(this.translate.instant('LOG_IN_SUCCESS'));
+            } else if (requestMethod) {
+              this.actionMessagesService.createSuccessMsg(
+                this.translate.instant('ITEM_ACTION_SUCCESSFUL', {
+                  action: this.translate.instant(requestMethod.actionOk)
+                })
+              );
+            }
           }
+          return event;
         }),
         catchError((err: HttpErrorResponse) => {
           if (request.url.endsWith('/auth/tokens')) {
