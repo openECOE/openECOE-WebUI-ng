@@ -3,6 +3,9 @@ import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 
+import {Area} from '../../../../models/ecoe';
+import {ItemCache} from '@infarm/potion-client';
+
 /**
  * Component with areas and questions by area.
  */
@@ -14,18 +17,27 @@ import {SharedService} from '../../../../services/shared/shared.service';
 export class AreasComponent implements OnInit {
 
   areas: any[] = [];
-  ecoeId: number;
-  editCache = {};
+  editCache: {}[] = [];
   index: number = 1;
+
+  ecoeId: number;
+
+  current_page  = 1;
+  per_page      = 2;
+  totalItems    = 0;
+
+  area: Area = new Area();
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private sharedService: SharedService) {
+
   }
 
-  ngOnInit() {
+  ngOnInit() { console.log(this.route.snapshot.params.id);
     this.ecoeId = +this.route.snapshot.params.id;
     this.loadAreas();
+    console.log('hola Areas...');
   }
 
   /**
@@ -33,39 +45,47 @@ export class AreasComponent implements OnInit {
    * Then calls [updateEditCache]{@link #updateEditCache} function.
    */
   loadAreas() {
-    this.apiService.getResources('area', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).subscribe(response => {
-      this.editCache = {};
-      this.areas = response;
-      this.updateEditCache();
-    });
+    Area.query({
+      where: {'ecoe': this.ecoeId},
+      page: this.current_page,
+      perPage: this.per_page,
+      sort: {code: false}
+    }, {paginate: true, cache: false})
+      .then(response => { console.log('Area:', response['items']);
+        this.editCache = [];
+        this.areas = response['items'];
+        this.totalItems = response['total'];
+        this.updateEditCache();
+      });
   }
+
+
 
   /**
    * Adds to the resource passed its array of questions as a new key object.
    * Then calls [updateEditCache]{@link #updateEditCache} function.
    *
-   * @param {boolean} expandOpen State of the expanded sub-table
-   * @param {any} area Resource selected to show its questions
+   * @param expandOpen State of the expanded sub-table
+   * @param area Resource selected to show its questions
    */
-  loadQuestionsByArea(expandOpen: boolean, area: any) {
+  /*loadQuestionsByArea(expandOpen: boolean, area: any) { console.log('goingo to load QuestionsByArea....');
     if (expandOpen) {
       this.apiService.getResources('question', {
         where: `{"area":${area.id}}`,
         sort: '{"order":false}'
-      }).subscribe(questions => {
+      }).subscribe(questions => { console.log('Questions', questions);
         area.questionsArray = questions;
         this.updateEditCache();
       });
     }
-  }
+  }*/
 
   /**
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayAreas]{@link #updateArrayAreas} function.
    *
-   * @param {any} area Resource selected
+   // tslint:disable-next-line:no-redundant-jsdoc
+   * @param area Resource selected
    */
   deleteItem(area: any) {
     this.apiService.deleteResource(area['$uri']).subscribe(() => {
@@ -79,8 +99,10 @@ export class AreasComponent implements OnInit {
    *
    * @param {number} id Id of the selected resource
    */
-  startEdit(id: number): void {
-    this.editCache[id].edit = true;
+  startEdit(item: any): void { console.log(item);
+    /*this.editCache[id].edit = true;*/
+    this.editCache[item.id] = item;
+    this.editCache[item.id]['edit'] = true;
   }
 
   /**
@@ -91,36 +113,58 @@ export class AreasComponent implements OnInit {
    * @param {any} area Resource selected
    */
   cancelEdit(area: any): void {
-    this.editCache[area.id].edit = false;
+    this.editCache[area.id]['edit'] = false;
 
-    if (this.editCache[area.id].new_item) {
+   /* if (this.editCache[area.id]['new_item']) {
       this.updateArrayAreas(area.id);
     } else {
       this.editCache[area.id] = area;
-    }
+    }*/
   }
 
   /**
    * Creates or updates the resource passed.
    * Then updates the variables to avoid calling the backend again.
    *
-   * @param {any} area Resource selected
-   * @param {boolean} newItem determines if the resource is already saved
+   * @param area Resource selected
+   * @param newItem determines if the resource is already saved
    */
-  saveItem(area: any, newItem: boolean): void {
-    const item = this.editCache[area.id];
+  saveItem(area: Area, newItem: boolean): void {
+    //const item = this.editCache[area.id];
 
-    if (!item.name || !item.code || !item.ecoe) {
+    /*if (!item.name || !item.code || !item.ecoe) {
       return;
-    }
+    }*/
 
-    const body = {
+    /*const body = {
       name: item.name,
       code: item.code,
       ecoe: this.ecoeId
-    };
+    };*/
 
-    const request = (
+    console.log('Well... going to save an Area item.' + '\n' , 'area: ', area , 'newItem: ', newItem );
+
+    console.log(area);
+
+    console.log('NeowItem: ', newItem);
+
+    const request = ( newItem ? area.save() : area.update() );
+
+    request.then(response => { console.log('Response: ', response);
+      delete this.editCache[area.id];
+      delete this.editCache[response['id']];
+
+      this.editCache[response['id']] = {
+        edit: false,
+        ...response
+      };
+      this.areas = this.areas.map(x => (x.id === area.id) ? response : x);
+    })
+      .catch( err => {
+        console.error('ERROR: ', err);
+      });
+
+ /*   const request = (
       newItem ?
         this.apiService.createResource('area', body) :
         this.apiService.updateResource(item['$uri'], body)
@@ -136,7 +180,7 @@ export class AreasComponent implements OnInit {
       };
 
       this.areas = this.areas.map(x => (x.id === area.id) ? response : x);
-    });
+    });*/
   }
 
   /**
@@ -155,11 +199,11 @@ export class AreasComponent implements OnInit {
    * Adds a new empty field to the resources array.
    * Then updates editCache with the new resource.
    */
-  addArea() {
+  addArea() { console.log('addArea...');
     this.apiService.getResources('area')
-      .subscribe(areas => {
+      .subscribe(areas => { console.log('subscribed...', areas);
         this.index += this.sharedService.getLastIndex(areas);
-
+        console.log('nuevo index...: ', this.index);
         const newItem = {
           id: this.index,
           name: '',
@@ -187,4 +231,17 @@ export class AreasComponent implements OnInit {
     delete this.editCache[areaId];
     this.areas = this.areas.filter(x => x.id !== areaId);
   }
+
+  pageChange(page: number) { console.log('some pageChanged....', page);
+    this.loadAreas();
+  }
+
+  pageSizeChange(pageSize: number) { console.log('pageSizeChange....', pageSize);
+    this.per_page = pageSize;
+    this.resetCurrentPage();
+    this.loadAreas();
+  }
+
+  resetCurrentPage() { this.current_page = 1; }
+
 }
