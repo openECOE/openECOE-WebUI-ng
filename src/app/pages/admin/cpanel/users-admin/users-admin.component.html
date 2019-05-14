@@ -1,21 +1,31 @@
-<nz-alert *ngFor="let error of importErrors, let idx=index"
-          nzType="error"
-          nzCloseable
-          [nzMessage]="error.reason.statusText"
-          [nzDescription]="error.reason.message"
-          (nzOnClose)="cleanError(idx)"
-          nzShowIcon
+<nz-drawer
+  [nzClosable]="true"
+  [nzVisible]="importErrors.length > 0"
+  nzPlacement="right"
+  [nzTitle]="'IMPORT_ERRORS'"
+  (nzOnClose)="cleanImportErrors()"
+  [nzWidth]="540"
 >
-</nz-alert>
+  <nz-alert *ngFor="let error of importErrors, let idx=index"
+            nzType="error"
+            nzCloseable
+            [nzMessage]="error.reason.statusText"
+            [nzDescription]="error.reason.message"
+            (nzOnClose)="cleanError(idx)"
+            nzShowIcon
+  >
+  </nz-alert>
+</nz-drawer>
 
 <nz-table #table
-          [(nzPageIndex)]="page"
-          [(nzPageSize)]="perPage"
+          [nzPageIndex]="page"
+          [nzPageSize]="perPage"
           (nzPageIndexChange)="pageChange($event)"
           (nzPageSizeChange)="pageSizeChange($event)"
           [nzLoading]="loading"
           [nzTotal]="totalItems"
           [nzData]="users"
+          [nzFrontPagination]="false"
           nzShowSizeChanger
           nzShowPagination>
   <thead>

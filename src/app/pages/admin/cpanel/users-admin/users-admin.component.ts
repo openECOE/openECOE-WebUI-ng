@@ -17,12 +17,12 @@ export class UsersAdminComponent implements OnInit {
   activeUser: User;
 
 
-  users: User[] = [];
+  users = [];
   usersPage: any;
   editCache: CacheItem[] = [];
 
   page: number = 1;
-  perPage: number = 20;
+  perPage: number = 5;
   totalItems: number = 0;
   loading: boolean = false;
 
@@ -74,34 +74,29 @@ export class UsersAdminComponent implements OnInit {
 
   pageSizeChange(pageSize: number) {
     this.perPage = pageSize;
+    this.loadUsers();
   }
 
   loadPage(page: any) {
     this.usersPage = page;
-    this.users = this.usersPage.items;
-    this.updateEditCache(this.users, this.editCache);
     this.totalItems = this.usersPage.total;
+    this.users = [...this.usersPage.items];
+    this.updateEditCache(this.users, this.editCache);
   }
 
   assignEditCache(item: Item, editItem: boolean = false, newItem: boolean = false) {
-    const cacheItem = new User;
-
     return {
       editItem: editItem,
       newItem: newItem,
-      data: Object.assign(cacheItem, item)
+      data: Object.assign(new User, item)
     };
   }
 
   updateEditCache(listItems: any[], editCache: any[]) {
+    editCache = [];
     listItems.forEach((item, index) => {
-      const cacheItem = new User;
       editCache[index] = this.assignEditCache(item, editCache[index] ? editCache[index].editItem : false, false);
     });
-  }
-
-  findCacheItem(cacheList: any[], item: any) {
-
   }
 
   addUser(email: string = '',
@@ -109,9 +104,7 @@ export class UsersAdminComponent implements OnInit {
           surname: string = '',
           superAdmin: boolean = false,
           password: string = null): Promise<any> {
-    // Go to last page
-    // this.page = this.usersPage.pages;
-    // this.loadUsers();
+
     const newUser = new User({
       email: email,
       name: name,
@@ -196,11 +189,16 @@ export class UsersAdminComponent implements OnInit {
   cleanError(idx: number) {
   }
 
+  cleanImportErrors() {
+    this.importErrors = [];
+  }
+
   showModal() {
     this.showAddUser = true;
   }
 
   closeModal() {
+    this.shared.cleanForm(this.validateForm);
     this.showAddUser = false;
   }
 
@@ -215,6 +213,7 @@ export class UsersAdminComponent implements OnInit {
         this.users = [...this.users, user];
         this.editCache.push(this.assignEditCache(user, false, true));
         this.shared.cleanForm(this.validateForm);
+        this.loadUsers();
         this.closeModal();
       });
   }
