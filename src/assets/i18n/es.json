@@ -32,9 +32,12 @@
   "ADD_USER": "Añadir usuario",
 
   "EMAIL": "Correo electrónico",
+  "EMAIL_NOT_VALID": "¡No es un correo electrónico válido!",
+  "EMAIL_REQUIRED": "Por favor indique el correo electrónico",
+
   "PASSWORD": "Contraseña",
-
-
+  "PASSWORD_NOT_VALID": "¡No es una contraseña válida!",
+  "PASSWORD_REQUIRED": "Por favor indique una contraseña",
 
   "ROUND": "Ronda",
   "ROUNDS": "Rondas",

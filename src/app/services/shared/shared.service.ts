@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
+import {FormGroup} from '@angular/forms';
 
 /**
  * Service with shared methods used around the app.
@@ -123,6 +124,14 @@ export class SharedService {
 
   generateRandomPassword(): string {
     return Math.random().toString(36).slice(-8);
+  }
+
+  cleanForm(form: FormGroup): void {
+    form.reset();
+    for (const key of Object.keys(form.controls)) {
+      form.controls[key].markAsPristine();
+      form.controls[key].updateValueAndValidity();
+    }
   }
 
 }
