@@ -6,7 +6,8 @@
             (nzPageIndexChange)="pageChange($event)"
             (nzPageSizeChange)="pageSizeChange($event)"
             [nzLoading]="loading"
-            [nzTotal]="pagesTotal"
+            [nzFrontPagination]="false"
+            [nzTotal]="totalItems"
             nzShowSizeChanger
             nzShowPagination>
     <thead>
@@ -25,7 +26,7 @@
           <button nz-button [nzType]="'primary'" class="margin-left"
                   [nz-tooltip] [nzTitle]="'ADD_STATION' | translate"
                   (click)="addStation()">
-            <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+            <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
           <app-upload-and-parse (parserResult)="importStations($event)"></app-upload-and-parse>
         </nz-button-group>

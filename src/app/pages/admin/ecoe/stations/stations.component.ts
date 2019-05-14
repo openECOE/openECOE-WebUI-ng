@@ -27,7 +27,7 @@ export class StationsComponent implements OnInit {
 
   page: number = 1;
   pagesNum: number = 0;
-  pagesTotal: number = 0;
+  totalItems: number = 0;
   perPage: number = 10;
 
   pagStations: any;
@@ -63,7 +63,7 @@ export class StationsComponent implements OnInit {
       .then(response => {
         this.editCache = [];
         this.loadPage(response);
-        console.log(this.pagesTotal, 'Stations loaded', this.stations);
+        console.log(this.totalItems, 'Stations loaded', this.stations);
       }).finally(() => this.loading = false);
   }
 
@@ -393,20 +393,23 @@ export class StationsComponent implements OnInit {
   }
 
   pageChange(page: number) {
+    this.loading = true;
     this.pagStations.page = page;
     this.pagStations.changePageTo(page)
-      .then(retPage => this.loadPage(retPage));
+      .then(retPage => this.loadPage(retPage))
+      .finally(() => this.loading = false);
   }
 
   pageSizeChange(pageSize: number) {
     this.perPage = pageSize;
+    this.loadStations();
   }
 
   loadPage(page: any) {
     this.pagStations = page;
-    this.stations = this.pagStations.items;
+    this.stations = [...this.pagStations.items];
     this.updateEditCache();
-    this.pagesTotal = this.pagStations.total;
+    this.totalItems = this.pagStations.total;
   }
 
 }
