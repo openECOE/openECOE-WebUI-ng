@@ -28,7 +28,7 @@ export class UsersAdminComponent implements OnInit {
 
   validateForm: FormGroup;
   showAddUser: boolean = false;
-  importErrors: {value: any, reason: any}[] = [];
+  importErrors: { value: any, reason: any }[] = [];
 
   constructor(private authService: AuthenticationService,
               private shared: SharedService,
@@ -61,24 +61,26 @@ export class UsersAdminComponent implements OnInit {
       perPage: this.perPage
     }, {paginate: true})
       .then(page => {
-        this.usersPage = page;
-        this.users = this.usersPage.items;
-        this.totalItems = this.usersPage.total;
-        this.updateEditCache(this.users, this.editCache);
+        this.loadPage(page);
       })
       .finally(() => this.loading = false);
   }
 
   pageChange(page: number) {
     this.page = page;
-    this.loadUsers();
-    // this.pagStations.changePageTo(page)
-    //   .then(value => this.stations = value.items);
+    this.usersPage.changePageTo(page)
+      .then(retPage => this.loadPage(retPage));
   }
 
   pageSizeChange(pageSize: number) {
     this.perPage = pageSize;
-    this.loadUsers();
+  }
+
+  loadPage(page: any) {
+    this.usersPage = page;
+    this.users = this.usersPage.items;
+    this.updateEditCache(this.users, this.editCache);
+    this.totalItems = this.usersPage.total;
   }
 
   assignEditCache(item: Item, editItem: boolean = false, newItem: boolean = false) {
@@ -177,7 +179,8 @@ export class UsersAdminComponent implements OnInit {
         .catch(reason => {
           console.warn('User import error', value, reason);
           this.importErrors.push(
-            { value: value,
+            {
+              value: value,
               reason: reason
             });
           return reason;

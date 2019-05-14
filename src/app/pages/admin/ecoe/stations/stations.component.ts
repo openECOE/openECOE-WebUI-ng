@@ -59,15 +59,10 @@ export class StationsComponent implements OnInit {
       sort: {order: false},
       page: this.page,
       perPage: this.perPage
-    }, {skip: excludeItems, paginate: true, cache: false})
+    }, {skip: excludeItems, paginate: true})
       .then(response => {
         this.editCache = [];
-        this.pagStations = response;
-
-
-        this.stations = this.pagStations.items;
-        this.pagesTotal = this.pagStations.total;
-        this.updateEditCache();
+        this.loadPage(response);
         console.log(this.pagesTotal, 'Stations loaded', this.stations);
       }).finally(() => this.loading = false);
   }
@@ -399,14 +394,19 @@ export class StationsComponent implements OnInit {
 
   pageChange(page: number) {
     this.pagStations.page = page;
-    this.loadStations();
-    // this.pagStations.changePageTo(page)
-    //   .then(value => this.stations = value.items);
+    this.pagStations.changePageTo(page)
+      .then(retPage => this.loadPage(retPage));
   }
 
   pageSizeChange(pageSize: number) {
     this.perPage = pageSize;
-    this.loadStations();
+  }
+
+  loadPage(page: any) {
+    this.pagStations = page;
+    this.stations = this.pagStations.items;
+    this.updateEditCache();
+    this.pagesTotal = this.pagStations.total;
   }
 
 }
