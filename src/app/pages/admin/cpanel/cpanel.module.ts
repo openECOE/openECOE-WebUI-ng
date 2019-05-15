@@ -11,14 +11,13 @@ import {DashboardComponent} from './dashboard/dashboard.component';
 import {UsersAdminComponent} from './users-admin/users-admin.component';
 import {UploadAndParseComponent} from '../../../components/upload-and-parse/upload-and-parse.component';
 import {ActionButtonsComponent} from '../../../components/action-buttons/action-buttons.component';
+import {ComponentsModule} from '../../../components/components.module';
 
 @NgModule({
   declarations: [
     CpanelComponent,
     DashboardComponent,
-    UsersAdminComponent,
-    UploadAndParseComponent,
-    ActionButtonsComponent
+    UsersAdminComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +25,8 @@ import {ActionButtonsComponent} from '../../../components/action-buttons/action-
     NgZorroAntdModule,
     TranslateModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ComponentsModule
   ]
 })
 export class CpanelModule {
