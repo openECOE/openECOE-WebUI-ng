@@ -6,7 +6,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {map} from 'rxjs/operators';
 import {ECOE, Station, Student} from '../../../../models/ecoe';
 import {Planner, Round, Shift} from '../../../../models/planner';
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 
 /**
  * Component with the relations of rounds and shifts to create plannersMatrix.
@@ -194,16 +194,18 @@ export class PlannerComponent implements OnInit {
       this.rounds = [];
       this.shifts = [];
 
+      const excludeItems = ['ecoe', 'organization', 'planners'];
+
       forkJoin(
         from(Round.query({
             where: {'ecoe': this.ecoeId},
             sort: {'round_code': false}
-          }, {cache: false})
+          }, {cache: false, skip: excludeItems})
         ),
         from(Shift.query({
             where: {'ecoe': this.ecoeId},
             sort: {'time_start': false}
-          }, {cache: false})
+          }, {cache: false, skip: excludeItems})
         )
       ).subscribe(response => {
         this.rounds = response[0];

@@ -1,5 +1,5 @@
 <nz-header>
-  <a *ngIf="authService.userData">{{authService.userData.email}}</a>
+  <a *ngIf="authService.userData">{{authService.userData.user.email}}</a>
   <a style="float: right;" (click)="authService.userData ? authService.logout() : router.navigate(['/login'])">
     {{(authService.userData ? "LOG_OUT" : "LOG_IN") | translate}}
   </a>

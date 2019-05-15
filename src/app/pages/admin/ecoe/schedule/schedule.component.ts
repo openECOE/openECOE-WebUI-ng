@@ -7,6 +7,7 @@ import {ECOE} from '../../../../models/ecoe';
 import {FormGroup, FormControl, ValidationErrors, Validators, FormBuilder} from '@angular/forms';
 import {Observable, Observer} from 'rxjs';
 import {SharedService} from '../../../../services/shared/shared.service';
+import {TranslateService} from '@ngx-translate/core';
 
 /**
  * Component schedule to configure stages and events.
@@ -42,7 +43,8 @@ export class ScheduleComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    private shared: SharedService
+    private shared: SharedService,
+    private translate: TranslateService
   ) {
 
     this.validateFormStage = this.fb.group({
@@ -165,14 +167,14 @@ export class ScheduleComponent implements OnInit {
     eventStart.time = 0;
     eventStart.isCountdown = false;
     eventStart.sound = null;
-    eventStart.text = 'Inicio';
+    eventStart.text = this.translate.instant('START');
 
     const eventFinish = new Event();
     eventFinish.schedule = schedule;
     eventFinish.time = schedule.stage.duration;
-    eventFinish.isCountdown = true;
+    eventFinish.isCountdown = false;
     eventFinish.sound = null;
-    eventFinish.text = 'Fin';
+    eventFinish.text = this.translate.instant('END');
 
     const saveStart = eventStart.save()
       .then(value => {
@@ -270,7 +272,7 @@ export class ScheduleComponent implements OnInit {
 
     this.createSchedule(value.stageName, stageDuration);
     this.handleStageCancel();
-  }
+  };
 
   resetForm(e: MouseEvent, form: FormGroup): void {
     e.preventDefault();
@@ -278,11 +280,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   cleanForm(form: FormGroup): void {
-    form.reset();
-    for (const key of Object.keys(form.controls) ) {
-      form.controls[key].markAsPristine();
-      form.controls[key].updateValueAndValidity();
-    }
+    this.shared.cleanForm(form);
   }
 
 }

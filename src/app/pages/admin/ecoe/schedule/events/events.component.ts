@@ -4,7 +4,7 @@ import {Station} from '../../../../../models/ecoe';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SharedService} from '../../../../../services/shared/shared.service';
 import {subscriptionLogsToBeFn} from 'rxjs/internal/testing/TestScheduler';
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 
 @Component({
   selector: 'app-events',

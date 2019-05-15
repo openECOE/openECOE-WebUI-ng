@@ -15,13 +15,18 @@
       </li>
 
       <li nz-menu-item (click)="showCreateEcoe = true">
-        <i nz-icon [type]="'plus-circle'" [theme]="'fill'"></i>
+        <i nz-icon [type]="icons.addIcon"></i>
         <span class="nav-text">{{"CREATE_ECOE" | translate}}</span>
       </li>
 
       <li nz-menu-item *ngFor="let ecoe of ecoes" [routerLink]="['./ecoe', ecoe.id]">
         <i nz-icon type="user"></i>
         <span class="nav-text">{{ecoe.name}}</span>
+      </li>
+
+      <li nz-menu-item [routerLink]="'./cpanel'">
+        <i nz-icon [type]="icons.settingsIcon"></i>
+        <span class="nav-text">{{"CONTROL_PANEL" | translate}}</span>
       </li>
     </ul>
   </nz-sider>

@@ -23,6 +23,24 @@
 
   "INFORMATION": "Información",
 
+  "CONTROL_PANEL": "Panel de Control",
+
+  "USER": "Usuario",
+  "USERS": "Usuarios",
+  "USER_ADMIN": "Administrador",
+  "USERS_ADMIN": "Administradores",
+  "USER_EVAL": "Evaluador",
+  "USERS_EVAL": "Evaluadores",
+  "ADD_USER": "Añadir usuario",
+
+  "EMAIL": "Correo electrónico",
+  "EMAIL_NOT_VALID": "¡No es un correo electrónico válido!",
+  "EMAIL_REQUIRED": "Por favor indique el correo electrónico",
+
+  "PASSWORD": "Contraseña",
+  "PASSWORD_NOT_VALID": "¡No es una contraseña válida!",
+  "PASSWORD_REQUIRED": "Por favor indique una contraseña",
+
   "ROUND": "Ronda",
   "ROUNDS": "Rondas",
   "NO_ROUNDS": "No hay rondas",
@@ -80,6 +98,9 @@
   "DURATION_PLACEHOLDER": "Introduzca la duración de la Fase",
   "MINUTES": "minutos",
   "SECONDS": "segundos",
+
+  "START": "Inicio",
+  "END": "Fin",
 
   "ADD_EVENT": "Añadir Evento",
   "TEXT": "Texto",
@@ -149,8 +170,10 @@
   "BACK": "Volver",
   "CLOSE_EDITION": "Cerrar edición",
 
-  "SELECT": "Seleccionar...",
+  "IMPORT_ERRORS": "Errores Importación",
 
+  "SELECT": "Seleccionar...",
+  "IMPORT_DATA": "Importar",
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",
   "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",

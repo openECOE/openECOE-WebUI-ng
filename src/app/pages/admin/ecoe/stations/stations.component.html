@@ -1,144 +1,156 @@
-<nz-content *ngIf="stations">
+<nz-content>
   <nz-table #table
             [nzData]="stations"
-            [nzPageSize]="8">
+            [(nzPageIndex)]="page"
+            [(nzPageSize)]="perPage"
+            (nzPageIndexChange)="pageChange($event)"
+            (nzPageSizeChange)="pageSizeChange($event)"
+            [nzLoading]="loading"
+            [nzFrontPagination]="false"
+            [nzTotal]="totalItems"
+            nzShowSizeChanger
+            nzShowPagination>
     <thead>
-      <tr>
-        <th [nzExpand]="true">
-          <a (click)="loadStations()">
-            <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
-          </a>
-        </th>
-        <th nzWidth="85px">{{"ORDER" | translate}}</th>
-        <th>{{"NAME" | translate}}</th>
-        <th nzWidth="140px">{{"PARENT_STATION" | translate}}</th>
-        <th nzWidth="140px">{{"CHILD_STATIONS" | translate}}</th>
-        <th nzWidth="140px">
+    <tr>
+      <th [nzExpand]="true">
+        <a (click)="loadStations()">
+          <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+        </a>
+      </th>
+      <th nzWidth="85px">{{"ORDER" | translate}}</th>
+      <th>{{"NAME" | translate}}</th>
+      <th nzWidth="140px">{{"PARENT_STATION" | translate}}</th>
+      <th nzWidth="140px">{{"CHILD_STATIONS" | translate}}</th>
+      <th nzWidth="240px">
+        <nz-button-group>
           <button nz-button [nzType]="'primary'" class="margin-left"
                   [nz-tooltip] [nzTitle]="'ADD_STATION' | translate"
                   (click)="addStation()">
-            <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+            <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
-        </th>
-      </tr>
+          <app-upload-and-parse (parserResult)="importStations($event)"></app-upload-and-parse>
+        </nz-button-group>
+      </th>
+    </tr>
     </thead>
     <tbody>
-      <ng-template ngFor let-item [ngForOf]="table.data">
-        <tr>
-          <td [nzShowExpand]="true"
-              [(nzExpand)]="item.expand"
-              (nzExpandChange)="loadQblocksByStation($event, item)">
-          </td>
+    <ng-template ngFor let-item let-i="index" [ngForOf]="table.data">
+      <tr>
+        <td [nzShowExpand]="false"
+            [(nzExpand)]="item.expand"
+            (nzExpandChange)="loadQblocksByStation($event, item)">
+        </td>
 
-          <td>
-            <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.order || "-"}}
-            </ng-container>
+        <td>
+          <ng-container *ngIf="!editCache[i].edit">
+            {{item.order || "-"}}
+          </ng-container>
 
-            <ng-container *ngIf="editCache[item.id].edit">
-              <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].order"></nz-input-number>
-            </ng-container>
-          </td>
+          <ng-container *ngIf="editCache[i].edit">
+            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[i].item.order"></nz-input-number>
+          </ng-container>
+        </td>
 
-          <td>
-            <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.name}}
-            </ng-container>
+        <td>
+          <ng-container *ngIf="!editCache[i].edit">
+            {{item.name}}
+          </ng-container>
 
-            <ng-container *ngIf="editCache[item.id].edit">
-              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].name">
-            </ng-container>
-          </td>
+          <ng-container *ngIf="editCache[i].edit">
+            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[i].item.name">
+          </ng-container>
+        </td>
 
-          <td>
-            TEST
-          </td>
+        <td>
+          <nz-tag *ngIf="item.parentStation?.name"
+                  [nzColor]="shared.stringToColour(item.parentStation.name)">{{item.parentStation.name}}</nz-tag>
+        </td>
 
-          <td>{{item.children_stations.length}}</td>
+        <td>{{item?.childrenStations?.length}}</td>
 
-          <td text-right>
-            <app-action-buttons [isEditing]="editCache[item.id].edit"
-                                [isNewItem]="editCache[item.id].new_item"
-                                (startEdit)="startEdit(item.id)"
-                                (delete)="deleteItem(item)"
-                                (save)="saveItem(item, editCache[item.id].new_item)"
-                                (cancelEdit)="cancelEdit(item)">
-            </app-action-buttons>
-          </td>
-        </tr>
-        <tr [nzExpand]="item.expand">
-          <td></td>
-          <td colspan="5" inner-table>
-            <nz-table #qblockTable
-                      [nzData]="item.qblocksArray"
-                      [nzSize]="'middle'"
-                      [nzShowPagination]="false"
-                      [nzFooter]="addQblockBtn">
-              <thead>
-                <tr>
-                  <th nzWidth="85px">{{"ORDER" | translate}}</th>
-                  <th>{{"NAME" | translate}}</th>
-                  <th nzWidth="85px">{{"QUESTIONS" | translate}}</th>
-                  <th nzWidth="140px"></th>
-                </tr>
-              </thead>
+        <td text-right>
+          <app-action-buttons [isEditing]="editCache[i].edit"
+                              [isNewItem]="editCache[i].new_item"
+                              (startEdit)="startEdit(i)"
+                              (delete)="deleteItem(item)"
+                              (save)="saveItem(editCache[i])"
+                              (cancelEdit)="cancelEdit(editCache[i])">
+          </app-action-buttons>
+        </td>
+      </tr>
+      <!--<tr [nzExpand]="item?.expand">-->
+      <!--<td></td>-->
+      <!--<td colspan="5" inner-table>-->
+      <!--<nz-table #qblockTable-->
+      <!--[nzData]="item.qblocksArray"-->
+      <!--[nzSize]="'middle'"-->
+      <!--[nzShowPagination]="false"-->
+      <!--[nzFooter]="addQblockBtn">-->
+      <!--<thead>-->
+      <!--<tr>-->
+      <!--<th nzWidth="85px">{{"ORDER" | translate}}</th>-->
+      <!--<th>{{"NAME" | translate}}</th>-->
+      <!--<th nzWidth="85px">{{"QUESTIONS" | translate}}</th>-->
+      <!--<th nzWidth="140px"></th>-->
+      <!--</tr>-->
+      <!--</thead>-->
 
-              <tbody>
-                <tr *ngFor="let qblock of qblockTable.data; let i = index">
-                  <td>
-                    <ng-container *ngIf="!editCacheQblock[qblock.id].edit">
-                      {{qblock.order || "-"}}
-                    </ng-container>
+      <!--<tbody>-->
+      <!--<tr *ngFor="let qblock of qblockTable.data; let i = index">-->
+      <!--<td>-->
+      <!--<ng-container *ngIf="!editCacheQblock[qblock.id].edit">-->
+      <!--{{qblock.order || "-"}}-->
+      <!--</ng-container>-->
 
-                    <ng-container *ngIf="editCacheQblock[qblock.id].edit">
-                      <nz-input-number [nzMin]="0"
-                             [nzSize]="'small'"
-                             [(ngModel)]="editCacheQblock[qblock.id].order">
-                      </nz-input-number>
-                    </ng-container>
-                  </td>
+      <!--<ng-container *ngIf="editCacheQblock[qblock.id].edit">-->
+      <!--<nz-input-number [nzMin]="0"-->
+      <!--[nzSize]="'small'"-->
+      <!--[(ngModel)]="editCacheQblock[qblock.id].order">-->
+      <!--</nz-input-number>-->
+      <!--</ng-container>-->
+      <!--</td>-->
 
-                  <td>
-                    <ng-container *ngIf="!editCacheQblock[qblock.id].edit">
-                      {{qblock.name}}
-                    </ng-container>
+      <!--<td>-->
+      <!--<ng-container *ngIf="!editCacheQblock[qblock.id].edit">-->
+      <!--{{qblock.name}}-->
+      <!--</ng-container>-->
 
-                    <ng-container *ngIf="editCacheQblock[qblock.id].edit">
-                      <input type="text"
-                             nz-input
-                             [nzSize]="'small'"
-                             required
-                             [(ngModel)]="editCacheQblock[qblock.id].name">
-                    </ng-container>
-                  </td>
+      <!--<ng-container *ngIf="editCacheQblock[qblock.id].edit">-->
+      <!--<input type="text"-->
+      <!--nz-input-->
+      <!--[nzSize]="'small'"-->
+      <!--required-->
+      <!--[(ngModel)]="editCacheQblock[qblock.id].name">-->
+      <!--</ng-container>-->
+      <!--</td>-->
 
-                  <td>{{qblock.questions.length}}</td>
+      <!--<td>{{qblock?.questions?.length}}</td>-->
 
-                  <td text-right>
-                    <app-action-buttons [isEditing]="editCacheQblock[qblock.id].edit"
-                                        [isNewItem]="editCacheQblock[qblock.id].new_item"
-                                        [showNavigateQuestions]="true"
-                                        (startEdit)="startEditQblock(qblock.id)"
-                                        (delete)="deleteQblock(qblock, item)"
-                                        (save)="saveQblock(qblock, item, editCacheQblock[qblock.id].new_item)"
-                                        (cancelEdit)="cancelEditQblock(qblock, item)"
-                                        (navigateQuestions)="navigateQuestions(item.id, qblock.id)">
-                    </app-action-buttons>
-                  </td>
-                </tr>
-              </tbody>
+      <!--<td text-right>-->
+      <!--<app-action-buttons [isEditing]="editCacheQblock[qblock.id].edit"-->
+      <!--[isNewItem]="editCacheQblock[qblock.id].new_item"-->
+      <!--[showNavigateQuestions]="true"-->
+      <!--(startEdit)="startEditQblock(qblock.id)"-->
+      <!--(delete)="deleteQblock(qblock, item)"-->
+      <!--(save)="saveQblock(qblock, item, editCacheQblock[qblock.id].new_item)"-->
+      <!--(cancelEdit)="cancelEditQblock(qblock, item)"-->
+      <!--(navigateQuestions)="navigateQuestions(item.id, qblock.id)">-->
+      <!--</app-action-buttons>-->
+      <!--</td>-->
+      <!--</tr>-->
+      <!--</tbody>-->
 
-              <ng-template #addQblockBtn>
-                <div text-center>
-                  <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addQblock(item)">
-                    {{"ADD_QBLOCK" | translate}}
-                  </button>
-                </div>
-              </ng-template>
-            </nz-table>
-          </td>
-        </tr>
-      </ng-template>
+      <!--<ng-template #addQblockBtn>-->
+      <!--<div text-center>-->
+      <!--<button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addQblock(item)">-->
+      <!--{{"ADD_QBLOCK" | translate}}-->
+      <!--</button>-->
+      <!--</div>-->
+      <!--</ng-template>-->
+      <!--</nz-table>-->
+      <!--</td>-->
+      <!--</tr>-->
+    </ng-template>
     </tbody>
   </nz-table>
 </nz-content>

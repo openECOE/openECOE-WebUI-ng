@@ -1,4 +1,4 @@
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule} from './schedule';
 import {Organization} from './organization';
@@ -29,6 +29,7 @@ export class Station extends Item {
   name: string;
   id_ecoe: number;
   order: number;
+  parentStation: any;
   id_parent_station: number;
 }
 

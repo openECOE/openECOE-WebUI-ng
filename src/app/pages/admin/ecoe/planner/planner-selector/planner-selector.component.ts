@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, OnChanges, Output, TemplateRef} from '@angular/core';
 import {Planner, Round, Shift} from '../../../../../models/planner';
 import {ECOE, Station, Student} from '../../../../../models/ecoe';
-import {Item} from '@infarm/potion-client';
-import {from} from 'rxjs';
+import {Item} from '@openecoe/potion-client';
+import {forkJoin, from} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
@@ -68,11 +68,11 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+
+
     this.loadPlanner();
 
-    Station.query(
-      {where: {ecoe: this.ecoeId}}
-    ).then(stations => this.stations = stations);
+
   }
 
   ngOnChanges() {
@@ -81,11 +81,34 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
 
   loadPlanner() {
     this.loading = true;
-    Planner.first({where: {'round': this.round, 'shift': this.shift}})
-      .then(value => {
-        this.planner = value;
-        this.loading = false;
-      });
+
+    const excludeItems = ['students', 'answers', 'ecoe', 'planner'];
+
+
+    forkJoin(
+      from(Planner.query({where: {'round': this.round, 'shift': this.shift}}, {skip: excludeItems})
+        .then(value => {
+          value[0].students = [];
+          return value[0];
+        })
+      ),
+      from(Station.query({
+          where: {ecoe: this.ecoeId}
+        }, {skip: excludeItems})
+      )
+    ).subscribe(response => {
+      this.planner = response[0];
+      this.stations = response[1];
+
+      Student.query({where: {'planner': this.planner}},
+        {skip: excludeItems})
+        .then(students => {
+          this.planner.students = students;
+        })
+        .finally(() => this.loading = false);
+    });
+
+
   }
 
   /**
@@ -344,8 +367,8 @@ export class AppStudentSelectorComponent implements OnInit {
     this.groupName = this.shift.shiftCode + this.round.roundCode;
 
     Student.query({
-        where: {ecoe: this.ecoeId},
-        sort: {planner_order: false, surnames: false, name: false}
+      where: {ecoe: this.ecoeId},
+      sort: {planner_order: false, surnames: false, name: false}
     })
       .then(value => {
         this.students = value

@@ -9,5 +9,8 @@ export const ResourceIcons = {
   scheduleIcon: 'hourglass',
   plannerIcon: 'calendar',
   roundIcon: '',
-  shiftIcon: ''
+  shiftIcon: '',
+  userIcon: 'user',
+  settingsIcon: 'setting',
+  addIcon: 'plus'
 };

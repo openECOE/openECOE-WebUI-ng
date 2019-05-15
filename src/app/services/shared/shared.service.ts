@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
+import {FormGroup} from '@angular/forms';
 
 /**
  * Service with shared methods used around the app.
@@ -103,19 +104,34 @@ export class SharedService {
    * @returns Hexadecimal color string
    */
   stringToColour(str: string): string {
-
-    let hash = 0;
-    const randStr = (str.slice(str.length / 2, str.length) + str.slice(0, str.length / 2)).replace(/\s/g, '').toLowerCase();
-
-    for (let i = 0; i < randStr.length; i++) {
-      hash = randStr.charCodeAt(i) + ((hash << 5) - hash);
-    }
     let colour = '#';
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xFF;
-      colour += ('00' + value.toString(16)).substr(-2);
+    if (str) {
+
+      let hash = 0;
+      const randStr = (str.slice(str.length / 2, str.length) + str.slice(0, str.length / 2)).replace(/\s/g, '').toLowerCase();
+
+      for (let i = 0; i < randStr.length; i++) {
+        hash = randStr.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      for (let i = 0; i < 3; i++) {
+        const value = (hash >> (i * 8)) & 0xFF;
+        colour += ('00' + value.toString(16)).substr(-2);
+      }
+
     }
     return colour;
+  }
+
+  generateRandomPassword(): string {
+    return Math.random().toString(36).slice(-8);
+  }
+
+  cleanForm(form: FormGroup): void {
+    form.reset();
+    for (const key of Object.keys(form.controls)) {
+      form.controls[key].markAsPristine();
+      form.controls[key].updateValueAndValidity();
+    }
   }
 
 }
