@@ -67,9 +67,11 @@ export class UsersAdminComponent implements OnInit {
   }
 
   pageChange(page: number) {
+    this.loading = true;
     this.page = page;
     this.usersPage.changePageTo(page)
-      .then(retPage => this.loadPage(retPage));
+      .then(retPage => this.loadPage(retPage))
+      .finally(() => this.loading = false);
   }
 
   pageSizeChange(pageSize: number) {

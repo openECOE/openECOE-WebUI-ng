@@ -23,6 +23,8 @@
 
   "INFORMATION": "Información",
 
+  "CONTROL_PANEL": "Panel de Control",
+
   "USER": "Usuario",
   "USERS": "Usuarios",
   "USER_ADMIN": "Administrador",
@@ -167,6 +169,8 @@
   "RESET": "Reiniciar",
   "BACK": "Volver",
   "CLOSE_EDITION": "Cerrar edición",
+
+  "IMPORT_ERRORS": "Errores Importación",
 
   "SELECT": "Seleccionar...",
   "IMPORT_DATA": "Importar",
