@@ -16,7 +16,7 @@ export class CpanelComponent implements OnInit {
     {
       title: 'CONTROL_PANEL',
       path: './',
-      icon: ResourceIcons.infoIcon
+      icon: ResourceIcons.settingsIcon
     },
     {
       title: 'USERS',

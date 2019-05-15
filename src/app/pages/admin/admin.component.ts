@@ -3,6 +3,7 @@ import {ApiService} from '../../services/api/api.service';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {SharedService} from '../../services/shared/shared.service';
 import {AuthenticationService} from '../../services/authentication/authentication.service';
+import { ResourceIcons } from '../../constants/icons';
 import {mergeMap} from 'rxjs/operators';
 
 @Component({
@@ -17,6 +18,8 @@ export class AdminComponent implements OnInit {
   ecoeForm: FormControl;
   showCreateEcoe: boolean;
   organization: any;
+
+  icons = ResourceIcons;
 
   constructor(private apiService: ApiService,
               private formBuilder: FormBuilder,
