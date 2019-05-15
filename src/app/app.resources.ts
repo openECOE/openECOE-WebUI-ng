@@ -1,4 +1,4 @@
-import {PotionResources} from '@infarm/potion-client';
+import {PotionResources} from '@openecoe/potion-client';
 import {
   Organization, User, Planner, Round, Shift,
   Area, ECOE, Question, Option, Station, Student, QBlock,

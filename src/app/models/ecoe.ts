@@ -1,4 +1,4 @@
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule} from './schedule';
 import {Organization} from './organization';

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {User, UserLogged} from '../../../../models';
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 
 @Component({

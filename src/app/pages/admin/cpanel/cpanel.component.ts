@@ -1,10 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {User, UserLogged} from '../../../models';
-import {AuthenticationService} from '../../../services/authentication/authentication.service';
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 import {ResourceIcons} from '../../../constants/icons';
 import {SharedService} from '../../../services/shared/shared.service';
-import {CpanelRoutingModule} from './cpanel-routing.module';
 
 @Component({
   selector: 'app-cpanel',

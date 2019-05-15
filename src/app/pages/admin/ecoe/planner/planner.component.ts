@@ -6,7 +6,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {map} from 'rxjs/operators';
 import {ECOE, Station, Student} from '../../../../models/ecoe';
 import {Planner, Round, Shift} from '../../../../models/planner';
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 
 /**
  * Component with the relations of rounds and shifts to create plannersMatrix.

@@ -4,7 +4,7 @@ import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
-import {Item, Pagination} from '@infarm/potion-client';
+import {Item, Pagination} from '@openecoe/potion-client';
 import {Station} from '../../../../models/ecoe';
 import {forkJoin, from} from 'rxjs';
 

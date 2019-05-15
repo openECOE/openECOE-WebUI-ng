@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, OnChanges, Output, TemplateRef} from '@angular/core';
 import {Planner, Round, Shift} from '../../../../../models/planner';
 import {ECOE, Station, Student} from '../../../../../models/ecoe';
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 import {forkJoin, from} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd';

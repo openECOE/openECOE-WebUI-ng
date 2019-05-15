@@ -1,4 +1,4 @@
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 import {ECOE, Student} from './ecoe';
 
 export class Planner extends Item {

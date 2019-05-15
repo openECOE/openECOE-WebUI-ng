@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Station, User, UserLogged} from '../../../../models';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
-import {Item, Pagination} from '@infarm/potion-client';
+import {Item, Pagination} from '@openecoe/potion-client';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
@@ -22,7 +22,7 @@ export class UsersAdminComponent implements OnInit {
   editCache: CacheItem[] = [];
 
   page: number = 1;
-  perPage: number = 5;
+  perPage: number = 20;
   totalItems: number = 0;
   loading: boolean = false;
 

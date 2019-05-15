@@ -18,7 +18,7 @@ import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import {environment} from '../environments/environment';
 
-import {POTION_PROVIDER_FACTORY, POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@infarm/potion-client';
+import {POTION_PROVIDER_FACTORY, POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-client';
 
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';

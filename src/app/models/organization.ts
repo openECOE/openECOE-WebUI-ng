@@ -1,4 +1,4 @@
-import {Item} from '@infarm/potion-client';
+import {Item} from '@openecoe/potion-client';
 
 export class Organization extends Item {
   id: number;
