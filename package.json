@@ -25,7 +25,7 @@
     "@angular/router": "^7.1.3",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "@openecoe/potion-client": "^4.0.9",
+    "@openecoe/potion-client": "^4.0.10",
     "core-js": "^2.6.5",
     "ng-zorro-antd": "^7.2.0",
     "ngx-papaparse": "^3.0.2",
@@ -52,6 +52,6 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
-    "typescript": "^3.1.6"
+    "typescript": ">=3.1.1 <3.3"
   }
 }
