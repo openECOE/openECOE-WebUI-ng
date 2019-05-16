@@ -33,6 +33,12 @@ export class Station extends Item {
   id_parent_station: number;
 }
 
+export interface RowStation {
+  order: any[];
+  name: any[];
+  parentStation?: any[];
+}
+
 export class QBlock extends Item {
   id: number;
   name: string;

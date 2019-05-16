@@ -3,10 +3,9 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
-import {map} from 'rxjs/operators';
-import {Item, Pagination} from '@openecoe/potion-client';
-import {Station} from '../../../../models/ecoe';
-import {forkJoin, from} from 'rxjs';
+import {RowStation, Station} from '../../../../models/ecoe';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+
 
 /**
  * Component with stations and qblocks by station.
@@ -34,16 +33,41 @@ export class StationsComponent implements OnInit {
 
   loading: boolean = false;
 
+  /* -- */
+  isVisible: boolean;
+  stationForm: FormGroup;
+  control:  FormArray;
+
+  rowStation: RowStation = {
+    order:  ['', Validators.required],
+    name:   ['', Validators.required],
+    parentStation: ['']
+  };
+
+  data: object = {
+    stationRow: [this.rowStation]
+  };
+  private logPromisesERROR: any[];
+  private logPromisesOK: any[];
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
               private translate: TranslateService,
-              public shared: SharedService) {
+              public shared: SharedService,
+              private fb: FormBuilder) {
+
+    this.stationForm = this.fb.group({
+      stationRow: this.fb.array([])
+    });
+
+    this.control = <FormArray>this.stationForm.controls.stationRow;
   }
 
   ngOnInit() {
     this.ecoeId = +this.route.snapshot.params.id;
-    this.loadStations();
+    this.loadStations().finally();
+    this.InitStationRow();
   }
 
   /**
@@ -54,17 +78,20 @@ export class StationsComponent implements OnInit {
     this.loading = true;
     const excludeItems = ['ecoe', 'organization'];
 
-    Station.query({
-      where: {ecoe: this.ecoeId},
-      sort: {order: false},
-      page: this.page,
-      perPage: this.perPage
-    }, {skip: excludeItems, paginate: true})
-      .then(response => {
-        this.editCache = [];
-        this.loadPage(response);
-        console.log(this.totalItems, 'Stations loaded', this.stations);
-      }).finally(() => this.loading = false);
+    return new Promise(resolve => {
+      Station.query({
+        where: {ecoe: this.ecoeId},
+        sort: {order: false},
+        page: this.page,
+        perPage: this.perPage
+      }, {skip: excludeItems, paginate: true})
+        .then(response => {
+          this.editCache = [];
+          this.loadPage(response);
+          resolve();
+          console.log(this.totalItems, 'Stations loaded', this.stations);
+        }).finally(() => this.loading = false);
+    });
   }
 
   /**
@@ -138,7 +165,10 @@ export class StationsComponent implements OnInit {
     const stationId: number = station.id;
 
     station.destroy()
-      .then(() => this.updateEditCache());
+      .then(() => {
+        this.loadStations()
+          .then(() => this.updateEditCache());
+      });
   }
 
   /**
@@ -364,6 +394,10 @@ export class StationsComponent implements OnInit {
     for (let index = 0; index < parserResult.length; index++) {
       const value = parserResult[index];
 
+      if (!value.name) {
+        return;
+      }
+
       if (!value.order) {
         value.order = index + 1;
       }
@@ -410,6 +444,138 @@ export class StationsComponent implements OnInit {
     this.stations = [...this.pagStations.items];
     this.updateEditCache();
     this.totalItems = this.pagStations.total;
+  }
+
+  /* ---- */
+  /**
+   * Opens form window to add new area/s
+   */
+  showDrawer() {
+    this.isVisible = true;
+  }
+
+  /**
+   * Closes the form area window
+   */
+  closeDrawer() {
+    this.isVisible = false;
+  }
+
+  /**
+   * Adds new row (name and code fields) area to the form
+   */
+  addStationRow() {
+    this.control.push( this.fb.group(this.rowStation) );
+  }
+
+  /**
+   * Deletes selected row area whose was added previously
+   * @param index id field to find and remove.
+   */
+  deleteRow(index) {
+    this.control.removeAt(index);
+  }
+
+
+  /**
+   *At first time when OnInit, adds new area row;
+   * in other cases resets the number of rows to 1 when the
+   * form window was closed.
+   */
+  InitStationRow() {
+    if (this.control.length === 0) {
+      this.addStationRow();
+    } else {
+      while (this.control.length > 1) { this.control.removeAt(1); }
+      this.control.reset();
+    }
+  }
+
+  /**
+   * Obtains de formControl instance of any element in our form.
+   * @param name of the field, in our case can be 'name' or 'code'
+   * @param idx the index of the field.
+   */
+  getFormControl(name: string, idx: number): AbstractControl {
+    return this.stationForm.get('stationRow')['controls'][idx].controls[name];
+  }
+
+  /**
+   * Before save values in data base, in first time checks that
+   * all fields are validates and then will save the values.
+   */
+  submitForm(): void {
+    for (const i in this.stationForm.get('stationRow')['controls']) {
+      if (this.stationForm.get('stationRow')['controls'].hasOwnProperty(i)) {
+        this.getFormControl('order', +i).markAsDirty();
+        this.getFormControl('order', +i).updateValueAndValidity();
+
+        this.getFormControl('name', +i).markAsDirty();
+        this.getFormControl('name', +i).updateValueAndValidity();
+      }
+    }
+    if (this.stationForm.valid) {
+      this.saveArrayStations(this.stationForm.get('stationRow').value)
+        .then(result => console.log('SAVED:', result))
+        .finally(() => {
+          this.loadStations();
+          this.closeDrawer();
+          this.InitStationRow();
+        });
+
+      console.log('array okay:', this.stationForm.get('stationRow').value);
+    }
+  }
+
+  /**
+   * When user decides do not save the form values and
+   * close the form window: will close the drawer window
+   * and reset the number of row areas.
+   */
+  cancelForm() {
+    this.closeDrawer();
+    this.InitStationRow();
+  }
+
+
+    /**
+     * Saves array of data in data base. The data can be provided from external file or from
+     * multiple rows form.
+     * @param items obtained from form array or array form.
+     */
+  saveArrayStations(items: any[]): Promise<any> {
+    const savePromises    = [];
+    this.logPromisesERROR = [];
+    this.logPromisesOK    = [];
+
+    for (const item of items) {
+      if (item.order && item.name) {
+        item['ecoe'] = this.ecoeId;
+        item.parentStation = parseInt(item.parentStation, 10);
+
+        const station = new Station(item);
+
+        const promise = station.save()
+          .then(result => {
+            this.logPromisesOK.push(result);
+            return result;
+          })
+          .catch(err => {
+            this.logPromisesERROR.push({
+              value: item,
+              reason: err
+            });
+            return err;
+          });
+        savePromises.push(promise);
+      }
+    }
+
+    return Promise.all(savePromises)
+      .then(() =>
+        new Promise((resolve, reject) =>
+          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(items)))
+      .catch(err => new Promise(((resolve, reject) => reject(err))));
   }
 
 }
