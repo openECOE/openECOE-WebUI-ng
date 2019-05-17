@@ -274,6 +274,16 @@ export class PlannerComponent implements OnInit {
 
     if (shift) {
       this.shiftForm.setValue({shift_code: shift.shiftCode, datePicker: shift.timeStart, timePicker: shift.timeStart});
+    } else {
+      if (this.shifts.length > 0) {
+        const lastShift = this.shifts[shift.length];
+
+        // TODO: Calculate next shift with stages time
+        const newDate = {
+          datePicker: this.shifts[shift.length].timeStart,
+          timePicker: shift.timeStart
+        };
+      }
     }
 
     this.isEditing = {
