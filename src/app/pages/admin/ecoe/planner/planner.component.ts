@@ -199,7 +199,7 @@ export class PlannerComponent implements OnInit {
       this.rounds = [];
       this.shifts = [];
 
-      const excludeItems = ['ecoe', 'organization', 'planners'];
+      const excludeItems = ['ecoe', 'organization'];
 
       forkJoin(
         from(Round.query({
