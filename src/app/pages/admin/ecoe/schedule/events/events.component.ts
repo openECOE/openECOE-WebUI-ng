@@ -70,6 +70,7 @@ export class EventsComponent implements OnInit {
     this.loading = true;
     this.stageDuration = this.shared.toMinutesSeconds(this.schedule.stage.duration);
 
+    // TODO: Change max duration when stage parent changes
     this.maxDuration.minutes = this.stageDuration.minutes;
     this.maxDuration.seconds = this.stageDuration.seconds;
 

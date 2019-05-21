@@ -1,4 +1,4 @@
-import {Item} from '@openecoe/potion-client';
+import {Item, Route} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule} from './schedule';
 import {Organization} from './organization';
@@ -15,6 +15,8 @@ export class ECOE extends Item {
   students: Student[];
   rounds: Round[];
   shifts: Shift[];
+
+  configuration = Route.GET('/configuration');
 }
 
 export class Area extends Item {

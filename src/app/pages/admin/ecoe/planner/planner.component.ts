@@ -59,7 +59,12 @@ export class PlannerComponent implements OnInit {
     this.loading = true;
 
     this.ecoeId = +this.route.snapshot.params.id;
-    this.loadRoundsShifts().then(() => this.loading = false);
+    ECOE.fetch(this.ecoeId)
+      .then(ecoe => {
+        this.ecoe = ecoe;
+        this.loadRoundsShifts().then(() => this.loading = false);
+      });
+
   }
 
   /**
@@ -194,7 +199,7 @@ export class PlannerComponent implements OnInit {
       this.rounds = [];
       this.shifts = [];
 
-      const excludeItems = ['ecoe', 'organization', 'planners'];
+      const excludeItems = ['ecoe', 'organization'];
 
       forkJoin(
         from(Round.query({
@@ -274,6 +279,21 @@ export class PlannerComponent implements OnInit {
 
     if (shift) {
       this.shiftForm.setValue({shift_code: shift.shiftCode, datePicker: shift.timeStart, timePicker: shift.timeStart});
+    } else {
+      if (this.shifts.length > 0) {
+        const lastShift = this.shifts[this.shifts.length - 1];
+
+        this.ecoe.configuration()
+          .then(conf => {
+            const stagesDuration = conf.schedules.reduce((sum, current) => sum + current.duration, 0);
+            const totalShift =   stagesDuration * conf.reruns;
+
+            const timeDefault = new Date(lastShift.timeStart.getTime() + totalShift * 1000)
+
+            // TODO: Calculate next shift with stages time
+            this.shiftForm.setValue({shift_code: '', datePicker: timeDefault, timePicker: timeDefault});
+          });
+      }
     }
 
     this.isEditing = {

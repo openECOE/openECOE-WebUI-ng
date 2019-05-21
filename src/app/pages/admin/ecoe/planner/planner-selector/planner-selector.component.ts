@@ -46,7 +46,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
     this.shiftChange.emit(this.plannerShift);
   }
 
-  planner: Planner | Item = null;
+  planner: Planner | Item;
   stations: Station | Item[] = [];
 
   plannerRound: Round;
@@ -68,11 +68,11 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    const excludeItems = ['students', 'answers', 'ecoe', 'planner'];
 
-
-    this.loadPlanner();
-
-
+    Station.query({where: {ecoe: this.ecoeId}, perPage: 100}, {skip: excludeItems})
+      .then(value => this.stations = value)
+      .finally(() => this.loadPlanner());
   }
 
   ngOnChanges() {
@@ -84,31 +84,9 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
 
     const excludeItems = ['students', 'answers', 'ecoe', 'planner'];
 
-
-    forkJoin(
-      from(Planner.query({where: {'round': this.round, 'shift': this.shift}}, {skip: excludeItems})
-        .then(value => {
-          value[0].students = [];
-          return value[0];
-        })
-      ),
-      from(Station.query({
-          where: {ecoe: this.ecoeId}
-        }, {skip: excludeItems})
-      )
-    ).subscribe(response => {
-      this.planner = response[0];
-      this.stations = response[1];
-
-      Student.query({where: {'planner': this.planner}},
-        {skip: excludeItems})
-        .then(students => {
-          this.planner.students = students;
-        })
-        .finally(() => this.loading = false);
-    });
-
-
+    Planner.first({where: {'round': this.round, 'shift': this.shift}})
+      .then(response => this.planner = response )
+      .finally(() => this.loading = false);
   }
 
   /**
