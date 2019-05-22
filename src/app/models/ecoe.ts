@@ -77,7 +77,7 @@ export class Student extends Item {
   surnames: string;
   dni: string;
 
-  ecoe: ECOE;
+  ecoe: ECOE | number;
   planner: Planner | Item;
   plannerOrder: number;
 
