@@ -22,8 +22,20 @@ export class ECOE extends Item {
 export class Area extends Item {
   id: number;
   name: string;
-  id_ecoe: number;
+  ecoe: ECOE;
   code: string;
+  questions: Question[];
+}
+
+export class EditCache extends Area {
+  new_item?: boolean;
+  edit?: boolean;
+}
+
+export interface RowArea {
+  name: any[];
+  code: any[];
+  questions?: any[];
 }
 
 export class Station extends Item {
