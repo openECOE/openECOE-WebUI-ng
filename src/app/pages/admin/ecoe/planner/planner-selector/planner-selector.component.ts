@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, OnChanges, Output, TemplateRef} from '@angular/core';
 import {Planner, Round, Shift} from '../../../../../models/planner';
 import {ECOE, Station, Student} from '../../../../../models/ecoe';
-import {Item} from '@openecoe/potion-client';
+import {Item, Pagination} from '@openecoe/potion-client';
 import {forkJoin, from} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd';
@@ -46,7 +46,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
     this.shiftChange.emit(this.plannerShift);
   }
 
-  planner: Planner | Item;
+  planner: Planner;
   stations: Station | Item[] = [];
 
   plannerRound: Round;
@@ -84,8 +84,8 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
 
     const excludeItems = ['students', 'answers', 'ecoe', 'planner'];
 
-    Planner.first({where: {'round': this.round, 'shift': this.shift}})
-      .then(response => this.planner = response )
+    Planner.first<Planner>({where: {'round': this.round, 'shift': this.shift}})
+      .then(response => this.planner = response)
       .finally(() => this.loading = false);
   }
 
@@ -94,7 +94,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
    *
    * @param planner Reference of the Planner
    */
-  savePlanner(planner: Planner | Item): Promise<any> {
+  savePlanner(planner: Planner): Promise<any> {
     return new Promise((resolve, reject) => {
       planner.save()
         .then(savedPlanner => {
@@ -254,7 +254,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   }
 
   createComponentModal(tplFooter: TemplateRef<{}>): void {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise<Planner>((resolve, reject) => {
       !this.planner ?
         this.createPlanner(this.round, this.shift)
           .then(value => resolve(value))
@@ -296,7 +296,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
 export class AppStudentSelectorComponent implements OnInit {
 
   @Input() ecoeId: number;
-  @Input() planner: any;
+  @Input() planner: Planner;
   @Input() maxStudents: number;
 
   @Output() roundChange = new EventEmitter();
@@ -331,9 +331,13 @@ export class AppStudentSelectorComponent implements OnInit {
   students: Array<any> = [];
   groupName: string;
 
+  studentsSearch: Pagination<Student>;
+
   transferDisabled: boolean = false;
 
   loading: boolean = false;
+
+  selectedStudents: [];
 
   constructor(private modal: NzModalRef,
               public shared: SharedService) {
@@ -344,20 +348,23 @@ export class AppStudentSelectorComponent implements OnInit {
 
     this.groupName = this.shift.shiftCode + this.round.roundCode;
 
+    const excludeItems = ['ecoe', 'planner', 'answers'];
+
     Student.query({
-      where: {ecoe: this.ecoeId},
-      sort: {planner_order: false, surnames: false, name: false}
-    })
-      .then(value => {
-        this.students = value
-          .map((studentItem, index) => {
-            const direction = !this.planner ? 'left' :
-              this.planner.students.includes(studentItem) ? 'right' : 'left';
-
-            const disabled = direction === 'left' ? !!studentItem.planner : false;
-
-            return {direction: direction, student: studentItem, disabled: disabled};
+      where: {
+        ecoe: this.ecoeId,
+        planner: this.planner.id
+      },
+      sort: {planner_order: false, surnames: false, name: false},
+      perPage: this.maxStudents
+    }, {skip: excludeItems, paginate: true})
+      .then(page => {
+        this.selectedStudents = page['items']
+          .map((studentItem) => {
+            return studentItem.id;
           });
+        this.planner.students = page['items'];
+        this.students = [...page['items']];
         this.loading = false;
       });
   }
@@ -369,6 +376,13 @@ export class AppStudentSelectorComponent implements OnInit {
       .sort((a, b) => a.student.name > b.student.name ? 1 : -1);
   }
 
+  saveGroup() {
+
+    this.planner.students = this.selectedStudents;
+    this.planner.save();
+
+  }
+
   // tslint:disable-next-line:no-any
   filterOption(inputValue: string, item: any): boolean {
     return item.student.name.indexOf(inputValue) > -1 ? true :
@@ -376,10 +390,39 @@ export class AppStudentSelectorComponent implements OnInit {
         item.student.dni.indexOf(inputValue) > -1;
   }
 
-  search(ret: {}): void {
-    console.log('nzSearchChange', ret);
+  searchStudents(value: string) {
+    this.loading = true;
+    const excludeItems = ['ecoe', 'planner', 'answers'];
+
+    Student.query <Student, Pagination<Student>>({
+      where: {
+        ecoe: this.ecoeId,
+        name: {'$contains': value}
+      },
+      sort: {planner_order: false, surnames: false, name: false}
+    }, {skip: excludeItems, paginate: true})
+      .then(page => {
+        this.studentsSearch = page;
+        this.students = [this.students, ...page['items']];
+        this.loading = false;
+      });
   }
 
+  loadMore() {
+    this.studentsSearch.changePageTo(this.studentsSearch.page + 1)
+      .then(page => {
+        this.students = [...this.students, ...page['items']];
+      });
+  }
+
+  search(ret: {}): void {
+    console.log('nzSearchChange', ret);
+    this.searchStudents(ret['value']);
+  }
+
+  selected(value: any) {
+    console.log(value);
+  }
 
   select(ret: { title: string, checked: boolean, direction: string, disabled: boolean, list: Array<any> }): void {
     console.log('nzSelectChange', ret);

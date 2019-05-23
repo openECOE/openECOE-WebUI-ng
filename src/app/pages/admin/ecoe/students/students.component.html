@@ -1,8 +1,15 @@
 <nz-content *ngIf="students">
   <nz-table #table
             [nzData]="students"
+            [(nzPageIndex)]="page"
+            [(nzPageSize)]="perPage"
+            (nzPageIndexChange)="loadStudents()"
+            (nzPageSizeChange)="loadStudents()"
             [nzLoading]="loading"
-            [nzShowPagination]="false">
+            [nzFrontPagination]="false"
+            [nzTotal]="totalItems"
+            nzShowSizeChanger
+            nzShowPagination>
     <thead>
     <tr>
       <th [nzExpand]="true">

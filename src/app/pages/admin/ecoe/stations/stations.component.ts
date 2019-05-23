@@ -52,7 +52,7 @@ export class StationsComponent implements OnInit {
    */
   loadStations() {
     this.loading = true;
-    const excludeItems = ['ecoe', 'organization'];
+    const excludeItems = ['ecoe'];
 
     Station.query({
       where: {ecoe: this.ecoeId},

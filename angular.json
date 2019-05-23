@@ -91,6 +91,9 @@
             },
             "test": {
               "browserTarget": "openECOE-WebUI-ng:build:test"
+            },
+            "prodDebug": {
+              "browserTarget": "openECOE-WebUI-ng:build:prodDebug"
             }
           }
         },
@@ -149,6 +152,9 @@
             },
             "test": {
               "devServerTarget": "openECOE-WebUI-ng:serve:test"
+            },
+            "prodDebug": {
+              "devServerTarget": "openECOE-WebUI-ng:serve:prodDebug"
             }
           }
         },

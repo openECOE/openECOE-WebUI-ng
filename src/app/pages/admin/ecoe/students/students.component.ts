@@ -6,6 +6,7 @@ import {Area, RowArea, Student} from 'src/app/models/ecoe';
 import {valueFunctionProp} from 'ng-zorro-antd';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
+import {Pagination} from '@openecoe/potion-client';
 
 /**
  * Component with students.
@@ -24,8 +25,8 @@ export class StudentsComponent implements OnInit {
 
   addStudentDraw: boolean = false;
 
-  current_page: number = 1;
-  per_page: number = 10;
+  page: number = 1;
+  perPage: number = 20;
   totalItems: number = 0;
 
   studentRow = {
@@ -66,17 +67,21 @@ export class StudentsComponent implements OnInit {
    */
   loadStudents() {
     this.loading = true;
+    const excludeItems = ['ecoe', 'planner'];
 
-    Student.query({
-      where: {ecoe: this.ecoeId},
-      sort: {surnames: false, name: false}
-    }, {cache: false})
-      .then(response => {
-        this.editCache = {};
-        this.students = response;
-        this.updateEditCache();
-      })
-      .finally(() => this.loading = false);
+    Student.query<Student, Pagination<Student>>({
+        where: {ecoe: this.ecoeId},
+        sort: {surnames: false, name: false},
+        perPage: this.perPage,
+        page: this.page
+      },
+      {paginate: true, skip: excludeItems}
+    ).then( pagStudents => {
+      this.editCache = {};
+      this.students = pagStudents['items'];
+      this.totalItems = pagStudents['total'];
+      this.updateEditCache();
+    }).finally(() => this.loading = false);
   }
 
   /**

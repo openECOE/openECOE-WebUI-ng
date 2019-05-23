@@ -1,33 +1,78 @@
 <!--<nz-checkbox-wrapper>-->
-  <!--<div *ngFor="let student of students">-->
-    <!--<label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected" [nzDisabled]="student.disabled">-->
-      <!--{{student.dni}}-->
-      <!--<nz-divider [nzType]="'vertical'"></nz-divider>-->
-      <!--{{student.surnames}}, {{student.name}}-->
-    <!--</label>-->
-    <!--<br/>-->
-    <!--<br/>-->
-  <!--</div>-->
+<!--<div *ngFor="let student of students">-->
+<!--<label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected" [nzDisabled]="student.disabled">-->
+<!--{{student.dni}}-->
+<!--<nz-divider [nzType]="'vertical'"></nz-divider>-->
+<!--{{student.surnames}}, {{student.name}}-->
+<!--</label>-->
+<!--<br/>-->
+<!--<br/>-->
+<!--</div>-->
 <!--</nz-checkbox-wrapper>-->
 
-<nz-transfer
-  [nzDataSource]="students"
-  nzShowSearch
-  [nzTitles]="['STUDENTS' | translate, ('GROUP' | translate) + ' ' + groupName]"
-  [nzRender]="render"
-  [nzListStyle]="{ 'width.px': modalWidth/2.3, 'height.px': modalWidth/2.5 }"
-  [nzFilterOption]="filterOption"
-  (nzSearchChange)="search($event)"
-  (nzSelectChange)="select($event)"
-  (nzChange)="change($event)"
->
-</nz-transfer>
-<!--TODO: Add buttons to select Students and clean Planner-->
-<ng-template #render let-item>
-  {{item.student.surnames}}, {{item.student.name}}
-  <nz-tag *ngIf="item.student.planner" [nzColor]="shared.stringToColour(item.student.planner.shift.shiftCode + item.student.planner.round.roundCode)">
-    {{item.student.planner.shift.shiftCode}}{{item.student.planner.round.roundCode}}{{item.student.plannerOrder}}
-  </nz-tag>
-</ng-template>
+<!--<nz-transfer-->
+<!--[nzDataSource]="students"-->
+<!--nzShowSearch-->
+<!--[nzTitles]="['STUDENTS' | translate, ('GROUP' | translate) + ' ' + groupName]"-->
+<!--[nzRender]="render"-->
+<!--[nzListStyle]="{ 'width.px': modalWidth/2.3, 'height.px': modalWidth/2.5 }"-->
+<!--[nzFilterOption]="filterOption"-->
+<!--(nzSearchChange)="search($event)"-->
+<!--(nzSelectChange)="select($event)"-->
+<!--(nzChange)="change($event)"-->
+<!--&gt;-->
+<!--</nz-transfer>-->
+<!--&lt;!&ndash;TODO: Add buttons to select Students and clean Planner&ndash;&gt;-->
+<!--<ng-template #render let-item>-->
+<!--{{item.student.surnames}}, {{item.student.name}}-->
+<!--&lt;!&ndash;<nz-tag *ngIf="item.student.planner" [nzColor]="shared.stringToColour(item.student.planner.shift.shiftCode + item.student.planner.round.roundCode)">&ndash;&gt;-->
+<!--&lt;!&ndash;{{item.student.planner.shift.shiftCode}}{{item.student.planner.round.roundCode}}{{item.student.plannerOrder}}&ndash;&gt;-->
+<!--&lt;!&ndash;</nz-tag>&ndash;&gt;-->
+<!--</ng-template>-->
+<div>{{students.length}}</div>
+<div nz-row>
+  <div nz-col nzSpan="12">
+    <nz-select
+      style="width: 100%;"
+      nzMode="multiple"
+      [(ngModel)]="selectedStudents"
+      nzPlaceHolder="Select users"
+      nzAllowClear
+      nzShowSearch
+      (ngModelChange)="selected($event)"
+      [nzServerSearch]="true"
+      (nzOnSearch)="searchStudents($event)"
+      (nzScrollToBottom)="loadMore()"
+    >
+      <ng-container *ngFor="let s of students">
+        <nz-option [nzValue]="s.id" [nzLabel]="s.surnames +' '+ s.name"></nz-option>
+      </ng-container>
+      <nz-option *ngIf="loading" nzDisabled nzCustomContent>
+        <i nz-icon type="loading" class="loading-icon"></i> Loading Data...
+      </nz-option>
+    </nz-select>
+    <button nz-button nzType="primary" (click)="saveGroup()">{{'SAVE' | translate}}</button>
+  </div>
+  <div nz-col nzSpan="12">
+    <nz-list
+      [nzDataSource]="planner.students"
+      nzBordered
+      nzSize="small"
+      [nzHeader]="groupName"
+      [nzFooter]="planner.students.length + '/' + maxStudents"
+      [nzRenderItem]="item">
+      <ng-template #item let-item>
+        <nz-list-item [nzContent]="item.surnames + ', ' + item.name"></nz-list-item>
+      </ng-template>
+    </nz-list>
+  </div>
+
+</div>
+
+
+
+
+
+
 
 

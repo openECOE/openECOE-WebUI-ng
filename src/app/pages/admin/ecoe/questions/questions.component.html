@@ -218,7 +218,7 @@
                         </ng-container>
 
                         <ng-container *ngIf="editCacheOption[option.id].edit">
-                          <nz-input-number [nzSize]="'small'" [(ngModel)]="editCacheOption[option.id].points">
+                          <nz-input-number [nzStep]="0.1" [nzSize]="'small'" [(ngModel)]="editCacheOption[option.id].points">
                           </nz-input-number>
                         </ng-container>
                       </td>

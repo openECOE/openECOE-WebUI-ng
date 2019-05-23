@@ -61,6 +61,8 @@ export class QuestionsComponent implements OnInit {
    * Finally, loads the questions for each Qblock and creates the multi-level array.
    */
   loadQuestions() {
+    // TODO: Only fetch 10 questions per station, need to create pagination for questions
+
     this.stationSelected = {};
     this.apiService.getResources('area', {
       where: `{"ecoe":${this.ecoeId}}`
