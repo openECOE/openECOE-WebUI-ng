@@ -78,13 +78,29 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   loadPlanner() {
     this.loading = true;
 
-    const excludeItems = ['students', 'answers', 'ecoe', 'planner'];
+    const excludeItems = ['students', 'answers', 'ecoe', 'planner', 'round', 'shift'];
 
     // TODO: Review planner query
-    Planner.query<Planner>({where: {'round': this.round.id, 'shift': this.shift.id}}, {skip: excludeItems})
-      .then(response => this.planner = response[0])
-      .catch(reason => console.log('ERROR', reason))
-      .finally(() => this.loading = false);
+    Planner.query<Planner>({where: {'round': this.plannerRound, 'shift': this.plannerShift}}, {skip: excludeItems})
+      .then(response => {
+        this.planner = response[0];
+        this.planner.round = this.plannerRound;
+        this.planner.shift = this.plannerShift;
+        this.planner.students = [];
+
+        Student.query<Student>({
+          where: {
+            ecoe: this.ecoeId,
+            planner: this.planner
+          },
+          sort: {planner_order: false, surnames: false, name: false}
+        }, {skip: excludeItems})
+          .then(students => {
+            this.planner.students = students;
+          })
+          .finally(() => this.loading = false);
+      })
+      .catch(reason => console.log('ERROR', reason));
   }
 
   /**
@@ -156,99 +172,6 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
         this.planner = null;
         this.destroyModal();
       });
-  }
-
-  /**
-   * Load listStudents by the passed ECOE.
-   * Maps the response and sets selected key to true if it has planner assigned and the reference is the same as the passed.
-   * Then calls [checkStudentsSelected]{@link #checkStudentsSelected} function.
-   *
-   * @param shift Id of the selected shift
-   * @param round Id of the selected round
-   * @param planner? Reference of the selected planner
-   */
-  loadStudents(shift: Shift, round: Round, planner?: Planner) {
-    this.listStudents = [];
-    let studentsSelected = 0;
-
-    from(Student.query({where: {'ecoe': this.ecoeId}}))
-      .pipe(
-        map(students => {
-          return students.map(student => {
-            const isSelected = (
-              planner ?
-                (student.planner && student.planner === planner) :
-                (!student.planner && studentsSelected < this.stationsNum)
-            );
-
-            if (!planner && isSelected) {
-              studentsSelected++;
-            }
-
-            return {
-              data: student,
-              selected: isSelected
-            };
-          });
-        })
-      ).subscribe(students => {
-      this.listStudents = students;
-      this.plannerSelected = {shift: shift, round: round, planner: planner};
-      this.showStudentsSelector = true;
-
-      this.isEditing = {
-        itemRef: planner ? planner : null,
-        edit: (typeof planner !== 'undefined')
-      };
-
-      this.checkStudentsSelected(this.listStudents.filter(student => student.selected));
-    });
-  }
-
-  /**
-   * Modifies the listStudents array and sets the disabled property to true if the selection length is equal or higher
-   * than the number of stations and the student is not selected,
-   * or if the student has a planner assigned and this planner is not the same as the selected.
-   * @param selection Array of listStudents currently selected
-   */
-  checkStudentsSelected(selection: any[]) {
-    this.listStudents = this.listStudents.map(student => {
-      return {
-        ...student,
-        disabled: (selection.length >= this.stationsNum && !student.selected) ||
-          (student.planner && student.planner !== this.plannerSelected.planner)
-      };
-    });
-  }
-
-  /**
-   * Creates or updates the planner selected.
-   * Then reloads all plannersMatrix and hides the modal.
-   */
-  assignPlanner() {
-    const students = this.listStudents
-      .filter(student => student.selected)
-      .map(student => student.data);
-
-    if (students.length === 0) {
-      return;
-    }
-
-    const request = (
-      this.plannerSelected.planner ?
-        this.updatePlanner(
-          this.plannerSelected.planner,
-          this.plannerSelected.round,
-          this.plannerSelected.shift,
-          students)
-        :
-        this.createPlanner(this.plannerSelected.round, this.plannerSelected.shift, students)
-    );
-
-    request.then(() => {
-      this.showStudentsSelector = false;
-    });
-
   }
 
   createComponentModal(tplFooter: TemplateRef<{}>): void {
@@ -337,30 +260,31 @@ export class AppStudentSelectorComponent implements OnInit {
 
   selectedStudents: Student[] = [];
 
+  searchString: string = null;
+
   constructor(private modal: NzModalRef,
               public shared: SharedService) {
   }
 
   ngOnInit() {
-    this.loading = true;
 
     this.groupName = this.shift.shiftCode + this.round.roundCode;
 
-    const excludeItems = ['ecoe', 'answers', 'students'];
-
-    Student.query<Student>({
-      where: {
-        ecoe: this.ecoeId,
-        planner: this.planner.id
-      },
-      sort: {planner_order: false, surnames: false, name: false},
-      perPage: this.maxStudents
-    }, {skip: excludeItems})
-      .then(students => {
-        this.planner.students = students;
-        this.searchStudents();
-        this.loading = false;
-      });
+    // const excludeItems = ['ecoe', 'answers', 'students'];
+    //
+    // Student.query<Student>({
+    //   where: {
+    //     ecoe: this.ecoeId,
+    //     planner: this.planner.id
+    //   },
+    //   sort: {planner_order: false, surnames: false, name: false},
+    //   perPage: this.maxStudents
+    // }, {skip: excludeItems})
+    //   .then(students => {
+    //     this.planner.students = students;
+    //     this.searchStudents();
+    //     this.loading = false;
+    //   });
   }
 
   orderStudents(listStudents: Array<any>): Array<any> {
@@ -397,12 +321,8 @@ export class AppStudentSelectorComponent implements OnInit {
   rmStudent(student: Student) {
     student.planner_order = null;
     student.planner = null;
-    student.save()
-      .then(savedStudent => {
-        this.planner.students = this.planner.students
-          .filter(value => value.id !== savedStudent.id);
-        this.searchStudents();
-      });
+    this.planner.students = this.planner.students.filter(value => value.id !== student.id);
+    student.save();
   }
 
   // tslint:disable-next-line:no-any
@@ -421,6 +341,8 @@ export class AppStudentSelectorComponent implements OnInit {
     let query: {} = {ecoe: this.ecoeId, planner: null};
 
     query = value ? {...query, ...{surnames: {'$contains': value}}} : query;
+
+    console.log('Search query', query.toString());
 
     Student.query <Student, Pagination<Student>>({
       where: query,

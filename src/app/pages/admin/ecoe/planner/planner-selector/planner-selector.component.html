@@ -1,5 +1,5 @@
-<ng-container *ngIf="planner; else noPlanner">
-  <nz-statistic [nzValue]="planner?.students?.length" [nzSuffix]="sufixPlanner"
+<ng-container *ngIf="planner && !loading; else noPlanner">
+  <nz-statistic  [nzValue]="planner?.students?.length" [nzSuffix]="sufixPlanner"
                 [ngClass]="planner?.students?.length == 0 ? 'empty' :
                   planner.students?.length < stationsNum ? 'incomplete' : 'complete'">
 
