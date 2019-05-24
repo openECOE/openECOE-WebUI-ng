@@ -6,7 +6,7 @@ export class Planner extends Item {
   shift: Shift | number;
   round: Round | number;
 
-  students: Student | number[];
+  students: Array<Student>;
 }
 
 export class Round extends Item {

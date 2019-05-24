@@ -1,11 +1,11 @@
 <ng-container *ngIf="planner; else noPlanner">
   <nz-statistic [nzValue]="planner?.students?.length" [nzSuffix]="sufixPlanner"
                 [ngClass]="planner?.students?.length == 0 ? 'empty' :
-                  planner.students?.length < stations.length ? 'incomplete' : 'complete'">
+                  planner.students?.length < stationsNum ? 'incomplete' : 'complete'">
 
   </nz-statistic>
   <ng-template #sufixPlanner>
-    <span>/ {{stations?.length}}</span>
+    <span>/ {{stationsNum}}</span>
     <app-action-buttons class="action-buttons"
                         [isEditing]="false"
                         [isNewItem]="false"

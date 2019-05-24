@@ -80,6 +80,7 @@ export class Student extends Item {
   ecoe: ECOE | number;
   planner: Planner | Item;
   plannerOrder: number;
+  planner_order: number;
 
 
 }

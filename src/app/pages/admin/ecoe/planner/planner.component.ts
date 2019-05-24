@@ -24,6 +24,7 @@ export class PlannerComponent implements OnInit {
   rounds: any[] = [];
   plannerRounds: any[] = [];
   stations: any[] = [];
+  stationsTotal: number;
   listStudents: any[] = [];
 
   plannerSelected: { shift: Shift, round: Round, planner: Planner };
@@ -57,13 +58,26 @@ export class PlannerComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
 
+    const excludeItems = ['areas', 'stations', 'schedules', 'students', 'rounds', 'shifts', 'organization'];
+
     this.ecoeId = +this.route.snapshot.params.id;
-    ECOE.fetch(this.ecoeId)
+    ECOE.fetch(this.ecoeId, {skip: excludeItems})
       .then(ecoe => {
         this.ecoe = ecoe;
+        this.loadStations();
         this.loadRoundsShifts().then(() => this.loading = false);
       });
 
+  }
+
+  loadStations() {
+    const excludeItems = ['students', 'answers', 'ecoe', 'planner'];
+
+    Station.query({where: {ecoe: this.ecoeId}}, {skip: excludeItems, paginate: true})
+      .then(value => {
+        this.stations = value['items'];
+        this.stationsTotal = value['total'];
+      });
   }
 
   /**
@@ -198,7 +212,7 @@ export class PlannerComponent implements OnInit {
       this.rounds = [];
       this.shifts = [];
 
-      const excludeItems = ['ecoe', 'organization'];
+      const excludeItems = ['ecoe', 'organization', 'planners', 'students'];
 
       forkJoin(
         from(Round.query({
@@ -365,9 +379,8 @@ export class PlannerComponent implements OnInit {
   getStudents(page: number = 1, perPage: number = 100) {
     const excludeItems = ['ecoe', 'planner'];
 
-
     return Student.query<Student, Pagination<Student>>({
-        where: {ecoe: this.ecoeId},
+        where: {ecoe: this.ecoeId, planner: null},
         sort: {surnames: false, name: false},
         perPage: perPage,
         page: page
@@ -376,7 +389,6 @@ export class PlannerComponent implements OnInit {
     );
   }
 
-
   autoCreatePlanners() {
     this.loading = true;
 
@@ -384,7 +396,7 @@ export class PlannerComponent implements OnInit {
       from(this.createAllPlanners()),
       from(Station.query<Station>({where: {ecoe: this.ecoeId}})),
       from(this.getStudents())
-    ).subscribe(async response => {
+    ).subscribe(response => {
       const promises = [];
 
       const listPlanners: Array<any> = response[0];
@@ -392,17 +404,19 @@ export class PlannerComponent implements OnInit {
       const pageStudents: Pagination<Student> = response[2];
 
 
-      for (let i = 1; i < pageStudents.pages; i += 1) {
-        pageStudents['items'].forEach(student => {
-          const freePlanner = listPlanners.find(value => value.students.length < listStations.length);
-
-          if (freePlanner) {
-            promises.push(this.assignStudentToPlanner(student, freePlanner));
-          }
-        });
+      for (let i = 1; i <= pageStudents.pages; i += 1) {
 
         // Load next Students page
-        await pageStudents.changePageTo(i++);
+        pageStudents.changePageTo(i)
+          .then(page => {
+              page['items'].forEach(student => {
+                const freePlanner = listPlanners.find(value => value.students.length < listStations.length);
+                if (freePlanner) {
+                  promises.push(this.assignStudentToPlanner(student, freePlanner));
+                }
+              });
+            }
+          );
       }
 
 
@@ -444,8 +458,8 @@ export class PlannerComponent implements OnInit {
     const promises = [];
 
 
-    this.rounds.forEach(async (round, round_index) => {
-      this.shifts.forEach(async (shift, shift_index) => {
+    this.rounds.forEach((round, round_index) => {
+      this.shifts.forEach((shift, shift_index) => {
 
         // Create all planners, if created catch error and ignore
         promises.push(this.findPlanner(shift, round));

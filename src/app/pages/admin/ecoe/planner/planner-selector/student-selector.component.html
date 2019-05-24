@@ -1,5 +1,5 @@
 <!--<nz-checkbox-wrapper>-->
-<!--<div *ngFor="let student of students">-->
+<!--<div *ngFor="let student of searchListStudents">-->
 <!--<label nz-checkbox [nzValue]="student.id" [(ngModel)]="student.selected" [nzDisabled]="student.disabled">-->
 <!--{{student.dni}}-->
 <!--<nz-divider [nzType]="'vertical'"></nz-divider>-->
@@ -11,7 +11,7 @@
 <!--</nz-checkbox-wrapper>-->
 
 <!--<nz-transfer-->
-<!--[nzDataSource]="students"-->
+<!--[nzDataSource]="searchListStudents"-->
 <!--nzShowSearch-->
 <!--[nzTitles]="['STUDENTS' | translate, ('GROUP' | translate) + ' ' + groupName]"-->
 <!--[nzRender]="render"-->
@@ -29,12 +29,14 @@
 <!--&lt;!&ndash;{{item.student.planner.shift.shiftCode}}{{item.student.planner.round.roundCode}}{{item.student.plannerOrder}}&ndash;&gt;-->
 <!--&lt;!&ndash;</nz-tag>&ndash;&gt;-->
 <!--</ng-template>-->
-<div>{{students.length}}</div>
+<div>{{searchListStudents.length}}</div>
 <div nz-row>
-  <div nz-col nzSpan="12">
+  <div nz-col nzSpan="16">
     <nz-select
+      #select
       style="width: 100%;"
       nzMode="multiple"
+      [nzDisabled]="this.planner.students.length >= maxStudents"
       [(ngModel)]="selectedStudents"
       nzPlaceHolder="Select users"
       nzAllowClear
@@ -44,30 +46,41 @@
       (nzOnSearch)="searchStudents($event)"
       (nzScrollToBottom)="loadMore()"
     >
-      <ng-container *ngFor="let s of students">
-        <nz-option [nzValue]="s.id" [nzLabel]="s.surnames +' '+ s.name"></nz-option>
+      <ng-container *ngFor="let s of searchListStudents">
+        <nz-option [nzDisabled]="selectedStudents.length + this.planner.students.length >= maxStudents && !this.selectedStudents.includes(s)"
+                   [nzValue]="s" [nzLabel]="s.surnames +', '+ s.name"></nz-option>
       </ng-container>
       <nz-option *ngIf="loading" nzDisabled nzCustomContent>
         <i nz-icon type="loading" class="loading-icon"></i> Loading Data...
       </nz-option>
     </nz-select>
-    <button nz-button nzType="primary" (click)="saveGroup()">{{'SAVE' | translate}}</button>
   </div>
-  <div nz-col nzSpan="12">
-    <nz-list
-      [nzDataSource]="planner.students"
-      nzBordered
-      nzSize="small"
-      [nzHeader]="groupName"
-      [nzFooter]="planner.students.length + '/' + maxStudents"
-      [nzRenderItem]="item">
-      <ng-template #item let-item>
-        <nz-list-item [nzContent]="item.surnames + ', ' + item.name"></nz-list-item>
-      </ng-template>
-    </nz-list>
+  <div nz-col nzSpan="8">
+    <button [disabled]="select.nzDisabled" nz-button nzType="primary" (click)="saveGroup()">{{'SAVE' | translate}}</button>
   </div>
 
 </div>
+<nz-list
+  [nzDataSource]="planner.students"
+  nzBordered
+  nzSize="small"
+  [nzHeader]="groupName"
+  [nzFooter]="planner.students.length + '/' + maxStudents"
+  [nzRenderItem]="item">
+  <ng-template #item let-item>
+    <ng-template #delItem>
+      <button nz-button nzType="danger" (click)="rmStudent(item)">{{'DELETE' | translate}}</button>
+    </ng-template>
+
+    <ng-template #studentItem>
+      {{item.plannerOrder}} - {{item.surnames}}, {{item.name}}
+    </ng-template>
+
+    <nz-list-item [nzContent]="studentItem" [nzActions]="[delItem]"></nz-list-item>
+  </ng-template>
+
+
+</nz-list>
 
 
 
