@@ -46,7 +46,7 @@ export class AreasComponent implements OnInit {
    * Adds to the resource passed its array of questions as a new key object.
    * Then calls [updateEditCache]{@link #updateEditCache} function.
    *
-   * @param {boolean} expandOpen State of the expanded sub-table
+   * @param {oolean} expandOpen State of the expanded sub-table
    * @param {any} area Resource selected to show its questions
    */
   loadQuestionsByArea(expandOpen: boolean, area: any) {

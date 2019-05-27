@@ -29,7 +29,10 @@ export class Station extends Item {
   name: string;
   id_ecoe: number;
   order: number;
-  parentStation: any;
+  parentStation?: {
+    id: number
+    name?: string,
+  };
   id_parent_station: number;
 }
 

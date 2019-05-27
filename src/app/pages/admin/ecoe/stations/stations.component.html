@@ -13,7 +13,7 @@
     <thead>
     <tr>
       <th [nzExpand]="true">
-        <a (click)="loadStations()">
+        <a (click)="loadStations().finally()">
           <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
@@ -34,7 +34,7 @@
     </tr>
     </thead>
     <tbody>
-    <ng-template ngFor let-item let-i="index" [ngForOf]="table.data">
+    <ng-template ngFor let-item [ngForOf]="table.data">
       <tr>
         <td [nzShowExpand]="false"
             [(nzExpand)]="item.expand"
@@ -42,39 +42,59 @@
         </td>
 
         <td>
-          <ng-container *ngIf="!editCache[i].edit">
+          <ng-container *ngIf="!editCache[item.id].edit">
             {{item.order || "-"}}
           </ng-container>
 
-          <ng-container *ngIf="editCache[i].edit">
-            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[i].item.order"></nz-input-number>
+          <ng-container *ngIf="editCache[item.id].edit">
+            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
           </ng-container>
         </td>
 
         <td>
-          <ng-container *ngIf="!editCache[i].edit">
+          <ng-container *ngIf="!editCache[item.id].edit">
             {{item.name}}
           </ng-container>
 
-          <ng-container *ngIf="editCache[i].edit">
-            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[i].item.name">
+          <ng-container *ngIf="editCache[item.id].edit">
+            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.name">
           </ng-container>
         </td>
 
         <td>
-          <nz-tag *ngIf="item.parentStation?.name"
-                  [nzColor]="shared.stringToColour(item.parentStation.name)">{{item.parentStation.name}}</nz-tag>
+          <ng-container *ngIf="!editCache[item.id].edit">
+            <nz-tag *ngIf="item.parentStation?.name"
+                    [nzColor]="shared.stringToColour(item.parentStation.name)">{{item.parentStation.name}}</nz-tag>
+          </ng-container>
+
+          <ng-container *ngIf="editCache[item.id].edit">
+            <!--<input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].item?.parentStation.name">-->
+            <nz-select style="width: 100px"
+              nzShowSearch
+              nzServerSearch
+              [nzMaxTagCount]="1"
+              [nzNotFoundContent]="'Estación no encontrada'"
+              nzAllowClear="true"
+              [ngModel]="editCache[item.id].item.parentStation?.id"
+              (ngModelChange)="optionChanged($event, editCache[item.id].item)"
+              [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
+              nzFilterOption="true"
+              (nzOnSearch)="search($event)"
+            >
+              <nz-option *ngFor="let option of selectOptions['items']"  [nzLabel]="option.name" [nzValue]="option.id"> </nz-option>
+            </nz-select>
+          </ng-container>
         </td>
 
-        <td>{{item?.childrenStations?.length}}</td>
+        <td>{{item.childrenStations?.length}}</td>
 
         <td text-right>
-          <app-action-buttons [isEditing]="editCache[i].edit"
-                              [isNewItem]="editCache[i].new_item"
-                              (startEdit)="startEdit(i)"
+          <app-action-buttons [isEditing]="editCache[item.id]?.edit"
+                              [isNewItem]="editCache[item.id]?.new_item"
+                              (startEdit)="startEdit(item)"
                               (delete)="deleteItem(item)"
-                              (save)="saveItem(editCache[i])"
-                              (cancelEdit)="cancelEdit(editCache[i])">
+                              (save)="updateItem(editCache[item.id].item)"
+                              (cancelEdit)="cancelEdit(item)">
           </app-action-buttons>
         </td>
       </tr>
@@ -105,11 +125,12 @@
         </div>
 
         <ng-container formArrayName="stationRow" *ngFor=" let control of stationForm.get('stationRow')['controls']; let i = index">
-          <div nz-row nzGutter="8" [formGroupName]="+i">
+          <div nz-row nzGutter="8" [formGroupName]="i+''">
             <div nz-col nzSpan="3">
               <nz-form-item>
                 <nz-form-control>
-                  <input nz-input type="number" [placeholder]="('ORDER_PLACEHOLDER' | translate)" formControlName="order"/>
+                  <input nz-input type="number" [value]="+totalItems + ( i + 1 )"  disabled/>
+                  <input nz-input type="hidden" [value]="+totalItems + ( i + 1 )" formControlName="order"/>
                   <nz-form-explain *ngIf="getFormControl('order', i)?.dirty && getFormControl('order', i)?.hasError('required')">
                     {{'ORDER_INPUT_REQUIRED' | translate}}
                   </nz-form-explain>
@@ -128,10 +149,33 @@
             <div nz-col nzSpan="9">
               <nz-form-item>
                 <nz-form-control>
-                  <input nz-input [placeholder]="('PARENT_PLACEHOLDER' | translate)" formControlName="parentStation"/>
+
+
+                  <!--<input nz-input [placeholder]="('PARENT_PLACEHOLDER' | translate)" formControlName="parentStation"/>-->
+
+
+                  <nz-select
+                    nzShowSearch
+                    nzServerSearch
+
+                    [nzMaxTagCount]="1"
+                    [nzNotFoundContent]="'Estación no encontrada'"
+                    nzAllowClear="true"
+
+                    [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
+                    [nzFilterOption]="true"
+                    formControlName="parentStation"
+                    (nzOnSearch)="search($event)"
+                  >
+                    <nz-option *ngFor="let option of selectOptions['items']" [nzLabel]="option.name" [nzValue]="option.id"> </nz-option>
+                  </nz-select>
+
+
                   <nz-form-explain *ngIf="getFormControl('parentStation', i)?.dirty && getFormControl('parentStation', i)?.hasError('required')">
                     {{'PARENT_INPUT_REQUIRED' | translate}}
                   </nz-form-explain>
+
+
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -155,6 +199,24 @@
         <button type="button" (click)="submitForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span></button>
       </div>
     </nz-drawer>
+
+
+    <nz-drawer
+      [nzClosable]="true"
+      [nzVisible]="logPromisesERROR.length > 0"
+      nzPlacement="right"
+      [nzTitle]="'IMPORT_ERRORS' | translate"
+      (nzOnClose)="clearImportErrors()"
+      [nzWidth]="540">
+      <nz-alert *ngFor="let error of logPromisesERROR"
+                nzType="error"
+                nzCloseable
+                [nzMessage]="error.reason.statusText"
+                [nzDescription]="error.reason.message"
+                nzShowIcon>
+      </nz-alert>
+    </nz-drawer>
+
   </ng-container>
 
 </nz-content>
