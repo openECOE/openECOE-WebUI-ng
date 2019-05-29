@@ -12,6 +12,7 @@
 
   "STATIONS": "Estaciones",
   "NO_STATIONS": "No hay estaciones",
+  "STATION_NOT_FOUND": "Estación no encontrada",
   "STATION": "Estación",
   "STATIONS_NUMBER": "Número de estaciones",
   "ADD_STATION": "Añadir estación",
@@ -149,6 +150,7 @@
 
   "NAME": "Nombre",
   "NAME_PLACEHOLDER": "Introduzca el nombre...",
+  "PARENT_PLACEHOLDER": "Seleccione el padre...",
   "NAME_INPUT_REQUIRED": "El campo nombre es obligatorio.",
 
   "MOVE_UP": "Subir posición",
@@ -178,7 +180,6 @@
 
   "SELECT": "Seleccionar...",
   "IMPORT_DATA": "Importar",
-  "IMPORT_ERRORS": "Errores de importación",
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",
   "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",
