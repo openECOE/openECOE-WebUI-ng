@@ -36,9 +36,8 @@
     <tbody>
     <ng-template ngFor let-item [ngForOf]="table.data">
       <tr>
-        <td [nzShowExpand]="false"
-            [(nzExpand)]="item.expand"
-            (nzExpandChange)="loadQblocksByStation($event, item)">
+        <td>
+
         </td>
 
         <td>
@@ -68,18 +67,17 @@
           </ng-container>
 
           <ng-container *ngIf="editCache[item.id].edit">
-            <!--<input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].item?.parentStation.name">-->
             <nz-select style="width: 100px"
               nzShowSearch
               nzServerSearch
               [nzMaxTagCount]="1"
-              [nzNotFoundContent]="'Estación no encontrada'"
+              [nzNotFoundContent]="('STATION_NOT_FOUND' | translate)"
               nzAllowClear="true"
               [ngModel]="editCache[item.id].item.parentStation?.id"
               (ngModelChange)="optionChanged($event, editCache[item.id].item)"
               [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
               nzFilterOption="true"
-              (nzOnSearch)="search($event)"
+              (nzOnSearch)="searchInSelect($event)"
             >
               <nz-option *ngFor="let option of selectOptions['items']"  [nzLabel]="option.name" [nzValue]="option.id"> </nz-option>
             </nz-select>
@@ -149,32 +147,25 @@
             <div nz-col nzSpan="9">
               <nz-form-item>
                 <nz-form-control>
-
-
-                  <!--<input nz-input [placeholder]="('PARENT_PLACEHOLDER' | translate)" formControlName="parentStation"/>-->
-
-
                   <nz-select
                     nzShowSearch
                     nzServerSearch
 
                     [nzMaxTagCount]="1"
-                    [nzNotFoundContent]="'Estación no encontrada'"
+                    [nzNotFoundContent]="('STATION_NOT_FOUND' | translate)"
                     nzAllowClear="true"
 
                     [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
-                    [nzFilterOption]="true"
+                    nzFilterOption="true"
                     formControlName="parentStation"
-                    (nzOnSearch)="search($event)"
+                    (nzOnSearch)="searchInSelect($event)"
                   >
                     <nz-option *ngFor="let option of selectOptions['items']" [nzLabel]="option.name" [nzValue]="option.id"> </nz-option>
                   </nz-select>
 
-
                   <nz-form-explain *ngIf="getFormControl('parentStation', i)?.dirty && getFormControl('parentStation', i)?.hasError('required')">
                     {{'PARENT_INPUT_REQUIRED' | translate}}
                   </nz-form-explain>
-
 
                 </nz-form-control>
               </nz-form-item>

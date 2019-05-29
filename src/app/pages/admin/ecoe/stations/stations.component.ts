@@ -17,38 +17,33 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 })
 export class StationsComponent implements OnInit {
 
-  stations: Station[] = [];
-  ecoeId: number;
-  editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
-  editCacheQblock = {};
-  index: number = 1;
-  /*indexQblock: number = 1;*/
+  stations:     Station[] = [];
+  ecoeId:       number;
+  editCache:    { edit: boolean, new_item: boolean, item: Station }[] = [];
+  index:        number = 1;
 
-  page: number = 1;
-  /*pagesNum: number = 0;*/
-  totalItems: number = 0;
-  perPage: number = 10;
+  page:         number = 1;
+  totalItems:   number = 0;
+  perPage:      number = 10;
 
-  pagStations: any;
+  pagStations:  any;
 
-  loading: boolean = false;
+  loading:      boolean = false;
+  isVisible:    boolean;
 
-  /* -- */
-  isVisible: boolean;
-  stationForm: FormGroup;
-  control:  FormArray;
+  stationForm:  FormGroup;
+  control:      FormArray;
 
   selectOptions: Array<any> = [];
 
-  rowStation: RowStation = {
-    order:  [''],
-    name:   ['', Validators.required],
-    parentStation: ['']
+  rowStation:    RowStation = {
+    order:          [''],
+    name:           ['', Validators.required],
+    parentStation:  ['']
   };
 
-  data: object = {
-    stationRow: [this.rowStation]
-  };
+  data: object = { stationRow: [this.rowStation] };
+
   logPromisesERROR: any[] = [];
   logPromisesOK: any[] = [];
 
@@ -73,10 +68,12 @@ export class StationsComponent implements OnInit {
     this.loadStations().finally();
   }
 
-  search(value: string): void {
-
-    // TODO: ADD ALSO NEW ITEMS THAT IS CURRENTLY IN THE FORM (LATER MUST BE PREVIUSLY ADDED TO DDBB).
-
+  /**
+   * Updates new results for parent select options
+   * @param value string to search
+   */
+  searchInSelect(value: string): void {
+    // TODO: ADD ALSO NEW ITEMS (options) THAT IS CURRENTLY IN THE FORM (in the drawer)
     if (value) {
       Station.query({
         where: {
@@ -87,10 +84,10 @@ export class StationsComponent implements OnInit {
         page: 1,
         perPage: 20
       }, {skip: this.EXCLUDE_ITEMS, paginate: true, cache: false})
-        .then(response => {
-          this.selectOptions = response;
-          console.log(this.selectOptions);
-        });
+        .then(response =>
+          this.selectOptions = response);
+    } else {
+      this.loadOptions4Select();
     }
   }
 
@@ -108,13 +105,17 @@ export class StationsComponent implements OnInit {
         page: this.page,
         perPage: this.perPage
       }, {skip: this.EXCLUDE_ITEMS, paginate: true, cache: false})
-        .then(response => { console.log(response);
+        .then(response => {
           this.editCache = [];
           this.loadPage(response);
         }).finally(() => { this.loading = false; resolve(); } );
     });
   }
 
+  /**
+   * Load options for parent station select. By default gets the first 20 results
+   * and when user starts to write, the results will update calling [searchInSelect]{@link #searchInSelect}
+   */
   loadOptions4Select() {
     if (!this.selectOptions || this.selectOptions.length === 0) {
       Station.query({
@@ -123,61 +124,10 @@ export class StationsComponent implements OnInit {
         page: 1,
         perPage: 20
       }, {skip: this.EXCLUDE_ITEMS, paginate: true, cache: false})
-        .then(response => {
-          this.selectOptions = response;
-          console.log(this.selectOptions);
-        });
+        .then(response =>
+          this.selectOptions = response);
     }
   }
-
-  /**
-   * Adds to the resource passed its array of qblocks as a new key object.
-   * Then updates the qblocks cache.
-   *
-   * @param expandOpen State of the expanded sub-table
-   * @param station Resource selected to show its qblocks
-   */
-  loadQblocksByStation(expandOpen: boolean, station: any) {
-    if (expandOpen) {
-      this.apiService.getResources('qblock', {
-        where: `{"station":${station.id}}`,
-        sort: '{"order":false}'
-      }).subscribe(qblocks => {
-        station.qblocksArray = qblocks;
-
-        station.qblocksArray.forEach(qblock => {
-          this.editCacheQblock[qblock.id] = {
-            edit: this.editCacheQblock[qblock.id] ? this.editCacheQblock[qblock.id].edit : false,
-            ...qblock
-          };
-        });
-      });
-    }
-  }
-
-  /**
-   * Adds a new empty field to the resources array.
-   * Then updates editCache with the new resource.
-   */
-  /*addStation() {
-    const index = this.stations.length;
-    const defaultStation = {
-      name: this.translate.instant('STATION') + ' ' + index,
-      ecoe: this.ecoeId,
-    };
-
-
-    const newStation = new Station(defaultStation);
-
-
-    this.stations = [...this.stations, newStation];
-
-    this.editCache[index] = {
-      edit: true,
-      new_item: true,
-      item: newStation
-    };
-  }*/
 
   /**
    * Sets the editCache variable to true.
@@ -185,16 +135,9 @@ export class StationsComponent implements OnInit {
    *
    * @param item selected resource of stations list
    */
-  startEdit(item: Station) { console.log('start editing: ', item);
-    /*if (!this.editCache[item.id].item.parentStation) {
-      console.log('if', !this.editCache[item.id].item.parentStation);
-      this.editCache[item.id].item.parentStation = new Station();
-    }*/
-
+  startEdit(item: Station) {
     this.editCache[item.id].item = Object.create(item);
     this.editCache[item.id].edit = true;
-
-    console.log('start editing: ', item);
 
     this.loadOptions4Select();
   }
@@ -205,7 +148,7 @@ export class StationsComponent implements OnInit {
    *
    * @param station Resource selected
    */
-  deleteItem(station: Station) { console.log('delete item', station);
+  deleteItem(station: Station) {
     station.destroy()
       .then(() => {
         this.loadStations()
@@ -238,24 +181,17 @@ export class StationsComponent implements OnInit {
       return;
     }
 
-    console.log('saveItem: ', cacheItem);
-    // console.log('saveItem-2: ', this.editCache[cacheItem.id].item);
-
-
     const body = {
       name: cacheItem.name,
       ecoe: this.ecoeId,
       parentStation: cacheItem.parentStation.id
     };
 
-    // const request = (this.editCache[cacheItem.id].item).update(body);
-
     const request = cacheItem.update(body);
 
     request.then(response => {
       this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
       this.editCache[cacheItem.id].edit = false;
-      // cacheItem.newItem = cacheItem.edit = false;
     });
   }
 
@@ -266,7 +202,7 @@ export class StationsComponent implements OnInit {
    *
    * @param item Resource selected
    */
-  cancelEdit(item: any): void { console.log('cancelEdit', item);
+  cancelEdit(item: any): void {
     this.editCache[item.id].edit = false;
   }
 
@@ -282,144 +218,9 @@ export class StationsComponent implements OnInit {
   }
 
   /**
-   * Navigates to Questions page with the queryParams of the Station and Qblock for filtering.
-   *
-   * @param stationId Id of the station selected
-   * @param qblockId Id of the qblock selected
+   * Fired when the current page is changed
+   * @param pageNum number of the new page.
    */
-  /*navigateQuestions(stationId: number, qblockId: number) {
-    this.router.navigate(['../questions'], {
-      relativeTo: this.route,
-      queryParams: {station: stationId, qblock: qblockId}
-    });
-  }*/
-
-  /**
-   * Adds a new empty field to the resources array.
-   * Then updates editCache with the new resource.
-   *
-   * @param station Parent resource passed
-   * @param name? Name of the Qblock
-   */
-  /*addQblock(station: any, name?: string) {
-    this.apiService.getResources('qblock')
-      .subscribe(qblocks => {
-        this.indexQblock += this.shared.getLastIndex(qblocks);
-
-        const newItem = {
-          id: this.indexQblock,
-          order: '',
-          name: name || '',
-          questions: [],
-          station: station.id
-        };
-
-        station.qblocksArray = [...station.qblocksArray, newItem];
-
-        this.editCacheQblock[this.indexQblock] = {
-          edit: true,
-          new_item: true,
-          ...newItem
-        };
-      });
-  }*/
-
-  /**
-   * Sets the editCache variable to true.
-   * Changes text-view tags by input tags.
-   *
-   * @param qblockId Id of the selected resource
-   */
-  /*startEditQblock(qblockId: number) {
-    this.editCacheQblock[qblockId].edit = true;
-  }*/
-
-  /**
-   * Calls ApiService to delete the resource passed.
-   * Then calls [updateArrayQblocks]{@link #updateArrayQblocks} function.
-   *
-   * @param qblock Resource selected
-   * @param station Parent resource passed
-   */
-  /*deleteQblock(qblock: any, station: any) {
-    this.apiService.deleteResource(qblock['$uri']).subscribe(() => {
-      this.updateArrayQblocks(qblock.id, station);
-    });
-  }*/
-
-  /**
-   * Creates or updates the resource passed.
-   * Then updates the variables to avoid calling the backend again.
-   *
-   * @param qblock Resource selected
-   * @param station Parent resource passed
-   * @param newItem determines if the resource is already saved
-   */
-  /*saveQblock(qblock: any, station: any, newItem: boolean) {
-    const item = this.editCacheQblock[qblock.id];
-
-    if (!item.order || !item.name) {
-      return;
-    }
-
-    const body = {
-      order: +item.order,
-      name: item.name,
-      station: station.id
-    };
-
-    const request = (
-      newItem ?
-        this.apiService.createResource('qblock', body) :
-        this.apiService.updateResource(item['$uri'], body)
-    );
-
-    request.subscribe(response => {
-      delete this.editCacheQblock[qblock.id];
-      delete this.editCacheQblock[response['id']];
-
-      this.editCacheQblock[response['id']] = {
-        edit: false,
-        ...response
-      };
-
-      station.qblocksArray = station.qblocksArray
-        .map(x => (x.id === qblock.id ? response : x))
-        .sort(this.shared.sortArray);
-    });
-  }*/
-
-  /**
-   * Sets the editCache variable to false.
-   * If resource is not already saved, calls [updateArrayQblocks]{@link #updateArrayQblocks} function.
-   * Else resets editCache to the previous value.
-   *
-   * @param qblock Resource selected
-   * @param station Parent resource passed
-   */
-  /*cancelEditQblock(qblock: any, station: any) {
-    this.editCacheQblock[qblock.id].edit = false;
-    if (this.editCacheQblock[qblock.id].new_item) {
-      this.updateArrayQblocks(qblock.id, station);
-
-    } else {
-      this.editCacheQblock[qblock.id] = qblock;
-    }
-  }*/
-
-  /**
-   * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
-   *
-   * @param qblock Id of the resource passed
-   * @param station Parent resource passed
-   */
-  updateArrayQblocks(qblock: number, station: any) {
-    delete this.editCacheQblock[qblock];
-    station.qblocksArray = station.qblocksArray
-      .filter(x => x.id !== qblock)
-      .sort(this.shared.sortArray);
-  }
-
   pageChange(pageNum: number) {
     this.loading = true;
     this.pagStations.page = pageNum;
@@ -428,12 +229,21 @@ export class StationsComponent implements OnInit {
       .finally(() => this.loading = false);
   }
 
+  /**
+   * Fired when the number of item per page is changed
+   * @param pageSize new number of item per page.
+   */
   pageSizeChange(pageSize: number) {
     this.perPage = pageSize;
     this.loadStations().finally();
   }
 
-  loadPage(pagination: any) { console.log('loadPage: ', pagination, this.pagStations);
+  /**
+   * When the stations are loaded, is fired for update
+   * some variables.
+   * @param pagination is a object type with all info about the current page.
+   */
+  loadPage(pagination: any) {
     this.pagStations = pagination;
     this.stations = [...this.pagStations.items];
     this.totalItems = pagination.total;
@@ -441,7 +251,6 @@ export class StationsComponent implements OnInit {
     this.totalItems = this.pagStations.total;
   }
 
-  /* ---- */
   /**
    * Opens form window to add new area/s
    */
@@ -538,19 +347,23 @@ export class StationsComponent implements OnInit {
     this.InitStationRow();
   }
 
+  /**
+   * Import stations from file
+   * @param items rows readed from file
+   */
   importStations(items: any[]) {
-    console.log(items);
-    setTimeout(() => {
-      console.log(this.logPromisesOK);
-    }, 5000);
-    // return;
     this.saveArrayStations(items)
-      .then(() => { console.log('lets check for parents', this.logPromisesOK);
+      .then(() => {
         this.loadStations().finally();
       })
-      .catch(err => console.error('error on import:', err));
+      .catch(err => console.error('ERROR ON IMPORT:', err));
   }
 
+  /**
+   * Fired when parent station select option is changed
+   * @param event new value selected or deleted
+   * @param item the row station that was edited
+   */
   optionChanged(event: EventTarget, item: Station) {
     this.editCache[item.id].item.parentStation = (event) ? {id: +event} : {id: null};
   }
@@ -572,8 +385,8 @@ export class StationsComponent implements OnInit {
         item['ecoe'] = this.ecoeId;
         item.parentStation = (item.parentStation) ? parseInt(item.parentStation, 10) : null;
 
-        // TODO: CHECK HOW TO TAKE VALUE FROM HIDDEN INPUT FORM, HOWEVER NEXT IF IS USEFUL FOR IMPORT FROM CSV.
-        if (!item.order) { console.log('!item.order'); item.order = ++total; }
+        // TODO: CHECK HOW TO TAKE VALUE FROM HIDDEN INPUT FORM
+        if (!item.order) { item.order = ++total; }
 
         const body = {
           name: item.name,
@@ -583,33 +396,27 @@ export class StationsComponent implements OnInit {
         };
 
         const station = new Station(body);
-        // TODO: REVISE PROMISE SENTECES
-        const promise = new Promise((resolve, reject) => {
-          station.save()
+        // TODO: REVISE PROMISES (sometimes them don't resolve)
+        const promise = station.save()
             .then(result => {
-              console.log('station saved:', result);
               this.logPromisesOK.push(result);
-              resolve();
-              // return result;
+              return result;
             })
             .catch(err => {
               this.logPromisesERROR.push({
                 value: item,
                 reason: err
               });
-              console.log('station NOT saved:', err);
-              reject();
-              // return err;
+              return err;
             });
-        });
         savePromises.push(promise);
       }
     }
     return Promise.all(savePromises)
-      .then((algo) => { console.log('station saved:', algo);
-        return new Promise((resolve, reject) =>
-          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(items)); })
-      .catch(err => new Promise(((resolve, reject) => reject(err))));
+      .then(() =>
+        new Promise((resolve, reject) =>
+          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(items)) )
+      .catch(err =>
+        new Promise(((resolve, reject) => reject(err))));
   }
-
 }
