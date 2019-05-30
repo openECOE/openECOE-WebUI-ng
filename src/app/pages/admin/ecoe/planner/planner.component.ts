@@ -58,7 +58,7 @@ export class PlannerComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
 
-    const excludeItems = ['areas', 'stations', 'schedules', 'students', 'rounds', 'shifts', 'organization'];
+    const excludeItems = [];
 
     this.ecoeId = +this.route.snapshot.params.id;
     ECOE.fetch(this.ecoeId, {skip: excludeItems})
@@ -71,7 +71,7 @@ export class PlannerComponent implements OnInit {
   }
 
   loadStations() {
-    const excludeItems = ['students', 'answers', 'ecoe', 'planner'];
+    const excludeItems = [];
 
     Station.query({where: {ecoe: this.ecoeId}}, {skip: excludeItems, paginate: true})
       .then(value => {
@@ -212,7 +212,7 @@ export class PlannerComponent implements OnInit {
       this.rounds = [];
       this.shifts = [];
 
-      const excludeItems = ['ecoe', 'organization', 'planners', 'students'];
+      const excludeItems = [];
 
       forkJoin(
         from(Round.query({
@@ -377,7 +377,7 @@ export class PlannerComponent implements OnInit {
   }
 
   getStudents(page: number = 1, perPage: number = 100) {
-    const excludeItems = ['ecoe', 'planner'];
+    const excludeItems = [];
 
     return Student.query<Student, Pagination<Student>>({
         where: {ecoe: this.ecoeId, planner: null},

@@ -66,15 +66,8 @@ export class EcoeComponent implements OnInit {
               private router: Router
   ) {
     const ecoeId = +this.route.snapshot.params.id;
-    // this.apiService.getResource(`/api/ecoe/${ecoeId}`)
-    //   .subscribe(ecoe => {
-    //     this.ecoe = [ecoe];
-    //     this.ecoe_menu[0].title = this.ecoe[0].name;
-    //   });
 
-    const excludeItems = ['areas', 'stations', 'schedules', 'students', 'rounds', 'shifts', 'organization'];
-
-    ECOE.fetch(ecoeId, {skip: excludeItems})
+    ECOE.fetch(ecoeId)
       .then(ecoe => {
         this.ecoe = ecoe;
         this.ecoe_menu[0].title = this.ecoe.name;

@@ -78,28 +78,21 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   loadPlanner() {
     this.loading = true;
 
-    const excludeItems = ['students', 'answers', 'ecoe', 'planner', 'round', 'shift'];
-
     // TODO: Review planner query
-    Planner.query<Planner>({where: {'round': this.plannerRound, 'shift': this.plannerShift}}, {skip: excludeItems})
-      .then(response => {
-        this.planner = response[0];
-        this.planner.round = this.plannerRound;
-        this.planner.shift = this.plannerShift;
-        this.planner.students = [];
+    Planner.first<Planner>({where: {'round': this.plannerRound, 'shift': this.plannerShift}})
+      .then(async response => {
+        if (response != null) {
+          this.planner = response;
+          const pagStudents: Pagination<Student> = await this.planner.getStudents({}, {paginate: true});
 
-        Student.query<Student>({
-          where: {
-            ecoe: this.ecoeId,
-            planner: this.planner
-          },
-          sort: {planner_order: false, surnames: false, name: false}
-        }, {skip: excludeItems})
-          .then(students => {
-            this.planner.students = students;
-          })
-          .finally(() => this.loading = false);
+          this.planner.students = [...pagStudents['items']];
+
+          for (let i = 2; i <= pagStudents['pages']; i++) {
+            this.planner.students = [...this.planner.students, (await pagStudents.changePageTo(i)).items];
+          }
+        }
       })
+      .finally(() => this.loading = false)
       .catch(reason => console.log('ERROR', reason));
   }
 
@@ -269,22 +262,7 @@ export class AppStudentSelectorComponent implements OnInit {
   ngOnInit() {
 
     this.groupName = this.shift.shiftCode + this.round.roundCode;
-
-    // const excludeItems = ['ecoe', 'answers', 'students'];
-    //
-    // Student.query<Student>({
-    //   where: {
-    //     ecoe: this.ecoeId,
-    //     planner: this.planner.id
-    //   },
-    //   sort: {planner_order: false, surnames: false, name: false},
-    //   perPage: this.maxStudents
-    // }, {skip: excludeItems})
-    //   .then(students => {
-    //     this.planner.students = students;
-    //     this.searchStudents();
-    //     this.loading = false;
-    //   });
+    this.searchStudents();
   }
 
   orderStudents(listStudents: Array<any>): Array<any> {
@@ -334,7 +312,7 @@ export class AppStudentSelectorComponent implements OnInit {
 
   searchStudents(value?: string) {
     this.loading = true;
-    const excludeItems = ['ecoe', 'planner', 'answers'];
+    const excludeItems = [];
 
     // TODO: Search by names and DNI
 

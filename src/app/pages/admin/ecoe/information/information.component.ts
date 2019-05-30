@@ -25,14 +25,13 @@ export class InformationComponent implements OnInit {
               private ecoeComp: EcoeComponent) {
   }
 
-  areas: Area | Pagination<Area>;
+  areas: any;
 
   /**
    * Loads the ECOE data and parses the response as an array to use it on the nz-list component.
    */
   ngOnInit() {
     const ecoeId = +this.route.snapshot.params.id;
-    // this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => this.ecoe = [ecoe]);
 
     ECOE.fetch<ECOE>(ecoeId, {cache: false}).then(value => {
       this.ecoe = value;

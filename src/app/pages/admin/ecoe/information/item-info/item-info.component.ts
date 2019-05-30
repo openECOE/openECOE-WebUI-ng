@@ -1,5 +1,4 @@
 import {Component, Input} from '@angular/core';
-import {Pagination} from '@openecoe/potion-client';
 
 @Component({
   selector: 'app-item-info',
@@ -11,7 +10,7 @@ export class ItemInfoComponent {
   @Input() link: string;
   @Input() title: string;
   @Input() no_items: string;
-  @Input() itemsPagination: any | Pagination<any>;
+  @Input() itemsPagination: any;
   @Input() icon: string;
   @Input() theme: string = 'fill';
 }

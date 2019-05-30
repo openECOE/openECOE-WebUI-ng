@@ -67,7 +67,6 @@ export class StudentsComponent implements OnInit {
    */
   loadStudents() {
     this.loading = true;
-    const excludeItems = ['ecoe', 'planner'];
 
     Student.query<Student, Pagination<Student>>({
         where: {ecoe: this.ecoeId},
@@ -75,7 +74,7 @@ export class StudentsComponent implements OnInit {
         perPage: this.perPage,
         page: this.page
       },
-      {paginate: true, skip: excludeItems}
+      {paginate: true}
     ).then( pagStudents => {
       this.editCache = {};
       this.students = pagStudents['items'];

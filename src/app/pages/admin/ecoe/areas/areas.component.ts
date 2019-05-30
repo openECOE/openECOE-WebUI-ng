@@ -65,7 +65,7 @@ export class AreasComponent implements OnInit {
    * Then calls [updateEditCache]{@link #updateEditCache} function.
    */
   loadAreas() {
-    const excludeItems = ['ecoe', 'questions'];
+    const excludeItems = [];
 
     Area.query({
       where: {'ecoe': this.ecoeId},
