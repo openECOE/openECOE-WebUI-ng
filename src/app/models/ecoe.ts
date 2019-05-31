@@ -42,11 +42,20 @@ export class Station extends Item {
   name: string;
   ecoe: ECOE;
   order: number;
-  parentStation: any;
-  parent_station: number;
+  parentStation?: {
+    id: number
+    name?: string,
+  };
+  id_parent_station: number;
 
   qblocks = Route.GET<Pagination<QBlock>>('/qblocks');
   schedules = Route.GET<Pagination<Schedule>>('/schedules');
+}
+
+export interface RowStation {
+  order: any[];
+  name: any[];
+  parentStation?: any[];
 }
 
 export class QBlock extends Item {

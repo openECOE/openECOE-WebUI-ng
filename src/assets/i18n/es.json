@@ -12,6 +12,7 @@
 
   "STATIONS": "Estaciones",
   "NO_STATIONS": "No hay estaciones",
+  "STATION_NOT_FOUND": "Estación no encontrada",
   "STATION": "Estación",
   "STATIONS_NUMBER": "Número de estaciones",
   "ADD_STATION": "Añadir estación",
@@ -150,6 +151,7 @@
   "NAME": "Nombre",
   "NAME_PLACEHOLDER": "Introduzca el nombre...",
   "NAME_INPUT_REQUIRED": "El campo nombre es obligatorio.",
+  "PARENT_PLACEHOLDER": "Seleccione el padre...",
 
   "MOVE_UP": "Subir posición",
   "MOVE_DOWN": "Bajar posición",

@@ -14,7 +14,7 @@
     <thead>
     <tr>
       <th [nzExpand]="true">
-        <a (click)="loadStations()">
+        <a (click)="loadStations().finally()">
           <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
@@ -26,7 +26,7 @@
         <nz-button-group>
           <button nz-button [nzType]="'primary'" class="margin-left"
                   [nz-tooltip] [nzTitle]="'ADD_STATION' | translate"
-                  (click)="addStation()">
+                  (click)="showDrawer()">
             <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
           <app-upload-and-parse (parserResult)="importStations($event)"></app-upload-and-parse>
@@ -35,123 +35,180 @@
     </tr>
     </thead>
     <tbody>
-    <ng-template ngFor let-item let-i="index" [ngForOf]="table.data">
+    <ng-template ngFor let-item [ngForOf]="table.data">
       <tr>
-        <td [nzShowExpand]="false"
-            [(nzExpand)]="item.expand"
-            (nzExpandChange)="loadQblocksByStation($event, item)">
+        <td>
+
         </td>
 
         <td>
-          <ng-container *ngIf="!editCache[i].edit">
+          <ng-container *ngIf="!editCache[item.id].edit">
             {{item.order || "-"}}
           </ng-container>
 
-          <ng-container *ngIf="editCache[i].edit">
-            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[i].item.order"></nz-input-number>
+          <ng-container *ngIf="editCache[item.id].edit">
+            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
           </ng-container>
         </td>
 
         <td>
-          <ng-container *ngIf="!editCache[i].edit">
+          <ng-container *ngIf="!editCache[item.id].edit">
             {{item.name}}
           </ng-container>
 
-          <ng-container *ngIf="editCache[i].edit">
-            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[i].item.name">
+          <ng-container *ngIf="editCache[item.id].edit">
+            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.name">
           </ng-container>
         </td>
 
         <td>
-          <nz-tag *ngIf="item.parentStation?.name"
-                  [nzColor]="shared.stringToColour(item.parentStation.name)">{{item.parentStation.name}}</nz-tag>
+          <ng-container *ngIf="!editCache[item.id].edit">
+            <nz-tag *ngIf="item.parentStation?.name"
+                    [nzColor]="shared.stringToColour(item.parentStation.name)">{{item.parentStation.name}}</nz-tag>
+          </ng-container>
+
+          <ng-container *ngIf="editCache[item.id].edit">
+            <nz-select style="width: 100px"
+              nzShowSearch
+              nzServerSearch
+              [nzMaxTagCount]="1"
+              [nzNotFoundContent]="('STATION_NOT_FOUND' | translate)"
+              nzAllowClear="true"
+              [ngModel]="editCache[item.id].item.parentStation?.id"
+              (ngModelChange)="optionChanged($event, editCache[item.id].item)"
+              [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
+              nzFilterOption="true"
+              (nzOnSearch)="searchInSelect($event)"
+            >
+              <nz-option *ngFor="let option of selectOptions['items']"  [nzLabel]="option.name" [nzValue]="option.id"> </nz-option>
+            </nz-select>
+          </ng-container>
         </td>
 
-        <td>{{item?.childrenStations?.length}}</td>
+        <td>{{item.childrenStations?.length}}</td>
 
         <td text-right>
-          <app-action-buttons [isEditing]="editCache[i].edit"
-                              [isNewItem]="editCache[i].new_item"
-                              (startEdit)="startEdit(i)"
+          <app-action-buttons [isEditing]="editCache[item.id]?.edit"
+                              [isNewItem]="editCache[item.id]?.new_item"
+                              (startEdit)="startEdit(item)"
                               (delete)="deleteItem(item)"
-                              (save)="saveItem(editCache[i])"
-                              (cancelEdit)="cancelEdit(editCache[i])">
+                              (save)="updateItem(editCache[item.id].item)"
+                              (cancelEdit)="cancelEdit(item)">
           </app-action-buttons>
         </td>
       </tr>
-      <!--<tr [nzExpand]="item?.expand">-->
-      <!--<td></td>-->
-      <!--<td colspan="5" inner-table>-->
-      <!--<nz-table #qblockTable-->
-      <!--[nzData]="item.qblocksArray"-->
-      <!--[nzSize]="'middle'"-->
-      <!--[nzShowPagination]="false"-->
-      <!--[nzFooter]="addQblockBtn">-->
-      <!--<thead>-->
-      <!--<tr>-->
-      <!--<th nzWidth="85px">{{"ORDER" | translate}}</th>-->
-      <!--<th>{{"NAME" | translate}}</th>-->
-      <!--<th nzWidth="85px">{{"QUESTIONS" | translate}}</th>-->
-      <!--<th nzWidth="140px"></th>-->
-      <!--</tr>-->
-      <!--</thead>-->
-
-      <!--<tbody>-->
-      <!--<tr *ngFor="let qblock of qblockTable.data; let i = index">-->
-      <!--<td>-->
-      <!--<ng-container *ngIf="!editCacheQblock[qblock.id].edit">-->
-      <!--{{qblock.order || "-"}}-->
-      <!--</ng-container>-->
-
-      <!--<ng-container *ngIf="editCacheQblock[qblock.id].edit">-->
-      <!--<nz-input-number [nzMin]="0"-->
-      <!--[nzSize]="'small'"-->
-      <!--[(ngModel)]="editCacheQblock[qblock.id].order">-->
-      <!--</nz-input-number>-->
-      <!--</ng-container>-->
-      <!--</td>-->
-
-      <!--<td>-->
-      <!--<ng-container *ngIf="!editCacheQblock[qblock.id].edit">-->
-      <!--{{qblock.name}}-->
-      <!--</ng-container>-->
-
-      <!--<ng-container *ngIf="editCacheQblock[qblock.id].edit">-->
-      <!--<input type="text"-->
-      <!--nz-input-->
-      <!--[nzSize]="'small'"-->
-      <!--required-->
-      <!--[(ngModel)]="editCacheQblock[qblock.id].name">-->
-      <!--</ng-container>-->
-      <!--</td>-->
-
-      <!--<td>{{qblock?.questions?.length}}</td>-->
-
-      <!--<td text-right>-->
-      <!--<app-action-buttons [isEditing]="editCacheQblock[qblock.id].edit"-->
-      <!--[isNewItem]="editCacheQblock[qblock.id].new_item"-->
-      <!--[showNavigateQuestions]="true"-->
-      <!--(startEdit)="startEditQblock(qblock.id)"-->
-      <!--(delete)="deleteQblock(qblock, item)"-->
-      <!--(save)="saveQblock(qblock, item, editCacheQblock[qblock.id].new_item)"-->
-      <!--(cancelEdit)="cancelEditQblock(qblock, item)"-->
-      <!--(navigateQuestions)="navigateQuestions(item.id, qblock.id)">-->
-      <!--</app-action-buttons>-->
-      <!--</td>-->
-      <!--</tr>-->
-      <!--</tbody>-->
-
-      <!--<ng-template #addQblockBtn>-->
-      <!--<div text-center>-->
-      <!--<button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addQblock(item)">-->
-      <!--{{"ADD_QBLOCK" | translate}}-->
-      <!--</button>-->
-      <!--</div>-->
-      <!--</ng-template>-->
-      <!--</nz-table>-->
-      <!--</td>-->
-      <!--</tr>-->
     </ng-template>
     </tbody>
   </nz-table>
+
+  <ng-container>
+    <nz-drawer
+      [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
+      [nzMaskClosable]="false"
+      [nzWidth]="720"
+      [nzVisible]="isVisible"
+      [nzTitle]="'ADD_STATION' | translate"
+      (nzOnClose)="cancelForm()">
+
+      <form [formGroup]="stationForm">
+        <div nz-row nzGutter="8">
+          <div nz-col nzSpan="3">
+            <nz-form-label>{{'ORDER' | translate}}</nz-form-label>
+          </div>
+          <div nz-col nzSpan="9">
+            <nz-form-label>{{'NAME' | translate}}</nz-form-label>
+          </div>
+          <div nz-col nzSpan="9">
+            <nz-form-label>{{'PARENT_STATION' | translate}}</nz-form-label>
+          </div>
+        </div>
+
+        <ng-container formArrayName="stationRow" *ngFor=" let control of stationForm.get('stationRow')['controls']; let i = index">
+          <div nz-row nzGutter="8" [formGroupName]="i+''">
+            <div nz-col nzSpan="3">
+              <nz-form-item>
+                <nz-form-control>
+                  <input nz-input type="number" [value]="+totalItems + ( i + 1 )"  disabled/>
+                  <input nz-input type="hidden" [value]="+totalItems + ( i + 1 )" formControlName="order"/>
+                  <nz-form-explain *ngIf="getFormControl('order', i)?.dirty && getFormControl('order', i)?.hasError('required')">
+                    {{'ORDER_INPUT_REQUIRED' | translate}}
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="9">
+              <nz-form-control>
+                <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
+                <nz-form-explain
+                  *ngIf="getFormControl('name',i)?.dirty && getFormControl('name', i)?.hasError('required')">
+                  {{'NAME_INPUT_REQUIRED' | translate}}
+                </nz-form-explain>
+              </nz-form-control>
+            </div>
+            <div nz-col nzSpan="9">
+              <nz-form-item>
+                <nz-form-control>
+                  <nz-select
+                    nzShowSearch
+                    nzServerSearch
+
+                    [nzMaxTagCount]="1"
+                    [nzNotFoundContent]="('STATION_NOT_FOUND' | translate)"
+                    nzAllowClear="true"
+
+                    [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
+                    nzFilterOption="true"
+                    formControlName="parentStation"
+                    (nzOnSearch)="searchInSelect($event)"
+                  >
+                    <nz-option *ngFor="let option of selectOptions['items']" [nzLabel]="option.name" [nzValue]="option.id"> </nz-option>
+                  </nz-select>
+
+                  <nz-form-explain *ngIf="getFormControl('parentStation', i)?.dirty && getFormControl('parentStation', i)?.hasError('required')">
+                    {{'PARENT_INPUT_REQUIRED' | translate}}
+                  </nz-form-explain>
+
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
+              <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
+            </div>
+          </div>
+        </ng-container>
+
+        <nz-form-item>
+          <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
+            <button nz-button   nzType="dashed" style="width:60%" (click)="addStationRow()">
+              <i nz-icon type="plus"></i> {{'ADD_STATION' | translate}}
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+
+      <div class="footer">
+        <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;"><span>{{'CANCEL' | translate}}</span></button>
+        <button type="button" (click)="submitForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span></button>
+      </div>
+    </nz-drawer>
+
+
+    <nz-drawer
+      [nzClosable]="true"
+      [nzVisible]="logPromisesERROR.length > 0"
+      nzPlacement="right"
+      [nzTitle]="'IMPORT_ERRORS' | translate"
+      (nzOnClose)="clearImportErrors()"
+      [nzWidth]="540">
+      <nz-alert *ngFor="let error of logPromisesERROR"
+                nzType="error"
+                nzCloseable
+                [nzMessage]="error.reason.statusText"
+                [nzDescription]="error.reason.message"
+                nzShowIcon>
+      </nz-alert>
+    </nz-drawer>
+
+  </ng-container>
+
 </nz-content>
