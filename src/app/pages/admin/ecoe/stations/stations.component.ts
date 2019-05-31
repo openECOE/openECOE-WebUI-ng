@@ -52,14 +52,13 @@ export class StationsComponent implements OnInit {
    */
   loadStations() {
     this.loading = true;
-    const excludeItems = ['ecoe', 'organization'];
 
     Station.query({
       where: {ecoe: this.ecoeId},
       sort: {order: false},
       page: this.page,
       perPage: this.perPage
-    }, {skip: excludeItems, paginate: true})
+    }, {paginate: true})
       .then(response => {
         this.editCache = [];
         this.loadPage(response);

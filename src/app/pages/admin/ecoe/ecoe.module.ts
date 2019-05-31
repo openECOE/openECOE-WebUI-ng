@@ -18,6 +18,7 @@ import { EventsComponent } from './schedule/events/events.component';
 import {PipesModule} from '../../../pipes/pipes.module';
 import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner/planner-selector/planner-selector.component';
 import {ComponentsModule} from '../../../components/components.module';
+import { QuestionsListComponent } from './questions/questions-list/questions-list.component';
 
 @NgModule({
   imports: [
@@ -43,7 +44,8 @@ import {ComponentsModule} from '../../../components/components.module';
     PlannerComponent,
     EventsComponent,
     PlannerSelectorComponent,
-    AppStudentSelectorComponent
+    AppStudentSelectorComponent,
+    QuestionsListComponent
   ],
   entryComponents: [AppStudentSelectorComponent]
 })

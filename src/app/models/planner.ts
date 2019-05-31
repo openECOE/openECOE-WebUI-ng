@@ -1,4 +1,4 @@
-import {Item} from '@openecoe/potion-client';
+import {Item, Pagination, Route} from '@openecoe/potion-client';
 import {ECOE, Student} from './ecoe';
 
 export class Planner extends Item {
@@ -6,7 +6,9 @@ export class Planner extends Item {
   shift: Shift | number;
   round: Round | number;
 
-  students: Student | number[];
+  students: Array<Student>;
+
+  getStudents = Route.GET<Pagination<Student>>('/students');
 }
 
 export class Round extends Item {

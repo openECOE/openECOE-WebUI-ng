@@ -134,4 +134,12 @@ export class SharedService {
     }
   }
 
+  dirtForm(form: FormGroup): void {
+    form.reset();
+    for (const key of Object.keys(form.controls)) {
+      form.controls[key].markAsDirty();
+      form.controls[key].updateValueAndValidity();
+    }
+  }
+
 }

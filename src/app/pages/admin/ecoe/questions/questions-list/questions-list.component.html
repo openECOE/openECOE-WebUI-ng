@@ -1,0 +1,270 @@
+<nz-table #table
+          [nzData]="questionsList"
+          [nzPageIndex]="page"
+          [nzPageSize]="perPage"
+          (nzPageIndexChange)="pageChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)"
+          [nzLoading]="loading"
+          [nzTotal]="totalItems"
+          [nzFrontPagination]="false"
+          nzShowSizeChanger
+          nzShowPagination
+          >
+  <thead>
+  <tr>
+    <th [nzExpand]="true">
+
+    </th>
+    <th nzWidth="85px">{{"ORDER" | translate}}</th>
+    <th>{{"DESCRIPTION" | translate}}</th>
+    <th nzWidth="150px">{{"REFERENCE" | translate}}</th>
+    <th nzWidth="150px">{{"QUESTION_TYPE" | translate}}</th>
+    <th nzWidth="95px">{{"OPTIONS" | translate}}</th>
+    <th nzWidth="130px">{{"AREA" | translate}}</th>
+    <th nzWidth="140px">
+      <button nz-button [nzType]="'primary'" class="margin-left"
+              [nz-tooltip] [nzTitle]="'ADD_QUESTION' | translate"
+              (click)="addQuestion()">
+        <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
+      </button>
+    </th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <ng-template ngFor let-item let-index="index" [ngForOf]="table.data">
+    <tr>
+      <td [nzShowExpand]="true">
+      </td>
+
+      <td>
+        <ng-container *ngIf="!editCache[index].edit else editOrder">
+          {{item.order || "-"}}
+        </ng-container>
+
+        <ng-template #editOrder>
+          <nz-input-number [nzMin]="0"
+                           [nzSize]="'small'"
+                           [(ngModel)]="editCache[index].data.order">
+          </nz-input-number>
+        </ng-template>
+      </td>
+
+      <td>
+        <ng-container *ngIf="!editCache[index].edit else editDesc">
+          {{item.description}}
+        </ng-container>
+
+        <ng-template #editDesc>
+          <textarea rows="1" [nzAutosize]="true" nz-input [(ngModel)]="editCache[index].data.description"></textarea>
+        </ng-template>
+      </td>
+
+      <td>
+        <ng-container *ngIf="!editCache[index].edit else editRef">
+          {{item.reference}}
+        </ng-container>
+
+        <ng-template #editRef>
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[index].data.reference">
+        </ng-template>
+      </td>
+
+      <td>
+        <ng-container *ngIf="!editCache[index].edit else editQuestionType">
+          {{getQuestionTypeLabel(item.questionType) | translate}}
+        </ng-container>
+
+        <ng-template #editQuestionType>
+          <nz-select style="width: 100%;"
+                     [nzSize]="'small'"
+                     [nzShowSearch]="true"
+                     [(ngModel)]="editCache[index].data.questionType">
+            <nz-option *ngFor="let option of questionTypeOptions"
+                       [nzLabel]="option.label | translate"
+                       [nzValue]="option.type">
+            </nz-option>
+          </nz-select>
+        </ng-template>
+      </td>
+
+      <td>{{item.options.length}}</td>
+
+      <td>
+        <ng-container *ngIf="!editCache[index].edit else editArea">
+          {{item.area.name}}
+        </ng-container>
+
+        <ng-template #editArea>
+          <nz-select style="width: 100%;"
+                     [nzSize]="'small'"
+                     [nzShowSearch]="true"
+                     [(ngModel)]="editCache[index].data.area"
+                     (nzScrollToBottom)="loadMoreAreas()"
+          >
+            <nz-option *ngFor="let area of areas" [nzLabel]="area.name" [nzValue]="area">
+            </nz-option>
+          </nz-select>
+        </ng-template>
+      </td>
+
+      <td text-right>
+        <ng-container>
+          <!--<a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">-->
+            <!--<i nz-icon type="folder-add" nzTheme="twotone"-->
+               <!--nz-popover-->
+               <!--[nzTrigger]="'click'"-->
+               <!--[nzPlacement]="'left'"-->
+               <!--[nzContent]="qblocksList">-->
+            <!--</i>-->
+          <!--</a>-->
+
+          <nz-divider [nzType]="'vertical'"></nz-divider>
+        </ng-container>
+
+        <!--<ng-template #qblocksList>-->
+          <!--<nz-list [nzDataSource]="qblocks" [nzSize]="'small'" [nzRenderItem]="qb">-->
+            <!--<ng-template #qb let-qb>-->
+              <!--<nz-list-item [nzContent]="qb.name" [nzActions]="[moveAction]" tappable-->
+                            <!--(click)="moveQuestion(item.id, qblock.id, qb.id)">-->
+                <!--<ng-template #moveAction>-->
+                  <!--<i nz-icon type="right-circle" nzTheme="twotone"></i>-->
+                <!--</ng-template>-->
+              <!--</nz-list-item>-->
+            <!--</ng-template>-->
+          <!--</nz-list>-->
+        <!--</ng-template>-->
+
+        <app-action-buttons [isEditing]="editCache[index].edit"
+                            [isNewItem]="editCache[index].new_item"
+                            (startEdit)="startEdit(index)"
+                            (delete)="deleteItem(index)"
+                            (save)="saveItem(editCache[index])"
+                            (cancelEdit)="cancelEdit(index)">
+        </app-action-buttons>
+      </td>
+    </tr>
+    <tr [nzExpand]="item.expand">
+      <td></td>
+      <td colspan="7" inner-table>
+      </td>
+    </tr>
+  </ng-template>
+  </tbody>
+</nz-table>
+
+
+<!--<nz-table #optionTable-->
+          <!--[nzData]="item.optionsArray"-->
+          <!--[nzSize]="'middle'"-->
+          <!--[nzShowPagination]="false"-->
+          <!--[nzFooter]="addOptionBtn">-->
+  <!--<thead>-->
+  <!--<tr>-->
+    <!--<th nzWidth="85px">{{"ORDER" | translate}}</th>-->
+    <!--<th>{{"LABEL" | translate}}</th>-->
+    <!--<th nzWidth="150px">{{"POINTS" | translate}}</th>-->
+    <!--<th nzWidth="150px">{{"PREVIEW" | translate}}</th>-->
+    <!--<th nzWidth="95px"></th>-->
+    <!--<th nzWidth="130px"></th>-->
+    <!--<th nzWidth="140px"></th>-->
+  <!--</tr>-->
+  <!--</thead>-->
+
+  <!--<tbody>-->
+  <!--<tr *ngFor="let option of optionTable.data; let indexOption = index">-->
+    <!--<td>-->
+      <!--<ng-container *ngIf="!editCacheOption[option.id].edit">-->
+        <!--{{option.order}}-->
+      <!--</ng-container>-->
+
+      <!--<ng-container *ngIf="editCacheOption[option.id].edit">-->
+        <!--<nz-input-number [nzMin]="0"-->
+                         <!--[nzSize]="'small'"-->
+                         <!--[(ngModel)]="editCacheOption[option.id].order">-->
+        <!--</nz-input-number>-->
+      <!--</ng-container>-->
+    <!--</td>-->
+
+    <!--<td>-->
+      <!--<ng-container *ngIf="!editCacheOption[option.id].edit">-->
+        <!--{{option.label}}-->
+      <!--</ng-container>-->
+
+      <!--<ng-container *ngIf="editCacheOption[option.id].edit">-->
+        <!--<input type="text"-->
+               <!--nz-input-->
+               <!--[nzSize]="'small'"-->
+               <!--required-->
+               <!--[(ngModel)]="editCacheOption[option.id].label">-->
+      <!--</ng-container>-->
+    <!--</td>-->
+
+    <!--<td>-->
+      <!--<ng-container *ngIf="!editCacheOption[option.id].edit">-->
+        <!--{{option.points}}-->
+      <!--</ng-container>-->
+
+      <!--<ng-container *ngIf="editCacheOption[option.id].edit">-->
+        <!--<nz-input-number [nzStep]="0.1" [nzSize]="'small'" [(ngModel)]="editCacheOption[option.id].points">-->
+        <!--</nz-input-number>-->
+      <!--</ng-container>-->
+    <!--</td>-->
+
+    <!--<td *ngIf="((item.question_type == 'RS') && indexOption == 0)-->
+<!--|| item.question_type == 'CH' || item.question_type == 'RB'"-->
+        <!--[attr.rowspan]="(item.question_type == 'RS') ? item.optionsArray.length : 1">-->
+      <!--<ng-container *ngIf="item.question_type == 'CH'">-->
+        <!--<nz-switch [ngModel]="!editCacheOption[option.id].edit"-->
+                   <!--[nzCheckedChildren]="editCacheOption[option.id].edit ?-->
+<!--editCacheOption[option.id].label :-->
+<!--option.label"-->
+                   <!--[nzUnCheckedChildren]="editCacheOption[option.id].edit ?-->
+<!--editCacheOption[option.id].label :-->
+<!--option.label"-->
+                   <!--[ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">-->
+        <!--</nz-switch>-->
+      <!--</ng-container>-->
+
+      <!--<ng-container *ngIf="item.question_type == 'RB'">-->
+        <!--<nz-radio-group [(ngModel)]="option.id">-->
+          <!--<label nz-radio [nzValue]="option.id"-->
+                 <!--[ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">-->
+            <!--{{editCacheOption[option.id].label}}-->
+          <!--</label>-->
+        <!--</nz-radio-group>-->
+      <!--</ng-container>-->
+
+      <!--<ng-container *ngIf="item.question_type == 'RS'">-->
+        <!--<nz-rate [(ngModel)]="valueopt" [nzCount]="item.optionsArray.length"></nz-rate>-->
+        <!--<span class="ant-rate-text">{{valueopt}}</span>-->
+      <!--</ng-container>-->
+    <!--</td>-->
+
+    <!--<td></td>-->
+    <!--<td></td>-->
+
+    <!--<td text-right>-->
+      <!--<app-action-buttons [isEditing]="editCacheOption[option.id].edit"-->
+                          <!--[isNewItem]="editCacheOption[option.id].new_item"-->
+                          <!--[index]="indexOption"-->
+                          <!--[itemsLength]="optionTable.data.length"-->
+                          <!--[showOrderButtons]="true"-->
+                          <!--(changeOrder)="changeOptionOrder($event, option, indexOption, item)"-->
+                          <!--(startEdit)="startEditOption(option.id)"-->
+                          <!--(delete)="deleteOption(option, item)"-->
+                          <!--(save)="saveOption(option, item, editCacheOption[option.id].new_item)"-->
+                          <!--(cancelEdit)="cancelEditOption(option, item)">-->
+      <!--</app-action-buttons>-->
+    <!--</td>-->
+  <!--</tr>-->
+  <!--</tbody>-->
+
+  <!--<ng-template #addOptionBtn>-->
+    <!--<div text-center>-->
+      <!--<button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addOption(item)">-->
+        <!--{{"ADD_OPTION" | translate}}-->
+      <!--</button>-->
+    <!--</div>-->
+  <!--</ng-template>-->
+<!--</nz-table>-->

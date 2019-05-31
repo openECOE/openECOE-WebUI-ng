@@ -69,6 +69,14 @@
                   "with": "src/environments/environment.test.ts"
                 }
               ]
+            },
+            "prodDebug": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prodDebug.ts"
+                }
+              ]
             }
           }
         },
@@ -83,6 +91,9 @@
             },
             "test": {
               "browserTarget": "openECOE-WebUI-ng:build:test"
+            },
+            "prodDebug": {
+              "browserTarget": "openECOE-WebUI-ng:build:prodDebug"
             }
           }
         },
@@ -141,6 +152,9 @@
             },
             "test": {
               "devServerTarget": "openECOE-WebUI-ng:serve:test"
+            },
+            "prodDebug": {
+              "devServerTarget": "openECOE-WebUI-ng:serve:prodDebug"
             }
           }
         },
