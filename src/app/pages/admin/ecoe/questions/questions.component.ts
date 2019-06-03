@@ -571,7 +571,7 @@ export class QuestionsComponent implements OnInit {
   /**
    * Saves array of data in data base. The data can be provided from external file or from
    * multiple rows form.
-   * @param items obtained from form array or array form.
+   * @param file obtained from form array or array form.
    */
   saveArrayQuestions(file: BlockType[]) {
     this.logPromisesERROR = [];
@@ -622,7 +622,6 @@ export class QuestionsComponent implements OnInit {
 
 
   addQuestions(items: any[], idBlock: number) {
-    const savePromises    = [];
     this.logPromisesERROR = [];
     this.logPromisesOK    = [];
 
