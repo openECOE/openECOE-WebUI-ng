@@ -1,11 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
-import {forkJoin, from, Observable} from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
-import {SharedService} from '../../../../services/shared/shared.service';
-import {Area, ECOE, QBlock, Question, Station} from '../../../../models';
-import {Pagination} from '@openecoe/potion-client';
+import {forkJoin} from 'rxjs';
+import {Area, ECOE, QBlock, Station} from '../../../../models';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 /**
  * Component with questions and options by question.
@@ -15,6 +13,7 @@ import {Pagination} from '@openecoe/potion-client';
   templateUrl: './questions.component.html',
   styleUrls: ['./questions.component.less']
 })
+
 export class QuestionsComponent implements OnInit {
 
   ecoe: ECOE;
@@ -27,16 +26,35 @@ export class QuestionsComponent implements OnInit {
   qblockId: number;
   stationId: number;
   questionShowQblocks = {};
-  valueopt: number;
-
 
   index: number = 1;
-  indexOpt: number = 1;
+
+  isVisible: boolean = false;
+
+  rowQblock: RowQblock = {
+    name: ['', Validators.required]
+  };
+
+  data: object = {
+    qblockRow: [this.rowQblock]
+  };
+
+  qblockForm: FormGroup;
+  control: FormArray;
+
+  logPromisesERROR: { value: any, reason: any }[] = [];
+  logPromisesOK: any[] = [];
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
-              private sharedService: SharedService) {
+              private fb: FormBuilder) {
+
+    this.qblockForm = this.fb.group({
+      qblockRow: this.fb.array([])
+    });
+
+    this.control = <FormArray>this.qblockForm.controls.qblockRow;
   }
 
   /**
@@ -50,6 +68,8 @@ export class QuestionsComponent implements OnInit {
       this.stationId = params.get('station') ? +params.get('station') : null;
       this.loadQuestions();
     });
+
+    this.InitQblockRow();
   }
 
   /**
@@ -61,7 +81,7 @@ export class QuestionsComponent implements OnInit {
     // TODO: Only fetch 10 questions per station, need to create pagination for questions
     this.ecoe = await ECOE.fetch<ECOE>(this.ecoeId);
 
-    const pagStations = await this.ecoe.stations({}, {paginate: true, cache: false});
+    const pagStations = await this.ecoe.stations({sort: {order: false}}, {paginate: true, cache: false});
     this.stations = [...pagStations['items']];
 
     for (let i = 2; i <= pagStations.pages; i++) {
@@ -155,159 +175,6 @@ export class QuestionsComponent implements OnInit {
   }
 
   /**
-   * Sets the editCacheOption variable to true.
-   * Changes text-view tags by input tags.
-   *
-   * @param id Id of the selected resource
-   */
-  startEditOption(id: number) {
-    this.editCacheOption[id].edit = true;
-  }
-
-  /**
-   * Creates or updates the resource passed.
-   * Then updates the variables to avoid calling the backend again and sorts the array.
-   *
-   * @param option Resource selected
-   * @param question Parent resource passed
-   * @param newItem determines if the resource is already saved
-   */
-  saveOption(option: any, question: any, newItem: boolean) {
-    const item = this.editCacheOption[option.id];
-
-    if (!item.order || !item.label || !item.points) {
-      return;
-    }
-
-    const body = {
-      order: +item.order,
-      label: item.label,
-      points: +item.points,
-      question: question.id
-    };
-
-    const request = (
-      newItem ?
-        this.apiService.createResource('option', body) :
-        this.apiService.updateResource(item['$uri'], body)
-    );
-
-    request.subscribe(response => {
-      delete this.editCacheOption[option.id];
-      delete this.editCacheOption[response['id']];
-
-      this.editCacheOption[response['id']] = {
-        edit: false,
-        ...response
-      };
-
-      question.optionsArray = question.optionsArray
-        .map(x => (x.id === option.id ? response : x))
-        .sort(this.sharedService.sortArray);
-    });
-  }
-
-  /**
-   * Sets the editCacheOption variable to false.
-   * If resource is not already saved, calls [updateArrayOptions]{@link #updateArrayOptions} function.
-   * Else resets editCache to the previous value.
-   *
-   * @param option Resource selected
-   * @param question Parent resource passed
-   */
-  cancelEditOption(option: any, question: any) {
-    this.editCacheOption[option.id].edit = false;
-
-    if (this.editCacheOption[option.id].new_item) {
-      this.updateArrayOptions(option.id, question);
-    } else {
-      this.editCacheOption[option.id] = option;
-    }
-  }
-
-  /**
-   * Calls ApiService to delete the resource passed.
-   * Then calls [updateArrayOptions]{@link #updateArrayOptions} function.
-   *
-   * @param option Resource selected
-   * @param question Parent resource passed
-   */
-  deleteOption(option: any, question: any) {
-    this.apiService.deleteResource(option['$uri']).subscribe(() => {
-      this.updateArrayOptions(option.id, question);
-    });
-  }
-
-  /**
-   * Deletes the editCacheOption key assigned to the resource id passed, filters out the item from the resources array and sorts the array.
-   *
-   * @param option Id of the resource passed
-   * @param question Parent resource passed
-   */
-  updateArrayOptions(option: number, question: any) {
-    delete this.editCacheOption[option];
-    question.optionsArray = question.optionsArray
-      .filter(x => x.id !== option)
-      .sort(this.sharedService.sortArray);
-  }
-
-  /**
-   * Adds a new empty field to the resources array.
-   * Then updates editCacheOption with the new resource.
-   *
-   * @param question Parent resource passed
-   */
-  addOption(question: any) {
-    this.apiService.getResources('option')
-      .subscribe(options => {
-        this.indexOpt += this.sharedService.getLastIndex(options);
-
-        const newItem = {
-          id: this.indexOpt,
-          order: '',
-          label: '',
-          points: 0,
-          question: question.id
-        };
-
-        question.optionsArray = [...question.optionsArray, newItem];
-
-        this.editCacheOption[this.indexOpt] = {
-          edit: true,
-          new_item: true,
-          ...newItem
-        };
-      });
-  }
-
-  /**
-   * Moves the option one position above or down.
-   * Updates the order key of the resource passed and the next to it.
-   * Then updates the variables to avoid calling the backend again and sorts the array.
-   *
-   * @param {string} direction 'up' or 'down'
-   * @param option Resource passed
-   * @param index Current index of the selected resource
-   * @param question Parent resource passed
-   */
-  changeOptionOrder(direction: string, option: any, index: number, question: any) {
-    const itemToMove = (direction === 'up') ? question.optionsArray[index - 1] : question.optionsArray[index + 1];
-
-    forkJoin(
-      this.apiService.updateResource(option['$uri'], {order: itemToMove.order}),
-      this.apiService.updateResource(itemToMove['$uri'], {order: option.order})
-    ).subscribe(response => {
-      response.forEach(res => {
-        this.editCacheOption[res['id']] = res;
-
-        question.optionsArray = question.optionsArray
-          .map(x => (x.id === res.id ? res : x))
-          .sort(this.sharedService.sortArray);
-      });
-    });
-  }
-
-  /**
    * Removes the Qblock filter and reloads the page by updating the URL.
    *
    * @param station Id of the station passed
@@ -319,4 +186,134 @@ export class QuestionsComponent implements OnInit {
       queryParams: {station: station}
     });
   }
+
+  /**
+   * Saves array of data in data base. The data can be provided from external file or from
+   * multiple rows form.
+   * @param items obtained from form array or array form.
+   */
+  saveArrayQblocks(items: any[]): Promise<any> {
+    const savePromises = [];
+    this.logPromisesERROR = [];
+    this.logPromisesOK = [];
+
+    items.forEach((item, idx) => {
+      if (item.name) {
+        item['station'] = this.stationSelected;
+        item['order'] = this.qblocks.length + idx;
+
+        const qblock = new QBlock(item);
+
+        const promise = qblock.save()
+          .then(result => {
+            this.logPromisesOK.push(result);
+            return result;
+          })
+          .catch(err => {
+            this.logPromisesERROR.push({
+              value: item,
+              reason: err
+            });
+            return err;
+          });
+        savePromises.push(promise);
+      }
+    });
+
+    return Promise.all(savePromises)
+      .then(() =>
+        new Promise((resolve, reject) =>
+          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(items)))
+      .catch(err => new Promise(((resolve, reject) => reject(err))));
+  }
+
+  /**
+   * Opens form window to add new qblock/s
+   */
+  showDrawer() {
+    this.isVisible = true;
+  }
+
+  /**
+   * Closes the form qblock window
+   */
+  closeDrawer() {
+    this.isVisible = false;
+  }
+
+  /**
+   * Adds new row (name field) qblock to the form
+   */
+  addQblockRow() {
+    this.control.push(this.fb.group(this.rowQblock));
+  }
+
+  /**
+   * Deletes selected row qblock whose was added previously
+   * @param index id field to find and remove.
+   */
+  deleteRow(index) {
+    this.control.removeAt(index);
+  }
+
+  /**
+   *At first time when OnInit, adds new qblock row;
+   * in other cases resets the number of rows to 1 when the
+   * form window was closed.
+   */
+  InitQblockRow() {
+    if (this.control.length === 0) {
+      this.addQblockRow();
+    } else {
+      while (this.control.length > 1) {
+        this.control.removeAt(1);
+      }
+      this.control.reset();
+    }
+  }
+
+  /**
+   * Obtains de formControl instance of any element in our form.
+   * @param name of the field, in our case can be 'name' or 'code'
+   * @param idx the index of the field.
+   */
+  getFormControl(name: string, idx: number): AbstractControl {
+    return this.qblockForm.get('qblockRow')['controls'][idx].controls[name];
+  }
+
+  /**
+   * Before save values in data base, in first time checks that
+   * all fields are validates and then will save the values.
+   */
+  submitForm(): void {
+    for (const i in this.qblockForm.get('qblockRow')['controls']) {
+      if (this.qblockForm.get('qblockRow')['controls'].hasOwnProperty(i)) {
+        this.getFormControl('name', +i).markAsDirty();
+        this.getFormControl('name', +i).updateValueAndValidity();
+      }
+    }
+    if (this.qblockForm.valid) {
+      this.saveArrayQblocks(this.qblockForm.get('qblockRow').value)
+        .finally(() => {
+          this.loadQuestions();
+          this.closeDrawer();
+          this.InitQblockRow();
+        });
+    }
+  }
+
+  /**
+   * When user decides do not save the form values and
+   * close the form window: will close the drawer window
+   * and reset the number of row qblocks.
+   */
+  cancelForm() {
+    this.closeDrawer();
+    this.InitQblockRow();
+  }
+
+}
+
+export interface RowQblock {
+  name: any[];
 }

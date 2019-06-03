@@ -27,7 +27,7 @@ export class QuestionsListComponent implements OnInit {
   // }
 
   questionsPage: Pagination<Question>;
-  questionsList: Question[];
+  questionsList: Question[] = [];
 
   editCache: Array<any> = [];
 
@@ -72,13 +72,12 @@ export class QuestionsListComponent implements OnInit {
         cache: false
       });
 
-    this.questionsList = [...this.questionsPage['items']];
+    this.questionsList = this.questionsPage != null ? [...this.questionsPage['items']] : [];
 
     this.updateEditCache();
     await this.loadAreas();
 
   }
-
 
 
   /**
