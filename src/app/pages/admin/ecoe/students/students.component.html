@@ -9,6 +9,7 @@
             [nzFrontPagination]="false"
             [nzTotal]="totalItems"
             [nzShowTotal]="tmpTotalItems"
+            nzSize="small"
             nzShowSizeChanger
             nzShowPagination>
     <ng-template #tmpTotalItems>
@@ -22,10 +23,27 @@
           <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
-      <th nzWidth="150px">{{"DNI" | translate}}</th>
-      <th>{{"SURNAMES" | translate}}</th>
-      <th nzWidth="200px">{{"NAME" | translate}}</th>
-      <th nzWidth="240px">
+      <th nzWidth="150px"
+          nzShowSort
+          [(nzSort)]="mapOfSort.planner"
+          (nzSortChange)="sort('planner', $event)">
+        {{"PLANNER" | translate}}</th>
+      <th nzWidth="150px"
+          nzShowSort
+          [(nzSort)]="mapOfSort.dni"
+          (nzSortChange)="sort('dni', $event)">
+        {{"DNI" | translate}}</th>
+      <th nzWidth="400px"
+          nzShowSort
+          [(nzSort)]="mapOfSort.surnames"
+          (nzSortChange)="sort('surnames', $event)">
+        {{"SURNAMES" | translate}}</th>
+      <th nzWidth="200px"
+          nzShowSort
+          [(nzSort)]="mapOfSort.name"
+          (nzSortChange)="sort('name', $event)">
+        {{"NAME" | translate}}</th>
+      <th nzWidth="200px" text-right>
         <nz-button-group>
           <button nz-button [nzType]="'primary'" class="margin-left"
                   [nz-tooltip] [nzTitle]="'ADD_STUDENT' | translate"
@@ -41,6 +59,15 @@
     <ng-template ngFor let-item [ngForOf]="table.data">
       <tr>
         <td [nzShowExpand]="false"></td>
+
+        <td>
+          <ng-container>
+            <nz-tag *ngIf="item.planner?.shift && item.planner?.round"
+                    [nzColor]="shared.stringToColour(item.planner?.shift.shiftCode + item.planner?.round.roundCode)">
+              {{item.planner?.shift?.shiftCode}}{{item.planner?.round?.roundCode}}{{item?.plannerOrder}}
+            </nz-tag>
+          </ng-container>
+        </td>
 
         <td>
           <ng-container *ngIf="!editCache[item.id].edit">
@@ -71,12 +98,8 @@
             <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].name">
           </ng-container>
         </td>
-
         <td text-right>
-          <nz-tag *ngIf="item.planner?.shift && item.planner?.round"
-                  [nzColor]="shared.stringToColour(item.planner?.shift.shiftCode + item.planner?.round.roundCode)">
-            {{item.planner?.shift?.shiftCode}}{{item.planner?.round?.roundCode}}{{item?.plannerOrder}}
-          </nz-tag>
+
           <app-action-buttons [isEditing]="editCache[item.id].edit"
                               [isNewItem]="editCache[item.id].new_item"
                               (startEdit)="startEdit(item.id)"
@@ -90,6 +113,7 @@
     </tbody>
   </nz-table>
 
+  <!--TODO: Finish student drawer to add students -->
   <ng-container>
     <nz-drawer
       [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
@@ -109,13 +133,15 @@
           </div>
         </div>
 
-        <ng-container formArrayName="studentRow" *ngFor=" let control of studentForm.get('studentRow')['controls']; let i = index">
+        <ng-container formArrayName="studentRow"
+                      *ngFor=" let control of studentForm.get('studentRow')['controls']; let i = index">
           <div nz-row nzGutter="8" [formGroupName]="+i">
             <div nz-col nzSpan="12">
               <nz-form-item>
                 <nz-form-control>
                   <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
-                  <nz-form-explain *ngIf="getFormControl('name', i)?.dirty && getFormControl('name', i)?.hasError('required')">
+                  <nz-form-explain
+                    *ngIf="getFormControl('name', i)?.dirty && getFormControl('name', i)?.hasError('required')">
                     {{'NAME_INPUT_REQUIRED' | translate}}
                   </nz-form-explain>
                 </nz-form-control>
@@ -131,14 +157,16 @@
               </nz-form-control>
             </div>
             <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
-              <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
+              <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete"
+                                                                                           nzTheme="outline"></i>
+              </button>
             </div>
           </div>
         </ng-container>
 
         <nz-form-item>
           <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
-            <button nz-button   nzType="dashed" style="width:60%" (click)="addStudentRow()">
+            <button nz-button nzType="dashed" style="width:60%" (click)="addStudentRow()">
               <i nz-icon type="plus"></i> {{'ADD_AREA' | translate}}
             </button>
           </nz-form-control>
@@ -146,8 +174,10 @@
       </form>
 
       <div class="footer">
-        <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;"><span>{{'CANCEL' | translate}}</span></button>
-        <button type="button" (click)="submitForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span></button>
+        <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;">
+          <span>{{'CANCEL' | translate}}</span></button>
+        <button type="button" (click)="submitForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span>
+        </button>
       </div>
     </nz-drawer>
 

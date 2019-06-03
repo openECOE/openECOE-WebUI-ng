@@ -44,6 +44,13 @@ export class StudentsComponent implements OnInit {
 
   loading: boolean = false;
 
+  mapOfSort: { [key: string]: any } = {
+    planner: null,
+    dni: null,
+    surnames: null,
+    name: null
+  };
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private shared: SharedService,
@@ -69,9 +76,22 @@ export class StudentsComponent implements OnInit {
   loadStudents() {
     this.loading = true;
 
+    const sortDict = {};
+
+    for (const key in this.mapOfSort) {
+      const value = this.mapOfSort[key];
+      if (value !== null) {
+        sortDict[key] = value === 'ascend';
+        if (key === 'planner') {
+          sortDict['planner_order'] = value === 'ascend';
+        }
+      }
+    }
+
+
     Student.query<Student, Pagination<Student>>({
         where: {ecoe: this.ecoeId},
-        sort: {surnames: false, name: false},
+        sort: sortDict,
         perPage: this.perPage,
         page: this.page
       },
@@ -384,5 +404,14 @@ export class StudentsComponent implements OnInit {
         });
     }
   }
+
+  sort(sortName: string, value: string): void {
+    for (const key in this.mapOfSort) {
+      this.mapOfSort[key] = key === sortName ? value : null;
+    }
+
+    this.loadStudents();
+  }
+
 
 }
