@@ -1,21 +1,27 @@
 <a [routerLink]="'./' + link">
-  <nz-list-item [nzContent]="content">
-    <nz-list-item-meta [nzTitle]="header">
-      <ng-template #header>
-        <a>
-          <i nz-icon [type]="icon" [nzTheme]="theme" style="padding-right: 10px"></i>
-          {{title | translate}}
-        </a>
-      </ng-template>
-
-      <ng-template #content>
-        <h3>
+  <nz-list-item [nzContent]="itemsPagination ? content : ' '">
+    <nz-skeleton [nzLoading]="!itemsPagination" [nzActive]="true" [nzAvatar]="true" [nzParagraph]="false">
+      <nz-list-item-meta
+        [nzTitle]="header"
+        [nzAvatar]="avatar">
+        <ng-template #avatar>
+          <nz-avatar [nzIcon]="icon"></nz-avatar>
+        </ng-template>
+        <ng-template #header>
           <a>
-            <i nz-icon type="warning" *ngIf="itemsPagination.total == 0" danger-color></i>
-            {{(itemsPagination.total > 0) ? itemsPagination.total : (no_items | translate)}}
+            {{title | translate}}
           </a>
-        </h3>
-      </ng-template>
-    </nz-list-item-meta>
+        </ng-template>
+
+        <ng-template #content>
+          <h3>
+            <a>
+              <i nz-icon type="warning" *ngIf="itemsPagination?.total == 0" danger-color></i>
+              {{(itemsPagination?.total > 0) ? itemsPagination?.total : (no_items | translate)}}
+            </a>
+          </h3>
+        </ng-template>
+      </nz-list-item-meta>
+    </nz-skeleton>
   </nz-list-item>
 </a>

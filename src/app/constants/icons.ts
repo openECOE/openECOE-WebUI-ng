@@ -8,8 +8,8 @@ export const ResourceIcons = {
   chronometerIcon: 'clock-circle',
   scheduleIcon: 'hourglass',
   plannerIcon: 'calendar',
-  roundIcon: '',
-  shiftIcon: '',
+  roundIcon: 'sync',
+  shiftIcon: 'clock-circle',
   userIcon: 'user',
   settingsIcon: 'setting',
   addIcon: 'plus'

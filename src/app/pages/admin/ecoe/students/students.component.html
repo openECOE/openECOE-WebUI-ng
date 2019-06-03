@@ -8,8 +8,13 @@
             [nzLoading]="loading"
             [nzFrontPagination]="false"
             [nzTotal]="totalItems"
+            [nzShowTotal]="tmpTotalItems"
             nzShowSizeChanger
             nzShowPagination>
+    <ng-template #tmpTotalItems>
+      {{totalItems}}
+    </ng-template>
+
     <thead>
     <tr>
       <th [nzExpand]="true">
@@ -157,8 +162,12 @@
                 nzType="error"
                 nzCloseable
                 [nzMessage]="error.reason.statusText"
-                [nzDescription]="error.reason.message"
+                [nzDescription]="errorMessage"
                 nzShowIcon>
+        <ng-template #errorMessage>
+          <div>{{error.value}}</div>
+          <div>{{error.reason.message}}</div>
+        </ng-template>
       </nz-alert>
     </nz-drawer>
   </ng-container>
