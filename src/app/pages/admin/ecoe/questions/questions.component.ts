@@ -4,6 +4,7 @@ import {ApiService} from '../../../../services/api/api.service';
 import {forkJoin, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {SharedService} from '../../../../services/shared/shared.service';
+import {QBlock, Question, Option, Area} from '../../../../models';
 
 /**
  * Component with questions and options by question.
@@ -35,6 +36,23 @@ export class QuestionsComponent implements OnInit {
     {type: 'CH', label: 'MULTI_ANSWER'},
     {type: 'RS', label: 'VALUE_RANGE'}
   ];
+
+  readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
+    order:       'orden',
+    description: 'enunciado',
+    reference:   'referencia',
+    points:      'points',
+    ac:          'ac',
+    type:        'type'
+  };
+
+  readonly DEFAULT_LABEL = 'Sí';
+  readonly OPTIONS  = 'options'; // PROPERTY NAME ADDED TO QUESTIONS ARRAY.
+  readonly OPTION   = 'option';
+  readonly POINTS   = 'points';
+
+  private logPromisesERROR: any[] = [];
+  private logPromisesOK: any[] = [];
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -109,8 +127,8 @@ export class QuestionsComponent implements OnInit {
    * Adds to the resource passed its array of options as a new key object.
    * Then updates the options cache.
    *
-   * @param {boolean} expand State of the expanded sub-table
-   * @param {any} question Resource selected to show its options
+   * @param expand State of the expanded sub-table
+   * @param question Resource selected to show its options
    */
   loadOptionsByQuestion(expand: boolean, question: any) {
     if (expand) {
@@ -133,19 +151,21 @@ export class QuestionsComponent implements OnInit {
   /**
    * Load qblocks by the passed station.
    *
-   * @param {number} stationId Id of the parent resource
+   * @param stationId Id of the parent resource
    */
   loadQblocksByStation(stationId: number) {
     this.apiService.getResources('qblock', {
       where: `{"station":${stationId}}`
-    }).subscribe(qblocks => this.qblocks = qblocks);
+    }).subscribe(qblocks => { console.log('loadQblocksByStation: ', qblocks);
+      this.qblocks = qblocks;
+    });
   }
 
   /**
    * Sets the editCache variable to true.
    * Changes text-view tags by input tags.
    *
-   * @param {number} id Id of the selected resource
+   * @param id Id of the selected resource
    */
   startEdit(id: number) {
     this.editCache[id].edit = true;
@@ -155,9 +175,9 @@ export class QuestionsComponent implements OnInit {
    * Creates or updates the resource passed.
    * Then updates the variables to avoid calling the backend again.
    *
-   * @param {any} question Resource selected
-   * @param {any} qblock Parent resource passed
-   * @param {boolean} newItem determines if the resource is already saved
+   * @param question Resource selected
+   * @param qblock Parent resource passed
+   * @param newItem determines if the resource is already saved
    */
   saveItem(question: any, qblock: any, newItem: boolean) {
     const item = this.editCache[question.id];
@@ -216,8 +236,8 @@ export class QuestionsComponent implements OnInit {
    * If resource is not already saved, calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
    * Else resets editCache to the previous value.
    *
-   * @param {any} question Resource selected
-   * @param {any} qblock Parent resource passed
+   * @param question Resource selected
+   * @param qblock Parent resource passed
    */
   cancelEdit(question: any, qblock: any) {
     this.editCache[question.id].edit = false;
@@ -233,8 +253,8 @@ export class QuestionsComponent implements OnInit {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
    *
-   * @param {any} question Resource selected
-   * @param {any} qblock Parent resource passed
+   * @param question Resource selected
+   * @param qblock Parent resource passed
    */
   deleteItem(question: any, qblock: any) {
     this.apiService.deleteResource(question['$uri']).subscribe(() => {
@@ -293,8 +313,8 @@ export class QuestionsComponent implements OnInit {
   /**
    * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
    *
-   * @param {number} questionId Id of the resource passed
-   * @param {any} qblock Parent resource passed
+   * @param questionId Id of the resource passed
+   * @param qblock Parent resource passed
    */
   updateArrayQuestions(questionId: number, qblock: any) {
     delete this.editCache[questionId];
@@ -306,9 +326,9 @@ export class QuestionsComponent implements OnInit {
    * Moves the passed question to the selected Qblock.
    * Then reloads the questions array.
    *
-   * @param {number} questionId Id of the resource passed
-   * @param {number} qblockPrevId Id of the actual Qblock
-   * @param {number} qblockNextId Id of the Qblock to move in
+   * @param questionId Id of the resource passed
+   * @param qblockPrevId Id of the actual Qblock
+   * @param qblockNextId Id of the Qblock to move in
    */
   moveQuestion(questionId: number, qblockPrevId: number, qblockNextId: number) {
     forkJoin(
@@ -328,7 +348,7 @@ export class QuestionsComponent implements OnInit {
    * Sets the editCacheOption variable to true.
    * Changes text-view tags by input tags.
    *
-   * @param {number} id Id of the selected resource
+   * @param id Id of the selected resource
    */
   startEditOption(id: number) {
     this.editCacheOption[id].edit = true;
@@ -338,9 +358,9 @@ export class QuestionsComponent implements OnInit {
    * Creates or updates the resource passed.
    * Then updates the variables to avoid calling the backend again and sorts the array.
    *
-   * @param {any} option Resource selected
-   * @param {any} question Parent resource passed
-   * @param {boolean} newItem determines if the resource is already saved
+   * @param option Resource selected
+   * @param question Parent resource passed
+   * @param newItem determines if the resource is already saved
    */
   saveOption(option: any, question: any, newItem: boolean) {
     const item = this.editCacheOption[option.id];
@@ -382,8 +402,8 @@ export class QuestionsComponent implements OnInit {
    * If resource is not already saved, calls [updateArrayOptions]{@link #updateArrayOptions} function.
    * Else resets editCache to the previous value.
    *
-   * @param {any} option Resource selected
-   * @param {any} question Parent resource passed
+   * @param option Resource selected
+   * @param question Parent resource passed
    */
   cancelEditOption(option: any, question: any) {
     this.editCacheOption[option.id].edit = false;
@@ -399,8 +419,8 @@ export class QuestionsComponent implements OnInit {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayOptions]{@link #updateArrayOptions} function.
    *
-   * @param {any} option Resource selected
-   * @param {any} question Parent resource passed
+   * @param option Resource selected
+   * @param question Parent resource passed
    */
   deleteOption(option: any, question: any) {
     this.apiService.deleteResource(option['$uri']).subscribe(() => {
@@ -411,8 +431,8 @@ export class QuestionsComponent implements OnInit {
   /**
    * Deletes the editCacheOption key assigned to the resource id passed, filters out the item from the resources array and sorts the array.
    *
-   * @param {number} option Id of the resource passed
-   * @param {any} question Parent resource passed
+   * @param option Id of the resource passed
+   * @param question Parent resource passed
    */
   updateArrayOptions(option: number, question: any) {
     delete this.editCacheOption[option];
@@ -425,7 +445,7 @@ export class QuestionsComponent implements OnInit {
    * Adds a new empty field to the resources array.
    * Then updates editCacheOption with the new resource.
    *
-   * @param {any} question Parent resource passed
+   * @param question Parent resource passed
    */
   addOption(question: any) {
     this.apiService.getResources('option')
@@ -455,10 +475,10 @@ export class QuestionsComponent implements OnInit {
    * Updates the order key of the resource passed and the next to it.
    * Then updates the variables to avoid calling the backend again and sorts the array.
    *
-   * @param {string} direction 'up' or 'down'
-   * @param {any} option Resource passed
-   * @param {number} index Current index of the selected resource
-   * @param {any} question Parent resource passed
+   * @param direction 'up' or 'down'
+   * @param option Resource passed
+   * @param index Current index of the selected resource
+   * @param question Parent resource passed
    */
   changeOptionOrder(direction: string, option: any, index: number, question: any) {
     const itemToMove = (direction === 'up') ? question.optionsArray[index - 1] : question.optionsArray[index + 1];
@@ -480,13 +500,215 @@ export class QuestionsComponent implements OnInit {
   /**
    * Removes the Qblock filter and reloads the page by updating the URL.
    *
-   * @param {number} station Id of the station passed
+   * @param station Id of the station passed
    */
-  deleteFilter(station: number) {
+  deleteFilter(station: number) { console.log('deleteFilter:', station);
     this.router.navigate(['../questions'], {
       relativeTo: this.route,
       replaceUrl: true,
       queryParams: {station: station}
+    }).finally();
+  }
+
+  mapFile(items: any[]) {
+    const newArr: any[] = [];
+    const currentBlock: { name: string; questions: any[] } = { name: '', questions: [] };
+    let aux: any = {};
+
+    items.forEach((item, idx) => {
+      if (!item[this.HEADER.order] && item[this.HEADER.description]) {
+        if (idx === 0) {
+          currentBlock.name = item[this.HEADER.description];
+          currentBlock.questions = [];
+        } else {
+          aux = {};
+          Object.assign(aux, currentBlock);
+          newArr.push(aux);
+          currentBlock.name = item[this.HEADER.description];
+          currentBlock.questions = [];
+         }
+      } else if (item[this.HEADER.order] && item[this.HEADER.description] && item[this.HEADER.points]) {
+        item[this.OPTIONS] = this.getOptions(item);
+        currentBlock.questions.push(item);
+      }
+    });
+
+    aux = {};
+    Object.assign(aux, currentBlock);
+    newArr.push(aux);
+
+    return newArr;
+  }
+
+  getOptions(item: object) {
+    Object.keys(item).forEach((key) => (item[key] == null) && delete item[key]);
+
+    const propertyNames = Object.getOwnPropertyNames(item);
+
+    const options = propertyNames.filter(value => value.toLowerCase().match(/option\d+$/) );
+    const points = propertyNames.filter(value => value.toLowerCase().match(/points\d+$/) );
+
+    const optionArray: any[] = [];
+
+    points.forEach((point, index) => {
+      const row: {} = {};
+      row[options[index]] = item[options[index]];
+      row[point] = item[point];
+      optionArray.push(row);
+    });
+
+    options.forEach((key) => delete item[key]);
+    points.forEach((key) => delete item[key]);
+
+    return optionArray;
+  }
+
+  importQuestions(items: any[]) {
+    const blocksWithQuestions = this.mapFile(items);
+    this.saveArrayQuestions(blocksWithQuestions);
+  }
+
+  /**
+   * Saves array of data in data base. The data can be provided from external file or from
+   * multiple rows form.
+   * @param items obtained from form array or array form.
+   */
+  saveArrayQuestions(file: BlockType[]) {
+    this.logPromisesERROR = [];
+    this.logPromisesOK    = [];
+    let currentBlockId: number;
+
+    if (!file) { return; }
+
+    file.forEach(async (block, idx) => {
+      await this.hasQblock(block.name, this.stationId)
+        .then( async (result) => {
+          if (result && (<Array<any>>result).length === 1) {
+            currentBlockId = result[0]['id'];
+            return this.addQuestions(block.questions, currentBlockId);
+          } else if (!result) {
+              await this.addQblock(block.name, (idx + 1) )
+                .then(async res => {
+                  currentBlockId = res['id'];
+                  return this.addQuestions(block.questions, currentBlockId);
+                })
+                .catch(err => console.error('ERROR ON ADD:', err));
+          }
+        });
     });
   }
+
+  hasQblock(name: string, station: number) {
+    return new Promise((resolve, reject) => {
+      QBlock.query({
+        where: { name: name, station: station }
+      }, {skip: [], cache: false})
+        .then((response: Array<any>) => {
+          if (response.length === 1) {
+            resolve(response);
+          } else if (response.length === 0) {
+            resolve(false);
+          } else if (response.length > 1) {
+            reject('TOO_MANY_ROWS');
+          }
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  addQblock(name: string, order: number) {
+    return ( new QBlock({name: name, station: this.stationId, order: order }) ).save();
+  }
+
+
+  addQuestions(items: any[], idBlock: number) {
+    const savePromises    = [];
+    this.logPromisesERROR = [];
+    this.logPromisesOK    = [];
+
+    items.forEach( async (item) => {
+      const body = {
+        area:         (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId } })),
+        description:  item[this.HEADER.description],
+        options:      [],
+        order:        item[this.HEADER.order],
+        qblocks:      [idBlock],
+        question_type: item[this.HEADER.type],
+        reference:    item[this.HEADER.reference]
+      };
+
+      await (new Question(body)).save()
+        .then(async (question) => {
+          await new Promise(resolve => {
+            this.addOptions(<Array<any>>item, question.id)
+              .then((res) => {
+                this.logPromisesOK.push(res);
+                resolve(res);
+              });
+          });
+        })
+        .catch(reason => {
+          console.error(reason);
+        });
+    });
+    return new Promise((resolve) => resolve('ALL'));
+  }
+
+  addOptions(questionItem: any[], idQuestion: number) {
+    const savePromises    = [];
+    this.logPromisesERROR = [];
+    this.logPromisesOK    = [];
+
+    const options = questionItem[this.OPTIONS];
+
+    if (options.length === 0) {
+      const body = {
+        label: this.DEFAULT_LABEL,
+        order: 1,
+        points: questionItem[this.POINTS],
+        question: idQuestion
+      };
+
+      const promise = (new Option(body)).save()
+        .then(result => result)
+        .catch(err => err);
+
+      savePromises.push(promise);
+    } else {
+      options.forEach((item, idx) => {
+        const body = {
+          label: (item[this.OPTION + (idx + 1)]).toString(),
+          order: idx,
+          points: item[this.POINTS + (idx + 1)],
+          question: idQuestion
+        };
+
+        const promise = (new Option(body)).save()
+          .then(result => {
+            this.logPromisesOK.push(result);
+            return result;
+          })
+          .catch(err => {
+            this.logPromisesERROR.push({
+              value: item,
+              reason: err
+            });
+            return err;
+          });
+        savePromises.push(promise);
+      });
+    }
+    return Promise.all(savePromises)
+      .then(() =>
+        new Promise((resolve, reject) =>
+          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)) )
+      .catch(err =>
+        new Promise(((resolve, reject) => reject(err))));
+  }
+
+}
+
+interface BlockType {
+ name: string;
+ questions: Question[];
 }

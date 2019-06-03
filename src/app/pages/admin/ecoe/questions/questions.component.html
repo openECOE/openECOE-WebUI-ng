@@ -10,6 +10,10 @@
 
   <button nz-button nzType="primary">{{"PREVIEW_EXAM" | translate}}</button>
 
+  <nz-button-group>
+    <app-upload-and-parse (parserResult)="importQuestions($event)"></app-upload-and-parse>
+  </nz-button-group>
+
   <nz-collapse *ngIf="stationSelected">
     <nz-collapse-panel *ngFor="let qblock of stationSelected.qblocks"
                        [nzHeader]="panelHeader"
@@ -17,10 +21,11 @@
 
       <ng-template #panelHeader>
         <nz-tag [nzMode]="qblockId ? 'closeable' : 'default'" [nzColor]="'geekblue'" (nzOnClose)="deleteFilter(stationId)">
-          <i nz-icon type="filter" [theme]="'twotone'"></i>
+          <i nz-icon type="filter" theme="twotone"></i>
           {{qblock.name}}
         </nz-tag>
       </ng-template>
+
 
       <nz-table #table
                 [nzData]="qblock.questions"
@@ -42,7 +47,7 @@
               <button nz-button [nzType]="'primary'" class="margin-left"
                       [nz-tooltip] [nzTitle]="'ADD_QUESTION' | translate"
                       (click)="addQuestion(qblock)">
-                <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+                <i nz-icon [type]="'plus-circle'" theme="twotone" icon-16></i>
               </button>
             </th>
           </tr>
@@ -128,7 +133,7 @@
               <td text-right>
                 <ng-container *ngIf="!editCache[item.id].edit">
                   <a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">
-                    <i nz-icon type="folder-add" [theme]="'twotone'"
+                    <i nz-icon type="folder-add" theme="twotone"
                        nz-popover
                        [(nzVisible)]="questionShowQblocks[item.id].show"
                        (click)="loadQblocksByStation(stationSelected.id)"
@@ -147,7 +152,7 @@
                       <nz-list-item [nzContent]="qb.name" [nzActions]="[moveAction]" tappable
                                     (click)="moveQuestion(item.id, qblock.id, qb.id)">
                         <ng-template #moveAction>
-                          <i nz-icon type="right-circle" [theme]="'twotone'"></i>
+                          <i nz-icon type="right-circle" theme="twotone"></i>
                         </ng-template>
                       </nz-list-item>
                     </ng-template>

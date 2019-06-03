@@ -70,6 +70,8 @@ export class Question extends Item {
   id_area: number;
   question_type: number;
   order: number;
+
+  addOption = Route.POST<Option>('/option');
 }
 
 export class Option extends Item {
