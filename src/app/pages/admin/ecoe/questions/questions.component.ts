@@ -4,7 +4,7 @@ import {ApiService} from '../../../../services/api/api.service';
 import {forkJoin, from, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {SharedService} from '../../../../services/shared/shared.service';
-import {Area, ECOE, QBlock, Question, Station} from '../../../../models';
+import {Area, ECOE, QBlock, Question, Station, Option} from '../../../../models';
 import {Pagination} from '@openecoe/potion-client';
 
 /**
@@ -32,6 +32,29 @@ export class QuestionsComponent implements OnInit {
 
   index: number = 1;
   indexOpt: number = 1;
+
+  question_type_options: Array<{ type: string, label: string }> = [
+    {type: 'RB', label: 'ONE_ANSWER'},
+    {type: 'CH', label: 'MULTI_ANSWER'},
+    {type: 'RS', label: 'VALUE_RANGE'}
+  ];
+
+  readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
+    order:       'orden',
+    description: 'enunciado',
+    reference:   'referencia',
+    points:      'points',
+    ac:          'ac',
+    type:        'type'
+  };
+
+  readonly DEFAULT_LABEL = 'Sí';
+  readonly OPTIONS  = 'options'; // PROPERTY NAME ADDED TO QUESTIONS ARRAY.
+  readonly OPTION   = 'option';
+  readonly POINTS   = 'points';
+
+  private logPromisesERROR: any[] = [];
+  private logPromisesOK: any[] = [];
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -285,7 +308,7 @@ export class QuestionsComponent implements OnInit {
    * Updates the order key of the resource passed and the next to it.
    * Then updates the variables to avoid calling the backend again and sorts the array.
    *
-   * @param {string} direction 'up' or 'down'
+   * @param direction 'up' or 'down'
    * @param option Resource passed
    * @param index Current index of the selected resource
    * @param question Parent resource passed
@@ -312,11 +335,212 @@ export class QuestionsComponent implements OnInit {
    *
    * @param station Id of the station passed
    */
-  deleteFilter(station: number) {
+  deleteFilter(station: number) { console.log('deleteFilter:', station);
     this.router.navigate(['../questions'], {
       relativeTo: this.route,
       replaceUrl: true,
       queryParams: {station: station}
+    }).finally();
+  }
+
+  mapFile(items: any[]) {
+    const newArr: any[] = [];
+    const currentBlock: { name: string; questions: any[] } = { name: '', questions: [] };
+    let aux: any = {};
+
+    items.forEach((item, idx) => {
+      if (!item[this.HEADER.order] && item[this.HEADER.description]) {
+        if (idx === 0) {
+          currentBlock.name = item[this.HEADER.description];
+          currentBlock.questions = [];
+        } else {
+          aux = {};
+          Object.assign(aux, currentBlock);
+          newArr.push(aux);
+          currentBlock.name = item[this.HEADER.description];
+          currentBlock.questions = [];
+         }
+      } else if (item[this.HEADER.order] && item[this.HEADER.description] && item[this.HEADER.points]) {
+        item[this.OPTIONS] = this.getOptions(item);
+        currentBlock.questions.push(item);
+      }
+    });
+
+    aux = {};
+    Object.assign(aux, currentBlock);
+    newArr.push(aux);
+
+    return newArr;
+  }
+
+  getOptions(item: object) {
+    Object.keys(item).forEach((key) => (item[key] == null) && delete item[key]);
+
+    const propertyNames = Object.getOwnPropertyNames(item);
+
+    const options = propertyNames.filter(value => value.toLowerCase().match(/option\d+$/) );
+    const points = propertyNames.filter(value => value.toLowerCase().match(/points\d+$/) );
+
+    const optionArray: any[] = [];
+
+    points.forEach((point, index) => {
+      const row: {} = {};
+      row[options[index]] = item[options[index]];
+      row[point] = item[point];
+      optionArray.push(row);
+    });
+
+    options.forEach((key) => delete item[key]);
+    points.forEach((key) => delete item[key]);
+
+    return optionArray;
+  }
+
+  importQuestions(items: any[]) {
+    const blocksWithQuestions = this.mapFile(items);
+    this.saveArrayQuestions(blocksWithQuestions);
+  }
+
+  /**
+   * Saves array of data in data base. The data can be provided from external file or from
+   * multiple rows form.
+   * @param file obtained from form array or array form.
+   */
+  saveArrayQuestions(file: BlockType[]) {
+    this.logPromisesERROR = [];
+    this.logPromisesOK    = [];
+    let currentBlockId: number;
+
+    if (!file) { return; }
+
+    file.forEach(async (block, idx) => {
+      await this.hasQblock(block.name, this.stationId)
+        .then( async (result) => {
+          if (result && (<Array<any>>result).length === 1) {
+            currentBlockId = result[0]['id'];
+            return this.addQuestions(block.questions, currentBlockId);
+          } else if (!result) {
+              await this.addQblock(block.name, (idx + 1) )
+                .then(async res => {
+                  currentBlockId = res['id'];
+                  return this.addQuestions(block.questions, currentBlockId);
+                })
+                .catch(err => console.error('ERROR ON ADD:', err));
+          }
+        });
     });
   }
+
+  hasQblock(name: string, station: number) {
+    return new Promise((resolve, reject) => {
+      QBlock.query({
+        where: { name: name, station: station }
+      }, {skip: [], cache: false})
+        .then((response: Array<any>) => {
+          if (response.length === 1) {
+            resolve(response);
+          } else if (response.length === 0) {
+            resolve(false);
+          } else if (response.length > 1) {
+            reject('TOO_MANY_ROWS');
+          }
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  addQblock(name: string, order: number) {
+    return ( new QBlock({name: name, station: this.stationId, order: order }) ).save();
+  }
+
+
+  addQuestions(items: any[], idBlock: number) {
+    this.logPromisesERROR = [];
+    this.logPromisesOK    = [];
+
+    items.forEach( async (item) => {
+      const body = {
+        area:         (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId } })),
+        description:  item[this.HEADER.description],
+        options:      [],
+        order:        item[this.HEADER.order],
+        qblocks:      [idBlock],
+        question_type: item[this.HEADER.type],
+        reference:    item[this.HEADER.reference]
+      };
+
+      await (new Question(body)).save()
+        .then(async (question) => {
+          await new Promise(resolve => {
+            this.addOptions(<Array<any>>item, question.id)
+              .then((res) => {
+                this.logPromisesOK.push(res);
+                resolve(res);
+              });
+          });
+        })
+        .catch(reason => {
+          console.error(reason);
+        });
+    });
+    return new Promise((resolve) => resolve('ALL'));
+  }
+
+  addOptions(questionItem: any[], idQuestion: number) {
+    const savePromises    = [];
+    this.logPromisesERROR = [];
+    this.logPromisesOK    = [];
+
+    const options = questionItem[this.OPTIONS];
+
+    if (options.length === 0) {
+      const body = {
+        label: this.DEFAULT_LABEL,
+        order: 1,
+        points: questionItem[this.POINTS],
+        question: idQuestion
+      };
+
+      const promise = (new Option(body)).save()
+        .then(result => result)
+        .catch(err => err);
+
+      savePromises.push(promise);
+    } else {
+      options.forEach((item, idx) => {
+        const body = {
+          label: (item[this.OPTION + (idx + 1)]).toString(),
+          order: idx,
+          points: item[this.POINTS + (idx + 1)],
+          question: idQuestion
+        };
+
+        const promise = (new Option(body)).save()
+          .then(result => {
+            this.logPromisesOK.push(result);
+            return result;
+          })
+          .catch(err => {
+            this.logPromisesERROR.push({
+              value: item,
+              reason: err
+            });
+            return err;
+          });
+        savePromises.push(promise);
+      });
+    }
+    return Promise.all(savePromises)
+      .then(() =>
+        new Promise((resolve, reject) =>
+          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)) )
+      .catch(err =>
+        new Promise(((resolve, reject) => reject(err))));
+  }
+
+}
+
+interface BlockType {
+ name: string;
+ questions: Question[];
 }

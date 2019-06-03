@@ -180,7 +180,6 @@
 
   "SELECT": "Seleccionar...",
   "IMPORT_DATA": "Importar",
-  "IMPORT_ERRORS": "Errores de importación",
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",
   "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",

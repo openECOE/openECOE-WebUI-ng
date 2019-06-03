@@ -10,6 +10,10 @@
 
   <button nz-button nzType="primary">{{"PREVIEW_EXAM" | translate}}</button>
 
+  <nz-button-group>
+    <app-upload-and-parse (parserResult)="importQuestions($event)"></app-upload-and-parse>
+  </nz-button-group>
+
   <nz-collapse *ngIf="stationSelected">
     <nz-collapse-panel *ngFor="let qblock of qblocks"
                        [nzHeader]="panelHeader"
