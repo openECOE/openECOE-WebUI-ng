@@ -26,6 +26,10 @@ export class InformationComponent implements OnInit {
   }
 
   areas: any;
+  stations: any;
+  students: any;
+  rounds: any;
+  shifts: any;
 
   /**
    * Loads the ECOE data and parses the response as an array to use it on the nz-list component.
@@ -33,13 +37,14 @@ export class InformationComponent implements OnInit {
   ngOnInit() {
     const ecoeId = +this.route.snapshot.params.id;
 
-    ECOE.fetch<ECOE>(ecoeId, {cache: false}).then(value => {
+    ECOE.fetch<ECOE>(ecoeId, {cache: false}).then(async value => {
       this.ecoe = value;
       console.log(this.ecoe);
-      this.ecoe.areas({}, {paginate: true}).then(pagAreas => {
-        this.areas = pagAreas;
-        console.log(this.areas);
-      });
+      this.areas = await this.ecoe.areas({}, {paginate: true});
+      this.stations = await this.ecoe.stations({}, {paginate: true});
+      this.students = await this.ecoe.students({}, {paginate: true});
+      this.rounds = await this.ecoe.rounds({}, {paginate: true});
+      this.shifts = await this.ecoe.shifts({}, {paginate: true});
 
     });
 

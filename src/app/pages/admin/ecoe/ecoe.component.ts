@@ -32,14 +32,9 @@ export class EcoeComponent implements OnInit {
       icon: ResourceIcons.stationIcon
     },
     {
-      title: 'QUESTIONS',
-      path: './questions',
-      icon: ResourceIcons.questionIcon
-    },
-    {
-      title: 'STUDENTS',
-      path: './students',
-      icon: ResourceIcons.studentIcon,
+      title: 'SCHEDULE',
+      path: './schedule',
+      icon: ResourceIcons.scheduleIcon,
       theme: 'outline'
     },
     {
@@ -48,10 +43,15 @@ export class EcoeComponent implements OnInit {
       icon: ResourceIcons.plannerIcon
     },
     {
-      title: 'SCHEDULE',
-      path: './schedule',
-      icon: ResourceIcons.scheduleIcon,
+      title: 'STUDENTS',
+      path: './students',
+      icon: ResourceIcons.studentIcon,
       theme: 'outline'
+    },
+    {
+      title: 'QUESTIONS',
+      path: './questions',
+      icon: ResourceIcons.questionIcon
     },
     {
       title: 'BACK',

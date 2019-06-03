@@ -7,6 +7,7 @@ import {valueFunctionProp} from 'ng-zorro-antd';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
+import {Planner, Round, Shift} from '../../../../models';
 
 /**
  * Component with students.
@@ -43,6 +44,13 @@ export class StudentsComponent implements OnInit {
 
   loading: boolean = false;
 
+  mapOfSort: { [key: string]: any } = {
+    planner: null,
+    dni: null,
+    surnames: null,
+    name: null
+  };
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private shared: SharedService,
@@ -68,14 +76,27 @@ export class StudentsComponent implements OnInit {
   loadStudents() {
     this.loading = true;
 
+    const sortDict = {};
+
+    for (const key in this.mapOfSort) {
+      const value = this.mapOfSort[key];
+      if (value !== null) {
+        sortDict[key] = value === 'ascend';
+        if (key === 'planner') {
+          sortDict['planner_order'] = value === 'ascend';
+        }
+      }
+    }
+
+
     Student.query<Student, Pagination<Student>>({
         where: {ecoe: this.ecoeId},
-        sort: {surnames: false, name: false},
+        sort: sortDict,
         perPage: this.perPage,
         page: this.page
       },
       {paginate: true}
-    ).then( pagStudents => {
+    ).then(pagStudents => {
       this.editCache = {};
       this.students = pagStudents['items'];
       this.totalItems = pagStudents['total'];
@@ -262,21 +283,23 @@ export class StudentsComponent implements OnInit {
   newStudent(dni: string,
              name: string,
              surnames: string,
-             plannerOrder?: number): Promise<any> {
+             plannerOrder?: number,
+             planner?: Planner): Promise<any> {
 
     const student = new Student();
 
     student.ecoe = this.ecoeId;
-    student.dni = dni.toString();
-    student.name = name;
-    student.surnames = surnames;
+    student.dni = dni.toString().trim();
+    student.name = name.trim();
+    student.surnames = surnames.trim();
     student.plannerOrder = plannerOrder ? plannerOrder : null;
+    student.planner = planner ? planner : null;
 
     return student.save();
 
   }
 
-  saveStudents(items: any[]): Promise<any> {
+  async saveStudents(items: any[]): Promise<any> {
     const savePromises = [];
     this.logPromisesERROR = [];
     this.logPromisesOK = [];
@@ -289,15 +312,30 @@ export class StudentsComponent implements OnInit {
     for (const item of items) {
       if (item.dni && item.name && item.surnames) {
 
+        let studentPlanner: Planner = null;
+        let studentPlannerOrder: number = null;
+
+
+        // If we have round and shift, we search for a planner
+        if (item.round && item.shift) {
+          const studentShift: Shift = await Shift.first<Shift>({where: {ecoe: this.ecoeId, shift_code: item.shift}});
+          const studentRound: Round = await Round.first<Round>({where: {ecoe: this.ecoeId, round_code: item.round}});
+
+          if (studentRound != null && studentShift != null) {
+            studentPlanner = await Planner.first<Planner>({where: {round: studentRound, shift: studentShift}});
+            studentPlannerOrder = studentPlanner ? item.planner_order : null;
+          }
+        }
+
         savePromises.push(
-          this.newStudent(item.dni, item.name, item.surnames)
+          this.newStudent(item.dni, item.name, item.surnames, studentPlannerOrder, studentPlanner)
             .then(result => {
               this.logPromisesOK.push(result);
               return result;
             })
             .catch(err => {
               this.logPromisesERROR.push({
-                value: item,
+                value: JSON.stringify(item),
                 reason: err
               });
               return err;
@@ -305,7 +343,7 @@ export class StudentsComponent implements OnInit {
         );
       } else {
         this.logPromisesERROR.push({
-          value: item,
+          value: JSON.stringify(item),
           reason: noItem
         });
       }
@@ -366,5 +404,14 @@ export class StudentsComponent implements OnInit {
         });
     }
   }
+
+  sort(sortName: string, value: string): void {
+    for (const key in this.mapOfSort) {
+      this.mapOfSort[key] = key === sortName ? value : null;
+    }
+
+    this.loadStudents();
+  }
+
 
 }
