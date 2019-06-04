@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
-import {forkJoin} from 'rxjs';
+import {forkJoin, from, Observable} from 'rxjs';
+import {SharedService} from '../../../../services/shared/shared.service';
 import {Area, ECOE, QBlock, Question, Station, Option} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Pagination} from '@openecoe/potion-client';
@@ -189,6 +190,12 @@ export class QuestionsComponent implements OnInit {
     }).finally();
   }
 
+  /**
+   * convert a simple array of objects to specific structure (grouped by block names and questions)
+   * currently blockname is true when the object has description but doesnt has the order number.
+   * in other case, for identify an question, that must have next properties: order, description and points.
+   * @param items array of items to parse
+   */
   mapFile(items: any[]) {
     const newArr: any[] = [];
     const currentBlock: { name: string; questions: any[] } = {name: '', questions: []};
@@ -219,6 +226,10 @@ export class QuestionsComponent implements OnInit {
     return newArr;
   }
 
+  /**
+   * Obtains for every question, all options available (radio buttons, range selects and checkboxs)
+   * @param item is a question row
+   */
   getOptions(item: object) {
     Object.keys(item).forEach((key) => (item[key] == null) && delete item[key]);
 
@@ -242,10 +253,15 @@ export class QuestionsComponent implements OnInit {
     return optionArray;
   }
 
-  async importQuestions(items: any[]) {
+  /**
+   * Simple method that calls #mapFile for map initial array to specific structure
+   * and later calls #saveArrayQuestions.
+   * @param items array of object to parse
+   */
+  importQuestions(items: any[]) {
     this.loading = true;
     const blocksWithQuestions = this.mapFile(items);
-    this.saveArrayQuestions(blocksWithQuestions).finally(() => this.loadQuestions());
+    this.saveArrayQuestions(blocksWithQuestions).finally(() => this.loading = false);
   }
 
   /**
@@ -253,33 +269,40 @@ export class QuestionsComponent implements OnInit {
    * multiple rows form.
    * @param file obtained from form array or array form.
    */
-  async saveArrayQuestions(file: BlockType[]) {
-    this.logPromisesERROR = [];
-    this.logPromisesOK = [];
+  saveArrayQuestions(file: BlockType[]) {
     let currentBlockId: number;
 
     if (!file) {
       return;
     }
 
-    await file.forEach(async (block, idx) => {
+    file.forEach(async (block, idx) => {
       await this.hasQblock(block.name, this.stationId)
-        .then((result) => {
+        .then( async (result) => {
           if (result && (<Array<any>>result).length === 1) {
             currentBlockId = result[0]['id'];
             return this.addQuestions(block.questions, currentBlockId);
           } else if (!result) {
-            return this.addQblock(block.name, (idx + 1))
-              .then(async res => {
-                currentBlockId = res['id'];
-                return this.addQuestions(block.questions, currentBlockId);
-              })
-              .catch(err => console.error('ERROR ON ADD:', err));
+              return this.addQblock(block.name, (idx + 1) )
+                .then(res => {
+                  currentBlockId = res['id'];
+                  return this.addQuestions(block.questions, currentBlockId);
+                })
+                .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
           }
-        });
+        })
+        .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}) );
     });
+
+    return new Promise(resolve => resolve());
   }
 
+  /**
+   * Checks if the name of the block already exists or not.
+   * if there are more than one result, will return an exception
+   * @param name of the block to verify if exists
+   * @param station whose block name to search
+   */
   hasQblock(name: string, station: number) {
     return new Promise((resolve, reject) => {
       QBlock.query({
@@ -298,47 +321,57 @@ export class QuestionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Method to add a new block
+   * @param name the name of the block
+   * @param order his order position
+   */
   addQblock(name: string, order: number) {
-    return (new QBlock({name: name, station: this.stationId, order: order})).save();
+    const qblock = new QBlock({name: name, station: this.stationId, order: order });
+    return qblock.save()
+      .catch(reason => {
+        this.logPromisesERROR.push({value: qblock, reason: reason});
+        return reason;
+      });
   }
 
-
+  /**
+   * Adds question by question with them options.
+   * @param items array of questions
+   * @param idBlock which questions will be asociated
+   */
   addQuestions(items: any[], idBlock: number) {
-    this.logPromisesERROR = [];
-    this.logPromisesOK = [];
-
-    items.forEach(async (item) => {
+    items.forEach( async (item) => {
       const body = {
-        area: (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId}})),
-        description: item[this.HEADER.description],
-        options: [],
-        order: item[this.HEADER.order],
-        qblocks: [idBlock],
+        area:         (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId } })),
+        description:  item[this.HEADER.description],
+        options:      [],
+        order:        item[this.HEADER.order],
+        qblocks:      [idBlock],
         question_type: item[this.HEADER.type],
-        reference: item[this.HEADER.reference]
+        reference:    item[this.HEADER.reference]
       };
 
       await (new Question(body)).save()
-        .then(async (question) => {
-          await new Promise(resolve => {
-            this.addOptions(<Array<any>>item, question.id)
-              .then((res) => {
-                this.logPromisesOK.push(res);
-                resolve(res);
-              });
-          });
-        })
+        .then((question) => this.addOptions(<Array<any>>item, question.id))
         .catch(reason => {
-          console.error(reason);
+          this.logPromisesERROR.push({
+            value: new Question(body),
+            reason: reason
+          });
+          return reason;
         });
     });
     return new Promise((resolve) => resolve('ALL'));
   }
 
+  /**
+   * For every question adds all the options asociated.
+   * @param questionItem question object row
+   * @param idQuestion to asociate with the options
+   */
   addOptions(questionItem: any[], idQuestion: number) {
-    const savePromises = [];
-    this.logPromisesERROR = [];
-    this.logPromisesOK = [];
+    const savePromises    = [];
 
     const options = questionItem[this.OPTIONS];
 
@@ -352,7 +385,10 @@ export class QuestionsComponent implements OnInit {
 
       const promise = (new Option(body)).save()
         .then(result => result)
-        .catch(err => err);
+        .catch(err => this.logPromisesERROR.push({
+          value: body,
+          reason: err
+        }));
 
       savePromises.push(promise);
     } else {
@@ -387,6 +423,13 @@ export class QuestionsComponent implements OnInit {
         new Promise(((resolve, reject) => reject(err))));
   }
 
+  /**
+   * Resets the array of promise errors when tried to save on
+   * data base.
+   */
+  clearImportErrors() {
+    this.logPromisesERROR = [];
+  }
   /**
    * Saves array of data in data base. The data can be provided from external file or from
    * multiple rows form.

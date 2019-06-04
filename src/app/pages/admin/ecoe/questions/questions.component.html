@@ -20,20 +20,39 @@
                          [nzHeader]="panelHeader"
                          [nzActive]="true">
 
-        <ng-template #panelHeader>
-          <nz-tag [nzMode]="qblockId ? 'closeable' : 'default'" [nzColor]="'geekblue'"
-                  (nzOnClose)="deleteFilter(stationId)">
-            <i nz-icon type="filter" nzTheme="twotone"></i>
-            {{qblock.name}}
-          </nz-tag>
-        </ng-template>
-        <app-questions-list
-          [idEcoe]="ecoeId"
-          [qblock]="qblock"
-        ></app-questions-list>
-      </nz-collapse-panel>
-    </nz-collapse>
-  </nz-content>
+      <ng-template #panelHeader>
+        <nz-tag [nzMode]="qblockId ? 'closeable' : 'default'" [nzColor]="'geekblue'" (nzOnClose)="deleteFilter(stationId)">
+          <i nz-icon type="filter" nzTheme="twotone"></i>
+          {{qblock.name}}
+        </nz-tag>
+      </ng-template>
+      <app-questions-list
+        [idEcoe]="ecoeId"
+        [qblock]="qblock"
+      ></app-questions-list>
+    </nz-collapse-panel>
+  </nz-collapse>
+
+  <ng-container>
+    <nz-drawer
+      [nzClosable]="true"
+      [nzVisible]="logPromisesERROR.length > 0"
+      nzPlacement="right"
+      [nzTitle]="'IMPORT_ERRORS' | translate"
+      (nzOnClose)="clearImportErrors()"
+      [nzWidth]="540">
+      <nz-alert *ngFor="let error of logPromisesERROR"
+                nzType="error"
+                nzCloseable
+                [nzMessage]="error.reason.statusText"
+                [nzDescription]="error.reason.message"
+                nzShowIcon>
+      </nz-alert>
+    </nz-drawer>
+  </ng-container>
+
+
+</nz-content>
 </nz-spin>
 
 <nz-drawer
