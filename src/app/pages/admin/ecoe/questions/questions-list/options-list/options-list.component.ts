@@ -23,6 +23,20 @@ export class OptionsListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadOptionsByQuestion();
+  }
+
+  /**
+   * Adds to the resource passed its array of options as a new key object.
+   * Then updates the options cache.
+   */
+  loadOptionsByQuestion() {
+    this.question.options.forEach(option => {
+      this.editCacheOption[option.id] = {
+        edit: this.editCacheOption[option.id] ? this.editCacheOption[option.id].edit : false,
+        ...option
+      };
+    });
   }
 
   /**

@@ -1,19 +1,19 @@
 <nz-table #table
           [nzData]="questionsList"
-          [nzPageIndex]="page"
-          [nzPageSize]="perPage"
+          [(nzPageIndex)]="page"
+          [(nzPageSize)]="perPage"
           (nzPageIndexChange)="pageChange($event)"
           (nzPageSizeChange)="pageSizeChange($event)"
           [nzLoading]="loading"
           [nzTotal]="totalItems"
           [nzFrontPagination]="false"
+          nzSize="small"
           nzShowSizeChanger
           nzShowPagination
           >
   <thead>
   <tr>
     <th [nzExpand]="true">
-
     </th>
     <th nzWidth="85px">{{"ORDER" | translate}}</th>
     <th>{{"DESCRIPTION" | translate}}</th>
@@ -34,7 +34,7 @@
   <tbody>
   <ng-template ngFor let-item let-index="index" [ngForOf]="table.data">
     <tr>
-      <td [nzShowExpand]="true">
+      <td [(nzExpand)]="editCache[index].expand" [nzShowExpand]="true">
       </td>
 
       <td>
@@ -144,8 +144,9 @@
         </app-action-buttons>
       </td>
     </tr>
-    <tr [nzExpand]="item.expand">
-      <td>
+    <tr [nzExpand]="editCache[index].expand">
+      <td></td>
+      <td colspan="8">
         <app-options-list [question]="item"></app-options-list>
       </td>
     </tr>

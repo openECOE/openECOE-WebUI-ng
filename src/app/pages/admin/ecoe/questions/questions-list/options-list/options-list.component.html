@@ -1,10 +1,7 @@
-<p>
-  options-list works!
-</p>
 <nz-table #optionTable
           [nzData]="question?.options"
-          [nzSize]="'middle'"
-          [nzShowPagination]="false"
+          nzSize="small"
+          [nzShowPagination]="true"
           [nzFooter]="addOptionBtn">
   <thead>
   <tr>

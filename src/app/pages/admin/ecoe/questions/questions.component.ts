@@ -4,6 +4,7 @@ import {ApiService} from '../../../../services/api/api.service';
 import {forkJoin} from 'rxjs';
 import {Area, ECOE, QBlock, Station} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Pagination} from '@openecoe/potion-client';
 
 /**
  * Component with questions and options by question.
@@ -20,7 +21,6 @@ export class QuestionsComponent implements OnInit {
   stations: Station[] = [];
   stationSelected: Station;
   qblocks: QBlock[] = [];
-  editCacheOption = {};
   editCache = {};
   ecoeId: number;
   qblockId: number;
@@ -30,6 +30,8 @@ export class QuestionsComponent implements OnInit {
   index: number = 1;
 
   isVisible: boolean = false;
+
+  loading: boolean = false;
 
   rowQblock: RowQblock = {
     name: ['', Validators.required]
@@ -78,10 +80,16 @@ export class QuestionsComponent implements OnInit {
    * Finally, loads the questions for each Qblock and creates the multi-level array.
    */
   async loadQuestions() {
+    this.loading = true;
     // TODO: Only fetch 10 questions per station, need to create pagination for questions
     this.ecoe = await ECOE.fetch<ECOE>(this.ecoeId);
 
-    const pagStations = await this.ecoe.stations({sort: {order: false}}, {paginate: true, cache: false});
+    const pagStations = await Station.query<Station, Pagination<Station>>({
+      where: {ecoe: this.ecoe},
+      sort: {order: false}}, {
+      paginate: true,
+      cache: false
+    });
     this.stations = [...pagStations['items']];
 
     for (let i = 2; i <= pagStations.pages; i++) {
@@ -100,31 +108,8 @@ export class QuestionsComponent implements OnInit {
     }
 
     this.updateEditCache();
-  }
 
-  /**
-   * Adds to the resource passed its array of options as a new key object.
-   * Then updates the options cache.
-   *
-   * @param expand State of the expanded sub-table
-   * @param question Resource selected to show its options
-   */
-  loadOptionsByQuestion(expand: boolean, question: any) {
-    if (expand) {
-      this.apiService.getResources('option', {
-        where: `{"question":${question.id}}`,
-        sort: '{"order":false}'
-      }).subscribe(options => {
-        question.optionsArray = options;
-
-        question.optionsArray.forEach(option => {
-          this.editCacheOption[option.id] = {
-            edit: this.editCacheOption[option.id] ? this.editCacheOption[option.id].edit : false,
-            ...option
-          };
-        });
-      });
-    }
+    this.loading = false;
   }
 
   /**
