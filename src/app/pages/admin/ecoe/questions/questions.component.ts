@@ -65,8 +65,8 @@ export class QuestionsComponent implements OnInit {
   readonly OPTION = 'option';
   readonly POINTS = 'points';
 
-  private logPromisesERROR: any[] = [];
-  private logPromisesOK: any[] = [];
+  logPromisesERROR: any[] = [];
+  logPromisesOK: any[] = [];
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
