@@ -15,7 +15,7 @@ export class ActionMessagesService {
   /**
    * Generates a success alert message.
    *
-   * @param {string} message Message to show on the alert
+   * @param message Message to show on the alert
    */
   createSuccessMsg(message: string) {
     this.nzMessageService.success(message);
@@ -24,7 +24,7 @@ export class ActionMessagesService {
   /**
    * Generates an error alert message.
    *
-   * @param {string} message Message to show on the alert
+   * @param message Message to show on the alert
    */
   createErrorMsg(message: string) {
     this.nzMessageService.error(message);

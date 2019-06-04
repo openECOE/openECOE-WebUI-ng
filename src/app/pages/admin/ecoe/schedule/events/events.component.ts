@@ -4,7 +4,7 @@ import {Station} from '../../../../../models/ecoe';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SharedService} from '../../../../../services/shared/shared.service';
 import {subscriptionLogsToBeFn} from 'rxjs/internal/testing/TestScheduler';
-import {Item} from '@openecoe/potion-client';
+import {Item, Pagination} from '@openecoe/potion-client';
 
 @Component({
   selector: 'app-events',
@@ -70,29 +70,41 @@ export class EventsComponent implements OnInit {
     this.loading = true;
     this.stageDuration = this.shared.toMinutesSeconds(this.schedule.stage.duration);
 
+    // TODO: Change max duration when stage parent changes
     this.maxDuration.minutes = this.stageDuration.minutes;
     this.maxDuration.seconds = this.stageDuration.seconds;
 
-    this.listOfData = [
-      ...this.schedule.events
-    ];
+    this.getEvents(this.schedule).then(events => {
+      this.listOfData = [...events];
 
-    this.getStationEvents()
-      .then(stageSchedules => {
-        this.listOfData = [
-          ...this.schedule.events, ...stageSchedules
-        ];
+      this.getStationEvents()
+        .then(stageSchedules => {
+          this.listOfData = [
+            ...this.listOfData, ...stageSchedules
+          ];
 
-        this.listOfDisplayData = [
-          ...this.listOfData
-        ];
+          this.listOfDisplayData = [
+            ...this.listOfData
+          ];
 
-        this.reorderEvents();
-        this.updateEditCache();
-        this.loading = false;
-      });
+          this.reorderEvents();
+          this.updateEditCache();
+          this.loading = false;
+        });
+    });
 
     console.log('Init Finish');
+  }
+
+  async getEvents(schedule: Schedule) {
+    const pagGeneralEvents: Pagination<Event> = await schedule.events({}, {paginate: true});
+    let eventsData = [...pagGeneralEvents['items']];
+
+    for (let i = 2; i <= pagGeneralEvents.pages; i++) {
+      eventsData = [...this.listOfData, (await pagGeneralEvents.changePageTo(i)).items];
+    }
+
+    return eventsData;
   }
 
   refreshEvents(): void {
@@ -118,15 +130,13 @@ export class EventsComponent implements OnInit {
     };
 
     const promise = new Promise((resolve, reject) => {
-      Schedule.query(query)
+      Schedule.query<Schedule>(query)
         .then(schedules => {
           let stationEvents: Array<Event> = [];
           schedules.filter((value) => value.station)
-            .forEach(itemSchedule => {
-              itemSchedule.events.forEach(event => {
-                stationEvents = [...stationEvents, event];
-              });
-            });
+            .forEach(async itemSchedule =>
+              stationEvents = [...stationEvents, ...await this.getEvents(itemSchedule)]
+            );
           console.log('Events Station', stationEvents);
           resolve(stationEvents);
         })
@@ -134,7 +144,6 @@ export class EventsComponent implements OnInit {
     });
 
     return promise;
-
 
   }
 

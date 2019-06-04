@@ -12,7 +12,7 @@ export class SanitizeHtmlPipe implements PipeTransform {
   /**
    * Makes the view trust the injected HTML tags.
    *
-   * @param {string} value Block of unsanitized HTML tags
+   * @param value Block of unsanitized HTML tags
    * @returns {SafeHtml} The sanitized HTML tags
    */
   transform(value: string): SafeHtml {

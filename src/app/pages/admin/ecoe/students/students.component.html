@@ -1,7 +1,21 @@
 <nz-content *ngIf="students">
   <nz-table #table
             [nzData]="students"
-            [nzShowPagination]="false">
+            [(nzPageIndex)]="page"
+            [(nzPageSize)]="perPage"
+            (nzPageIndexChange)="loadStudents()"
+            (nzPageSizeChange)="loadStudents()"
+            [nzLoading]="loading"
+            [nzFrontPagination]="false"
+            [nzTotal]="totalItems"
+            [nzShowTotal]="tmpTotalItems"
+            nzSize="small"
+            nzShowSizeChanger
+            nzShowPagination>
+    <ng-template #tmpTotalItems>
+      {{totalItems}}
+    </ng-template>
+
     <thead>
     <tr>
       <th [nzExpand]="true">
@@ -9,69 +23,182 @@
           <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
-      <th nzWidth="150px">{{"DNI" | translate}}</th>
-      <th>{{"SURNAMES" | translate}}</th>
-      <th nzWidth="200px">{{"NAME" | translate}}</th>
-      <th nzWidth="140px">
-        <button nz-button [nzType]="'primary'" class="margin-left"
-                [nz-tooltip] [nzTitle]="'ADD_STUDENT' | translate"
-                (click)="addStudent()">
-          <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
-        </button>
+      <th nzWidth="150px"
+          nzShowSort
+          [(nzSort)]="mapOfSort.planner"
+          (nzSortChange)="sort('planner', $event)">
+        {{"PLANNER" | translate}}</th>
+      <th nzWidth="150px"
+          nzShowSort
+          [(nzSort)]="mapOfSort.dni"
+          (nzSortChange)="sort('dni', $event)">
+        {{"DNI" | translate}}</th>
+      <th nzWidth="400px"
+          nzShowSort
+          [(nzSort)]="mapOfSort.surnames"
+          (nzSortChange)="sort('surnames', $event)">
+        {{"SURNAMES" | translate}}</th>
+      <th nzWidth="200px"
+          nzShowSort
+          [(nzSort)]="mapOfSort.name"
+          (nzSortChange)="sort('name', $event)">
+        {{"NAME" | translate}}</th>
+      <th nzWidth="200px" text-right>
+        <nz-button-group>
+          <button nz-button [nzType]="'primary'" class="margin-left"
+                  [nz-tooltip] [nzTitle]="'ADD_STUDENT' | translate"
+                  (click)="showDrawer()">
+            <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
+          </button>
+          <app-upload-and-parse (parserResult)="importStudents($event)"></app-upload-and-parse>
+        </nz-button-group>
       </th>
     </tr>
     </thead>
     <tbody>
-      <ng-template ngFor let-item [ngForOf]="table.data">
-        <tr>
-          <td [nzShowExpand]="false"></td>
+    <ng-template ngFor let-item [ngForOf]="table.data">
+      <tr>
+        <td [nzShowExpand]="false"></td>
 
-          <td>
-            <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.dni}}
-            </ng-container>
-
-            <ng-container *ngIf="editCache[item.id].edit">
-              <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].dni">
-            </ng-container>
-          </td>
-
-          <td>
-            <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.surnames}}
-            </ng-container>
-
-            <ng-container *ngIf="editCache[item.id].edit">
-              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].surnames">
-            </ng-container>
-          </td>
-
-          <td>
-            <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.name}}
-            </ng-container>
-
-            <ng-container *ngIf="editCache[item.id].edit">
-              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].name">
-            </ng-container>
-          </td>
-
-          <td text-right>
-            <nz-tag *ngIf="item.planner?.shift && item.planner?.round" [nzColor]="shared.stringToColour(item.planner?.shift.shiftCode + item.planner?.round.roundCode)">
+        <td>
+          <ng-container>
+            <nz-tag *ngIf="item.planner?.shift && item.planner?.round"
+                    [nzColor]="shared.stringToColour(item.planner?.shift.shiftCode + item.planner?.round.roundCode)">
               {{item.planner?.shift?.shiftCode}}{{item.planner?.round?.roundCode}}{{item?.plannerOrder}}
             </nz-tag>
-            <app-action-buttons [isEditing]="editCache[item.id].edit"
-                                [isNewItem]="editCache[item.id].new_item"
-                                (startEdit)="startEdit(item.id)"
-                                (delete)="deleteItem(item)"
-                                (save)="saveItem(item, editCache[item.id].new_item)"
-                                (cancelEdit)="cancelEdit(item)">
-            </app-action-buttons>
-          </td>
-        </tr>
-      </ng-template>
+          </ng-container>
+        </td>
+
+        <td>
+          <ng-container *ngIf="!editCache[item.id].edit">
+            {{item.dni}}
+          </ng-container>
+
+          <ng-container *ngIf="editCache[item.id].edit">
+            <input type="text" nz-input [nzSize]="'small'" style="width: 80%;" [(ngModel)]="editCache[item.id].dni">
+          </ng-container>
+        </td>
+
+        <td>
+          <ng-container *ngIf="!editCache[item.id].edit">
+            {{item.surnames}}
+          </ng-container>
+
+          <ng-container *ngIf="editCache[item.id].edit">
+            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].surnames">
+          </ng-container>
+        </td>
+
+        <td>
+          <ng-container *ngIf="!editCache[item.id].edit">
+            {{item.name}}
+          </ng-container>
+
+          <ng-container *ngIf="editCache[item.id].edit">
+            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].name">
+          </ng-container>
+        </td>
+        <td text-right>
+
+          <app-action-buttons [isEditing]="editCache[item.id].edit"
+                              [isNewItem]="editCache[item.id].new_item"
+                              (startEdit)="startEdit(item.id)"
+                              (delete)="deleteItem(item)"
+                              (save)="saveItem(item, editCache[item.id].new_item)"
+                              (cancelEdit)="cancelEdit(item)">
+          </app-action-buttons>
+        </td>
+      </tr>
+    </ng-template>
     </tbody>
   </nz-table>
 
-  <!--<app-upload-and-parse [ecoeId]="ecoeId" [resource]="'student'"></app-upload-and-parse>-->
+  <!--TODO: Finish student drawer to add students -->
+  <ng-container>
+    <nz-drawer
+      [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
+      [nzMaskClosable]="false"
+      [nzWidth]="720"
+      [nzVisible]="addStudentDraw"
+      [nzTitle]="'ADD_AREA' | translate"
+      (nzOnClose)="cancelForm()">
+
+      <form [formGroup]="studentForm">
+        <div nz-row nzGutter="8">
+          <div nz-col nzSpan="12">
+            <nz-form-label>{{'NAME' | translate}}</nz-form-label>
+          </div>
+          <div nz-col nzSpan="9">
+            <nz-form-label>{{'CODE' | translate}}</nz-form-label>
+          </div>
+        </div>
+
+        <ng-container formArrayName="studentRow"
+                      *ngFor=" let control of studentForm.get('studentRow')['controls']; let i = index">
+          <div nz-row nzGutter="8" [formGroupName]="+i">
+            <div nz-col nzSpan="12">
+              <nz-form-item>
+                <nz-form-control>
+                  <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
+                  <nz-form-explain
+                    *ngIf="getFormControl('name', i)?.dirty && getFormControl('name', i)?.hasError('required')">
+                    {{'NAME_INPUT_REQUIRED' | translate}}
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="9">
+              <nz-form-control>
+                <input nz-input [placeholder]="('CODE_PLACEHOLDER' | translate)" formControlName="surnames"/>
+                <nz-form-explain
+                  *ngIf="getFormControl('surnames',i)?.dirty && getFormControl('surnames', i)?.hasError('required')">
+                  {{'CODE_INPUT_REQUIRED' | translate}}
+                </nz-form-explain>
+              </nz-form-control>
+            </div>
+            <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
+              <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete"
+                                                                                           nzTheme="outline"></i>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <nz-form-item>
+          <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
+            <button nz-button nzType="dashed" style="width:60%" (click)="addStudentRow()">
+              <i nz-icon type="plus"></i> {{'ADD_AREA' | translate}}
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+
+      <div class="footer">
+        <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;">
+          <span>{{'CANCEL' | translate}}</span></button>
+        <button type="button" (click)="submitForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span>
+        </button>
+      </div>
+    </nz-drawer>
+
+    <nz-drawer
+      [nzClosable]="true"
+      [nzVisible]="logPromisesERROR.length > 0"
+      nzPlacement="right"
+      [nzTitle]="'IMPORT_ERRORS' | translate"
+      (nzOnClose)="clearImportErrors()"
+      [nzWidth]="540">
+      <nz-alert *ngFor="let error of logPromisesERROR"
+                nzType="error"
+                nzCloseable
+                [nzMessage]="error.reason.statusText"
+                [nzDescription]="errorMessage"
+                nzShowIcon>
+        <ng-template #errorMessage>
+          <div>{{error.value}}</div>
+          <div>{{error.reason.message}}</div>
+        </ng-template>
+      </nz-alert>
+    </nz-drawer>
+  </ng-container>
 </nz-content>

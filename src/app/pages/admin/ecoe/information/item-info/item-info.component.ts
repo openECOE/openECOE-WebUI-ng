@@ -10,7 +10,7 @@ export class ItemInfoComponent {
   @Input() link: string;
   @Input() title: string;
   @Input() no_items: string;
-  @Input() itemsArray: any[];
+  @Input() itemsPagination: any;
   @Input() icon: string;
   @Input() theme: string = 'fill';
 }

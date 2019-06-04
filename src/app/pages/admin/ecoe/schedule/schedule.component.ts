@@ -8,6 +8,7 @@ import {FormGroup, FormControl, ValidationErrors, Validators, FormBuilder} from 
 import {Observable, Observer} from 'rxjs';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
+import {Pagination} from '@openecoe/potion-client';
 
 /**
  * Component schedule to configure stages and events.
@@ -179,14 +180,12 @@ export class ScheduleComponent implements OnInit {
     const saveStart = eventStart.save()
       .then(value => {
         console.log('eventStart Created', value);
-        schedule.events = [...schedule.events, value];
       })
       .catch(reason => console.error(reason));
 
     const saveFinish = eventFinish.save()
       .then(value => {
         console.log('eventFinish Created', value);
-        schedule.events = [...schedule.events, value];
       })
       .catch(reason => console.error(reason));
 
@@ -220,9 +219,11 @@ export class ScheduleComponent implements OnInit {
       });
   }
 
-  deleteSchedule(schedule: Schedule): Promise<any> {
-    if (schedule.events) {
-      schedule.events.forEach(event => event.destroy()
+  async deleteSchedule(schedule: Schedule): Promise<any> {
+    const events: Pagination<Event> = await schedule.events({perPage: 50}, {paginate: true});
+
+    if (events['items']) {
+      events['items'].forEach(async event => await event.destroy()
         .then(value => console.log('[DELETE] Event', event))
         .catch(reason => console.error('delete Event error:', reason))
       );

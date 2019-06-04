@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, OnChanges, Output, TemplateRef} from '@angular/core';
 import {Planner, Round, Shift} from '../../../../../models/planner';
 import {ECOE, Station, Student} from '../../../../../models/ecoe';
-import {Item} from '@openecoe/potion-client';
+import {Item, Pagination} from '@openecoe/potion-client';
 import {forkJoin, from} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd';
@@ -21,6 +21,7 @@ import {formatDate} from '@angular/common';
 export class PlannerSelectorComponent implements OnInit, OnChanges {
 
   @Input() ecoeId: number;
+  @Input() stationsNum: number;
 
   @Output() roundChange = new EventEmitter();
 
@@ -46,8 +47,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
     this.shiftChange.emit(this.plannerShift);
   }
 
-  planner: Planner | Item = null;
-  stations: Station | Item[] = [];
+  planner: Planner;
 
   plannerRound: Round;
   plannerShift: Shift;
@@ -68,11 +68,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-
-
     this.loadPlanner();
-
-
   }
 
   ngOnChanges() {
@@ -82,33 +78,22 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   loadPlanner() {
     this.loading = true;
 
-    const excludeItems = ['students', 'answers', 'ecoe', 'planner'];
+    // TODO: Review planner query
+    Planner.first<Planner>({where: {'round': this.plannerRound, 'shift': this.plannerShift}})
+      .then(async response => {
+        if (response != null) {
+          this.planner = response;
+          const pagStudents: Pagination<Student> = await this.planner.getStudents({}, {paginate: true});
 
+          this.planner.students = [...pagStudents['items']];
 
-    forkJoin(
-      from(Planner.query({where: {'round': this.round, 'shift': this.shift}}, {skip: excludeItems})
-        .then(value => {
-          value[0].students = [];
-          return value[0];
-        })
-      ),
-      from(Station.query({
-          where: {ecoe: this.ecoeId}
-        }, {skip: excludeItems})
-      )
-    ).subscribe(response => {
-      this.planner = response[0];
-      this.stations = response[1];
-
-      Student.query({where: {'planner': this.planner}},
-        {skip: excludeItems})
-        .then(students => {
-          this.planner.students = students;
-        })
-        .finally(() => this.loading = false);
-    });
-
-
+          for (let i = 2; i <= pagStudents['pages']; i++) {
+            this.planner.students = [...this.planner.students, (await pagStudents.changePageTo(i)).items];
+          }
+        }
+      })
+      .finally(() => this.loading = false)
+      .catch(reason => console.log('ERROR', reason));
   }
 
   /**
@@ -116,7 +101,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
    *
    * @param planner Reference of the Planner
    */
-  savePlanner(planner: Planner | Item): Promise<any> {
+  savePlanner(planner: Planner): Promise<any> {
     return new Promise((resolve, reject) => {
       planner.save()
         .then(savedPlanner => {
@@ -182,101 +167,8 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
       });
   }
 
-  /**
-   * Load listStudents by the passed ECOE.
-   * Maps the response and sets selected key to true if it has planner assigned and the reference is the same as the passed.
-   * Then calls [checkStudentsSelected]{@link #checkStudentsSelected} function.
-   *
-   * @param shift Id of the selected shift
-   * @param round Id of the selected round
-   * @param planner? Reference of the selected planner
-   */
-  loadStudents(shift: Shift, round: Round, planner?: Planner) {
-    this.listStudents = [];
-    let studentsSelected = 0;
-
-    from(Student.query({where: {'ecoe': this.ecoeId}}))
-      .pipe(
-        map(students => {
-          return students.map(student => {
-            const isSelected = (
-              planner ?
-                (student.planner && student.planner === planner) :
-                (!student.planner && studentsSelected < this.stations.length)
-            );
-
-            if (!planner && isSelected) {
-              studentsSelected++;
-            }
-
-            return {
-              data: student,
-              selected: isSelected
-            };
-          });
-        })
-      ).subscribe(students => {
-      this.listStudents = students;
-      this.plannerSelected = {shift: shift, round: round, planner: planner};
-      this.showStudentsSelector = true;
-
-      this.isEditing = {
-        itemRef: planner ? planner : null,
-        edit: (typeof planner !== 'undefined')
-      };
-
-      this.checkStudentsSelected(this.listStudents.filter(student => student.selected));
-    });
-  }
-
-  /**
-   * Modifies the listStudents array and sets the disabled property to true if the selection length is equal or higher
-   * than the number of stations and the student is not selected,
-   * or if the student has a planner assigned and this planner is not the same as the selected.
-   * @param selection Array of listStudents currently selected
-   */
-  checkStudentsSelected(selection: any[]) {
-    this.listStudents = this.listStudents.map(student => {
-      return {
-        ...student,
-        disabled: (selection.length >= this.stations.length && !student.selected) ||
-          (student.planner && student.planner !== this.plannerSelected.planner)
-      };
-    });
-  }
-
-  /**
-   * Creates or updates the planner selected.
-   * Then reloads all plannersMatrix and hides the modal.
-   */
-  assignPlanner() {
-    const students = this.listStudents
-      .filter(student => student.selected)
-      .map(student => student.data);
-
-    if (students.length === 0) {
-      return;
-    }
-
-    const request = (
-      this.plannerSelected.planner ?
-        this.updatePlanner(
-          this.plannerSelected.planner,
-          this.plannerSelected.round,
-          this.plannerSelected.shift,
-          students)
-        :
-        this.createPlanner(this.plannerSelected.round, this.plannerSelected.shift, students)
-    );
-
-    request.then(() => {
-      this.showStudentsSelector = false;
-    });
-
-  }
-
   createComponentModal(tplFooter: TemplateRef<{}>): void {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise<Planner>((resolve, reject) => {
       !this.planner ?
         this.createPlanner(this.round, this.shift)
           .then(value => resolve(value))
@@ -295,7 +187,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
         nzComponentParams: {
           ecoeId: this.ecoeId,
           planner: planner,
-          maxStudents: this.stations.length,
+          maxStudents: this.stationsNum,
           round: this.plannerRound,
           shift: this.plannerShift,
           modalWidth: this.modalStudentSelectorWidth
@@ -318,7 +210,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
 export class AppStudentSelectorComponent implements OnInit {
 
   @Input() ecoeId: number;
-  @Input() planner: any;
+  @Input() planner: Planner;
   @Input() maxStudents: number;
 
   @Output() roundChange = new EventEmitter();
@@ -350,45 +242,65 @@ export class AppStudentSelectorComponent implements OnInit {
   plannerRound: Round;
   plannerShift: Shift;
 
-  students: Array<any> = [];
+  searchListStudents: Student[] = [];
   groupName: string;
+
+  studentsSearch: Pagination<Student>;
 
   transferDisabled: boolean = false;
 
   loading: boolean = false;
+
+  selectedStudents: Student[] = [];
+
+  searchString: string = null;
 
   constructor(private modal: NzModalRef,
               public shared: SharedService) {
   }
 
   ngOnInit() {
-    this.loading = true;
 
     this.groupName = this.shift.shiftCode + this.round.roundCode;
-
-    Student.query({
-      where: {ecoe: this.ecoeId},
-      sort: {planner_order: false, surnames: false, name: false}
-    })
-      .then(value => {
-        this.students = value
-          .map((studentItem, index) => {
-            const direction = !this.planner ? 'left' :
-              this.planner.students.includes(studentItem) ? 'right' : 'left';
-
-            const disabled = direction === 'left' ? !!studentItem.planner : false;
-
-            return {direction: direction, student: studentItem, disabled: disabled};
-          });
-        this.loading = false;
-      });
+    this.searchStudents();
   }
 
-  orderStudents(listStudents: Array<any>) {
-    listStudents
+  orderStudents(listStudents: Array<any>): Array<any> {
+    return listStudents
       .sort((a, b) => a.student.planner_order > b.student.planner_order ? 1 : -1)
       .sort((a, b) => a.student.surnames > b.student.surnames ? 1 : -1)
       .sort((a, b) => a.student.name > b.student.name ? 1 : -1);
+  }
+
+  saveGroup() {
+    const order = this.planner.students.length + 1;
+
+    this.selectedStudents.forEach((student, index) => {
+
+      this.addStudent(student, order + index);
+    });
+
+
+    this.selectedStudents = [];
+
+  }
+
+  addStudent(student: Student, order?: number) {
+    order = order ? order : this.planner.students.length + 1;
+
+    student.planner_order = order;
+    student.planner = this.planner;
+    student.save().then(savedStudent => {
+      this.planner.students.push(savedStudent);
+      this.searchListStudents = this.searchListStudents.filter(value => value.id !== student.id);
+    });
+  }
+
+  rmStudent(student: Student) {
+    student.planner_order = null;
+    student.planner = null;
+    this.planner.students = this.planner.students.filter(value => value.id !== student.id);
+    student.save();
   }
 
   // tslint:disable-next-line:no-any
@@ -398,10 +310,44 @@ export class AppStudentSelectorComponent implements OnInit {
         item.student.dni.indexOf(inputValue) > -1;
   }
 
-  search(ret: {}): void {
-    console.log('nzSearchChange', ret);
+  searchStudents(value?: string) {
+    this.loading = true;
+    const excludeItems = [];
+
+    // TODO: Search by names and DNI
+
+    let query: {} = {ecoe: this.ecoeId, planner: null};
+
+    query = value ? {...query, ...{surnames: {'$contains': value}}} : query;
+
+    console.log('Search query', query.toString());
+
+    Student.query <Student, Pagination<Student>>({
+      where: query,
+      sort: {planner_order: false, surnames: false, name: false}
+    }, {skip: excludeItems, paginate: true})
+      .then(page => {
+        this.studentsSearch = page;
+        this.searchListStudents = page['items'];
+        this.loading = false;
+      });
   }
 
+  loadMore() {
+    this.studentsSearch.changePageTo(this.studentsSearch.page + 1)
+      .then(page => {
+        this.searchListStudents = [...this.searchListStudents, ...page['items']];
+      });
+  }
+
+  search(ret: {}): void {
+    console.log('nzSearchChange', ret);
+    this.searchStudents(ret['value']);
+  }
+
+  selected(value: any) {
+    console.log(value);
+  }
 
   select(ret: { title: string, checked: boolean, direction: string, disabled: boolean, list: Array<any> }): void {
     console.log('nzSelectChange', ret);
@@ -418,19 +364,19 @@ export class AppStudentSelectorComponent implements OnInit {
     }
   }
 
-  change(ret: { from: string, to: string, list: Array<any> }): void {
-    console.log('nzChange', ret);
-    ret.list.forEach(value => {
-      ret.to === 'right' ?
-        this.addPlannerStudent(value.student) :
-        this.removePlannerStudent(value.student);
-    });
-
-    this.orderStudents(this.students);
-  }
+  // change(ret: { from: string, to: string, list: Array<any> }): void {
+  //   console.log('nzChange', ret);
+  //   ret.list.forEach(value => {
+  //     ret.to === 'right' ?
+  //       this.addPlannerStudent(value.student) :
+  //       this.removePlannerStudent(value.student);
+  //   });
+  //
+  //   this.orderStudents(this.searchListStudents);
+  // }
 
   getLeftStudentsNoPlanner(excludeList?: Array<any>): Array<any> {
-    let leftStudents = this.students.filter(value => value.direction === 'left' && !value.student.planner);
+    let leftStudents = this.searchListStudents.filter(value => value.direction === 'left' && !value.student.planner);
 
     if (excludeList) {
       leftStudents = leftStudents.filter(value => !excludeList.map(x => x.student).includes(value.student));
@@ -446,27 +392,27 @@ export class AppStudentSelectorComponent implements OnInit {
     });
   }
 
-  addPlannerStudent(itemStudent: Student) {
-    itemStudent.planner = this.planner;
-    itemStudent.plannerOrder = this.planner.students.length + 1;
-    this.planner.students.push(itemStudent);
-    itemStudent.save()
-      .then(value => console.log('Student planner change', value))
-      .catch(reason => console.error('ERROR Student planner change', reason));
-    this.planner.save();
-  }
-
-  removePlannerStudent(itemStudent: Student) {
-    this.disableStudents(this.getLeftStudentsNoPlanner(), false);
-    itemStudent.planner = null;
-    itemStudent.plannerOrder = null;
-    itemStudent.save()
-      .then(saveStudent => {
-        this.planner.students = this.planner.students.filter(value => value !== saveStudent);
-        // this.ngOnInit();
-        this.planner.save();
-      });
-  }
+  // addPlannerStudent(itemStudent: Student) {
+  //   itemStudent.planner = this.planner;
+  //   itemStudent.plannerOrder = this.planner.students.length + 1;
+  //   this.planner.students.push(itemStudent);
+  //   itemStudent.save()
+  //     .then(value => console.log('Student planner change', value))
+  //     .catch(reason => console.error('ERROR Student planner change', reason));
+  //   this.planner.save();
+  // }
+  //
+  // removePlannerStudent(itemStudent: Student) {
+  //   this.disableStudents(this.getLeftStudentsNoPlanner(), false);
+  //   itemStudent.planner = null;
+  //   itemStudent.plannerOrder = null;
+  //   itemStudent.save()
+  //     .then(saveStudent => {
+  //       this.planner.students = this.planner.students.filter(value => value !== saveStudent);
+  //       // this.ngOnInit();
+  //       this.planner.save();
+  //     });
+  // }
 
 
 }

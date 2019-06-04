@@ -1,62 +1,85 @@
 <nz-content>
+
+
   <nz-table #table
             nzBordered
             [nzData]="rounds"
             [nzLoading]="loading"
             [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
-    <tr text-center>
-      <th nzWidth="100px" nzLeft="0px">
+    <tr>
+      <th nzWidth="200px" nzLeft="0px"></th>
+      <th nzWidth="200px" nzLeft="200px" text-center *ngFor="let round of rounds">
+        <div nz-col nzSpan="6">
+          <h3>
+            <app-action-buttons class="action-buttons"
+                                [isEditing]="false"
+                                [isNewItem]="false"
+                                [showDeleteButton]="false"
+                                (startEdit)="addRound(round)">
+            </app-action-buttons>
+            {{round.roundCode}}
+          </h3>
+        </div>
+        <div nz-col nzSpan="18">
+          {{round.description}}
+        </div>
       </th>
-      <th *ngFor="let shift of shifts" nzWidth="100px" nzLeft="100px">
-        <span><strong>{{shift.shiftCode}}</strong> {{shift.timeStart | date: 'dd/MM/yyyy HH:mm'}}</span>
-
-        <app-action-buttons class="action-buttons"
-                            [isEditing]="false"
-                            [isNewItem]="false"
-                            [showDeleteButton]="false"
-                            (startEdit)="addShift(shift)">
-        </app-action-buttons>
-
-      </th>
-      <th (click)="addShift()" nzWidth="100px" tappable>
-        <i nz-icon type="plus-circle" [nzTheme]="'twotone'" class="margin-right"></i>
-        {{"ADD_SHIFT" | translate}}
+      <th nzWidth="200px" nzLeft="200px">
+        <button nz-button
+                nzGhost
+                nzType="primary"
+                (click)="addRound()"
+                [nzBlock]="true">
+          <i nz-icon [type]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
+          {{"ADD_ROUND" | translate}}
+        </button>
       </th>
     </tr>
     </thead>
-
     <tbody>
-    <ng-template ngFor let-round [ngForOf]="table.data">
-      <tr text-center>
-        <td nzLeft="0px">
-          <span><strong>{{round.roundCode}}</strong> {{round.description}}</span>
-          <app-action-buttons class="action-buttons"
-                              [isEditing]="false"
-                              [isNewItem]="false"
-                              [showDeleteButton]="false"
-                              (startEdit)="addRound(round)">
-          </app-action-buttons>
-        </td>
-        <td nzLeft="100px" *ngFor="let shift of shifts">
-          <app-planner-selector [ecoeId]="ecoeId"
-                                [(round)]="round"
-                                [(shift)]="shift"
-          >
-          </app-planner-selector>
-        </td>
-        <td></td>
-      </tr>
-    </ng-template>
-
+    <tr *ngFor="let shift of shifts">
+      <td nzLeft="0px" text-center>
+        <div nz-col nzSpan="6">
+          <h3>
+            <app-action-buttons class="action-buttons"
+                                [isEditing]="false"
+                                [isNewItem]="false"
+                                [showDeleteButton]="false"
+                                (startEdit)="addShift(shift)">
+            </app-action-buttons>
+            {{shift.shiftCode}}
+          </h3>
+        </div>
+        <div nz-col nzSpan="18">
+          {{shift.timeStart | date: 'dd/MM/yyyy HH:mm'}}
+        </div>
+      </td>
+      <td nzLeft="200px" *ngFor="let round of rounds">
+        <app-planner-selector [ecoeId]="ecoeId"
+                              [(round)]="round"
+                              [(shift)]="shift"
+                              [stationsNum]="stationsTotal"
+        >
+        </app-planner-selector>
+      </td>
+      <td [nzDisabled]="true" nzLeft="200px"></td>
+    </tr>
     <tr>
-      <td (click)="addRound()" nzLeft="100px" tappable>
-        <i nz-icon type="plus-circle" nzTheme="twotone" class="margin-right"></i>
-        {{"ADD_ROUND" | translate}}
+      <td nzLeft="0px">
+        <button nz-button
+                nzGhost
+                nzType="primary"
+                (click)="addShift()"
+                [nzBlock]="true">
+          <i nz-icon [type]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
+          {{"ADD_SHIFT" | translate}}
+        </button>
       </td>
     </tr>
     </tbody>
   </nz-table>
+
   <button nz-button
           nzType="default"
           [nzBlock]="true"
