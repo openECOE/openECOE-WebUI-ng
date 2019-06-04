@@ -11,7 +11,7 @@ import {map} from 'rxjs/operators';
 })
 export class QuestionsListComponent implements OnInit {
 
-  @Input() ecoe: ECOE;
+  @Input() idEcoe: ECOE;
   @Input() qblock: QBlock;
 
   // @Output() questionsChange = new EventEmitter();
@@ -27,7 +27,7 @@ export class QuestionsListComponent implements OnInit {
   // }
 
   questionsPage: Pagination<Question>;
-  questionsList: Question[];
+  questionsList: Question[] = [];
 
   editCache: Array<any> = [];
 
@@ -39,6 +39,7 @@ export class QuestionsListComponent implements OnInit {
   totalItems: number = 0;
 
   loading: boolean = false;
+  defaultExpand: boolean = false;
 
   questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -50,35 +51,38 @@ export class QuestionsListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadAreas();
+    this.loadQuestions(this.page, this.perPage);
+  }
+
+  pageChange(page: number) {
+    this.loadQuestions(page, this.perPage);
+  }
+
+  pageSizeChange(pageSize: number) {
+    this.loadQuestions(this.page, pageSize);
+  }
+
+  loadQuestions(page: number, perPage: number) {
     this.loading = true;
-    this.loadQuestions()
-      .finally(() => this.loading = false);
-  }
-
-  pageChange($event) {
-
-  }
-
-  pageSizeChange($event) {
-
-  }
-
-  async loadQuestions() {
-    this.questionsPage = await this.qblock.getQuestions({
-        sort: {order: false}
+    Question.query<Question, Pagination<Question>>({
+        where: {qblocks: {$contains: this.qblock.id}},
+        sort: {order: false},
+        page: page,
+        perPage: perPage
       },
       {
         paginate: true,
         cache: false
-      });
-
-    this.questionsList = [...this.questionsPage['items']];
-
-    this.updateEditCache();
-    await this.loadAreas();
-
+      }).then(pagQuestion => {
+        this.questionsPage = pagQuestion;
+        this.totalItems = pagQuestion.total;
+        this.questionsList = this.questionsPage != null ? [...this.questionsPage['items']] : [];
+        this.updateEditCache();
+        this.loading = false;
+      }
+    );
   }
-
 
 
   /**
@@ -92,13 +96,14 @@ export class QuestionsListComponent implements OnInit {
 
       this.editCache[index] = {
         edit: this.editCache[index] ? this.editCache[index].edit : false,
-        data: Object.assign(new Question(), item)
+        data: Object.assign(new Question(), item),
+        expand: this.defaultExpand
       };
     });
   }
 
   async loadAreas() {
-    this.pagAreas = await Area.query<Area, Pagination<Area>>({where: {ecoe: ECOE}}, {paginate: true});
+    this.pagAreas = await Area.query<Area, Pagination<Area>>({where: {ecoe: this.idEcoe}, sort: {code: false}}, {paginate: true});
     this.areas = [...this.pagAreas['items']];
   }
 
@@ -206,7 +211,8 @@ export class QuestionsListComponent implements OnInit {
     this.editCache[this.questionsList.indexOf(question)] = {
       edit: true,
       new_item: true,
-      data: Object.assign(new Question(), question)
+      data: Object.assign(new Question(), question),
+      expand: this.defaultExpand
     };
   }
 

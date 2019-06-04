@@ -9,26 +9,78 @@
   </nz-select>
 
   <button nz-button nzType="primary">{{"PREVIEW_EXAM" | translate}}</button>
+  <nz-skeleton [nzLoading]="loading">
+    <nz-collapse *ngIf="stationSelected">
+      <button nz-button nzType="dashed" nzBlock (click)="showDrawer()">{{'ADD_QBLOCK' | translate}}</button>
+      <nz-collapse-panel *ngFor="let qblock of qblocks"
+                         [nzHeader]="panelHeader"
+                         [nzActive]="true">
 
-  <nz-button-group>
-    <app-upload-and-parse (parserResult)="importQuestions($event)"></app-upload-and-parse>
-  </nz-button-group>
-
-  <nz-collapse *ngIf="stationSelected">
-    <nz-collapse-panel *ngFor="let qblock of qblocks"
-                       [nzHeader]="panelHeader"
-                       [nzActive]="true">
-
-      <ng-template #panelHeader>
-        <nz-tag [nzMode]="qblockId ? 'closeable' : 'default'" [nzColor]="'geekblue'" (nzOnClose)="deleteFilter(stationId)">
-          <i nz-icon type="filter" nzTheme="twotone"></i>
-          {{qblock.name}}
-        </nz-tag>
-      </ng-template>
-      <app-questions-list
-        [ecoe]="ecoe"
-        [qblock]="qblock"
-      ></app-questions-list>
-    </nz-collapse-panel>
-  </nz-collapse>
+        <ng-template #panelHeader>
+          <nz-tag [nzMode]="qblockId ? 'closeable' : 'default'" [nzColor]="'geekblue'"
+                  (nzOnClose)="deleteFilter(stationId)">
+            <i nz-icon type="filter" nzTheme="twotone"></i>
+            {{qblock.name}}
+          </nz-tag>
+        </ng-template>
+        <app-questions-list
+          [idEcoe]="ecoeId"
+          [qblock]="qblock"
+        ></app-questions-list>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </nz-skeleton>
 </nz-content>
+
+<nz-drawer
+  [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
+  [nzMaskClosable]="false"
+  [nzWidth]="480"
+  [nzVisible]="isVisible"
+  [nzTitle]="'ADD_QBLOCK' | translate"
+  (nzOnClose)="cancelForm()">
+
+  <form [formGroup]="qblockForm">
+    <div nz-row nzGutter="8">
+      <div nz-col nzSpan="21">
+        <nz-form-label>{{'NAME' | translate}}</nz-form-label>
+      </div>
+    </div>
+
+    <ng-container formArrayName="qblockRow"
+                  *ngFor=" let control of qblockForm.get('qblockRow')['controls']; let i = index">
+      <div nz-row nzGutter="8" [formGroupName]="+i">
+        <div nz-col nzSpan="21">
+          <nz-form-item>
+            <nz-form-control>
+              <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
+              <nz-form-explain
+                *ngIf="getFormControl('name', i)?.dirty && getFormControl('name', i)?.hasError('required')">
+                {{'NAME_INPUT_REQUIRED' | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
+          <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete"
+                                                                                       nzTheme="outline"></i></button>
+        </div>
+      </div>
+    </ng-container>
+
+    <nz-form-item>
+      <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
+        <button nz-button nzType="dashed" style="width:60%" (click)="addQblockRow()">
+          <i nz-icon type="plus"></i> {{'ADD_QBLOCK' | translate}}
+        </button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+  <div class="footer">
+    <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;">
+      <span>{{'CANCEL' | translate}}</span></button>
+    <button type="button" (click)="submitForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span>
+    </button>
+  </div>
+</nz-drawer>

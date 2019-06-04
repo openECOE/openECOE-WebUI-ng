@@ -24,7 +24,7 @@ export class ApiService {
   /**
    * Makes a HTTP GET request to the backend and gets a list of items.
    *
-   * @param {string} resource Name of the resource
+   * @param resource Name of the resource
    * @param {{}} requestParams? Optional params object
    * @returns {Observable<any[]>} The array of items of the requested resource
    */
@@ -46,7 +46,7 @@ export class ApiService {
   /**
    * Makes a HTTP GET request to the backend and gets an item.
    *
-   * @param {string} ref Reference path of the resource
+   * @param ref Reference path of the resource
    * @returns {Observable<any>} The object of the reference passed
    */
   getResource(ref: string): Observable<any> {
@@ -60,7 +60,7 @@ export class ApiService {
   /**
    * Makes a HTTP POST request to the backend.
    *
-   * @param {string} resource Name of the resource
+   * @param resource Name of the resource
    * @param body Object with the elements of the resource
    * @returns {Observable<any>} The object of the item created
    */
@@ -77,7 +77,7 @@ export class ApiService {
    * Makes a HTTP DELETE request to the backend.
    * To remove relations of tables a body must be passed with the id of the resource.
    *
-   * @param {string} ref Reference path of the resource
+   * @param ref Reference path of the resource
    * @param body? Id of the resource
    * @returns {Observable<any>} An empty response
    */
@@ -92,7 +92,7 @@ export class ApiService {
   /**
    * Makes a HTTP PATCH request to the backend.
    *
-   * @param {string} ref Reference path of the resource
+   * @param ref Reference path of the resource
    * @param body Object with the elements of the resource
    * @returns {Observable<any>} The object of the item updated
    */
@@ -107,7 +107,7 @@ export class ApiService {
   /**
    * Gets the id of the reference passed.
    *
-   * @param {string} ref Reference path of the resource
+   * @param ref Reference path of the resource
    * @returns The id obtained
    */
   getIdFromRef(ref: string): number {

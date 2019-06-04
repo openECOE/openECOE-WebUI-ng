@@ -73,12 +73,18 @@ export class Question extends Item {
   id: number;
   reference: string;
   description: string;
-  id_area: number;
   question_type: string;
   questionType: string;
   order: number;
 
   addOption = Route.POST<Option>('/option');
+
+  area: Area;
+
+  options: Option[];
+  qblocks: QBlock[];
+
+  getPoints = Route.GET<number>('/points');
 }
 
 export class Option extends Item {
