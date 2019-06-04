@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
-import {forkJoin, Observable} from 'rxjs';
+import {forkJoin, from, Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {SharedService} from '../../../../services/shared/shared.service';
-import {QBlock, Question, Option, Area} from '../../../../models';
+import {Area, ECOE, QBlock, Question, Station, Option} from '../../../../models';
+import {Pagination} from '@openecoe/potion-client';
 
 /**
  * Component with questions and options by question.
@@ -16,17 +17,18 @@ import {QBlock, Question, Option, Area} from '../../../../models';
 })
 export class QuestionsComponent implements OnInit {
 
-  stations: any[] = [];
-  stationSelected: any;
-  areas: any[] = [];
-  qblocks: any[] = [];
-  editCache = {};
+  ecoe: ECOE;
+  stations: Station[] = [];
+  stationSelected: Station;
+  qblocks: QBlock[] = [];
   editCacheOption = {};
+  editCache = {};
   ecoeId: number;
   qblockId: number;
   stationId: number;
   questionShowQblocks = {};
   valueopt: number;
+
 
   index: number = 1;
   indexOpt: number = 1;
@@ -80,49 +82,29 @@ export class QuestionsComponent implements OnInit {
    * Loads all the stations, then filters by the station passed on the URL and loads their qblocks.
    * Finally, loads the questions for each Qblock and creates the multi-level array.
    */
-  loadQuestions() {
-    this.stationSelected = {};
-    this.apiService.getResources('area', {
-      where: `{"ecoe":${this.ecoeId}}`
-    }).pipe(
-      mergeMap(areas => {
-        this.areas = areas;
-        return this.apiService.getResources('station', {
-          where: `{"ecoe":${this.ecoeId}}`
-        }).pipe(
-          mergeMap(stations => {
-            this.stations = stations;
-            const station = this.stationId ? stations.find(st => st.id === this.stationId) : stations[0];
-            return this.apiService.getResources('qblock', {
-              where: (this.stationId && this.qblockId) ? `{"$uri":"/api/qblock/${this.qblockId}"}` : `{"station":${station.id}}`
-            }).pipe(
-              mergeMap(qblocks => {
-                this.stationId = station.id;
-                return <Observable<any[]>>forkJoin(...qblocks.map(qblock => {
-                  return this.apiService.getResources('question', {
-                    where: `{"qblocks":{"$contains":${qblock.id}}}`
-                  }).pipe(map(questions => {
-                    questions = questions.map(q => {
-                      const area = areas.find(a => a['$uri'] === q.area['$ref']);
-                      return {...q, areaName: area.name, areaId: area.id};
-                    });
+  async loadQuestions() {
+    // TODO: Only fetch 10 questions per station, need to create pagination for questions
+    this.ecoe = await ECOE.fetch<ECOE>(this.ecoeId);
 
-                    qblock.show = true;
-                    return [{...qblock, questions}];
-                  }));
-                }));
-              }),
-              map(qblocks => {
-                return [{...station, qblocks: [].concat.apply([], qblocks)}];
-              })
-            );
-          })
-        );
-      })
-    ).subscribe(response => {
-      this.stationSelected = response[0];
-      this.updateEditCache();
-    });
+    const pagStations = await this.ecoe.stations({}, {paginate: true, cache: false});
+    this.stations = [...pagStations['items']];
+
+    for (let i = 2; i <= pagStations.pages; i++) {
+      await pagStations.changePageTo(i);
+      this.stations = [...this.stations, ...pagStations['items']];
+    }
+
+    this.stationSelected = await Station.fetch<Station>(this.stationId ? this.stationId : this.stations[0].id);
+    this.stationId = this.stationSelected.id;
+
+    const pagQblocks = await this.stationSelected.qblocks({}, {paginate: true, cache: false});
+    this.qblocks = [...pagQblocks['items']];
+
+    for (let i = 2; i <= pagQblocks.pages; i++) {
+      this.qblocks = [...this.qblocks, ...(await pagQblocks.changePageTo(i)).items];
+    }
+
+    this.updateEditCache();
   }
 
   /**
@@ -158,140 +140,7 @@ export class QuestionsComponent implements OnInit {
   loadQblocksByStation(stationId: number) {
     this.apiService.getResources('qblock', {
       where: `{"station":${stationId}}`
-    }).subscribe(qblocks => { console.log('loadQblocksByStation: ', qblocks);
-      this.qblocks = qblocks;
-    });
-  }
-
-  /**
-   * Sets the editCache variable to true.
-   * Changes text-view tags by input tags.
-   *
-   * @param id Id of the selected resource
-   */
-  startEdit(id: number) {
-    this.editCache[id].edit = true;
-  }
-
-  /**
-   * Creates or updates the resource passed.
-   * Then updates the variables to avoid calling the backend again.
-   *
-   * @param question Resource selected
-   * @param qblock Parent resource passed
-   * @param newItem determines if the resource is already saved
-   */
-  saveItem(question: any, qblock: any, newItem: boolean) {
-    const item = this.editCache[question.id];
-
-    if (!item.description || !item.reference || !item.question_type || !item.areaId || !qblock.id) {
-      return;
-    }
-
-    const body = {
-      order: +item.order,
-      description: item.description,
-      reference: item.reference,
-      question_type: item.question_type,
-      area: item.areaId,
-      qblocks: [qblock.id]
-    };
-
-    const request = (
-      newItem ?
-        this.apiService.createResource('question', body) :
-        this.apiService.updateResource(item['$uri'], body)
-    );
-
-    request.pipe(
-      map(response => {
-        const area = this.areas.find(a => a.id === item.areaId);
-        return {
-          areaId: area.id,
-          areaName: area.name,
-          optionsArray: question.optionsArray,
-          ...response
-        };
-      })
-    ).subscribe(response => {
-      delete this.editCache[question.id];
-      delete this.editCache[response['id']];
-      delete this.questionShowQblocks[question.id];
-      delete this.questionShowQblocks[response['id']];
-
-      this.editCache[response['id']] = {
-        edit: false,
-        areaId: question.areaId,
-        ...response
-      };
-
-      this.questionShowQblocks[response['id']] = {
-        show: false
-      };
-
-      qblock.questions = qblock.questions.map(x => (x.id === question.id) ? response : x);
-    });
-  }
-
-  /**
-   * Sets the editCache variable to false.
-   * If resource is not already saved, calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
-   * Else resets editCache to the previous value.
-   *
-   * @param question Resource selected
-   * @param qblock Parent resource passed
-   */
-  cancelEdit(question: any, qblock: any) {
-    this.editCache[question.id].edit = false;
-
-    if (this.editCache[question.id].new_item) {
-      this.updateArrayQuestions(question.id, qblock);
-    } else {
-      this.editCache[question.id] = question;
-    }
-  }
-
-  /**
-   * Calls ApiService to delete the resource passed.
-   * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
-   *
-   * @param question Resource selected
-   * @param qblock Parent resource passed
-   */
-  deleteItem(question: any, qblock: any) {
-    this.apiService.deleteResource(question['$uri']).subscribe(() => {
-      this.updateArrayQuestions(question.id, qblock);
-    });
-  }
-
-  /**
-   * Adds a new empty field to the resources array.
-   * Then updates editCache with the new resource.
-   */
-  addQuestion(qblock) {
-    this.apiService.getResources('question')
-      .subscribe(questions => {
-        this.index += this.sharedService.getLastIndex(questions);
-
-        const newItem = {
-          id: this.index,
-          order: '',
-          description: '',
-          reference: '',
-          question_type: '',
-          area: '',
-          qblocks: [],
-          options: []
-        };
-
-        qblock.questions = [...qblock.questions, newItem];
-
-        this.editCache[this.index] = {
-          edit: true,
-          new_item: true,
-          ...newItem
-        };
-      });
+    }).subscribe(qblocks => this.qblocks = qblocks);
   }
 
   /**
@@ -299,29 +148,17 @@ export class QuestionsComponent implements OnInit {
    */
   updateEditCache(): void {
     this.editCache = {};
-    this.stationSelected.qblocks.forEach(qb => {
+    this.qblocks.forEach(async qb => {
       qb.questions.forEach(item => {
         this.questionShowQblocks[item.id] = {
           show: false
         };
         this.editCache[item.id] = {
           edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
-          ...item
+          data: Object.assign({}, item)
         };
       });
     });
-  }
-
-  /**
-   * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
-   *
-   * @param questionId Id of the resource passed
-   * @param qblock Parent resource passed
-   */
-  updateArrayQuestions(questionId: number, qblock: any) {
-    delete this.editCache[questionId];
-    delete this.questionShowQblocks[questionId];
-    qblock.questions = qblock.questions.filter(x => x.id !== questionId);
   }
 
   /**
@@ -340,10 +177,6 @@ export class QuestionsComponent implements OnInit {
       this.questionShowQblocks[questionId].show = false;
       this.loadQuestions();
     });
-  }
-
-  getQuestionTypeLabel(questionType: string) {
-    return this.question_type_options.find(x => x.type === questionType).label;
   }
 
   /**

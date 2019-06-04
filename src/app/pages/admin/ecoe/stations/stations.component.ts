@@ -47,7 +47,7 @@ export class StationsComponent implements OnInit {
   logPromisesERROR: any[] = [];
   logPromisesOK: any[] = [];
 
-  readonly EXCLUDE_ITEMS = ['ecoe', 'organization'];
+  readonly EXCLUDE_ITEMS = [];
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,

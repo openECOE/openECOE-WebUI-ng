@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ResourceIcons} from '../../../../constants/icons';
 import {EcoeComponent} from '../ecoe.component';
-import {ECOE} from '../../../../models/ecoe';
+import {Area, ECOE} from '../../../../models/ecoe';
+import {Pagination} from '@openecoe/potion-client';
 
 /**
  * Component with general information of the ECOE.
@@ -15,7 +16,7 @@ import {ECOE} from '../../../../models/ecoe';
 })
 export class InformationComponent implements OnInit {
 
-  ecoe: any;
+  ecoe: ECOE;
   icons: any = ResourceIcons;
 
   constructor(private apiService: ApiService,
@@ -24,19 +25,30 @@ export class InformationComponent implements OnInit {
               private ecoeComp: EcoeComponent) {
   }
 
+  areas: any;
+  stations: any;
+  students: any;
+  rounds: any;
+  shifts: any;
+
   /**
    * Loads the ECOE data and parses the response as an array to use it on the nz-list component.
    */
   ngOnInit() {
     const ecoeId = +this.route.snapshot.params.id;
-    // this.apiService.getResource(`/api/ecoe/${ecoeId}`).subscribe(ecoe => this.ecoe = [ecoe]);
 
-    const excludeItems = ['organization'];
+    ECOE.fetch<ECOE>(ecoeId, {cache: false}).then(async value => {
+      this.ecoe = value;
+      console.log(this.ecoe);
+      this.areas = await this.ecoe.areas({}, {paginate: true});
+      this.stations = await this.ecoe.stations({}, {paginate: true});
+      this.students = await this.ecoe.students({}, {paginate: true});
+      this.rounds = await this.ecoe.rounds({}, {paginate: true});
+      this.shifts = await this.ecoe.shifts({}, {paginate: true});
 
-    ECOE.fetch(ecoeId, {cache: false, skip: excludeItems})
-      .then(ecoe => {
-        this.ecoe = [ecoe];
-      });
+    });
+
+    // this.areas = async () => await this.ecoe.areas({}, {paginate: true});
   }
 
   /**

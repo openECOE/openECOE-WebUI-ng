@@ -1,53 +1,43 @@
 <nz-content *ngIf="ecoe">
   <div nz-row [nzGutter]="16">
     <div nz-col [nzSpan]="12">
-      <nz-card [nzTitle]="ecoe[0].name" [nzExtra]="headerExtra">
-        <nz-list [nzDataSource]="ecoe" [nzRenderItem]="item">
-          <ng-template #item let-item>
+      <nz-card [nzTitle]="ecoe.name" [nzExtra]="headerExtra">
+        <nz-list>
             <app-item-info [link]="'areas'"
                            [title]="'AREAS'"
                            [no_items]="'NO_AREAS'"
-                           [itemsArray]="item.areas"
+                           [itemsPagination]="areas"
                            [icon]="icons.areaIcon">
             </app-item-info>
 
             <app-item-info [link]="'stations'"
                            [title]="'STATIONS'"
                            [no_items]="'NO_STATIONS'"
-                           [itemsArray]="item.stations"
+                           [itemsPagination]="stations"
                            [icon]="icons.stationIcon">
             </app-item-info>
+
+          <app-item-info [link]="'planner'"
+                         [title]="'ROUNDS'"
+                         [no_items]="'NO_ROUNDS'"
+                         [itemsPagination]="rounds"
+                         [icon]="icons.roundIcon">
+          </app-item-info>
+
+          <app-item-info [link]="'planner'"
+                         [title]="'SHIFTS'"
+                         [no_items]="'NO_SHIFTS'"
+                         [itemsPagination]="shifts"
+                         [icon]="icons.shiftIcon">
+          </app-item-info>
 
             <app-item-info [link]="'students'"
                            [title]="'STUDENTS'"
                            [no_items]="'NO_STUDENTS'"
-                           [itemsArray]="item.students"
+                           [itemsPagination]="students"
                            [icon]="icons.studentIcon"
                            [theme]="'outline'">
             </app-item-info>
-
-            <app-item-info [link]="'planner'"
-                           [title]="'ROUNDS'"
-                           [no_items]="'NO_ROUNDS'"
-                           [itemsArray]="item.rounds"
-                           [icon]="icons.roundIcon">
-            </app-item-info>
-
-            <app-item-info [link]="'planner'"
-                           [title]="'SHIFTS'"
-                           [no_items]="'NO_SHIFTS'"
-                           [itemsArray]="item.shifts"
-                           [icon]="icons.shiftIcon">
-            </app-item-info>
-
-            <app-item-info [link]="'schedule'"
-                           [title]="'SCHEDULE'"
-                           [no_items]="'NO_SCHEDULE'"
-                           [itemsArray]="item.schedules"
-                           [icon]="icons.scheduleIcon"
-                           [theme]="'outline'">
-            </app-item-info>
-          </ng-template>
         </nz-list>
 
         <ng-template #headerExtra>

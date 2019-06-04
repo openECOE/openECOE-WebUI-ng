@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "start": "ng serve",
-    "test_server": "ng serve --configuration=test",
+    "startProd": "ng serve --configuration=prodDebug",
+    "testServer": "ng serve --configuration=test",
     "prod": "ng serve --prod",
     "build": "ng build",
     "test": "ng test",
@@ -44,7 +45,7 @@
     "codelyzer": "~4.5.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
-    "karma": "~3.0.0",
+    "karma": "^4.1.0",
     "karma-chrome-launcher": "~2.2.0",
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~1.1.2",

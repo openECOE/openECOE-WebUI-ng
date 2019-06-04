@@ -1,20 +1,19 @@
-import {Item, Route} from '@openecoe/potion-client';
+import {Item, Pagination, Route} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule} from './schedule';
 import {Organization} from './organization';
 
 export class ECOE extends Item {
+  areas = Route.GET('/areas');
+  stations = Route.GET<Station | Pagination<Station>>('/stations');
+  schedules = Route.GET('/schedules');
+  students = Route.GET('/students');
+  rounds = Route.GET('/rounds');
+  shifts = Route.GET('/shifts');
+
   id: number;
   name: string;
   organization: Organization;
-
-
-  areas: Area[];
-  stations: Station[];
-  schedules: Schedule[];
-  students: Student[];
-  rounds: Round[];
-  shifts: Shift[];
 
   configuration = Route.GET('/configuration');
 }
@@ -41,13 +40,16 @@ export interface RowArea {
 export class Station extends Item {
   id: number;
   name: string;
-  id_ecoe: number;
+  ecoe: ECOE;
   order: number;
   parentStation?: {
     id: number
     name?: string,
   };
   id_parent_station: number;
+
+  qblocks = Route.GET<Pagination<QBlock>>('/qblocks');
+  schedules = Route.GET<Pagination<Schedule>>('/schedules');
 }
 
 export interface RowStation {
@@ -59,8 +61,12 @@ export interface RowStation {
 export class QBlock extends Item {
   id: number;
   name: string;
-  id_station: number;
   order: number;
+
+  station: Station;
+  questions: Question[];
+
+  getQuestions = Route.GET<Pagination<Question>>('/questions');
 }
 
 export class Question extends Item {
@@ -68,7 +74,8 @@ export class Question extends Item {
   reference: string;
   description: string;
   id_area: number;
-  question_type: number;
+  question_type: string;
+  questionType: string;
   order: number;
 
   addOption = Route.POST<Option>('/option');
@@ -88,9 +95,10 @@ export class Student extends Item {
   surnames: string;
   dni: string;
 
-  ecoe: ECOE;
+  ecoe: ECOE | number;
   planner: Planner | Item;
   plannerOrder: number;
+  planner_order: number;
 
 
 }

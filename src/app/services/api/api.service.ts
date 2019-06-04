@@ -61,7 +61,7 @@ export class ApiService {
    * Makes a HTTP POST request to the backend.
    *
    * @param {string} resource Name of the resource
-   * @param {any} body Object with the elements of the resource
+   * @param body Object with the elements of the resource
    * @returns {Observable<any>} The object of the item created
    */
   createResource(resource: string, body: any): Observable<any> {
@@ -78,7 +78,7 @@ export class ApiService {
    * To remove relations of tables a body must be passed with the id of the resource.
    *
    * @param {string} ref Reference path of the resource
-   * @param {any} body? Id of the resource
+   * @param body? Id of the resource
    * @returns {Observable<any>} An empty response
    */
   deleteResource(ref: string, body?: any): Observable<any> {
@@ -93,7 +93,7 @@ export class ApiService {
    * Makes a HTTP PATCH request to the backend.
    *
    * @param {string} ref Reference path of the resource
-   * @param {any} body Object with the elements of the resource
+   * @param body Object with the elements of the resource
    * @returns {Observable<any>} The object of the item updated
    */
   updateResource(ref: string, body: any): Observable<any> {
@@ -108,7 +108,7 @@ export class ApiService {
    * Gets the id of the reference passed.
    *
    * @param {string} ref Reference path of the resource
-   * @returns {number} The id obtained
+   * @returns The id obtained
    */
   getIdFromRef(ref: string): number {
     return +ref.substr(ref.lastIndexOf('/') + 1);

@@ -1,12 +1,13 @@
-import {Item} from '@openecoe/potion-client';
+import {Item, Pagination, Route} from '@openecoe/potion-client';
 import {ECOE, Station} from './ecoe';
 
 export class Schedule extends Item {
   id: number;
   ecoe: ECOE;
   stage: Stage;
-  events: Event[];
   station: Station | number;
+
+  events = Route.GET<Pagination<Event>>('/events');
 }
 
 export class Stage extends Item {
