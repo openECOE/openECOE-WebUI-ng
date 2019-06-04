@@ -1,6 +1,6 @@
 <a [routerLink]="'./' + link">
   <nz-list-item [nzContent]="itemsPagination ? content : ' '">
-    <nz-skeleton [nzLoading]="!itemsPagination" [nzActive]="true" [nzAvatar]="true" [nzParagraph]="false">
+    <nz-skeleton [nzLoading]="!itemsPagination" [nzActive]="true" [nzAvatar]="{shape: 'circle'}" [nzParagraph]="false">
       <nz-list-item-meta
         [nzTitle]="header"
         [nzAvatar]="avatar">

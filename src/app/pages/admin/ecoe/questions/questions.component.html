@@ -1,16 +1,20 @@
-<nz-content>
-  <nz-select style="width: 50%;"
-             [nzShowSearch]="true"
-             (ngModelChange)="deleteFilter($event)"
-             [(ngModel)]="stationId"
-             [nzSize]="'large'"
-             padding>
-    <nz-option *ngFor="let st of stations" [nzLabel]="st.name" [nzValue]="st.id"></nz-option>
-  </nz-select>
+<nz-spin [nzSpinning]="loading" nzSize="large" [nzDelay]="500">
+  <nz-content>
+    <nz-select style="width: 50%;"
+               [nzShowSearch]="true"
+               (ngModelChange)="deleteFilter($event)"
+               [(ngModel)]="stationId"
+               [nzSize]="'large'"
+               padding>
+      <nz-option *ngFor="let st of stations" [nzLabel]="st.name" [nzValue]="st.id"></nz-option>
+    </nz-select>
 
-  <button nz-button nzType="primary">{{"PREVIEW_EXAM" | translate}}</button>
-  <nz-skeleton [nzLoading]="loading">
-    <nz-collapse *ngIf="stationSelected">
+    <button nz-button nzType="primary">{{"PREVIEW_EXAM" | translate}}</button>
+
+    <nz-button-group>
+      <app-upload-and-parse (parserResult)="importQuestions($event)"></app-upload-and-parse>
+    </nz-button-group>
+    <nz-collapse>
       <button nz-button nzType="dashed" nzBlock (click)="showDrawer()">{{'ADD_QBLOCK' | translate}}</button>
       <nz-collapse-panel *ngFor="let qblock of qblocks"
                          [nzHeader]="panelHeader"
@@ -29,8 +33,8 @@
         ></app-questions-list>
       </nz-collapse-panel>
     </nz-collapse>
-  </nz-skeleton>
-</nz-content>
+  </nz-content>
+</nz-spin>
 
 <nz-drawer
   [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"

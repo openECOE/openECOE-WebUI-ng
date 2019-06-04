@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {forkJoin} from 'rxjs';
-import {Area, ECOE, QBlock, Station} from '../../../../models';
+import {Area, ECOE, QBlock, Question, Station, Option} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Pagination} from '@openecoe/potion-client';
 
@@ -44,9 +44,6 @@ export class QuestionsComponent implements OnInit {
   qblockForm: FormGroup;
   control: FormArray;
 
-  logPromisesERROR: { value: any, reason: any }[] = [];
-  logPromisesOK: any[] = [];
-
   question_type_options: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
     {type: 'CH', label: 'MULTI_ANSWER'},
@@ -54,18 +51,18 @@ export class QuestionsComponent implements OnInit {
   ];
 
   readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
-    order:       'orden',
+    order: 'orden',
     description: 'enunciado',
-    reference:   'referencia',
-    points:      'points',
-    ac:          'ac',
-    type:        'type'
+    reference: 'referencia',
+    points: 'points',
+    ac: 'ac',
+    type: 'type'
   };
 
   readonly DEFAULT_LABEL = 'Sí';
-  readonly OPTIONS  = 'options'; // PROPERTY NAME ADDED TO QUESTIONS ARRAY.
-  readonly OPTION   = 'option';
-  readonly POINTS   = 'points';
+  readonly OPTIONS = 'options'; // PROPERTY NAME ADDED TO QUESTIONS ARRAY.
+  readonly OPTION = 'option';
+  readonly POINTS = 'points';
 
   private logPromisesERROR: any[] = [];
   private logPromisesOK: any[] = [];
@@ -109,7 +106,8 @@ export class QuestionsComponent implements OnInit {
 
     const pagStations = await Station.query<Station, Pagination<Station>>({
       where: {ecoe: this.ecoe},
-      sort: {order: false}}, {
+      sort: {order: false}
+    }, {
       paginate: true,
       cache: false
     });
@@ -123,7 +121,13 @@ export class QuestionsComponent implements OnInit {
     this.stationSelected = await Station.fetch<Station>(this.stationId ? this.stationId : this.stations[0].id);
     this.stationId = this.stationSelected.id;
 
-    const pagQblocks = await this.stationSelected.qblocks({}, {paginate: true, cache: false});
+    const pagQblocks = await QBlock.query<QBlock, Pagination<QBlock>>({
+      where: {station: this.stationSelected},
+      sort: {order: false}
+    }, {
+      paginate: true, cache: false
+    });
+
     this.qblocks = [...pagQblocks['items']];
 
     for (let i = 2; i <= pagQblocks.pages; i++) {
@@ -133,17 +137,6 @@ export class QuestionsComponent implements OnInit {
     this.updateEditCache();
 
     this.loading = false;
-  }
-
-  /**
-   * Load qblocks by the passed station.
-   *
-   * @param stationId Id of the parent resource
-   */
-  loadQblocksByStation(stationId: number) {
-    this.apiService.getResources('qblock', {
-      where: `{"station":${stationId}}`
-    }).subscribe(qblocks => this.qblocks = qblocks);
   }
 
   /**
@@ -187,7 +180,8 @@ export class QuestionsComponent implements OnInit {
    *
    * @param station Id of the station passed
    */
-  deleteFilter(station: number) { console.log('deleteFilter:', station);
+  deleteFilter(station: number) {
+    console.log('deleteFilter:', station);
     this.router.navigate(['../questions'], {
       relativeTo: this.route,
       replaceUrl: true,
@@ -197,7 +191,7 @@ export class QuestionsComponent implements OnInit {
 
   mapFile(items: any[]) {
     const newArr: any[] = [];
-    const currentBlock: { name: string; questions: any[] } = { name: '', questions: [] };
+    const currentBlock: { name: string; questions: any[] } = {name: '', questions: []};
     let aux: any = {};
 
     items.forEach((item, idx) => {
@@ -211,7 +205,7 @@ export class QuestionsComponent implements OnInit {
           newArr.push(aux);
           currentBlock.name = item[this.HEADER.description];
           currentBlock.questions = [];
-         }
+        }
       } else if (item[this.HEADER.order] && item[this.HEADER.description] && item[this.HEADER.points]) {
         item[this.OPTIONS] = this.getOptions(item);
         currentBlock.questions.push(item);
@@ -230,8 +224,8 @@ export class QuestionsComponent implements OnInit {
 
     const propertyNames = Object.getOwnPropertyNames(item);
 
-    const options = propertyNames.filter(value => value.toLowerCase().match(/option\d+$/) );
-    const points = propertyNames.filter(value => value.toLowerCase().match(/points\d+$/) );
+    const options = propertyNames.filter(value => value.toLowerCase().match(/option\d+$/));
+    const points = propertyNames.filter(value => value.toLowerCase().match(/points\d+$/));
 
     const optionArray: any[] = [];
 
@@ -248,9 +242,10 @@ export class QuestionsComponent implements OnInit {
     return optionArray;
   }
 
-  importQuestions(items: any[]) {
+  async importQuestions(items: any[]) {
+    this.loading = true;
     const blocksWithQuestions = this.mapFile(items);
-    this.saveArrayQuestions(blocksWithQuestions);
+    this.saveArrayQuestions(blocksWithQuestions).finally(() => this.loadQuestions());
   }
 
   /**
@@ -258,26 +253,28 @@ export class QuestionsComponent implements OnInit {
    * multiple rows form.
    * @param file obtained from form array or array form.
    */
-  saveArrayQuestions(file: BlockType[]) {
+  async saveArrayQuestions(file: BlockType[]) {
     this.logPromisesERROR = [];
-    this.logPromisesOK    = [];
+    this.logPromisesOK = [];
     let currentBlockId: number;
 
-    if (!file) { return; }
+    if (!file) {
+      return;
+    }
 
-    file.forEach(async (block, idx) => {
+    await file.forEach(async (block, idx) => {
       await this.hasQblock(block.name, this.stationId)
-        .then( async (result) => {
+        .then((result) => {
           if (result && (<Array<any>>result).length === 1) {
             currentBlockId = result[0]['id'];
             return this.addQuestions(block.questions, currentBlockId);
           } else if (!result) {
-              await this.addQblock(block.name, (idx + 1) )
-                .then(async res => {
-                  currentBlockId = res['id'];
-                  return this.addQuestions(block.questions, currentBlockId);
-                })
-                .catch(err => console.error('ERROR ON ADD:', err));
+            return this.addQblock(block.name, (idx + 1))
+              .then(async res => {
+                currentBlockId = res['id'];
+                return this.addQuestions(block.questions, currentBlockId);
+              })
+              .catch(err => console.error('ERROR ON ADD:', err));
           }
         });
     });
@@ -286,7 +283,7 @@ export class QuestionsComponent implements OnInit {
   hasQblock(name: string, station: number) {
     return new Promise((resolve, reject) => {
       QBlock.query({
-        where: { name: name, station: station }
+        where: {name: name, station: station}
       }, {skip: [], cache: false})
         .then((response: Array<any>) => {
           if (response.length === 1) {
@@ -302,23 +299,23 @@ export class QuestionsComponent implements OnInit {
   }
 
   addQblock(name: string, order: number) {
-    return ( new QBlock({name: name, station: this.stationId, order: order }) ).save();
+    return (new QBlock({name: name, station: this.stationId, order: order})).save();
   }
 
 
   addQuestions(items: any[], idBlock: number) {
     this.logPromisesERROR = [];
-    this.logPromisesOK    = [];
+    this.logPromisesOK = [];
 
-    items.forEach( async (item) => {
+    items.forEach(async (item) => {
       const body = {
-        area:         (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId } })),
-        description:  item[this.HEADER.description],
-        options:      [],
-        order:        item[this.HEADER.order],
-        qblocks:      [idBlock],
+        area: (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId}})),
+        description: item[this.HEADER.description],
+        options: [],
+        order: item[this.HEADER.order],
+        qblocks: [idBlock],
         question_type: item[this.HEADER.type],
-        reference:    item[this.HEADER.reference]
+        reference: item[this.HEADER.reference]
       };
 
       await (new Question(body)).save()
@@ -339,9 +336,9 @@ export class QuestionsComponent implements OnInit {
   }
 
   addOptions(questionItem: any[], idQuestion: number) {
-    const savePromises    = [];
+    const savePromises = [];
     this.logPromisesERROR = [];
-    this.logPromisesOK    = [];
+    this.logPromisesOK = [];
 
     const options = questionItem[this.OPTIONS];
 
@@ -385,16 +382,10 @@ export class QuestionsComponent implements OnInit {
     return Promise.all(savePromises)
       .then(() =>
         new Promise((resolve, reject) =>
-          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)) )
+          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)))
       .catch(err =>
         new Promise(((resolve, reject) => reject(err))));
   }
-
-}
-
-interface BlockType {
- name: string;
- questions: Question[];
 
   /**
    * Saves array of data in data base. The data can be provided from external file or from
@@ -525,4 +516,9 @@ interface BlockType {
 
 export interface RowQblock {
   name: any[];
+}
+
+interface BlockType {
+  name: string;
+  questions: Question[];
 }

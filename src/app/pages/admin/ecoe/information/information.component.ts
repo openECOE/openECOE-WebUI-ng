@@ -37,18 +37,24 @@ export class InformationComponent implements OnInit {
   ngOnInit() {
     const ecoeId = +this.route.snapshot.params.id;
 
-    ECOE.fetch<ECOE>(ecoeId, {cache: false}).then(async value => {
+    ECOE.fetch<ECOE>(ecoeId, {cache: false}).then(value => {
       this.ecoe = value;
       console.log(this.ecoe);
-      this.areas = await this.ecoe.areas({}, {paginate: true});
-      this.stations = await this.ecoe.stations({}, {paginate: true});
-      this.students = await this.ecoe.students({}, {paginate: true});
-      this.rounds = await this.ecoe.rounds({}, {paginate: true});
-      this.shifts = await this.ecoe.shifts({}, {paginate: true});
+      this.ecoe.areas({perPage: 1}, {paginate: true})
+        .then(response => this.areas = response);
 
+      this.ecoe.stations({perPage: 1}, {paginate: true})
+        .then(response => this.stations = response);
+
+      this.ecoe.rounds({perPage: 1}, {paginate: true})
+        .then(response => this.rounds = response);
+
+      this.ecoe.shifts({perPage: 1}, {paginate: true})
+        .then(response => this.shifts = response);
+
+      this.ecoe.students({perPage: 1}, {paginate: true})
+        .then(response => this.students = response);
     });
-
-    // this.areas = async () => await this.ecoe.areas({}, {paginate: true});
   }
 
   /**
