@@ -52,8 +52,8 @@ export class InformationComponent implements OnInit {
       this.ecoe.shifts({perPage: 1}, {paginate: true})
         .then(response => this.shifts = response);
 
-      this.ecoe.students({perPage: 1}, {paginate: true})
-        .then(response => this.students = response);
+      // this.ecoe.students({perPage: 1}, {paginate: true})
+      //   .then(response => this.students = response);
     });
   }
 

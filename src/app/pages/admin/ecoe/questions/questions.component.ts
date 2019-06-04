@@ -261,7 +261,11 @@ export class QuestionsComponent implements OnInit {
   importQuestions(items: any[]) {
     this.loading = true;
     const blocksWithQuestions = this.mapFile(items);
-    this.saveArrayQuestions(blocksWithQuestions).finally(() => this.loading = false);
+    this.saveArrayQuestions(blocksWithQuestions)
+      .finally(() => {
+        this.loading = false;
+        this.loadQuestions();
+      });
   }
 
   /**
@@ -276,25 +280,30 @@ export class QuestionsComponent implements OnInit {
       return;
     }
 
+
+    const respPromises = [];
+
     file.forEach(async (block, idx) => {
-      await this.hasQblock(block.name, this.stationId)
-        .then( async (result) => {
+      const response = this.hasQblock(block.name, this.stationId)
+        .then((result) => {
           if (result && (<Array<any>>result).length === 1) {
             currentBlockId = result[0]['id'];
             return this.addQuestions(block.questions, currentBlockId);
           } else if (!result) {
-              return this.addQblock(block.name, (idx + 1) )
-                .then(res => {
-                  currentBlockId = res['id'];
-                  return this.addQuestions(block.questions, currentBlockId);
-                })
-                .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
+            return this.addQblock(block.name, (idx + 1))
+              .then(res => {
+                currentBlockId = res['id'];
+                return this.addQuestions(block.questions, currentBlockId);
+              })
+              .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
           }
         })
-        .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}) );
+        .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
+      respPromises.push(response);
     });
 
-    return new Promise(resolve => resolve());
+    return Promise.all(respPromises);
+
   }
 
   /**
@@ -327,7 +336,7 @@ export class QuestionsComponent implements OnInit {
    * @param order his order position
    */
   addQblock(name: string, order: number) {
-    const qblock = new QBlock({name: name, station: this.stationId, order: order });
+    const qblock = new QBlock({name: name, station: this.stationId, order: order});
     return qblock.save()
       .catch(reason => {
         this.logPromisesERROR.push({value: qblock, reason: reason});
@@ -341,15 +350,15 @@ export class QuestionsComponent implements OnInit {
    * @param idBlock which questions will be asociated
    */
   addQuestions(items: any[], idBlock: number) {
-    items.forEach( async (item) => {
+    items.forEach(async (item) => {
       const body = {
-        area:         (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId } })),
-        description:  item[this.HEADER.description],
-        options:      [],
-        order:        item[this.HEADER.order],
-        qblocks:      [idBlock],
+        area: (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId}})),
+        description: item[this.HEADER.description],
+        options: [],
+        order: item[this.HEADER.order],
+        qblocks: [idBlock],
         question_type: item[this.HEADER.type],
-        reference:    item[this.HEADER.reference]
+        reference: item[this.HEADER.reference]
       };
 
       await (new Question(body)).save()
@@ -371,7 +380,7 @@ export class QuestionsComponent implements OnInit {
    * @param idQuestion to asociate with the options
    */
   addOptions(questionItem: any[], idQuestion: number) {
-    const savePromises    = [];
+    const savePromises = [];
 
     const options = questionItem[this.OPTIONS];
 
@@ -430,6 +439,7 @@ export class QuestionsComponent implements OnInit {
   clearImportErrors() {
     this.logPromisesERROR = [];
   }
+
   /**
    * Saves array of data in data base. The data can be provided from external file or from
    * multiple rows form.
