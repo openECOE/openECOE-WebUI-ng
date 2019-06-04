@@ -2,10 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {forkJoin, from, Observable} from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {Area, ECOE, QBlock, Question, Station, Option} from '../../../../models';
-import {Pagination} from '@openecoe/potion-client';
 
 /**
  * Component with questions and options by question.
@@ -359,7 +357,7 @@ export class QuestionsComponent implements OnInit {
     items.forEach((item, idx) => {
       if (!item[this.HEADER.order] && item[this.HEADER.description]) {
         if (idx === 0) {
-          currentBlock.name = item[this.HEADER.description].replace(/MooTools/g, '<br>');
+          currentBlock.name = item[this.HEADER.description];
           currentBlock.questions = [];
         } else {
           aux = {};
@@ -441,10 +439,10 @@ export class QuestionsComponent implements OnInit {
                   currentBlockId = res['id'];
                   return this.addQuestions(block.questions, currentBlockId);
                 })
-                .catch(err => this.logPromisesERROR.push(err));
+                .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
           }
         })
-        .catch(err => this.logPromisesERROR.push(err));
+        .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}) );
     });
 
     return new Promise(resolve => resolve());
@@ -480,7 +478,12 @@ export class QuestionsComponent implements OnInit {
    * @param order his order position
    */
   addQblock(name: string, order: number) {
-    return ( new QBlock({name: name, station: this.stationId, order: order }) ).save();
+    const qblock = new QBlock({name: name, station: this.stationId, order: order });
+    return qblock.save()
+      .catch(reason => {
+        this.logPromisesERROR.push({value: qblock, reason: reason});
+        return reason;
+      });
   }
 
   /**
@@ -502,7 +505,13 @@ export class QuestionsComponent implements OnInit {
 
       await (new Question(body)).save()
         .then((question) => this.addOptions(<Array<any>>item, question.id))
-        .catch(reason => this.logPromisesERROR.push(reason));
+        .catch(reason => {
+          this.logPromisesERROR.push({
+            value: new Question(body),
+            reason: reason
+          });
+          return reason;
+        });
     });
     return new Promise((resolve) => resolve('ALL'));
   }
@@ -527,7 +536,10 @@ export class QuestionsComponent implements OnInit {
 
       const promise = (new Option(body)).save()
         .then(result => result)
-        .catch(err => this.logPromisesERROR.push(err));
+        .catch(err => this.logPromisesERROR.push({
+          value: body,
+          reason: err
+        }));
 
       savePromises.push(promise);
     } else {

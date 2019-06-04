@@ -8,7 +8,7 @@
     <nz-option *ngFor="let st of stations" [nzLabel]="st.name" [nzValue]="st.id"></nz-option>
   </nz-select>
 
-  <button nz-button nzType="primary">{{"PREVIEW_EXAM" | translate}}</button>
+  <button nz-button nzType="primary">{{"PREVIEW_EXAM" | translate}}</button> <!---->
 
   <nz-button-group>
     <app-upload-and-parse (parserResult)="importQuestions($event)"></app-upload-and-parse>
@@ -40,7 +40,6 @@
       [nzTitle]="'IMPORT_ERRORS' | translate"
       (nzOnClose)="clearImportErrors()"
       [nzWidth]="540">
-      <pre>{{logPromisesERROR | json}}</pre>
       <nz-alert *ngFor="let error of logPromisesERROR"
                 nzType="error"
                 nzCloseable

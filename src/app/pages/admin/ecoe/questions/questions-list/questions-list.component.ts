@@ -27,7 +27,7 @@ export class QuestionsListComponent implements OnInit {
   // }
 
   questionsPage: Pagination<Question>;
-  questionsList: Question[];
+  questionsList: Question[] = [];
 
   editCache: Array<any> = [];
 
