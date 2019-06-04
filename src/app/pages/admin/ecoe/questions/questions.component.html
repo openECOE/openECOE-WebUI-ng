@@ -29,7 +29,9 @@
 
       <nz-table #table
                 [nzData]="qblock.questions"
-                [nzShowPagination]="false">
+                [nzShowPagination]="false"
+                [nzLoading]="loading"
+      >
         <thead>
           <tr>
             <th [nzExpand]="true">
@@ -292,4 +294,25 @@
       </nz-table>
     </nz-collapse-panel>
   </nz-collapse>
+
+  <ng-container>
+    <nz-drawer
+      [nzClosable]="true"
+      [nzVisible]="logPromisesERROR.length > 0"
+      nzPlacement="right"
+      [nzTitle]="'IMPORT_ERRORS' | translate"
+      (nzOnClose)="clearImportErrors()"
+      [nzWidth]="540">
+      <pre>{{logPromisesERROR | json}}</pre>
+      <nz-alert *ngFor="let error of logPromisesERROR"
+                nzType="error"
+                nzCloseable
+                [nzMessage]="error.reason.statusText"
+                [nzDescription]="error.reason.message"
+                nzShowIcon>
+      </nz-alert>
+    </nz-drawer>
+  </ng-container>
+
+
 </nz-content>
