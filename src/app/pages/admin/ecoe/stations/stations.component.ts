@@ -5,6 +5,7 @@ import {SharedService} from '../../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {getPotionID} from '@openecoe/potion-client';
 
 
 /**
@@ -17,32 +18,32 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 })
 export class StationsComponent implements OnInit {
 
-  stations:     Station[] = [];
-  ecoeId:       number;
-  editCache:    { edit: boolean, new_item: boolean, item: Station }[] = [];
-  index:        number = 1;
+  stations: Station[] = [];
+  ecoeId: number;
+  editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
+  index: number = 1;
 
-  page:         number = 1;
-  totalItems:   number = 0;
-  perPage:      number = 10;
+  page: number = 1;
+  totalItems: number = 0;
+  perPage: number = 10;
 
-  pagStations:  any;
+  pagStations: any;
 
-  loading:      boolean = false;
-  isVisible:    boolean;
+  loading: boolean = false;
+  isVisible: boolean;
 
-  stationForm:  FormGroup;
-  control:      FormArray;
+  stationForm: FormGroup;
+  control: FormArray;
 
   selectOptions: Array<any> = [];
 
-  rowStation:    RowStation = {
-    order:          [''],
-    name:           ['', Validators.required],
-    parentStation:  ['']
+  rowStation: RowStation = {
+    order: [''],
+    name: ['', Validators.required],
+    parentStation: ['']
   };
 
-  data: object = { stationRow: [this.rowStation] };
+  data: object = {stationRow: [this.rowStation]};
 
   logPromisesERROR: any[] = [];
   logPromisesOK: any[] = [];
@@ -83,7 +84,7 @@ export class StationsComponent implements OnInit {
         sort: {'order': false},
         page: 1,
         perPage: 20
-      }, {skip: this.EXCLUDE_ITEMS, paginate: true, cache: false})
+      }, {paginate: true, cache: false})
         .then(response =>
           this.selectOptions = response);
     } else {
@@ -104,11 +105,14 @@ export class StationsComponent implements OnInit {
         sort: {order: false},
         page: this.page,
         perPage: this.perPage
-      }, {skip: this.EXCLUDE_ITEMS, paginate: true, cache: false})
+      }, {paginate: true, cache: false})
         .then(response => {
           this.editCache = [];
           this.loadPage(response);
-        }).finally(() => { this.loading = false; resolve(); } );
+        }).finally(() => {
+        this.loading = false;
+        resolve();
+      });
     });
   }
 
@@ -152,7 +156,7 @@ export class StationsComponent implements OnInit {
     station.destroy()
       .then(() => {
         this.loadStations()
-          .then(() => this.updateEditCache() );
+          .then(() => this.updateEditCache());
       });
   }
 
@@ -246,9 +250,16 @@ export class StationsComponent implements OnInit {
   loadPage(pagination: any) {
     this.pagStations = pagination;
     this.stations = [...this.pagStations.items];
-    this.totalItems = pagination.total;
-    this.updateEditCache();
     this.totalItems = this.pagStations.total;
+    this.updateEditCache();
+
+    this.stations.map(value => {
+      // Fix for SelfReference Station Type
+      if (value.parentStation !== null && !value.parentStation.name) {
+        Station.fetch<Station>(getPotionID(value.parentStation['$uri'], '/station'))
+          .then(parentStation => value.parentStation = parentStation);
+      }
+    });
   }
 
   /**
@@ -280,7 +291,7 @@ export class StationsComponent implements OnInit {
    * Adds new row (name and order fields) station to the form
    */
   addStationRow() {
-    this.control.push( this.fb.group(this.rowStation) );
+    this.control.push(this.fb.group(this.rowStation));
   }
 
   /**
@@ -300,7 +311,9 @@ export class StationsComponent implements OnInit {
     if (this.control.length === 0) {
       this.addStationRow();
     } else {
-      while (this.control.length > 0) { this.control.removeAt(0); }
+      while (this.control.length > 0) {
+        this.control.removeAt(0);
+      }
     }
   }
 
@@ -374,9 +387,9 @@ export class StationsComponent implements OnInit {
    * @param items obtained from form array or array form.
    */
   saveArrayStations(items: any[]): Promise<any> {
-    const savePromises    = [];
+    const savePromises = [];
     this.logPromisesERROR = [];
-    this.logPromisesOK    = [];
+    this.logPromisesOK = [];
 
     let total = +this.totalItems;
 
@@ -386,7 +399,9 @@ export class StationsComponent implements OnInit {
         item.parentStation = (item.parentStation) ? parseInt(item.parentStation, 10) : null;
 
         // TODO: CHECK HOW TO TAKE VALUE FROM HIDDEN INPUT FORM
-        if (!item.order) { item.order = ++total; }
+        if (!item.order) {
+          item.order = ++total;
+        }
 
         const body = {
           name: item.name,
@@ -398,24 +413,24 @@ export class StationsComponent implements OnInit {
         const station = new Station(body);
         // TODO: REVISE PROMISES (sometimes them don't resolve)
         const promise = station.save()
-            .then(result => {
-              this.logPromisesOK.push(result);
-              return result;
-            })
-            .catch(err => {
-              this.logPromisesERROR.push({
-                value: item,
-                reason: err
-              });
-              return err;
+          .then(result => {
+            this.logPromisesOK.push(result);
+            return result;
+          })
+          .catch(err => {
+            this.logPromisesERROR.push({
+              value: item,
+              reason: err
             });
+            return err;
+          });
         savePromises.push(promise);
       }
     }
     return Promise.all(savePromises)
       .then(() =>
         new Promise((resolve, reject) =>
-          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(items)) )
+          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(items)))
       .catch(err =>
         new Promise(((resolve, reject) => reject(err))));
   }

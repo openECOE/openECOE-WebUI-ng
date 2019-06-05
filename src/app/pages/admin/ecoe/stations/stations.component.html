@@ -19,8 +19,8 @@
         </a>
       </th>
       <th nzWidth="85px">{{"ORDER" | translate}}</th>
-      <th>{{"NAME" | translate}}</th>
-      <th nzWidth="140px">{{"PARENT_STATION" | translate}}</th>
+      <th nzWidth="300px">{{"NAME" | translate}}</th>
+      <th nzWidth="300px">{{"PARENT_STATION" | translate}}</th>
       <th nzWidth="140px">{{"CHILD_STATIONS" | translate}}</th>
       <th nzWidth="240px">
         <nz-button-group>
@@ -68,19 +68,18 @@
           </ng-container>
 
           <ng-container *ngIf="editCache[item.id].edit">
-            <nz-select style="width: 100px"
+            <nz-select style="width: 100%"
               nzShowSearch
               nzServerSearch
               [nzMaxTagCount]="1"
               [nzNotFoundContent]="('STATION_NOT_FOUND' | translate)"
               nzAllowClear="true"
-              [ngModel]="editCache[item.id].item.parentStation?.id"
-              (ngModelChange)="optionChanged($event, editCache[item.id].item)"
+              [(ngModel)]="editCache[item.id].item.parentStation"
               [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
               nzFilterOption="true"
               (nzOnSearch)="searchInSelect($event)"
             >
-              <nz-option *ngFor="let option of selectOptions['items']"  [nzLabel]="option.name" [nzValue]="option.id"> </nz-option>
+              <nz-option *ngFor="let station of selectOptions['items']"  [nzLabel]="station.name" [nzValue]="station"> </nz-option>
             </nz-select>
           </ng-container>
         </td>
