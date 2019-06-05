@@ -1,9 +1,8 @@
-import {Component, Input, Output, OnInit, EventEmitter} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Event, Schedule} from '../../../../../models/schedule';
 import {Station} from '../../../../../models/ecoe';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SharedService} from '../../../../../services/shared/shared.service';
-import {subscriptionLogsToBeFn} from 'rxjs/internal/testing/TestScheduler';
 import {Item, Pagination} from '@openecoe/potion-client';
 
 @Component({
@@ -126,25 +125,26 @@ export class EventsComponent implements OnInit {
 
   getStationEvents(): Promise<any> {
     const query = {
-      where: {stage: this.schedule.stage.id}
+      where: {stage: this.schedule.stage.id, station: {$ne: null}}
     };
 
-    const promise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       Schedule.query<Schedule>(query)
-        .then(schedules => {
+        .then(async schedules => {
           let stationEvents: Array<Event> = [];
-          schedules.filter((value) => value.station)
-            .forEach(async itemSchedule =>
-              stationEvents = [...stationEvents, ...await this.getEvents(itemSchedule)]
-            );
-          console.log('Events Station', stationEvents);
+
+          await Promise.all(schedules.map((itemSchedule) =>
+              this.getEvents(itemSchedule).then(value => {
+                stationEvents = [...stationEvents, ...value];
+              })
+            )
+          );
+
+          console.log('Station Events', stationEvents);
           resolve(stationEvents);
         })
         .catch(reason => reject(reason));
     });
-
-    return promise;
-
   }
 
   getStations(): Promise<any> {

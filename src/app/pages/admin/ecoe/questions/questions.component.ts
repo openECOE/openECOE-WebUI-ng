@@ -280,29 +280,24 @@ export class QuestionsComponent implements OnInit {
       return;
     }
 
-
-    const respPromises = [];
-
-    file.forEach(async (block, idx) => {
-      const response = this.hasQblock(block.name, this.stationId)
-        .then((result) => {
-          if (result && (<Array<any>>result).length === 1) {
-            currentBlockId = result[0]['id'];
-            return this.addQuestions(block.questions, currentBlockId);
-          } else if (!result) {
-            return this.addQblock(block.name, (idx + 1))
-              .then(res => {
-                currentBlockId = res['id'];
-                return this.addQuestions(block.questions, currentBlockId);
-              })
-              .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
-          }
-        })
-        .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
-      respPromises.push(response);
-    });
-
-    return Promise.all(respPromises);
+    return Promise.all(file.map(async (block, idx) => {
+        await this.hasQblock(block.name, this.stationId)
+          .then(async (result) => {
+            if (result && (<Array<any>>result).length === 1) {
+              currentBlockId = result[0]['id'];
+              return await this.addQuestions(block.questions, currentBlockId);
+            } else if (!result) {
+              return await this.addQblock(block.name, (idx + 1))
+                .then(async res => {
+                  currentBlockId = res['id'];
+                  return await this.addQuestions(block.questions, currentBlockId);
+                })
+                .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
+            }
+          })
+          .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
+      })
+    );
 
   }
 
@@ -349,8 +344,8 @@ export class QuestionsComponent implements OnInit {
    * @param items array of questions
    * @param idBlock which questions will be asociated
    */
-  addQuestions(items: any[], idBlock: number) {
-    items.forEach(async (item) => {
+  async addQuestions(items: any[], idBlock: number) {
+    for (const item of items) {
       const body = {
         area: (await Area.first({where: {code: (item[this.HEADER.ac] + ''), ecoe: this.ecoeId}})),
         description: item[this.HEADER.description],
@@ -370,7 +365,8 @@ export class QuestionsComponent implements OnInit {
           });
           return reason;
         });
-    });
+    }
+
     return new Promise((resolve) => resolve('ALL'));
   }
 
