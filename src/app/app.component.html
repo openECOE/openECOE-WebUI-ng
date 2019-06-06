@@ -1,7 +1,11 @@
-<nz-header>
-  <a *ngIf="authService.userData">{{authService.userData.user.email}}</a>
-  <a style="float: right;" (click)="authService.userData ? authService.logout() : router.navigate(['/login'])">
-    {{(authService.userData ? "LOG_OUT" : "LOG_IN") | translate}}
-  </a>
-</nz-header>
-<router-outlet></router-outlet>
+<nz-layout class="layout">
+  <nz-header style="position:fixed; width:100%; z-index: 1000;">
+    <a *ngIf="authService.userData">{{authService.userData.user.email}}</a>
+    <a style="float: right;" (click)="authService.userData ? authService.logout() : router.navigate(['/login'])">
+      {{(authService.userData ? "LOG_OUT" : "LOG_IN") | translate}}
+    </a>
+  </nz-header>
+  <nz-layout style="margin-top:64px;">
+    <router-outlet></router-outlet>
+  </nz-layout>
+</nz-layout>

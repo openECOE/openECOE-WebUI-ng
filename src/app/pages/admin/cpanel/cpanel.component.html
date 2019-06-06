@@ -1,22 +1,21 @@
 <nz-layout>
   <nz-sider [nzCollapsible]="true"
             [(nzCollapsed)]="isCollapsed"
-            [nzTrigger]="null"
-            *ngIf="(shared.getPageChanged() | async) != '/admin'">
+            [nzWidth]="200"
+            *ngIf="(shared.getPageChanged() | async) != '/admin'"
+            [nzReverseArrow]="isReverseArrow"
+            style="height: calc(100vh - 64px); overflow: auto; position: fixed; left: 0">
     <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
       <li nz-menu-item *ngFor="let item of menu" [routerLink]="item.path">
         <i nz-icon [nzType]="item.icon" [nzTheme]="item.theme ? item.theme : 'outline'"></i>
         <span class="nav-text">{{item.title | translate}}</span>
       </li>
-      <li (click)="isCollapsed = !isCollapsed">
-        <button nz-button [nzType]="'primary'" [nzBlock]="true">
-          <i nz-icon [type]="isCollapsed ? 'menu-unfold' : 'menu-fold'" icon-25></i>
-        </button>
-      </li>
     </ul>
   </nz-sider>
-  <nz-layout>
+  <nz-layout [ngStyle]="{'margin-left.px': isCollapsed ? 80 : 200}"
+             style="padding:0 24px 24px;">
     <router-outlet></router-outlet>
+    <nz-footer style="text-align: center;"></nz-footer>
   </nz-layout>
 </nz-layout>
 

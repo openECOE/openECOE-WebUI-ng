@@ -16,11 +16,10 @@
     <th nzWidth="40px">{{"ORDER" | translate}}</th>
     <th nzWidth="400px">{{"DESCRIPTION" | translate}}</th>
     <th nzWidth="150px">{{"REFERENCE" | translate}}</th>
-    <th>{{"QUESTION_TYPE" | translate}}</th>
     <th>{{"AREA" | translate}}</th>
+    <th>{{"QUESTION_TYPE" | translate}}</th>
     <th nzAlign="right">
-      <button nz-button [nzType]="'primary'"
-              (click)="addQuestion()">
+      <button nz-button [nzType]="'primary'" (click)="addQuestion()">
         <i nz-icon [type]="'plus-circle'"></i>
         {{'ADD_QUESTION' | translate}}
       </button>
@@ -65,23 +64,6 @@
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[index].edit else editQuestionType">
-          {{getQuestionTypeLabel(item.questionType) | translate}}
-        </ng-container>
-
-        <ng-template #editQuestionType>
-          <nz-select style="width: 100%;"
-                     [nzSize]="'small'"
-                     [nzShowSearch]="true"
-                     [(ngModel)]="editCache[index].data.questionType">
-            <nz-option *ngFor="let option of questionTypeOptions"
-                       [nzLabel]="option.label | translate"
-                       [nzValue]="option.type">
-            </nz-option>
-          </nz-select>
-        </ng-template>
-      </td>
-      <td>
         <ng-container *ngIf="!editCache[index].edit else editArea">
           {{item.area.name}}
         </ng-container>
@@ -98,6 +80,25 @@
           </nz-select>
         </ng-template>
       </td>
+
+      <td>
+        <ng-container *ngIf="!editCache[index].edit else editQuestionType">
+          {{getQuestionTypeLabel(item.questionType) | translate}}
+        </ng-container>
+
+        <ng-template #editQuestionType>
+          <nz-select style="width: 100%;"
+                     [nzSize]="'small'"
+                     [nzShowSearch]="true"
+                     [(ngModel)]="editCache[index].data.questionType">
+            <nz-option *ngFor="let option of questionTypeOptions"
+                       [nzLabel]="option.label | translate"
+                       [nzValue]="option.type">
+            </nz-option>
+          </nz-select>
+        </ng-template>
+      </td>
+
       <td text-right>
         <nz-tag [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'" (click)="editCache[index].expand = !editCache[index].expand">
           <i nz-icon [type]="editCache[index].expand ? 'caret-down' : 'caret-right'"></i>

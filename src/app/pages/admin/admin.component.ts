@@ -14,6 +14,7 @@ import {mergeMap} from 'rxjs/operators';
 export class AdminComponent implements OnInit {
 
   isCollapsed: boolean = false;
+  isReverseArrow: boolean = false;
   ecoes: any[];
   ecoeForm: FormControl;
   showCreateEcoe: boolean;
@@ -61,5 +62,13 @@ export class AdminComponent implements OnInit {
   closeDrawer() {
     this.showCreateEcoe = false;
     this.ecoeForm.reset();
+  }
+
+  minName(text: string): string {
+
+    // First remove all letters, only use nums
+    const minText = text.replace(/((?![\d\s]).)+/g, '').trim();
+
+    return minText.length > 0 ? minText : text.charAt(0);
   }
 }

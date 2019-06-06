@@ -12,6 +12,9 @@ export class CpanelComponent implements OnInit {
 
   loading: boolean = false;
 
+  isCollapsed: boolean = false;
+  isReverseArrow: boolean = false;
+
   menu: Array<{ title: string, path: string, icon: string, theme?: string }> = [
     {
       title: 'CONTROL_PANEL',

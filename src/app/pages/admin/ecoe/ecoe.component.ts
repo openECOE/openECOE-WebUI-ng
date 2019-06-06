@@ -14,6 +14,7 @@ export class EcoeComponent implements OnInit {
 
   ecoe: any;
   isCollapsed: boolean = false;
+  isReverseArrow: boolean = false;
 
   ecoe_menu: Array<{ title: string, path: string, icon: string, theme?: string }> = [
     {
