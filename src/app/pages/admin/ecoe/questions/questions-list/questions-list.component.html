@@ -13,19 +13,16 @@
           >
   <thead>
   <tr>
-    <th [nzExpand]="true">
-    </th>
-    <th nzWidth="85px">{{"ORDER" | translate}}</th>
-    <th>{{"DESCRIPTION" | translate}}</th>
+    <th nzWidth="40px">{{"ORDER" | translate}}</th>
+    <th nzWidth="400px">{{"DESCRIPTION" | translate}}</th>
     <th nzWidth="150px">{{"REFERENCE" | translate}}</th>
-    <th nzWidth="150px">{{"QUESTION_TYPE" | translate}}</th>
-    <th nzWidth="95px">{{"OPTIONS" | translate}}</th>
-    <th nzWidth="130px">{{"AREA" | translate}}</th>
-    <th nzWidth="140px">
-      <button nz-button [nzType]="'primary'" class="margin-left"
-              [nz-tooltip] [nzTitle]="'ADD_QUESTION' | translate"
+    <th>{{"QUESTION_TYPE" | translate}}</th>
+    <th>{{"AREA" | translate}}</th>
+    <th nzAlign="right">
+      <button nz-button [nzType]="'primary'"
               (click)="addQuestion()">
-        <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
+        <i nz-icon [type]="'plus-circle'"></i>
+        {{'ADD_QUESTION' | translate}}
       </button>
     </th>
   </tr>
@@ -34,10 +31,7 @@
   <tbody>
   <ng-template ngFor let-item let-index="index" [ngForOf]="table.data">
     <tr>
-      <td [(nzExpand)]="editCache[index].expand" [nzShowExpand]="true">
-      </td>
-
-      <td>
+      <td nzAlign="right">
         <ng-container *ngIf="!editCache[index].edit else editOrder">
           {{item.order || "-"}}
         </ng-container>
@@ -87,9 +81,6 @@
           </nz-select>
         </ng-template>
       </td>
-
-      <td>{{item.options.length}}</td>
-
       <td>
         <ng-container *ngIf="!editCache[index].edit else editArea">
           {{item.area.name}}
@@ -107,34 +98,12 @@
           </nz-select>
         </ng-template>
       </td>
-
       <td text-right>
-        <ng-container>
-          <!--<a [nz-tooltip] [nzTitle]="'MOVE_TO' | translate">-->
-            <!--<i nz-icon type="folder-add" nzTheme="twotone"-->
-               <!--nz-popover-->
-               <!--[nzTrigger]="'click'"-->
-               <!--[nzPlacement]="'left'"-->
-               <!--[nzContent]="qblocksList">-->
-            <!--</i>-->
-          <!--</a>-->
-
-          <nz-divider [nzType]="'vertical'"></nz-divider>
-        </ng-container>
-
-        <!--<ng-template #qblocksList>-->
-          <!--<nz-list [nzDataSource]="qblocks" [nzSize]="'small'" [nzRenderItem]="qb">-->
-            <!--<ng-template #qb let-qb>-->
-              <!--<nz-list-item [nzContent]="qb.name" [nzActions]="[moveAction]" tappable-->
-                            <!--(click)="moveQuestion(item.id, qblock.id, qb.id)">-->
-                <!--<ng-template #moveAction>-->
-                  <!--<i nz-icon type="right-circle" nzTheme="twotone"></i>-->
-                <!--</ng-template>-->
-              <!--</nz-list-item>-->
-            <!--</ng-template>-->
-          <!--</nz-list>-->
-        <!--</ng-template>-->
-
+        <nz-tag [nzColor]="'geekblue'" (click)="editCache[index].expand = !editCache[index].expand">
+          <i nz-icon [type]="editCache[index].expand ? 'caret-down' : 'caret-right'"></i>
+          {{item.options.length}} {{'OPTIONS' | translate}}
+        </nz-tag>
+        <nz-divider [nzType]="'vertical'"></nz-divider>
         <app-action-buttons [isEditing]="editCache[index].edit"
                             [isNewItem]="editCache[index].new_item"
                             (startEdit)="startEdit(index)"
@@ -146,7 +115,7 @@
     </tr>
     <tr [nzExpand]="editCache[index].expand">
       <td></td>
-      <td colspan="8">
+      <td colspan="5">
         <app-options-list [question]="item"></app-options-list>
       </td>
     </tr>

@@ -4,6 +4,7 @@ import {forkJoin} from 'rxjs';
 import {ApiService} from '../../../../../../services/api/api.service';
 import {Router} from '@angular/router';
 import {SharedService} from '../../../../../../services/shared/shared.service';
+import {promise} from 'selenium-webdriver';
 
 @Component({
   selector: 'app-options-list',
@@ -72,12 +73,10 @@ export class OptionsListComponent implements OnInit {
     };
 
     const request = (
-      newItem ?
-        this.apiService.createResource('option', body) :
-        this.apiService.updateResource(item['$uri'], body)
+      newItem ? new Option(body).save() : option.update(body)
     );
 
-    request.subscribe(response => {
+    request.then(response => {
       delete this.editCacheOption[option.id];
       delete this.editCacheOption[response['id']];
 
@@ -86,7 +85,7 @@ export class OptionsListComponent implements OnInit {
         ...response
       };
 
-      question.optionsArray = question.optionsArray
+      question.options = question.options
         .map(x => (x.id === option.id ? response : x))
         .sort(this.sharedService.sortArray);
     });
@@ -117,9 +116,11 @@ export class OptionsListComponent implements OnInit {
    * @param option Resource selected
    * @param question Parent resource passed
    */
-  deleteOption(option: any, question: any) {
-    this.apiService.deleteResource(option['$uri']).subscribe(() => {
-      this.updateArrayOptions(option.id, question);
+  deleteOption(option: Option, question: any) {
+    const idOption = option.id;
+
+    option.destroy().then(() => {
+      this.updateArrayOptions(idOption, question);
     });
   }
 
@@ -131,7 +132,7 @@ export class OptionsListComponent implements OnInit {
    */
   updateArrayOptions(option: number, question: any) {
     delete this.editCacheOption[option];
-    question.optionsArray = question.optionsArray
+    question.options = question.options
       .filter(x => x.id !== option)
       .sort(this.sharedService.sortArray);
   }
@@ -149,13 +150,13 @@ export class OptionsListComponent implements OnInit {
 
         const newItem = {
           id: this.indexOpt,
-          order: '',
+          order: this.question.options.length + 1,
           label: '',
           points: 0,
           question: question.id
         };
 
-        question.optionsArray = [...question.optionsArray, newItem];
+        question.options = [...question.options, newItem];
 
         this.editCacheOption[this.indexOpt] = {
           edit: true,
@@ -176,16 +177,18 @@ export class OptionsListComponent implements OnInit {
    * @param question Parent resource passed
    */
   changeOptionOrder(direction: string, option: any, index: number, question: any) {
-    const itemToMove = (direction === 'up') ? question.optionsArray[index - 1] : question.optionsArray[index + 1];
+    const itemToMove = (direction === 'up') ? question.options[index - 1] : question.options[index + 1];
 
-    forkJoin(
-      this.apiService.updateResource(option['$uri'], {order: itemToMove.order}),
-      this.apiService.updateResource(itemToMove['$uri'], {order: option.order})
-    ).subscribe(response => {
-      response.forEach(res => {
+    const promises = [];
+
+    promises.push(option.update({order: itemToMove.order}));
+    promises.push(itemToMove.update({order: option.order}));
+
+    Promise.all(promises).then(response => {
+      response.map(res => {
         this.editCacheOption[res['id']] = res;
 
-        question.optionsArray = question.optionsArray
+        question.options = question.options
           .map(x => (x.id === res.id ? res : x))
           .sort(this.sharedService.sortArray);
       });
