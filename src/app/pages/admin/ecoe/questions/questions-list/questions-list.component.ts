@@ -139,6 +139,8 @@ export class QuestionsListComponent implements OnInit {
       return;
     }
 
+    question.question_type = question.questionType;
+
     question.save().then(response => {
       // this.cancelEdit(index);
 
