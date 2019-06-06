@@ -1,64 +1,53 @@
 <nz-table #optionTable
           [nzData]="question?.options"
-          nzSize="small"
-          [nzShowPagination]="true"
+          nzSize="middle"
+          [nzShowPagination]="false"
           [nzFooter]="addOptionBtn">
   <thead>
   <tr>
-    <th nzWidth="85px">{{"ORDER" | translate}}</th>
-    <th>{{"LABEL" | translate}}</th>
+    <th nzWidth="40px">{{"ORDER" | translate}}</th>
+    <th nzWidth="250px">{{"LABEL" | translate}}</th>
     <th nzWidth="150px">{{"POINTS" | translate}}</th>
-    <th nzWidth="150px">{{"PREVIEW" | translate}}</th>
-    <th nzWidth="95px"></th>
-    <th nzWidth="130px"></th>
-    <th nzWidth="140px"></th>
+    <th>{{"PREVIEW" | translate}}</th>
+    <th></th>
   </tr>
   </thead>
 
   <tbody>
   <tr *ngFor="let option of optionTable.data; let indexOption = index">
     <td>
-      <ng-container *ngIf="!editCacheOption[option.id].edit">
-        {{option.order}}
-      </ng-container>
-
-      <ng-container *ngIf="editCacheOption[option.id].edit">
-        <nz-input-number [nzMin]="0"
-                         [nzSize]="'small'"
-                         [(ngModel)]="editCacheOption[option.id].order">
-        </nz-input-number>
-      </ng-container>
+      {{option.order}}
     </td>
 
     <td>
-      <ng-container *ngIf="!editCacheOption[option.id].edit">
+      <ng-container *ngIf="!editCacheOption[option.id].edit else editLabel">
         {{option.label}}
       </ng-container>
 
-      <ng-container *ngIf="editCacheOption[option.id].edit">
+      <ng-template #editLabel>
         <input type="text"
                nz-input
                [nzSize]="'small'"
                required
                [(ngModel)]="editCacheOption[option.id].label">
-      </ng-container>
+      </ng-template>
     </td>
 
     <td>
-      <ng-container *ngIf="!editCacheOption[option.id].edit">
+      <ng-container *ngIf="!editCacheOption[option.id].edit else editPoints">
         {{option.points}}
       </ng-container>
 
-      <ng-container *ngIf="editCacheOption[option.id].edit">
+      <ng-template #editPoints>
         <nz-input-number [nzStep]="0.1" [nzSize]="'small'" [(ngModel)]="editCacheOption[option.id].points">
         </nz-input-number>
-      </ng-container>
+      </ng-template>
     </td>
 
-    <td *ngIf="((question.question_type == 'RS') && indexOption == 0)
-|| question.question_type == 'CH' || question.question_type == 'RB'"
-        [attr.rowspan]="(question.question_type == 'RS') ? question.options.length : 1">
-      <ng-container *ngIf="question.question_type == 'CH'">
+    <td *ngIf="((question.questionType == 'RS') && indexOption == 0)
+|| question.questionType == 'CH' || question.questionType == 'RB'"
+        [attr.rowspan]="(question.questionType == 'RS') ? question.options.length : 1">
+      <ng-container *ngIf="question.questionType == 'CH'">
         <nz-switch [ngModel]="!editCacheOption[option.id].edit"
                    [nzCheckedChildren]="editCacheOption[option.id].edit ?
 editCacheOption[option.id].label :
@@ -70,7 +59,7 @@ option.label"
         </nz-switch>
       </ng-container>
 
-      <ng-container *ngIf="question.question_type == 'RB'">
+      <ng-container *ngIf="question.questionType == 'RB'">
         <nz-radio-group [(ngModel)]="option.id">
           <label nz-radio [nzValue]="option.id"
                  [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
@@ -79,15 +68,11 @@ option.label"
         </nz-radio-group>
       </ng-container>
 
-      <ng-container *ngIf="question.question_type == 'RS'">
+      <ng-container *ngIf="question.questionType == 'RS'">
         <nz-rate [(ngModel)]="valueopt" [nzCount]="question.options.length"></nz-rate>
         <span class="ant-rate-text">{{valueopt}}</span>
       </ng-container>
     </td>
-
-    <td></td>
-    <td></td>
-
     <td text-right>
       <app-action-buttons [isEditing]="editCacheOption[option.id].edit"
                           [isNewItem]="editCacheOption[option.id].new_item"
@@ -105,10 +90,9 @@ option.label"
   </tbody>
 
   <ng-template #addOptionBtn>
-    <div text-center>
-      <button nz-button [nzType]="'dashed'" style="width: 300px" (click)="addOption(question)">
-        {{"ADD_OPTION" | translate}}
-      </button>
-    </div>
+    <button nz-button nzType="dashed" nzBlock (click)="addOption(question)">
+      <i nz-icon type="check-circle"></i>
+      {{"ADD_OPTION" | translate}}
+    </button>
   </ng-template>
 </nz-table>
