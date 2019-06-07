@@ -1,21 +1,21 @@
-<nz-layout>
-  <nz-sider [nzCollapsible]="true"
-            [(nzCollapsed)]="isCollapsed"
-            [nzWidth]="200"
-            *ngIf="(sharedService.getPageChanged() | async) != '/admin'"
-            [nzReverseArrow]="isReverseArrow"
-            style="height: calc(100vh - 64px); overflow: auto; position: fixed; left: 0">
-    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
-      <li nz-menu-item *ngFor="let item of ecoe_menu" [routerLink]="item.path">
-        <i nz-icon [type]="item.icon" [nzTheme]="item.theme ? item.theme : 'fill'"></i>
-        <span class="nav-text">{{item.title | translate}}</span>
-      </li>
-    </ul>
-  </nz-sider>
-  <nz-layout [ngStyle]="{'margin-left.px': isCollapsed ? 80 : 200}"
-             style="padding:0 24px 24px;">
-    <router-outlet></router-outlet>
-    <nz-footer style="text-align: center;"></nz-footer>
-  </nz-layout>
+<nz-sider [nzCollapsible]="true"
+          [(nzCollapsed)]="isCollapsed"
+          [nzWidth]="200"
+          *ngIf="(sharedService.getPageChanged() | async) != '/admin'"
+          [nzReverseArrow]="isReverseArrow"
+          style="height: calc(100vh - 64px); overflow: auto; position: fixed; left: 0">
+
+  <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+    <li nz-menu-item *ngFor="let item of ecoe_menu" [routerLink]="item.path">
+      <i nz-icon [type]="item.icon" [nzTheme]="item.theme ? item.theme : 'fill'"></i>
+      <span class="nav-text">{{item.title | translate}}</span>
+    </li>
+  </ul>
+</nz-sider>
+<nz-layout [ngStyle]="{'margin-left.px': isCollapsed ? 80 : 200}"
+           style="padding:0 24px 24px;">
+  <router-outlet></router-outlet>
+  <nz-footer style="text-align: center;"></nz-footer>
 </nz-layout>
+
 
