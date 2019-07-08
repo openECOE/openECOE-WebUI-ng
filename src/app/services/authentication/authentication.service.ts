@@ -58,7 +58,7 @@ export class AuthenticationService {
   }
 
   loadUserData() {
-    this.apiService.getResource('/api/user/me')
+    this.apiService.getResource('/api/v1/user/me')
       .subscribe(
         data => {
           const user = new UserLogged(data);
@@ -73,6 +73,6 @@ export class AuthenticationService {
   }
 
   getUserData() {
-    return this.apiService.getResource('/api/user/me');
+    return this.apiService.getResource('/api/v1/user/me');
   }
 }

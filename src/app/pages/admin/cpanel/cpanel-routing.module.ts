@@ -4,7 +4,7 @@ import { CpanelComponent} from './cpanel.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthenticationGuard} from '../../../guards/authentication/authentication.guard';
 import {UsersAdminComponent} from './users-admin/users-admin.component';
-
+import {Role} from '../../../models';
 
 
 const routes: Routes = [

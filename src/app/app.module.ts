@@ -78,7 +78,7 @@ export function createTranslateLoader(http: HttpClient) {
       provide: POTION_CONFIG,
       useValue: {
         host: environment.API_ROUTE,
-        prefix: '/api'
+        prefix: '/api/v1'
       }
     },
     {

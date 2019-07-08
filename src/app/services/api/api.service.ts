@@ -15,7 +15,7 @@ export class ApiService {
   /**
   * Constant with the 'api' path.
   */
-  apiUrl: string = 'api';
+  apiUrl: string = 'api/v1';
 
   constructor(private http: HttpClient) {
 
