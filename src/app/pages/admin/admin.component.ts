@@ -37,7 +37,7 @@ export class AdminComponent implements OnInit {
     this.authService.getUserData().pipe(
       mergeMap(userData => {
         this.organization = userData.organization;
-        return this.apiService.getResources('ecoe', {
+        return this.apiService.getResources('ecoes', {
           where: `{"organization":{"$eq":${JSON.stringify(this.organization)}}}`
         });
       })

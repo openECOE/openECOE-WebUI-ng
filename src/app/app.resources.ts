@@ -6,19 +6,19 @@ import {
 } from './models';
 
 export const resources: PotionResources = {
-  '/organization': Organization,
-  '/ecoe': ECOE,
-  '/area': Area,
-  '/station': Station,
-  '/qblock': QBlock,
-  '/question': Question,
-  '/option': Option,
-  '/student': Student,
-  '/schedule': Schedule,
-  '/stage': Stage,
-  '/event': Event,
-  '/planner': Planner,
-  '/round': Round,
-  '/shift': Shift,
-  '/user': User
+  '/organizations': Organization,
+  '/ecoes': ECOE,
+  '/areas': Area,
+  '/stations': Station,
+  '/qblocks': QBlock,
+  '/questions': Question,
+  '/options': Option,
+  '/students': Student,
+  '/schedules': Schedule,
+  '/stages': Stage,
+  '/events': Event,
+  '/planners': Planner,
+  '/rounds': Round,
+  '/shifts': Shift,
+  '/users': User
 };
