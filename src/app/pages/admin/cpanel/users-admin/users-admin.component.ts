@@ -99,6 +99,7 @@ export class UsersAdminComponent implements OnInit {
     listItems.forEach((item, index) => {
       editCache[index] = this.assignEditCache(item, editCache[index] ? editCache[index].editItem : false, false);
     });
+    this.editCache = editCache;
   }
 
   addUser(email: string = '',
@@ -219,7 +220,6 @@ export class UsersAdminComponent implements OnInit {
         this.closeModal();
       });
   }
-
 
 }
 

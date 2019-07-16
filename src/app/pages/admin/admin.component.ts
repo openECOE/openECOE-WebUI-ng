@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../services/api/api.service';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
-import {SharedService} from '../../services/shared/shared.service';
 import {AuthenticationService} from '../../services/authentication/authentication.service';
 import { ResourceIcons } from '../../constants/icons';
 import {mergeMap} from 'rxjs/operators';
+import {SharedService} from '../../services/shared/shared.service';
+import {MenuService} from '../../services/menu/menu.service';
+import {Router} from '@angular/router';
+
 
 @Component({
   selector: 'app-admin',
@@ -22,15 +25,39 @@ export class AdminComponent implements OnInit {
 
   icons = ResourceIcons;
 
+  menu: any[];
+  admin: boolean;
+
   constructor(private apiService: ApiService,
               private formBuilder: FormBuilder,
-              public sharedService: SharedService,
-              private authService: AuthenticationService) {
+              private authService: AuthenticationService,
+              private sharedService: SharedService) {
   }
 
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
     this.loadEcoes();
+
+    // this.menuService.menuAdmin.next(true);
+
+    /*this.menuService.getMenuFor(this.constructor.name)
+      .then(value => {
+        this.menu = value;
+        this.cdRef.markForCheck();
+      });*/
+
+    /*this.menuService.currentMenu.subscribe(value => {
+      this.menuService.getMenuFor(value)
+        .then(menu => { console.log('this.menuService.getMenuFor ', menu);
+          this.menu = menu;
+          this.cdRef.markForCheck();
+        });
+    });*/
+    /*this.menuService.menuAdmin.subscribe( value => { console.log('admin?: ', value);
+      this.admin = value;
+      this.cdRef.markForCheck();
+    });*/
+
   }
 
   loadEcoes() {
@@ -41,7 +68,10 @@ export class AdminComponent implements OnInit {
           where: `{"organization":{"$eq":${JSON.stringify(this.organization)}}}`
         });
       })
-    ).subscribe(ecoes => this.ecoes = ecoes);
+    ).subscribe(ecoes => {
+      this.ecoes = ecoes;
+      console.log('ecoes: ' , this.ecoes);
+    });
   }
 
   submitForm() {

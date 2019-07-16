@@ -20,6 +20,7 @@ import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner
 import {ComponentsModule} from '../../../components/components.module';
 import { QuestionsListComponent } from './questions/questions-list/questions-list.component';
 import { OptionsListComponent } from './questions/questions-list/options-list/options-list.component';
+import { StationDetailsComponent } from './stations/station-details/station-details.component';
 
 @NgModule({
   imports: [
@@ -47,7 +48,8 @@ import { OptionsListComponent } from './questions/questions-list/options-list/op
     PlannerSelectorComponent,
     AppStudentSelectorComponent,
     QuestionsListComponent,
-    OptionsListComponent
+    OptionsListComponent,
+    StationDetailsComponent
   ],
   entryComponents: [AppStudentSelectorComponent]
 })

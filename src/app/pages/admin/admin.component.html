@@ -1,9 +1,11 @@
-<nz-sider [nzCollapsible]="false"
+
+<!-----------MENU SIDER PARA TODA LA SECCION DE ADMINISTRACION--------------->
+<!--<nz-sider [nzCollapsible]="false"
           [(nzCollapsed)]="isCollapsed"
           [nzWidth]="200"
           [nzReverseArrow]="isReverseArrow"
           *ngIf="(sharedService.getPageChanged() | async) == '/admin'"
-          style="overflow: auto; height: 100vh; position: fixed">
+          style="overflow: auto; height: 100vh; position: fixed"> &lt;!&ndash;*ngIf="(sharedService.getPageChanged() | async) == '/admin'"&ndash;&gt;
   <ul nz-menu
       [nzTheme]="'dark'"
       [nzMode]="'inline'"
@@ -23,7 +25,54 @@
       <span class="nav-text">{{"CONTROL_PANEL" | translate}}</span>
     </li>
   </ul>
-</nz-sider>
+</nz-sider>-->
+<!--------------------------------FIN MENU SIDER----------------------------------->
+
+
+<ng-container *ngIf="(sharedService.getPageChanged() | async) == '/admin'">
+
+  <a>
+    <nz-card
+      style=" margin-left: 250px; margin-top: 50px; width:300px;"
+      [nzTitle]="'CREATE_ECOE' | translate"
+      (click)="showCreateEcoe = true">
+    </nz-card>
+    <!--<i nz-icon [type]="icons.addIcon"></i>-->
+    <!--<ng-template #extraTemplate>
+      <a>-</a>
+    </ng-template>-->
+  </a>
+
+  <ng-container *ngFor="let ecoe of ecoes">
+    <a>
+      <nz-card
+        style=" margin-left: 250px; margin-top: 50px; width:300px;"
+        [nzTitle]="ecoe.name"
+        [routerLink]="['./ecoe', ecoe.id]">
+        <!--<p>Card content</p>-->
+      </nz-card>
+      <!--<ng-template #extraTemplate>
+        <a>-</a>
+      </ng-template>-->
+    </a>
+  </ng-container>
+
+  <a>
+    <nz-card
+      style=" margin-left: 250px; margin-top: 50px; width:300px;"
+      [nzTitle]="'CONTROL_PANEL' | translate"
+      [nzExtra]="'CONTROL_PANEL' | translate"
+      [routerLink]="'./cpanel'">
+    </nz-card>
+    <!--<i nz-icon [type]="icons.settingsIcon"></i>
+    <ng-template #extraTemplate>
+      <a>-</a>
+    </ng-template>-->
+  </a>
+
+</ng-container>
+
+
 <router-outlet></router-outlet>
 
 <nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"

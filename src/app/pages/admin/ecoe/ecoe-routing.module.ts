@@ -10,6 +10,8 @@ import {PlannerComponent} from './planner/planner.component';
 import {StudentsComponent} from './students/students.component';
 import {AuthenticationGuard} from '../../../guards/authentication/authentication.guard';
 import {ScheduleComponent} from './schedule/schedule.component';
+import {Role} from '../../../models';
+import {StationDetailsComponent} from './stations/station-details/station-details.component';
 
 const routes: Routes = [
   {
@@ -20,13 +22,14 @@ const routes: Routes = [
       {
         path: '',
         children: [
-          {path: 'areas', component: AreasComponent},
-          {path: 'stations', component: StationsComponent},
-          {path: 'questions', component: QuestionsComponent},
-          {path: 'exam', component: ExamComponent},
-          {path: 'planner', component: PlannerComponent},
-          {path: 'students', component: StudentsComponent},
-          {path: 'schedule', component: ScheduleComponent},
+          {path: 'areas', component: AreasComponent,                data: {title: 'AREAS',      roles: [Role.Admin]}},
+          {path: 'stations', component: StationsComponent,          data: {title: 'STATIONS',   roles: [Role.Admin]}},
+          {path: 'stations/:id', component: StationDetailsComponent,data: {title: 'STATIONS',   roles: [Role.Admin]}},
+          {path: 'questions', component: QuestionsComponent,        data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
+          {path: 'exam', component: ExamComponent,                  data: {title: 'EXAM',       roles: [Role.Admin]}},
+          {path: 'planner', component: PlannerComponent,            data: {title: 'PLANNER',    roles: [Role.Admin]}},
+          {path: 'students', component: StudentsComponent,          data: {title: 'STUDENTS',   roles: [Role.Admin]}},
+          {path: 'schedule', component: ScheduleComponent,          data: {title: 'SCHEDULE',   roles: [Role.Admin]}},
           {path: '', component: InformationComponent},
           {path: '**', redirectTo: ''}
         ]

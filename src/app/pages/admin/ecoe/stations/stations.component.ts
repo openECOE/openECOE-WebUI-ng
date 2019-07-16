@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
-import {RowStation, Station} from '../../../../models';
+import {Area, RowStation, Station} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID} from '@openecoe/potion-client';
 
@@ -35,7 +35,7 @@ export class StationsComponent implements OnInit {
   stationForm: FormGroup;
   control: FormArray;
 
-  selectOptions: Array<any> = [];
+  selectOptions: any [] = [];
 
   rowStation: RowStation = {
     order: [''],
@@ -73,8 +73,7 @@ export class StationsComponent implements OnInit {
    * Updates new results for parent select options
    * @param value string to search
    */
-  searchInSelect(value: string): void {
-    // TODO: ADD ALSO NEW ITEMS (options) THAT IS CURRENTLY IN THE FORM (in the drawer)
+  searchInSelect(value: string, exclude?: string): void {
     if (value) {
       Station.query({
         where: {
@@ -83,13 +82,32 @@ export class StationsComponent implements OnInit {
         },
         sort: {'order': false},
         page: 1,
-        perPage: 20
+        perPage: 50
       }, {paginate: true, cache: false})
-        .then(response =>
-          this.selectOptions = response);
+        .then(response => {
+          this.updateOptions(response, exclude);
+        });
     } else {
-      this.loadOptions4Select();
+      this.loadOptions4Select(exclude);
     }
+  }
+
+  updateOptions(response: any, exclude?: string) {
+    this.selectOptions = response;
+    for (const row of (this.stationForm.get('stationRow').value)) {
+      if (row.name) {
+        this.selectOptions['items'].push(new Station({name: row.name}));
+      }
+    }
+    // deleting current station in parent stations list.
+    if (exclude) {
+      const idx = this.selectOptions['items'].map(e => e.name).indexOf(exclude);
+      if (idx > -1) {
+        this.selectOptions['items'].splice(idx, 1);
+      }
+    }
+
+    return new Promise( resolve => resolve(this.selectOptions));
   }
 
   /**
@@ -109,10 +127,19 @@ export class StationsComponent implements OnInit {
         .then(response => {
           this.editCache = [];
           this.loadPage(response);
-        }).finally(() => {
-        this.loading = false;
-        resolve();
-      });
+        })
+        .catch(err => {
+          if (err.status === 404) {
+            this.page--;
+            if (this.page > 0) {
+              this.loadStations().finally();
+            }
+          }
+        })
+        .finally(() => {
+          this.loading = false;
+          resolve();
+        });
     });
   }
 
@@ -120,17 +147,16 @@ export class StationsComponent implements OnInit {
    * Load options for parent station select. By default gets the first 20 results
    * and when user starts to write, the results will update calling [searchInSelect]{@link #searchInSelect}
    */
-  loadOptions4Select() {
-    if (!this.selectOptions || this.selectOptions.length === 0) {
-      Station.query({
+  loadOptions4Select(excludeItem: string = null, page: number = 1 ) {
+      return Station.query({
         where: {'ecoe': this.ecoeId},
         sort: {'order': false},
-        page: 1,
-        perPage: 20
+        page: page,
+        perPage: 50
       }, {skip: this.EXCLUDE_ITEMS, paginate: true, cache: false})
-        .then(response =>
-          this.selectOptions = response);
-    }
+        .then(response => {
+          return this.updateOptions(response, excludeItem);
+        });
   }
 
   /**
@@ -139,11 +165,9 @@ export class StationsComponent implements OnInit {
    *
    * @param item selected resource of stations list
    */
-  startEdit(item: Station) {
-    this.editCache[item.id].item = Object.create(item);
+  startEdit(item: Station, excludeItem?: string) {
     this.editCache[item.id].edit = true;
-
-    this.loadOptions4Select();
+    this.loadOptions4Select(excludeItem);
   }
 
   /**
@@ -168,7 +192,7 @@ export class StationsComponent implements OnInit {
       this.editCache[item.id] = {
         edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
         new_item: false,
-        item: item
+        item: Object.create(item)
       };
     });
   }
@@ -180,7 +204,7 @@ export class StationsComponent implements OnInit {
    *
    * @param cacheItem Resource selected
    */
-  updateItem(cacheItem: any): void {
+  updateItem(cacheItem: any): void { console.log('updateItem()', cacheItem);
     if (!cacheItem.name) {
       return;
     }
@@ -188,7 +212,7 @@ export class StationsComponent implements OnInit {
     const body = {
       name: cacheItem.name,
       ecoe: this.ecoeId,
-      parentStation: cacheItem.parentStation.id
+      parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
     };
 
     const request = cacheItem.update(body);
@@ -206,8 +230,9 @@ export class StationsComponent implements OnInit {
    *
    * @param item Resource selected
    */
-  cancelEdit(item: any): void {
+  cancelEdit(item: any): void { // console.log('on:cancel:', item, this.editCache[item.id]); return;
     this.editCache[item.id].edit = false;
+    this.editCache[item.id].item = Object.create(item);
   }
 
   /**
@@ -386,33 +411,35 @@ export class StationsComponent implements OnInit {
    * multiple rows form.
    * @param items obtained from form array or array form.
    */
-  saveArrayStations(items: any[]): Promise<any> {
+   private async saveArrayStations(items: any[]): Promise<any> {
     const savePromises = [];
     this.logPromisesERROR = [];
     this.logPromisesOK = [];
 
     let total = +this.totalItems;
+    const withParent = [];
 
-    for (const item of items) {
+    console.log('saveArrayStations', items);
+
+     for (const item of items) {
       if (item.name) {
         item['ecoe'] = this.ecoeId;
-        item.parentStation = (item.parentStation) ? parseInt(item.parentStation, 10) : null;
+        // item.parentStation = (item.parentStation) ? parseInt(item.parentStation, 10) : null;
 
-        // TODO: CHECK HOW TO TAKE VALUE FROM HIDDEN INPUT FORM
         if (!item.order) {
           item.order = ++total;
         }
+        if (item.parentStation) { withParent.push(item); }
 
         const body = {
           name: item.name,
           order: item.order,
-          ecoe: this.ecoeId,
-          parentStation: item.parentStation
+          ecoe: this.ecoeId
         };
 
         const station = new Station(body);
-        // TODO: REVISE PROMISES (sometimes them don't resolve)
-        const promise = station.save()
+
+        const promise = await station.save()
           .then(result => {
             this.logPromisesOK.push(result);
             return result;
@@ -427,6 +454,32 @@ export class StationsComponent implements OnInit {
         savePromises.push(promise);
       }
     }
+
+     // SAVING PARENTS NAMES
+    for (const item of withParent) {
+      const primaryStation = await Station.first({where: {name: (item['name'] + ''), ecoe: this.ecoeId}});
+
+      const body = {
+        name: item.name,
+        ecoe: this.ecoeId,
+        parentStation: (item.parentStation) ? (await Station.first({where: {name: (item['parentStation'] + ''), ecoe: this.ecoeId}}))['id'] : null
+      };
+
+      const station = await new Station(primaryStation).update(body)
+        .then(result => {
+          this.logPromisesOK.push(result);
+          return result;
+        })
+        .catch(err => {
+          this.logPromisesERROR.push({
+            value: item,
+            reason: err
+          });
+          return err;
+        });
+      savePromises.push(station);
+    }
+
     return Promise.all(savePromises)
       .then(() =>
         new Promise((resolve, reject) =>

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {Area, EditCache, RowArea} from '../../../../models';
@@ -43,6 +43,7 @@ export class AreasComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
+              private router: Router,
               private sharedService: SharedService,
               private fb: FormBuilder) {
 
@@ -58,6 +59,8 @@ export class AreasComponent implements OnInit {
     this.ecoeId = +this.route.snapshot.params.id;
     this.loadAreas();
     this.InitAreaRow();
+
+    console.log('this.router: ', this.router.url);
   }
 
   /**

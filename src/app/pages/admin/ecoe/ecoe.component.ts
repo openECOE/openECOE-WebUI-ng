@@ -1,81 +1,53 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, AfterViewInit} from '@angular/core';
 import {SharedService} from '../../../services/shared/shared.service';
 import {ResourceIcons} from '../../../constants/icons';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ECOE} from '../../../models/ecoe';
+import {MenuService} from '../../../services/menu/menu.service';
 
 @Component({
   selector: 'app-ecoe',
   templateUrl: './ecoe.component.html',
   styleUrls: ['./ecoe.component.less']
 })
-export class EcoeComponent implements OnInit {
+export class EcoeComponent implements OnInit, AfterViewInit {
 
   ecoe: any;
   isCollapsed: boolean = false;
   isReverseArrow: boolean = false;
 
-  ecoe_menu: Array<{ title: string, path: string, icon: string, theme?: string }> = [
-    {
-      title: 'INFORMATION',
-      path: './',
-      icon: ResourceIcons.infoIcon
-    },
-    {
-      title: 'AREAS',
-      path: './areas',
-      icon: ResourceIcons.areaIcon
-    },
-    {
-      title: 'STATIONS',
-      path: './stations',
-      icon: ResourceIcons.stationIcon
-    },
-    {
-      title: 'SCHEDULE',
-      path: './schedule',
-      icon: ResourceIcons.scheduleIcon,
-      theme: 'outline'
-    },
-    {
-      title: 'PLANNER',
-      path: './planner',
-      icon: ResourceIcons.plannerIcon
-    },
-    {
-      title: 'STUDENTS',
-      path: './students',
-      icon: ResourceIcons.studentIcon,
-      theme: 'outline'
-    },
-    {
-      title: 'QUESTIONS',
-      path: './questions',
-      icon: ResourceIcons.questionIcon
-    },
-    {
-      title: 'BACK',
-      path: '/admin',
-      icon: 'left-square'
-    }
-  ];
+  ecoeId: number;
+
+  menu: any[];
+  admin: boolean;
 
   constructor(public sharedService: SharedService,
               private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router
+              private router: Router,
+              private menuService: MenuService
   ) {
-    const ecoeId = +this.route.snapshot.params.id;
-
-    ECOE.fetch(ecoeId)
-      .then(ecoe => {
-        this.ecoe = ecoe;
-        this.ecoe_menu[0].title = this.ecoe.name;
-      });
+    this.ecoeId = +this.route.snapshot.params.id;
   }
 
   ngOnInit() {
 
+    this.menuService.getMenuFor(this.constructor.name)
+      .then(value => {
+        this.menu = value;
+      });
+
+
+    ECOE.fetch(this.ecoeId)
+      .then(ecoe => {
+        this.ecoe = ecoe;
+        // this.ecoe_menu[0].title = this.ecoe.name;
+      });
+  }
+
+  ngAfterViewInit() { console.log('from ECOE component do next');
+    this.menuService.currentMenu.next(this.constructor.name);
+    this.menuService.menuAdmin.next(false);
   }
 }

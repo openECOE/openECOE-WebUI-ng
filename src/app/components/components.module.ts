@@ -3,26 +3,29 @@ import { CommonModule } from '@angular/common';
 import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
 import { ActionButtonsComponent } from './action-buttons/action-buttons.component';
 import {PapaParseModule} from 'ngx-papaparse';
-import {LoginComponent} from './login/login.component';
-import {HomeComponent} from './home/home.component';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
+import { MenuComponent } from './menu/menu.component';
+import {RouterModule} from '@angular/router';
 
 // TODO: Review to include Login and Home components
 @NgModule({
   declarations: [
     UploadAndParseComponent,
-    ActionButtonsComponent
+    ActionButtonsComponent,
+    MenuComponent
   ],
   imports: [
     CommonModule,
     PapaParseModule,
     NgZorroAntdModule,
-    TranslateModule
+    TranslateModule,
+    RouterModule
   ],
   exports: [
     UploadAndParseComponent,
-    ActionButtonsComponent
+    ActionButtonsComponent,
+    MenuComponent
   ]
 })
 export class ComponentsModule {}

@@ -8,6 +8,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import { HomeAdminComponent } from './home-admin/home-admin.component';
 import {PapaParseModule} from 'ngx-papaparse';
+import {ComponentsModule} from '../../components/components.module';
 
 
 @NgModule({
@@ -18,11 +19,15 @@ import {PapaParseModule} from 'ngx-papaparse';
     ReactiveFormsModule,
     NgZorroAntdModule,
     TranslateModule,
-    PapaParseModule
+    PapaParseModule,
+    ComponentsModule
   ],
   declarations: [
     AdminComponent,
     HomeAdminComponent
+  ],
+  exports: [
+    AdminComponent
   ]
 })
 export class AdminModule { }

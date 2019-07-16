@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {NgZorroAntdModule, NZ_I18N, es_ES, NZ_MESSAGE_CONFIG} from 'ng-zorro-antd';
+import {NgZorroAntdModule, NZ_I18N, es_ES, NZ_MESSAGE_CONFIG, NzBreadCrumbModule} from 'ng-zorro-antd';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeEsExtra from '@angular/common/locales/extra/es';
@@ -22,6 +22,7 @@ import {POTION_PROVIDER_FACTORY, POTION_CONFIG, POTION_RESOURCES, PotionModule} 
 
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';
+
 
 registerLocaleData(localeEs, 'es', localeEsExtra);
 
@@ -43,6 +44,7 @@ export function createTranslateLoader(http: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
     NgZorroAntdModule,
+    NzBreadCrumbModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -78,7 +80,7 @@ export function createTranslateLoader(http: HttpClient) {
       provide: POTION_CONFIG,
       useValue: {
         host: environment.API_ROUTE,
-        prefix: '/api'
+        prefix: '/api/v1'
       }
     },
     {

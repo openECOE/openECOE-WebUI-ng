@@ -1,11 +1,41 @@
 <nz-layout class="layout">
-  <nz-header style="position:fixed; width:100%; z-index: 1000;">
-    <a *ngIf="authService.userData">{{authService.userData.user.email}}</a>
-    <a style="float: right;" (click)="authService.userData ? authService.logout() : router.navigate(['/login'])">
-      {{(authService.userData ? "LOG_OUT" : "LOG_IN") | translate}}
+
+  <nz-header style="width:100%; z-index: 1000; position:fixed;">
+    <a
+       (click)="router.navigate(['/'])">
+      {{"open ECOE" | translate}}
+    </a>
+
+    <nz-dropdown *ngIf="authService.userData" style="float: right;" right>
+      <a nz-dropdown>
+        <i nz-icon nzType="user" nzTheme="outline"></i>
+        {{authService.userData['user']['name'] + ' ' + this.authService.userData['user']['surname']}}
+        <i nz-icon type="down"></i> </a>
+      <ul nz-menu nzSelectable>
+        <li nz-menu-item>
+          <a [routerLink]="'admin/cpanel/users'">{{"Ajustes" | translate}}</a>
+        </li>
+        <li nz-menu-item>
+          <a (click)="authService.logout()" >{{"LOG_OUT" | translate}}</a>
+        </li>
+      </ul>
+    </nz-dropdown>
+    <a *ngIf="!authService.userData"
+       style="float: right;"
+       (click)="router.navigate(['/login'])">
+      {{"LOG_IN" | translate}}
     </a>
   </nz-header>
-  <nz-layout style="margin-top:64px;">
-    <router-outlet></router-outlet>
-  </nz-layout>
+
+  <nz-content style="overflow-y: scroll; overflow-x: hidden; margin-top:64px;">
+
+    <router-outlet>
+
+    </router-outlet>
+
+  </nz-content>
+  <nz-footer style="text-align: center;">
+    open ECOE ©2019 Implement By UMH SIATDI
+  </nz-footer>
 </nz-layout>
+
