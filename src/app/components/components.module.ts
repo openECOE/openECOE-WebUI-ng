@@ -7,25 +7,37 @@ import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import { MenuComponent } from './menu/menu.component';
 import {RouterModule} from '@angular/router';
+import { QblockFormComponent } from './qblock-form/qblock-form.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { QuestionFormComponent } from './question-form/question-form.component';
+import { OptionFormComponent } from './option-form/option-form.component';
 
 // TODO: Review to include Login and Home components
 @NgModule({
   declarations: [
     UploadAndParseComponent,
     ActionButtonsComponent,
-    MenuComponent
+    MenuComponent,
+    QblockFormComponent,
+    QuestionFormComponent,
+    OptionFormComponent
   ],
   imports: [
     CommonModule,
     PapaParseModule,
     NgZorroAntdModule,
     TranslateModule,
-    RouterModule
+    RouterModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
   exports: [
     UploadAndParseComponent,
     ActionButtonsComponent,
-    MenuComponent
+    MenuComponent,
+    QblockFormComponent,
+    QuestionFormComponent,
+    OptionFormComponent
   ]
 })
 export class ComponentsModule {}

@@ -136,7 +136,6 @@ export class QuestionsComponent implements OnInit {
     }
 
     this.updateEditCache();
-
     this.loading = false;
   }
 

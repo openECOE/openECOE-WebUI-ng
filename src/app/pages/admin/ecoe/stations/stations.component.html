@@ -51,9 +51,11 @@
           </ng-container>
         </td>
 
-        <td [routerLink]="['./', item.id]">
+        <td>
           <ng-container *ngIf="!editCache[item.id].edit" >
-            {{item.name}}
+            <a [routerLink]="['./', item.id]">
+              {{item.name}}
+            </a>
           </ng-container>
 
           <ng-container *ngIf="editCache[item.id].edit">

@@ -1,0 +1,48 @@
+<form [formGroup]="qblockForm">
+
+    <ng-container formArrayName="qblockRow" *ngFor=" let control of qblockForm.get('qblockRow')['controls']; let i = index">
+
+      <div nz-row nzType="flex" nzJustify="center">
+        <div nz-col nzSpan="2">
+          <nz-form-label>{{'NAME' | translate}}</nz-form-label>
+        </div>
+
+        <div nz-col nzSpan="7" [formGroupName]="+i">
+          <nz-form-item>
+            <nz-form-control>
+              <input nz-input [value]="qblocks[i]?.name" [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
+              <nz-form-explain
+                *ngIf="getFormControl('name', i)?.dirty && getFormControl('name', i)?.hasError('required')">
+                {{'NAME_INPUT_REQUIRED' | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzSpan="2" nzOffset="0" style="bottom: 0">
+          <button  [hidden]="i == 0" nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
+        </div>
+
+      </div>
+
+    </ng-container>
+
+<!--  <nz-form-item>
+    <div nz-row nzType="flex" nzJustify="center">
+      <nz-form-control nz-col nzSpan="12">
+        <button nz-button nzBlock nzType="dashed" (click)="addQblockRow()">
+          <i nz-icon type="plus"></i> {{'ADD_QBLOCK' | translate}}
+        </button>
+      </nz-form-control>
+    </div>
+  </nz-form-item>-->
+
+</form>
+
+<div class="margin-top margin-bottom" nz-row nzType="flex" nzJustify="space-around" nzAlign="middle">
+  <div nz-col nzSpan="12">
+    <ng-content></ng-content>
+  </div>
+</div>
+
+

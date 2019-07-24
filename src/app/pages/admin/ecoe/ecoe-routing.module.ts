@@ -12,6 +12,7 @@ import {AuthenticationGuard} from '../../../guards/authentication/authentication
 import {ScheduleComponent} from './schedule/schedule.component';
 import {Role} from '../../../models';
 import {StationDetailsComponent} from './stations/station-details/station-details.component';
+import {QuestionsListComponent} from './questions/questions-list/questions-list.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,7 @@ const routes: Routes = [
           {path: 'areas', component: AreasComponent,                data: {title: 'AREAS',      roles: [Role.Admin]}},
           {path: 'stations', component: StationsComponent,          data: {title: 'STATIONS',   roles: [Role.Admin]}},
           {path: 'stations/:id', component: StationDetailsComponent,data: {title: 'STATIONS',   roles: [Role.Admin]}},
+          {path: 'stations/:id/qblocks/:id', component: QuestionsListComponent,        data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
           {path: 'questions', component: QuestionsComponent,        data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
           {path: 'exam', component: ExamComponent,                  data: {title: 'EXAM',       roles: [Role.Admin]}},
           {path: 'planner', component: PlannerComponent,            data: {title: 'PLANNER',    roles: [Role.Admin]}},

@@ -165,7 +165,7 @@ export class StationsComponent implements OnInit {
    *
    * @param item selected resource of stations list
    */
-  startEdit(item: Station, excludeItem?: string) {
+  startEdit(item: Station, excludeItem?: string) { // console.log('StartEdit:station', item);
     this.editCache[item.id].edit = true;
     this.loadOptions4Select(excludeItem);
   }
@@ -194,6 +194,7 @@ export class StationsComponent implements OnInit {
         new_item: false,
         item: Object.create(item)
       };
+      // console.log(`ìtem = ${ JSON.stringify(item)  } , this.editCache[${item.id}]= ${JSON.stringify(this.editCache[item.id].item)}`);
     });
   }
 

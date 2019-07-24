@@ -28,51 +28,53 @@
   </thead>
 
   <tbody>
-  <ng-template ngFor let-item let-index="index" [ngForOf]="table.data">
+  <ng-template ngFor let-item let-index="index" [ngForOf]="table.data" >
+<!--  <ng-template *ngFor="let item of table.data; let index" >-->
+    <!--<h1>{{table.data.length}}</h1>-->
     <tr>
       <td nzAlign="right">
-        <ng-container *ngIf="!editCache[index].edit else editOrder">
+        <ng-template [ngIf]="!editCache[item.id]?.edit" [ngIfElse]="editOrder">
           {{item.order || "-"}}
-        </ng-container>
+        </ng-template>
 
         <ng-template #editOrder>
           <nz-input-number [nzMin]="0"
                            [nzSize]="'small'"
-                           [(ngModel)]="editCache[index].data.order">
+                           [(ngModel)]="editCache[item.id].item.order">
           </nz-input-number>
         </ng-template>
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[index].edit else editDesc">
+        <ng-container *ngIf="!editCache[item.id]?.edit else editDesc">
           {{item.description}}
         </ng-container>
 
         <ng-template #editDesc>
-          <textarea rows="1" [nzAutosize]="true" nz-input [(ngModel)]="editCache[index].data.description"></textarea>
+          <textarea rows="1" [nzAutosize]="true" nz-input [(ngModel)]="editCache[item.id].item.description"></textarea>
         </ng-template>
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[index].edit else editRef">
+        <ng-container *ngIf="!editCache[item.id]?.edit else editRef">
           {{item.reference}}
         </ng-container>
 
         <ng-template #editRef>
-          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[index].data.reference">
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.reference">
         </ng-template>
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[index].edit else editArea">
-          {{item.area.name}}
+        <ng-container *ngIf="!editCache[item.id]?.edit else editArea">
+          {{item.area?.name}}
         </ng-container>
 
         <ng-template #editArea>
           <nz-select style="width: 100%;"
                      [nzSize]="'small'"
                      [nzShowSearch]="true"
-                     [(ngModel)]="editCache[index].data.area"
+                     [(ngModel)]="editCache[item.id].item.area"
                      (nzScrollToBottom)="loadMoreAreas()"
           >
             <nz-option *ngFor="let area of areas" [nzLabel]="area.name" [nzValue]="area">
@@ -82,44 +84,46 @@
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[index].edit else editQuestionType">
+        <ng-container *ngIf="!editCache[item.id]?.edit">
           {{getQuestionTypeLabel(item.questionType) | translate}}
         </ng-container>
 
-        <ng-template #editQuestionType>
+        <ng-container *ngIf="editCache[item.id]?.edit">
           <nz-select style="width: 100%;"
                      [nzSize]="'small'"
                      [nzShowSearch]="true"
-                     [(ngModel)]="editCache[index].data.questionType">
+                     [(ngModel)]="editCache[item.id].item.questionType">
             <nz-option *ngFor="let option of questionTypeOptions"
                        [nzLabel]="option.label | translate"
                        [nzValue]="option.type">
             </nz-option>
           </nz-select>
-        </ng-template>
+        </ng-container>
       </td>
 
       <td text-right>
-        <nz-tag [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'" (click)="editCache[index].expand = !editCache[index].expand">
-          <i nz-icon [type]="editCache[index].expand ? 'caret-down' : 'caret-right'"></i>
+        <nz-tag [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'" (click)="editCache[item.id].expand = !editCache[item.id].expand">
+          <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
           {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
         </nz-tag>
         <nz-divider [nzType]="'vertical'"></nz-divider>
-        <app-action-buttons [isEditing]="editCache[index].edit"
-                            [isNewItem]="editCache[index].new_item"
-                            (startEdit)="startEdit(index)"
-                            (delete)="deleteItem(index)"
-                            (save)="saveItem(editCache[index])"
-                            (cancelEdit)="cancelEdit(index)">
+        <app-action-buttons [isEditing]="editCache[item.id]?.edit"
+                            [isNewItem]="editCache[item.id]?.new_item"
+                            (startEdit)="startEdit(item.id)"
+                            (delete)="deleteItem(item.id)"
+                            (save)="saveItem(editCache[item.id])"
+                            (cancelEdit)="cancelEdit(item.id)">
         </app-action-buttons>
       </td>
     </tr>
-    <tr [nzExpand]="editCache[index].expand">
+    <tr [nzExpand]="editCache[item.id]?.expand">
       <td></td>
       <td colspan="5">
         <app-options-list [question]="item"></app-options-list>
       </td>
     </tr>
   </ng-template>
+  <tr><td></td> <td>{{table.data[0] + table.data[1] + table.data[2] + table.data[3]}}</td></tr>
   </tbody>
 </nz-table>
+

@@ -1,8 +1,7 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Area, ECOE, QBlock, Question, Round} from '../../../../../models';
+import {Component, Input, OnInit} from '@angular/core';
+import {Area, QBlock, Question} from '../../../../../models';
 import {Pagination} from '@openecoe/potion-client';
-import {from} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-questions-list',
@@ -11,20 +10,11 @@ import {map} from 'rxjs/operators';
 })
 export class QuestionsListComponent implements OnInit {
 
-  @Input() idEcoe: ECOE;
-  @Input() qblock: QBlock;
+  // @Input() idEcoe: ECOE;
+  @Input() qblock: QBlock = new QBlock();
 
-  // @Output() questionsChange = new EventEmitter();
-  //
-  // @Input()
-  // get questions() {
-  //   return this.questionsList;
-  // }
-  //
-  // set questions(questions: Question[]) {
-  //   this.questionsList = questions;
-  //   this.questionsChange.emit(this.questionsList);
-  // }
+  param_id: number;
+
 
   questionsPage: Pagination<Question>;
   questionsList: Question[] = [];
@@ -47,10 +37,14 @@ export class QuestionsListComponent implements OnInit {
     {type: 'RS', label: 'VALUE_RANGE'}
   ];
 
-  constructor() {
+  constructor(private route: ActivatedRoute) {
   }
 
   ngOnInit() {
+    if (this.route.snapshot.params.id) { console.log(+this.route.snapshot.params.id);
+      this.param_id = +this.route.snapshot.params.id;
+    }
+
     this.loadAreas();
     this.loadQuestions(this.page, this.perPage);
   }
@@ -65,8 +59,9 @@ export class QuestionsListComponent implements OnInit {
 
   loadQuestions(page: number, perPage: number) {
     this.loading = true;
+
     Question.query<Question, Pagination<Question>>({
-        where: {qblocks: {$contains: this.qblock.id}},
+        where: {qblocks: {$contains: this.qblock.id ? this.qblock.id : this.param_id}},
         sort: {order: false},
         page: page,
         perPage: perPage
@@ -92,18 +87,19 @@ export class QuestionsListComponent implements OnInit {
     this.editCache = [];
 
     this.questionsList.forEach(item => {
-      const index = this.questionsList.indexOf(item);
 
-      this.editCache[index] = {
-        edit: this.editCache[index] ? this.editCache[index].edit : false,
-        data: Object.assign(new Question(), item),
+      this.editCache[item.id] = {
+        edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
+        new_item: false,
+        item: Object.create(item),
         expand: this.defaultExpand
       };
     });
   }
 
   async loadAreas() {
-    this.pagAreas = await Area.query<Area, Pagination<Area>>({where: {ecoe: this.idEcoe}, sort: {code: false}}, {paginate: true});
+    // this.pagAreas = await Area.query<Area, Pagination<Area>>({where: {ecoe: this.idEcoe}, sort: {code: false}}, {paginate: true});
+    this.pagAreas = await Area.query<Area, Pagination<Area>>({sort: {code: false}}, {paginate: true});
     this.areas = [...this.pagAreas['items']];
   }
 
@@ -121,8 +117,8 @@ export class QuestionsListComponent implements OnInit {
    *
    * @param idx Id of the selected resource
    */
-  startEdit(idx: number) {
-    this.editCache[idx].edit = true;
+  startEdit(id: number) {
+    this.editCache[id].edit = true;
   }
 
   /**
@@ -132,8 +128,7 @@ export class QuestionsListComponent implements OnInit {
    * @param editItem Resource selected
    */
   saveItem(editItem: any) {
-    const index = this.editCache.indexOf(editItem);
-    const question = editItem.data;
+    const question = editItem.item;
 
     if (!question.description || !question.reference || !question.questionType || !question.area) {
       return;
@@ -141,12 +136,12 @@ export class QuestionsListComponent implements OnInit {
 
     question.question_type = question.questionType;
 
-    question.save().then(response => {
-      // this.cancelEdit(index);
-
-      this.questionsList[index] = response;
-      this.editCache[index].edit = false;
-    });
+    question.save()
+      .then(response => {
+        this.questionsList[question.id] = response;
+        this.editCache[question.id].edit = false;
+      })
+      .catch(err => console.error(err));
   }
 
   /**
@@ -156,13 +151,13 @@ export class QuestionsListComponent implements OnInit {
    *
    * @param idx Resource selected
    */
-  cancelEdit(idx: number) {
-    this.editCache[idx].edit = false;
+  cancelEdit(id: number) {
+    this.editCache[id].edit = false;
 
-    if (this.editCache[idx].new_item) {
-      this.updateArrayQuestions(idx);
+    if (this.editCache[id].new_item) {
+      this.updateArrayQuestions(id);
     } else {
-      this.editCache[idx].data = Object.assign(new Question(), this.questionsList[idx]);
+      this.editCache[id].data = Object.assign(new Question(), this.questionsList[id]);
     }
   }
 
@@ -172,8 +167,8 @@ export class QuestionsListComponent implements OnInit {
    *
    * @param idx Resource selected
    */
-  deleteItem(idx: number) {
-    this.questionsList[idx].destroy().then(() => this.updateArrayQuestions(idx));
+  deleteItem(id: number) {
+    this.questionsList[id].destroy().then(() => this.updateArrayQuestions(id));
   }
 
   /**
@@ -192,13 +187,15 @@ export class QuestionsListComponent implements OnInit {
    * Adds a new empty field to the resources array.
    * Then updates editCache with the new resource.
    */
-  async addQuestion() {
+  async addQuestion() { console.log('new id: ', this.questionsList[this.questionsList.length - 1].id + 1);
     const newItem = {
+      // id: this.questionsList[this.questionsList.length - 1].id + 1,
+      // id: 100,
       order: this.questionsList.length + 1,
       description: '',
       reference: '',
-      question_type: '',
-      area: '',
+      questionType: '',
+      area: null,
       qblocks: [this.qblock],
       options: []
     };
@@ -206,19 +203,33 @@ export class QuestionsListComponent implements OnInit {
     // Recover last item to make index
     const lastId: number = (await Question.first<Question>({sort: {'$uri': true}})).id;
 
-    const question = new Question(newItem);
+    // console.log(new Question(newItem));
+    // return;
+     const question = new Question(newItem);
+    // const question = newItem as Question;
+
+    console.log('before questionList: ', Object.create(this.questionsList));
 
     this.questionsList = [...this.questionsList, question];
 
-    this.editCache[this.questionsList.indexOf(question)] = {
+    console.log('after questionList: ', this.questionsList);
+
+    console.log('antes de error', this.questionsList[this.questionsList.length - 2]);
+    // console.log(question, this.questionsList, this.questionsList.indexOf(question) );
+
+    // this.editCache[this.questionsList.indexOf(question)] = {
+    this.editCache[this.questionsList[this.questionsList.length - 2].id + 1] = {
       edit: true,
       new_item: true,
-      data: Object.assign(new Question(), question),
+      item: Object.assign(new Question(), question),
       expand: this.defaultExpand
     };
+
+    console.log('despues de error', this.editCache);
   }
 
   getQuestionTypeLabel(questionType: string) {
+    // TODO: CHECK FOR REDUCE NUMBER OF CALLS THIS METHOD
     return this.questionTypeOptions.find(x => x.type === questionType).label;
   }
 

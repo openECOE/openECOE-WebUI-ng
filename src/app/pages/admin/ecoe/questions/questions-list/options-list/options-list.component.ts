@@ -144,7 +144,7 @@ export class OptionsListComponent implements OnInit {
    * @param question Parent resource passed
    */
   addOption(question: any) {
-    this.apiService.getResources('option')
+    this.apiService.getResources('options')
       .subscribe(options => {
         this.indexOpt += this.sharedService.getLastIndex(options);
 

@@ -1,6 +1,13 @@
-<nz-content *ngIf="pagQblocks">
+<nz-content>
+  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="station?.name" nzSubtitle="Estación"> </nz-page-header>
+
+  <button class="margin-bottom" nz-button nzType="dashed" nzBlock (click)="showDrawer()">
+    {{'ADD_QBLOCK' | translate}}
+    <i nz-icon nzType="file-add" nzTheme="outline"></i>
+  </button>
+
   <nz-table #table
-            [nzData]="pagQblocks['items']"
+            [nzData]="qblocks"
             [(nzPageIndex)]="page"
             [(nzPageSize)]="perPage"
             (nzPageIndexChange)="pageChange($event)"
@@ -14,31 +21,31 @@
     <thead>
     <tr>
       <th [nzExpand]="true">
-        <a (click)="getQlobks().finally()">
+        <a (click)="getQblocks()">
           <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
-      <th nzWidth="85px">{{"ORDER" | translate}}</th>
-      <th nzWidth="300px">{{"NAME" | translate}}</th>
-      <th nzWidth="300px">{{"PARENT_STATION" | translate}}</th>
-      <th nzWidth="140px">{{"CHILD_STATIONS" | translate}}</th>
-      <th nzWidth="240px">
-        <nz-button-group class="margin-left">
+      <th nzWidth="5%">{{"ORDER" | translate}}</th>
+      <th nzWidth="70%">{{"NAME" | translate}}</th>
+      <th nzWidth="7%">{{"Nº preguntas" | translate}}</th>
+      <th nzWidth="12%" style="min-width: 165px;">
+        <nz-button-group class="margin-left right">
           <button nz-button [nzType]="'primary'"
-                  [nz-tooltip] [nzTitle]="'ADD_STATION' | translate"
-                  > <!--(click)="showDrawer()"-->
+                  [nz-tooltip] [nzTitle]="'ADD_STATION' | translate" (click)="showDrawer()"
+                  >
             <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
-          <app-upload-and-parse (parserResult)="getQlobks().finally()"></app-upload-and-parse>
+          <app-upload-and-parse (parserResult)="getQblocks()"></app-upload-and-parse>
         </nz-button-group>
       </th>
+      <th nzWidth="6%" style="min-width: 65px;"></th>
     </tr>
     </thead>
     <tbody>
-    <ng-template ngFor let-item [ngForOf]="table.data">
+    <ng-template ngFor let-item [ngForOf]="table.data" let-index="index">
       <tr>
         <td>
-
+          <i nz-icon nzType="file-text" nzTheme="outline"></i>
         </td>
 
         <td>
@@ -51,9 +58,11 @@
           </ng-container>
         </td>
 
-        <td [routerLink]="['./', item.id]">
+        <td>
           <ng-container *ngIf="!editCache[item.id].edit" >
-            {{item.name}}
+<!--            <a [routerLink]="['./qblocks/', item.id]">-->
+              {{item.name}}
+<!--            </a>-->
           </ng-container>
 
           <ng-container *ngIf="editCache[item.id].edit">
@@ -62,43 +71,248 @@
         </td>
 
         <td>
-          <!--<ng-container *ngIf="!editCache[item.id].edit">
-            <nz-tag *ngIf="item.parentStation?.name"
-                    [nzColor]="shared.stringToColour(item.parentStation.name)">{{item.parentStation.name}}</nz-tag>
-          </ng-container>-->
-
-          <!--<ng-container *ngIf="editCache[item.id].edit">
-            <nz-select style="width: 100%"
-                       nzShowSearch
-                       nzServerSearch
-                       [nzMaxTagCount]="1"
-                       [nzNotFoundContent]="('STATION_NOT_FOUND' | translate)"
-                       nzAllowClear="true"
-                       [(ngModel)]="editCache[item.id].item.parentStation"
-                       [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
-                       nzFilterOption="true"
-                       (nzOnSearch)="searchInSelect($event, editCache[item.id].item.name)"
-            >
-              &lt;!&ndash;<ng-container *ngFor="let pageOptions of selectOptions">&ndash;&gt;
-              <nz-option *ngFor="let station of selectOptions['items']"  [nzLabel]="station.name" [nzValue]="station"> </nz-option>
-              &lt;!&ndash;</ng-container>&ndash;&gt;
-            </nz-select>
-          </ng-container>-->
+          <ng-container *ngIf="!editCache[item.id].edit" >
+            {{item.questions?.length}}
+          </ng-container>
         </td>
 
-        <td>{{item.childrenStations?.length}}</td>
+        <td>
+          <nz-collapse (click)="item.clicked = (item.clicked === true) ? false : true; item.expand = !item.expand">
+            <nz-collapse-panel [nzHeader]="'Ver preguntas'"
+                               [nzActive]="item.expand">
+            </nz-collapse-panel>
+          </nz-collapse>
+        </td>
 
         <td text-right>
           <app-action-buttons [isEditing]="editCache[item.id]?.edit"
                               [isNewItem]="editCache[item.id]?.new_item"
-                              (startEdit)="startEdit(item,editCache[item.id].item.name)"
+                              (startEdit)="startEdit(item)"
                               (delete)="deleteItem(item)"
                               (save)="updateItem(editCache[item.id].item)"
                               (cancelEdit)="cancelEdit(item)">
           </app-action-buttons>
         </td>
       </tr>
+      <tr  *ngIf="item.clicked">
+        <td colspan="10">
+          <app-questions-list
+            [qblock]="item"
+          ></app-questions-list>
+        </td>
+      </tr>
     </ng-template>
     </tbody>
   </nz-table>
 </nz-content>
+
+<!--<nz-spin [nzSpinning]="loading" nzSize="large" [nzDelay]="500">
+  <nz-content class="margin-top">
+    <button nz-button nzType="primary" nzBlock (click)="showDrawer()">{{'ADD_QBLOCK' | translate}}</button>
+    <nz-collapse class="margin-top">
+      <nz-collapse-panel *ngFor="let item of qblocks"
+                         [nzHeader]="panelHeader"
+                         [nzActive]="false"
+                         (click)="item.clicked = true">
+
+        <ng-template #panelHeader>
+
+          <div nz-row nzType="flex" nzJustify="space-around" nzAlign="middle" nzType="flex" nzJustify="space-around" nzAlign="middle">
+            <div nz-col nzSpan="22">
+              <ng-container *ngIf="!editCache[item.id].edit">
+                <nz-page-header [nzTitle]="item.name"></nz-page-header>
+              </ng-container>
+
+              <ng-container *ngIf="editCache[item.id].edit">
+                <textarea rows="5" [nzAutosize]="true" nz-input [(ngModel)]="editCache[item.id].item.name"></textarea>
+              </ng-container>
+
+            </div>
+            <div nz-col nzSpan="2">
+              <nz-divider [nzType]="'vertical'"></nz-divider>
+              <app-action-buttons [isEditing]="editCache[item.id].edit"
+                                  [isNewItem]="editCache[item.id].new_item"
+                                  (startEdit)="startEdit(item)"
+                                  (delete)="deleteItem(editCache[item.id].item)"
+                                  (save)="updateItem(editCache[item.id].item)"
+                                  (cancelEdit)="cancelEdit(item)">
+              </app-action-buttons>
+            </div>
+          </div>
+
+        </ng-template>
+
+        <app-questions-list *ngIf="item.clicked"
+          [qblock]="item"
+        ></app-questions-list>
+
+      </nz-collapse-panel>
+    </nz-collapse>
+
+    <ng-container>
+      <nz-drawer
+        [nzClosable]="true"
+        [nzVisible]="logPromisesERROR.length > 0"
+        nzPlacement="right"
+        [nzTitle]="'IMPORT_ERRORS' | translate"
+        (nzOnClose)="clearImportErrors()"
+        [nzWidth]="540">
+        <nz-alert *ngFor="let error of logPromisesERROR"
+                  nzType="error"
+                  nzCloseable
+                  [nzMessage]="error.reason.statusText"
+                  [nzDescription]="error.reason.message"
+                  nzShowIcon>
+        </nz-alert>
+      </nz-drawer>
+    </ng-container>
+
+
+  </nz-content>
+</nz-spin>-->
+
+
+
+<nz-drawer
+  [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
+  [nzMaskClosable]="false"
+  [nzWidth]="'75%'"
+  [nzVisible]="isVisible"
+  [nzTitle]="'ADD_QBLOCK' | translate"
+  (nzOnClose)="cancelForm()">
+
+
+
+  <nz-steps [nzCurrent]="current">
+    <nz-step nzTitle="Crear bloque/s"></nz-step>
+    <nz-step nzTitle="Añadir preguntas"></nz-step>
+    <nz-step nzTitle="Añadir opciones"></nz-step>
+  </nz-steps>
+
+  <!--<div class="steps-content">{{ index + 'content' }}</div>-->
+  <div class="steps-action">
+
+    <!-- TODO: Every ng-container should be an component -->
+    <ng-container *ngIf="current === 0">
+      <div class="steps-content">
+        <app-qblock-form #qblock [qblocks]="this.qblocksToAdd" (returnData)="onGetQblocks($event)">
+          <button nz-button nzType="default" (click)="submitQblocks()">
+            <span>{{'NEXT' | translate}}</span>
+          </button>
+        </app-qblock-form>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="current === 1">
+
+      <div class="steps-content">
+        <app-question-form #question (returnData)="onGetQuestions($event)">
+
+        </app-question-form>
+      </div>
+
+      <button nz-button nzType="default" (click)="pre()">
+        <span>Previous</span>
+      </button>
+      <button nz-button nzType="default" (click)="submitQuestions()" *ngIf="current < 2">
+        <span>Save</span>
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="current === 2">
+
+      <div class="steps-content">{{ index + ' 2' }}</div>
+
+      <button nz-button nzType="default" (click)="pre()">
+        <span>Previous</span>
+      </button>
+      <button nz-button nzType="primary" (click)="done()" *ngIf="current === 2">
+        <span>Done</span>
+      </button>
+    </ng-container>
+  </div>
+
+
+  <div class="footer">
+    <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;">
+      <span>{{'CANCEL' | translate}}</span></button>
+    <button type="button"
+            class="ant-btn ant-btn-primary"
+            (click)="submitForm()"
+    ><span>{{'SAVE' | translate}}</span>
+    </button>
+  </div>
+</nz-drawer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nz-drawer
+  [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
+  [nzMaskClosable]="false"
+  [nzWidth]="480"
+  [nzVisible]="false"
+  [nzTitle]="'ADD_QBLOCK' | translate"
+  (nzOnClose)="cancelForm()">
+
+  <form [formGroup]="qblockForm">
+    <div nz-row nzGutter="8">
+      <div nz-col nzSpan="21">
+        <nz-form-label>{{'NAME' | translate}}</nz-form-label>
+      </div>
+    </div>
+
+    <ng-container formArrayName="qblockRow"
+                  *ngFor=" let control of qblockForm.get('qblockRow')['controls']; let i = index">
+      <div nz-row nzGutter="8" [formGroupName]="+i">
+        <div nz-col nzSpan="21">
+          <nz-form-item>
+            <nz-form-control>
+              <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
+              <nz-form-explain
+                *ngIf="getFormControl('name', i)?.dirty && getFormControl('name', i)?.hasError('required')">
+                {{'NAME_INPUT_REQUIRED' | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
+          <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete"
+                                                                                       nzTheme="outline"></i></button>
+        </div>
+      </div>
+    </ng-container>
+
+    <nz-form-item>
+      <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
+        <button nz-button nzType="dashed" style="width:60%" (click)="addQblockRow()">
+          <i nz-icon type="plus"></i> {{'ADD_QBLOCK' | translate}}
+        </button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+  <div class="footer">
+    <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;">
+      <span>{{'CANCEL' | translate}}</span></button>
+    <button type="button" (click)="submitForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span>
+    </button>
+  </div>
+</nz-drawer>
+

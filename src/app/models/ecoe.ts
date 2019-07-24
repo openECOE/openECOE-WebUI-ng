@@ -2,6 +2,7 @@ import {Item, Pagination, Route} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule} from './schedule';
 import {Organization} from './organization';
+import {FormArray} from '@angular/forms';
 
 export class ECOE extends Item {
   areas = Route.GET('/areas');
@@ -64,7 +65,7 @@ export class QBlock extends Item {
   order: number;
 
   station: Station;
-  questions: Question[];
+  questions?: Question[];
 
   getQuestions = Route.GET<Pagination<Question>>('/questions');
 }
@@ -73,18 +74,28 @@ export class Question extends Item {
   id: number;
   reference: string;
   description: string;
-  question_type: string;
+  // question_type: string;
   questionType: string;
   order: number;
 
-  addOption = Route.POST<Option>('/option');
+  addOption ? = Route.POST<Option>('/option');
 
   area: Area;
 
   options: Option[];
   qblocks: QBlock[];
 
-  getPoints = Route.GET<number>('/points');
+  getPoints ? = Route.GET<number>('/points');
+}
+
+export interface RowQuestion {
+  order: any[];
+  description: any[];
+  reference: any[];
+  area: any[];
+  questionType: any[];
+  optionsNumber?: number;
+  options?: any[];
 }
 
 export class Option extends Item {
@@ -93,6 +104,12 @@ export class Option extends Item {
   label: string;
   id_question: number;
   order: number;
+}
+
+export interface RowOption {
+  order: any[];
+  text: any[];
+  points: any[];
 }
 
 export class Student extends Item {
