@@ -45,16 +45,16 @@
     </td>
 
     <td *ngIf="((question.questionType == 'RS') && indexOption == 0)
-|| question.questionType == 'CH' || question.questionType == 'RB'"
+                || question.questionType == 'CH' || question.questionType == 'RB'"
         [attr.rowspan]="(question.questionType == 'RS') ? question.options.length : 1">
       <ng-container *ngIf="question.questionType == 'CH'">
         <nz-switch [ngModel]="!editCacheOption[option.id].edit"
                    [nzCheckedChildren]="editCacheOption[option.id].edit ?
-editCacheOption[option.id].label :
-option.label"
+                        editCacheOption[option.id].label :
+                        option.label"
                    [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
-editCacheOption[option.id].label :
-option.label"
+                        editCacheOption[option.id].label :
+                        option.label"
                    [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
         </nz-switch>
       </ng-container>
@@ -74,7 +74,8 @@ option.label"
       </ng-container>
     </td>
     <td text-right>
-      <app-action-buttons [isEditing]="editCacheOption[option.id].edit"
+      <app-action-buttons *ngIf="!preview"
+                          [isEditing]="editCacheOption[option.id].edit"
                           [isNewItem]="editCacheOption[option.id].new_item"
                           [index]="indexOption"
                           [itemsLength]="optionTable.data.length"
@@ -89,7 +90,7 @@ option.label"
   </tr>
   </tbody>
 
-  <ng-template #addOptionBtn>
+  <ng-template *ngIf="!preview" #addOptionBtn>
     <button nz-button nzType="dashed" nzBlock (click)="addOption(question)">
       <i nz-icon type="check-circle"></i>
       {{"ADD_OPTION" | translate}}

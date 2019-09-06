@@ -1,8 +1,7 @@
 import {Item, Pagination, Route} from '@openecoe/potion-client';
-import {Planner, Round, Shift} from './planner';
+import {Planner} from './planner';
 import {Schedule} from './schedule';
 import {Organization} from './organization';
-import {FormArray} from '@angular/forms';
 
 export class ECOE extends Item {
   areas = Route.GET('/areas');
@@ -89,13 +88,14 @@ export class Question extends Item {
 }
 
 export interface RowQuestion {
-  order: any[];
+  order:  any[];
   description: any[];
   reference: any[];
   area: any[];
   questionType: any[];
   optionsNumber?: number;
-  options?: any[];
+  points?: any[];
+  options?: Option[];
 }
 
 export class Option extends Item {
@@ -107,8 +107,8 @@ export class Option extends Item {
 }
 
 export interface RowOption {
-  order: any[];
-  text: any[];
+  order: any;
+  label: any[];
   points: any[];
 }
 

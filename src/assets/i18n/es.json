@@ -83,6 +83,7 @@
   "PREVIEW": "Previsualización",
   "LABEL": "Texto",
   "POINTS": "Puntos",
+  "MAX_POINTS": "Puntación máxima",
   "POINT": "Punto",
   "ORDER": "Orden",
   "OPTIONAL": "opcional",
@@ -174,10 +175,21 @@
   "CLOSE": "Cerrar",
   "REFRESH": "Refrescar",
   "RESET": "Reiniciar",
+  "NEXT": "Siguiente",
   "BACK": "Volver",
   "CLOSE_EDITION": "Cerrar edición",
 
   "IMPORT_ERRORS": "Errores Importación",
+
+  "DESCRIPTION_PLACEHOLDER": "Descripción...",
+  "REFERENCE_PLACEHOLDER": "Referencia",
+  "POINTS_PLACEHOLDER": "Puntos",
+
+  "DESCRIPTION_INPUT_REQUIRED": "El campo descripción es obligatorio.",
+  "REFERENCE_INPUT_REQUIRED": "El campo referencia es obligatorio.",
+  "AREA_INPUT_REQUIRED": "El campo área es obligatorio.",
+  "QUESTION_TYPE_INPUT_REQUIRED": "El campo tipo de pregunta es obligatorio.",
+  "POINTS_INPUT_REQUIRED": "El campo puntos es obligatorio.",
 
   "SELECT": "Seleccionar...",
   "IMPORT_DATA": "Importar",
@@ -185,4 +197,5 @@
   "LOG_OUT": "Cerrar sesión",
   "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",
   "LOG_IN_ERROR": "Error al iniciar sesión"
+
 }

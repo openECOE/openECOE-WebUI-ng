@@ -12,7 +12,7 @@ import {AuthenticationGuard} from '../../../guards/authentication/authentication
 import {ScheduleComponent} from './schedule/schedule.component';
 import {Role} from '../../../models';
 import {StationDetailsComponent} from './stations/station-details/station-details.component';
-import {QuestionsListComponent} from './questions/questions-list/questions-list.component';
+import {QuestionsListComponent} from '../../../components/questions-list/questions-list.component';
 
 const routes: Routes = [
   {

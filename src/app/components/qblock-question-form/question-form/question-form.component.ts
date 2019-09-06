@@ -1,34 +1,25 @@
-import {Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Area, RowQuestion, Station} from '../../models';
+import {Area, RowQuestion, Station} from '../../../models';
 import {Pagination} from '@openecoe/potion-client';
-import {FunctionCall} from '@angular/compiler';
+
+import {OptionFormComponent} from '../option-form/option-form.component';
 
 @Component({
   selector: 'app-question-form',
   templateUrl: './question-form.component.html',
-  styleUrls: ['./question-form.component.less']
+  styleUrls: ['./question-form.component.less'],
+  providers: [OptionFormComponent]
 })
 export class QuestionFormComponent implements OnInit {
 
+  @ViewChildren(OptionFormComponent) optionsRef: QueryList<OptionFormComponent>;
+  @Output() returnData = new EventEmitter();
+
   questionForm: FormGroup;
   control: FormArray;
-
   totalItems: number = 0;
-
-  selectOptions: any [] = [];
-
-  rowQuestion: RowQuestion = {
-    order: [''],
-    description: ['', Validators.required],
-    reference: ['', Validators.required],
-    area: [''],
-    questionType: [''],
-    optionsNumber: 0
-  };
-
-  data: object = {questionRow: [this.rowQuestion]};
-
+  totalPoints: number = 0;
   areas: Area[] = [];
   pagAreas: Pagination<Area>;
 
@@ -38,14 +29,9 @@ export class QuestionFormComponent implements OnInit {
     {type: 'RS', label: 'VALUE_RANGE'}
   ];
 
-  saved: boolean = false;
+  data: object = {questionRow: [this.getRowQuestion()]};
+  selectedQType: string = this.questionTypeOptions[0].type;
 
-  func: any;
-
-  @ViewChild('option') optionRef;
-
-
-  @Output() returnData = new EventEmitter();
 
   constructor(private fb: FormBuilder) { }
 
@@ -58,7 +44,7 @@ export class QuestionFormComponent implements OnInit {
 
     this.addQuestionRow();
 
-    this.loadAreas();
+    this.loadAreas().finally( () => this.getFormControl('area', 0 ).setValue(this.areas[0])  );
   }
 
   /**
@@ -70,20 +56,29 @@ export class QuestionFormComponent implements OnInit {
     return this.questionForm.get('questionRow')['controls'][idx].controls[name];
   }
 
-  searchInSelect(value: string, exclude?: string): void {
+  getRowQuestion() {
+    return <RowQuestion>({
+      order: [''],
+      description: ['', Validators.required],
+      reference: ['', Validators.required],
+      area: [(this.areas) ? this.areas[0] : '', Validators.required],
+      questionType: [this.questionTypeOptions[0].type, Validators.required],
+      optionsNumber: 2, // BECAUSE RB QUESTION TYPE IS BY DEFAULT.
+      points: [{value: 0, disabled: true}, Validators.required]
+    });
+  }
+
+  searchInSelect(value: string): void {
     if (value) {
       Station.query({
         where: {
-          // 'ecoe': this.ecoeId,
           'name': {'$contains': value}
         },
         sort: {'order': false},
         page: 1,
         perPage: 50
       }, {paginate: true, cache: false})
-        .then(response => {
-          // this.updateOptions(response, exclude);
-        });
+        .finally();
     } else {
       // this.loadOptions4Select(exclude);
     }
@@ -101,18 +96,14 @@ export class QuestionFormComponent implements OnInit {
    * Adds new row (name and order fields) station to the form
    */
   addQuestionRow() {
-    this.control.push(this.fb.group(this.rowQuestion));
-    console.log('control: ', this.control);
+    this.control.push(this.fb.group(this.getRowQuestion()));
   }
 
-  addOptionRow(idx: number) { console.log('addOptionRow on index: ', idx);
+  addOptionRow(idx: number) {
     this.control.value[idx]['optionsNumber']++;
-    // console.log('addOptionRow', this.rowQuestion.optionsNumber);
-    console.log('optionsNumber', this.control.value[idx]['optionsNumber']);
   }
 
   async loadAreas() {
-    // this.pagAreas = await Area.query<Area, Pagination<Area>>({where: {ecoe: this.idEcoe}, sort: {code: false}}, {paginate: true});
     this.pagAreas = await Area.query<Area, Pagination<Area>>({sort: {code: false}}, {paginate: true});
     this.areas = [...this.pagAreas['items']];
   }
@@ -125,20 +116,18 @@ export class QuestionFormComponent implements OnInit {
     }
   }
 
-  mySubmit() {
-    console.log('submit from question form');
-    return true;
-  }
-
   onGetOptions(event: any) {
-    console.log('onGetOptions', event);
+    const questions = this.questionForm.get('questionRow').value;
+
+    questions[event.id].order = event.id;
+    questions[event.id].options = event.options;
   }
 
   /**
    * Before save values in data base, in first time checks that
    * all fields are validates and then will save the values.
    */
-  submitForm(event?: any): boolean {
+  submitForm(): boolean {
     for (const i in this.questionForm.get('questionRow')['controls']) {
       if (this.questionForm.get('questionRow')['controls'].hasOwnProperty(i)) {
         this.getFormControl('description', +i).markAsDirty();
@@ -157,26 +146,55 @@ export class QuestionFormComponent implements OnInit {
         this.getFormControl('questionType', +i).updateValueAndValidity();
       }
     }
-    console.log('question:submitForm: ', this.questionForm.valid);
+
     if (this.questionForm.valid) {
+      let formValidFlag: boolean = true;
 
-      // console.log('option: ', this.optionRef.submitForm());
+      this.optionsRef.toArray().forEach((item) => {
+        if (!item.submitForm()) {
+          formValidFlag = false;
+          return;
+        }
+      });
 
-      // this.optionRef.submitForm();
+      if (!formValidFlag) { return; }
 
-      if (event) {
-        event();
-      }
-
-
-      this.returnData.next(this.questionForm.get('questionRow').value);
+      this.returnData.next((this.questionForm.get('questionRow').value).map((item) => {
+        item['order'] += 1;
+        return item;
+      }));
     }
 
     return this.questionForm.valid;
   }
 
-  toSave(){
-    this.saved = true;
+  onQuestionTypeChange(event: string) {
+    this.selectedQType = event;
   }
 
+  onReceivePointValues($event: any[]) {
+    this.totalPoints = 0;
+    const questionOrder = $event[0];
+    const questionType = this.control.value[questionOrder]['questionType'];
+    switch (questionType) {
+      case this.questionTypeOptions[0].type: { // RB
+        this.control.value[questionOrder]['points'] = ($event[1].length > 0) ? Math.max(...(Array.from( $event[1], x => x['value'] ))) : 0;
+        break;
+      }
+      case this.questionTypeOptions[1].type: { // CH
+        $event[1].forEach(item => {
+          this.totalPoints += parseInt(item.value, 10);
+          this.control.value[questionOrder]['points'] = this.totalPoints;
+        });
+        break;
+      }
+      case this.questionTypeOptions[2].type: {
+        $event[1].forEach(item => {
+          this.totalPoints += parseInt(item.value, 10);
+          this.control.value[questionOrder]['points'] = this.totalPoints;
+        });
+        break;
+      }
+    }
+  }
 }

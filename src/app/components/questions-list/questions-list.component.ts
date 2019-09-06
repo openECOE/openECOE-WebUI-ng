@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Area, QBlock, Question} from '../../../../../models';
+import {Area, QBlock, Question} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {ActivatedRoute} from '@angular/router';
 
@@ -10,14 +10,13 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class QuestionsListComponent implements OnInit {
 
-  // @Input() idEcoe: ECOE;
   @Input() qblock: QBlock = new QBlock();
+  @Input() questionsList: Question[] = [];
+  @Input() preview: boolean = false;
 
   param_id: number;
 
-
   questionsPage: Pagination<Question>;
-  questionsList: Question[] = [];
 
   editCache: Array<any> = [];
 
@@ -29,7 +28,7 @@ export class QuestionsListComponent implements OnInit {
   totalItems: number = 0;
 
   loading: boolean = false;
-  defaultExpand: boolean = false;
+  defaultExpand: boolean = (this.preview) ? true : false;
 
   questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -41,12 +40,17 @@ export class QuestionsListComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.route.snapshot.params.id) { console.log(+this.route.snapshot.params.id);
-      this.param_id = +this.route.snapshot.params.id;
-    }
 
-    this.loadAreas();
-    this.loadQuestions(this.page, this.perPage);
+    if (this.questionsList.length > 0) {
+      this.defaultExpand = (this.preview) ? true : false;
+      this.updateEditCache(this.preview);
+      console.log(this.defaultExpand);
+    } else {
+      if (this.route.snapshot.params.id) { this.param_id = +this.route.snapshot.params.id; }
+
+      this.loadAreas().finally();
+      this.loadQuestions(this.page, this.perPage);
+    }
   }
 
   pageChange(page: number) {
@@ -79,15 +83,16 @@ export class QuestionsListComponent implements OnInit {
     );
   }
 
-
   /**
    * Updates editCache variable with the same values of the resources array and adds a 'edit' key.
    */
-  updateEditCache(): void {
+  updateEditCache(preview?: boolean): void {
     this.editCache = [];
 
     this.questionsList.forEach(item => {
-
+      if (preview) {
+        item.id = item.order;
+      }
       this.editCache[item.id] = {
         edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
         new_item: false,
@@ -98,7 +103,6 @@ export class QuestionsListComponent implements OnInit {
   }
 
   async loadAreas() {
-    // this.pagAreas = await Area.query<Area, Pagination<Area>>({where: {ecoe: this.idEcoe}, sort: {code: false}}, {paginate: true});
     this.pagAreas = await Area.query<Area, Pagination<Area>>({sort: {code: false}}, {paginate: true});
     this.areas = [...this.pagAreas['items']];
   }
@@ -115,7 +119,7 @@ export class QuestionsListComponent implements OnInit {
    * Sets the editCache variable to true.
    * Changes text-view tags by input tags.
    *
-   * @param idx Id of the selected resource
+   * @param id Id of the selected resource
    */
   startEdit(id: number) {
     this.editCache[id].edit = true;
@@ -149,7 +153,7 @@ export class QuestionsListComponent implements OnInit {
    * If resource is not already saved, calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
    * Else resets editCache to the previous value.
    *
-   * @param idx Resource selected
+   * @param id Resource selected
    */
   cancelEdit(id: number) {
     this.editCache[id].edit = false;
@@ -165,7 +169,7 @@ export class QuestionsListComponent implements OnInit {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
    *
-   * @param idx Resource selected
+   * @param id Resource selected
    */
   deleteItem(id: number) {
     this.questionsList[id].destroy().then(() => this.updateArrayQuestions(id));
@@ -187,10 +191,8 @@ export class QuestionsListComponent implements OnInit {
    * Adds a new empty field to the resources array.
    * Then updates editCache with the new resource.
    */
-  async addQuestion() { console.log('new id: ', this.questionsList[this.questionsList.length - 1].id + 1);
+  async addQuestion() {
     const newItem = {
-      // id: this.questionsList[this.questionsList.length - 1].id + 1,
-      // id: 100,
       order: this.questionsList.length + 1,
       description: '',
       reference: '',
@@ -201,35 +203,21 @@ export class QuestionsListComponent implements OnInit {
     };
 
     // Recover last item to make index
-    const lastId: number = (await Question.first<Question>({sort: {'$uri': true}})).id;
+    // const lastId: number = (await Question.first<Question>({sort: {'$uri': true}})).id;
 
-    // console.log(new Question(newItem));
-    // return;
-     const question = new Question(newItem);
-    // const question = newItem as Question;
-
-    console.log('before questionList: ', Object.create(this.questionsList));
+    const question = new Question(newItem);
 
     this.questionsList = [...this.questionsList, question];
 
-    console.log('after questionList: ', this.questionsList);
-
-    console.log('antes de error', this.questionsList[this.questionsList.length - 2]);
-    // console.log(question, this.questionsList, this.questionsList.indexOf(question) );
-
-    // this.editCache[this.questionsList.indexOf(question)] = {
     this.editCache[this.questionsList[this.questionsList.length - 2].id + 1] = {
       edit: true,
       new_item: true,
       item: Object.assign(new Question(), question),
       expand: this.defaultExpand
     };
-
-    console.log('despues de error', this.editCache);
   }
 
   getQuestionTypeLabel(questionType: string) {
-    // TODO: CHECK FOR REDUCE NUMBER OF CALLS THIS METHOD
     return this.questionTypeOptions.find(x => x.type === questionType).label;
   }
 

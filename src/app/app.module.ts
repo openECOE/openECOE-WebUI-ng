@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {NgZorroAntdModule, NZ_I18N, es_ES, NZ_MESSAGE_CONFIG, NzBreadCrumbModule} from 'ng-zorro-antd';
+import {NgZorroAntdModule, NZ_I18N, es_ES, NZ_MESSAGE_CONFIG} from 'ng-zorro-antd';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeEsExtra from '@angular/common/locales/extra/es';
@@ -44,7 +44,6 @@ export function createTranslateLoader(http: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
     NgZorroAntdModule,
-    NzBreadCrumbModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

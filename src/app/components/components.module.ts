@@ -7,10 +7,13 @@ import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import { MenuComponent } from './menu/menu.component';
 import {RouterModule} from '@angular/router';
-import { QblockFormComponent } from './qblock-form/qblock-form.component';
+import { QblockFormComponent } from './qblock-question-form/qblock-form/qblock-form.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { QuestionFormComponent } from './question-form/question-form.component';
-import { OptionFormComponent } from './option-form/option-form.component';
+import { QuestionFormComponent } from './qblock-question-form/question-form/question-form.component';
+import { OptionFormComponent } from './qblock-question-form/option-form/option-form.component';
+import { QblockQuestionFormComponent } from './qblock-question-form/qblock-question-form.component';
+import {QuestionsListComponent} from './questions-list/questions-list.component';
+import {OptionsListComponent} from './questions-list/options-list/options-list.component';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -20,7 +23,10 @@ import { OptionFormComponent } from './option-form/option-form.component';
     MenuComponent,
     QblockFormComponent,
     QuestionFormComponent,
-    OptionFormComponent
+    OptionFormComponent,
+    QblockQuestionFormComponent,
+    QuestionsListComponent,
+    OptionsListComponent
   ],
   imports: [
     CommonModule,
@@ -35,9 +41,8 @@ import { OptionFormComponent } from './option-form/option-form.component';
     UploadAndParseComponent,
     ActionButtonsComponent,
     MenuComponent,
-    QblockFormComponent,
-    QuestionFormComponent,
-    OptionFormComponent
+    QblockQuestionFormComponent,
+    QuestionsListComponent
   ]
 })
 export class ComponentsModule {}

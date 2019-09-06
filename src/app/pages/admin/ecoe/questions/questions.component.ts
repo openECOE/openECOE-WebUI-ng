@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
-import {forkJoin, from, Observable} from 'rxjs';
-import {SharedService} from '../../../../services/shared/shared.service';
+import {forkJoin} from 'rxjs';
 import {Area, ECOE, QBlock, Question, Station, Option} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Pagination} from '@openecoe/potion-client';
@@ -257,9 +256,11 @@ export class QuestionsComponent implements OnInit {
    * and later calls #saveArrayQuestions.
    * @param items array of object to parse
    */
-  importQuestions(items: any[]) {
+  importQuestions(items: any[]) { console.log('importQuestions:', items);
     this.loading = true;
     const blocksWithQuestions = this.mapFile(items);
+    console.log('importQuestions:parsed', blocksWithQuestions);
+    return;
     this.saveArrayQuestions(blocksWithQuestions)
       .finally(() => {
         this.loading = false;

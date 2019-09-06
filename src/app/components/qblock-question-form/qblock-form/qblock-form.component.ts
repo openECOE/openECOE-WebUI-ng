@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {RowQblock} from '../../pages/admin/ecoe/questions/questions.component';
-import {QBlock} from '../../models';
+import {RowQblock} from '../../../pages/admin/ecoe/questions/questions.component';
+import {QBlock} from '../../../models';
 
 @Component({
   selector: 'app-qblock-form',
@@ -10,6 +10,9 @@ import {QBlock} from '../../models';
 })
 export class QblockFormComponent implements OnInit {
 
+  @Output() returnData = new EventEmitter();
+  @Input() qblocks?: QBlock;
+
   private qblockForm: FormGroup;
   private control: FormArray;
 
@@ -17,13 +20,9 @@ export class QblockFormComponent implements OnInit {
     name: ['', Validators.required]
   };
 
-  @Output() returnData = new EventEmitter();
-  @Input() qblocks?: QBlock;
-
   constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
-
     this.qblockForm = this.fb.group({
       qblockRow: this.fb.array([])
     });
@@ -47,7 +46,7 @@ export class QblockFormComponent implements OnInit {
    * Adds new row (name field) qblock to the form
    */
   private addQblockRow() {
-    this.control.push(this.fb.group(this.rowQblock));
+     this.control.push(this.fb.group(this.rowQblock));
   }
 
   /**
@@ -85,11 +84,11 @@ export class QblockFormComponent implements OnInit {
         this.getFormControl('name', +i).updateValueAndValidity();
       }
     }
-    if (this.qblockForm.valid) {
+    const valid = this.qblockForm.valid;
+
+    if (valid) {
       this.returnData.next(this.qblockForm.get('qblockRow').value);
     }
-
-    return this.qblockForm.valid;
+    return valid;
   }
-
 }

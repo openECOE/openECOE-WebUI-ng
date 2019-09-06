@@ -1,10 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Option, Question} from '../../../../../../models';
-import {forkJoin} from 'rxjs';
-import {ApiService} from '../../../../../../services/api/api.service';
-import {Router} from '@angular/router';
-import {SharedService} from '../../../../../../services/shared/shared.service';
-import {promise} from 'selenium-webdriver';
+import {Option, Question} from '../../../models';
+import {ApiService} from '../../../services/api/api.service';
+import {SharedService} from '../../../services/shared/shared.service';
 
 @Component({
   selector: 'app-options-list',
@@ -14,6 +11,7 @@ import {promise} from 'selenium-webdriver';
 export class OptionsListComponent implements OnInit {
 
   @Input() question: Question;
+  @Input() preview: boolean;
 
   editCacheOption: Array<any> = [];
   indexOpt: number = 1;
@@ -33,6 +31,7 @@ export class OptionsListComponent implements OnInit {
    */
   loadOptionsByQuestion() {
     this.question.options.forEach(option => {
+      if (this.preview) {option.id = option.order; }
       this.editCacheOption[option.id] = {
         edit: this.editCacheOption[option.id] ? this.editCacheOption[option.id].edit : false,
         ...option
