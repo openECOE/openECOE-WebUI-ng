@@ -10,7 +10,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
 
   @Input() questionOrder: number;
   @Input() numberOptions: number;
-  @Input() type: 'CH' | 'RS'  | 'RB';
+  @Input() type: 'RB' | 'CH'  | 'RS';
   @Input() optionsCache: RowOption[] = [];
 
   @Output() returnData:   EventEmitter<any> = new EventEmitter();
@@ -34,10 +34,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
-    this.optionForm = this.fb.group({
-      optionRow: this.fb.array([])
-    });
-    this.control = <FormArray>this.optionForm.controls.optionRow;
+    this.initOptionForm();
   }
 
   ngAfterContentInit() {
@@ -57,6 +54,13 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
       this.optionsCache = [];
       this.initOptionRow(this.numberOptions, changes.type.previousValue);
     }
+  }
+
+  initOptionForm() {
+    this.optionForm = this.fb.group({
+      optionRow: this.fb.array([])
+    });
+    this.control = <FormArray>this.optionForm.controls.optionRow;
   }
 
   getTotalPoints() {
@@ -95,29 +99,21 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   }
 
   getRowOption(rowType: string, params: any, index?: number) {
-    switch (rowType) {
-      case 'RB':
-        return <RowOption>({
-          id: (params && params['id']) ? params['id'] : '',
-          order: params ? params['order'] : '',
-          label: [params ? params['label'] : this.defaultTextValues[index], [Validators.required, Validators.maxLength(255)]],
-          points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]]
-        });
-      case 'CH':
-        return <RowOption>({
-          id: (params && params['id']) ? params['id'] : '',
-          order: params ? params['order'] : '',
-          label: [params ? params['label'] : '', [Validators.required, Validators.maxLength(255)]],
-          points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]]
-        });
-      case 'RS':
-        return <RowOption>({
-          id: (params && params['id']) ? params['id'] : '',
-          order: '',
-          label: [{value: ' ', disabled: true}, ],
-          points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]],
-          rateCount: this.nRateCount.current
-        });
+    if (rowType !== this.questionTypeOptions[2]) {
+      return <RowOption>({
+        id: (params && params['id']) ? params['id'] : '',
+        order: params ? params['order'] : '',
+        label: [params ? params['label'] : this.defaultTextValues[index], [Validators.required, Validators.maxLength(255)]],
+        points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]]
+      });
+    } else {
+      return <RowOption>({
+        id: (params && params['id']) ? params['id'] : '',
+        order: '',
+        label: [{value: ' ', disabled: true}, ],
+        points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]],
+        rateCount: this.nRateCount.current
+      });
     }
   }
 
@@ -162,7 +158,6 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     while (this.optionForm.get('optionRow')['controls'].length > 0) {
       if (this.optionForm.get('optionRow')['controls'].length === (k - 1)) {
         this.updateTotalPoints();
-        // this.getTotalPoints();
         break;
       } else if (previousValue === this.questionTypeOptions[2]
         || (this.getFormControl('label', +i).untouched
@@ -267,7 +262,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     const length = options.length;
     const rateCount = options[length - 1].rateCount;
 
-    if (this.type !== 'RS') {
+    if (this.type !== this.questionTypeOptions[2]) {
       return options;
     }
     const auxOptions: RowOption[] = [];

@@ -1,14 +1,10 @@
 <nz-content>
   <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="station?.name" nzSubtitle="Estación"> </nz-page-header>
 
-  <!--<nz-button-group style="display: inline-flex" text-center>-->
     <button class="margin-bottom" nz-button nzType="dashed" nzBlock (click)="showDrawer()">
       {{'ADD_QBLOCK' | translate}}
       <i nz-icon nzType="file-add" nzTheme="outline"></i>
     </button>
-<!--    <app-upload-and-parse nzBlock (parserResult)="getQblocks()"></app-upload-and-parse>
-  </nz-button-group>-->
-
 
   <nz-table #table
             [nzData]="qblocks"
@@ -25,22 +21,15 @@
     <thead>
     <tr>
       <th [nzExpand]="true">
-        <a (click)="getQblocks()">
+        <a (click)="getQblocks(id_station)">
           <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="5%">{{"ORDER" | translate}}</th>
       <th nzWidth="77%">{{"NAME" | translate}}</th>
-<!--      <th nzWidth="7%">{{"Nº preguntas" | translate}}</th>-->
-<!--      <th nzWidth="7%"></th>-->
       <th nzWidth="12%" style="min-width: 165px;">
         <nz-button-group class="margin-left right">
-          <!--<button nz-button [nzType]="'primary'"
-                  [nz-tooltip] [nzTitle]="'ADD_STATION' | translate" (click)="showDrawer()"
-                  >
-            <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
-          </button>-->
-<!--          <app-upload-and-parse (parserResult)="getQblocks()"></app-upload-and-parse>-->
+          <app-upload-and-parse (parserResult)="importQblocksWithQuestions($event, id_station)"></app-upload-and-parse>
         </nz-button-group>
       </th>
       <th nzWidth="6%" style="min-width: 65px;"></th>
@@ -77,19 +66,7 @@
           </td>
         </ng-container>
 
-        <!--<td>
-          <ng-container *ngIf="!editCache[item.id].edit" >
-            {{item.questions?.length}}
-          </ng-container>
-        </td>-->
-
-        <td>
-          <!--<nz-collapse (click)="onItemClicked(item)">
-            <nz-collapse-panel [nzHeader]="'Ver preguntas'"
-                               [nzActive]="item.expand">
-            </nz-collapse-panel>
-          </nz-collapse>-->
-        </td>
+        <td></td>
 
         <td text-right>
           <app-action-buttons [isEditing]="editCache[item.id]?.edit"

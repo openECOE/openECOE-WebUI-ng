@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges, ViewChildren} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Area, RowQuestion, Station, QBlock} from '../../../models';
+import {Area, RowQuestion, Station} from '../../../models';
 import {Pagination} from '@openecoe/potion-client';
 
 import {OptionFormComponent} from '../option-form/option-form.component';
@@ -48,9 +48,6 @@ export class QuestionFormComponent implements OnInit, OnChanges {
     this.initRowQuestions(this.questionsCache);
 
     this.loadAreas().finally();
-
-/*    this.getQblockQuestionsNumber()
-      .then(response => console.log(response));*/
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -143,8 +140,6 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         perPage: 50
       }, {paginate: true, cache: false})
         .finally();
-    } else {
-      // this.loadOptions4Select(exclude);
     }
   }
 

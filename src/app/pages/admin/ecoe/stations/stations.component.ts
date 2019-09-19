@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station} from '../../../../models';
@@ -19,40 +18,31 @@ import {Location} from '@angular/common';
 
 export class StationsComponent implements OnInit {
 
-  stations: Station[] = [];
-  ecoeId: number;
-  editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
-  index: number = 1;
-
-  page: number = 1;
-  totalItems: number = 0;
-  perPage: number = 10;
-
-  pagStations: any;
-
-  loading: boolean = false;
-  isVisible: boolean;
-
-  stationForm: FormGroup;
-  control: FormArray;
-
-  selectOptions: any [] = [];
-
-  rowStation: RowStation = {
+  private stations: Station[] = [];
+  private ecoeId: number;
+  private editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
+  public  index: number = 1;
+  private page: number = 1;
+  private totalItems: number = 0;
+  private perPage: number = 10;
+  private pagStations: any;
+  private loading: boolean = false;
+  private isVisible: boolean;
+  private stationForm: FormGroup;
+  private control: FormArray;
+  private selectOptions: any [] = [];
+  private rowStation: RowStation = {
     order: [''],
     name: ['', Validators.required],
     parentStation: ['']
   };
-
-  data: object = {stationRow: [this.rowStation]};
 
   logPromisesERROR: any[] = [];
   logPromisesOK: any[] = [];
 
   readonly EXCLUDE_ITEMS = [];
 
-  constructor(private apiService: ApiService,
-              private route: ActivatedRoute,
+  constructor(private route: ActivatedRoute,
               private router: Router,
               private translate: TranslateService,
               public shared: SharedService,
@@ -88,10 +78,10 @@ export class StationsComponent implements OnInit {
         perPage: 50
       }, {paginate: true, cache: false})
         .then(response => {
-          this.updateOptions(response, exclude);
+          this.updateOptions(response, exclude).finally();
         });
     } else {
-      this.loadOptions4Select(exclude);
+      this.loadOptions4Select(exclude).finally();
     }
   }
 
@@ -173,13 +163,13 @@ export class StationsComponent implements OnInit {
    * @param item selected resource of stations list
    * @param excludeItem exclude himself item
    */
-  startEdit(item: Station, excludeItem?: string) { // console.log('StartEdit:station', item);
+  startEdit(item: Station, excludeItem?: string) {
     this.editCache[item.id].edit = true;
-    this.loadOptions4Select(excludeItem);
+    this.loadOptions4Select(excludeItem).finally();
   }
 
   /**
-   * Calls ApiService to delete the resource passed.
+   * Calls destroy to delete the resource passed.
    * Then calls [updateArrayStations]{@link #updateArrayStations} function.
    *
    * @param station Resource selected
@@ -202,7 +192,6 @@ export class StationsComponent implements OnInit {
         new_item: false,
         item: Object.create(item)
       };
-      // console.log(`ìtem = ${ JSON.stringify(item)  } , this.editCache[${item.id}]= ${JSON.stringify(this.editCache[item.id].item)}`);
     });
   }
 
@@ -239,7 +228,7 @@ export class StationsComponent implements OnInit {
    *
    * @param item Resource selected
    */
-  cancelEdit(item: any): void { // console.log('on:cancel:', item, this.editCache[item.id]); return;
+  cancelEdit(item: any): void {
     this.editCache[item.id].edit = false;
     this.editCache[item.id].item = Object.create(item);
   }
@@ -302,7 +291,7 @@ export class StationsComponent implements OnInit {
   showDrawer() {
     this.isVisible = true;
     this.InitStationRow();
-    this.loadOptions4Select();
+    this.loadOptions4Select().finally();
 
   }
 
@@ -407,15 +396,6 @@ export class StationsComponent implements OnInit {
   }
 
   /**
-   * Fired when parent station select option is changed
-   * @param event new value selected or deleted
-   * @param item the row station that was edited
-   */
-  optionChanged(event: EventTarget, item: Station) {
-    this.editCache[item.id].item.parentStation = (event) ? {id: +event} : {id: null};
-  }
-
-  /**
    * Saves array of data in data base. The data can be provided from external file or from
    * multiple rows form.
    * @param items obtained from form array or array form.
@@ -428,12 +408,9 @@ export class StationsComponent implements OnInit {
     let total = +this.totalItems;
     const withParent = [];
 
-    console.log('saveArrayStations', items);
-
      for (const item of items) {
       if (item.name) {
         item['ecoe'] = this.ecoeId;
-        // item.parentStation = (item.parentStation) ? parseInt(item.parentStation, 10) : null;
 
         if (!item.order) {
           item.order = ++total;

@@ -135,6 +135,7 @@ export class QuestionsComponent implements OnInit {
     }
 
     this.updateEditCache();
+
     this.loading = false;
   }
 
@@ -256,11 +257,9 @@ export class QuestionsComponent implements OnInit {
    * and later calls #saveArrayQuestions.
    * @param items array of object to parse
    */
-  importQuestions(items: any[]) { console.log('importQuestions:', items);
+  importQuestions(items: any[]) {
     this.loading = true;
     const blocksWithQuestions = this.mapFile(items);
-    console.log('importQuestions:parsed', blocksWithQuestions);
-    return;
     this.saveArrayQuestions(blocksWithQuestions)
       .finally(() => {
         this.loading = false;

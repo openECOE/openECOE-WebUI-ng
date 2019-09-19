@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Area, Option, QBlock, Question} from '../../models';
+import {Option, QBlock, Question} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {ActivatedRoute} from '@angular/router';
 
@@ -21,11 +21,9 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   private param_id: number;
   private questionsPage: Pagination<Question>;
   private editCache: Array<any> = [];
-  private areas: Area[] = [];
-  private pagAreas: Pagination<Area>;
 
   page: number = 1;
-  perPage: number = 20;
+  perPage: number = 10;
   totalItems: number = 0;
 
   loading: boolean = false;
@@ -46,8 +44,6 @@ export class QuestionsListComponent implements OnInit, OnChanges {
       this.updateEditCache(this.preview);
     } else {
       if (this.route.snapshot.params.id) { this.param_id = +this.route.snapshot.params.id; }
-      console.log(this.param_id);
-      this.loadAreas().finally();
       this.loadQuestions(this.page, this.perPage);
     }
   }
@@ -68,7 +64,6 @@ export class QuestionsListComponent implements OnInit, OnChanges {
 
   loadQuestions(page: number, perPage: number) {
     this.loading = true;
-    console.log('lets start loadQuestions: ', this.qblock.id);
     this.questionsList = [];
     Question.query<Question, Pagination<Question>>({
         where: {qblocks: {$contains: this.qblock.id ? this.qblock.id : this.param_id}},
@@ -108,68 +103,15 @@ export class QuestionsListComponent implements OnInit, OnChanges {
     });
   }
 
-  async loadAreas() {
-    this.pagAreas = await Area.query<Area, Pagination<Area>>({sort: {code: false}}, {paginate: true});
-    this.areas = [...this.pagAreas['items']];
-  }
-
-  async loadMoreAreas() {
-    const nextPage = this.pagAreas.page + 1;
-
-    if (nextPage <= this.pagAreas.pages) {
-      this.areas = [...this.areas, ...(await this.pagAreas.changePageTo(nextPage)).items];
-    }
-  }
-
   /**
    * Sets the editCache variable to true.
    * Changes text-view tags by input tags.
    *
    * @param id Id of the selected resource
    */
-  startEdit(id: number) {
+  onEditQuestion(id: number) {
     const idx = this.questionsList.map(item => item.id).indexOf(id);
     this.editQuestion.next(this.questionsList[idx]);
-  }
-
-  /**
-   * Creates or updates the resource passed.
-   * Then updates the variables to avoid calling the backend again.
-   *
-   * @param editItem Resource selected
-   */
-  saveItem(editItem: any) {
-    const question = editItem.item;
-
-    if (!question.description || !question.reference || !question.questionType || !question.area) {
-      return;
-    }
-
-    question.question_type = question.questionType;
-
-    question.save()
-      .then(response => {
-        this.questionsList[question.id] = response;
-        this.editCache[question.id].edit = false;
-      })
-      .catch(err => console.error(err));
-  }
-
-  /**
-   * Sets the editCache variable to false.
-   * If resource is not already saved, calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
-   * Else resets editCache to the previous value.
-   *
-   * @param id Resource selected
-   */
-  cancelEdit(id: number) {
-    this.editCache[id].edit = false;
-
-    if (this.editCache[id].new_item) {
-      this.updateArrayQuestions(id);
-    } else {
-      this.editCache[id].data = Object.assign(new Question(), this.questionsList[id]);
-    }
   }
 
   /**
@@ -178,11 +120,8 @@ export class QuestionsListComponent implements OnInit, OnChanges {
    *
    * @param id Resource selected
    */
-  async deleteItem(id: number) {
-
+  async onDeleteQuestion(id: number) {
     const idx = this.questionsList.map(item => item.id).indexOf(id);
-    console.log('deleteItem:', id, idx, this.questionsList[idx]);
-
     const options: Option[] = (this.questionsList[idx].options) ? this.questionsList[idx].options : [];
 
     if (options.length > 0) {
@@ -190,7 +129,6 @@ export class QuestionsListComponent implements OnInit, OnChanges {
         await option.destroy();
       }
     }
-    console.log('after delete all options go delete QUESTION');
     this.questionsList[idx].destroy().then(() => {
       this.updateArrayQuestions(id);
       this.loadQuestions(this.page, this.perPage);
@@ -205,7 +143,6 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   updateArrayQuestions(idx: number) {
     delete this.editCache[idx];
     this.questionsList = this.questionsList.filter(x => x !== this.questionsList[idx]);
-
   }
 
   /**
@@ -219,5 +156,4 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   getQuestionTypeLabel(questionType: string) {
     return this.questionTypeOptions.find(x => x.type === questionType).label;
   }
-
 }

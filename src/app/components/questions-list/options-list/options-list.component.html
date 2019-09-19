@@ -31,20 +31,14 @@
         [attr.rowspan]="(question.questionType == 'RS') ? question.options.length : 1">
 
       <ng-container *ngIf="question.questionType == 'RB'">
-        <!--<nz-radio-group [(ngModel)]="option.id">
-          <label nz-radio [nzValue]="option.id"
-                 [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
-            {{editCacheOption[option.id].label}}
-          </label>
-        </nz-radio-group>-->
 
         <nz-switch *ngIf="indexOption === 0" [ngModel]="!editCacheOption[option.id].edit"
-                   [nzCheckedChildren]="editCacheOption[option.id].edit ?
-                        editCacheOption[option.id].label :
-                        option.label"
-                   [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
-                        editCacheOption[option.id].label :
-                        optionTable.data[1].label"
+                   [nzCheckedChildren]="editCacheOption[option.id].edit
+                    ? editCacheOption[option.id].label
+                    : option.label"
+                   [nzUnCheckedChildren]="editCacheOption[option.id].edit
+                    ? editCacheOption[option.id].label
+                    : optionTable.data[1].label"
                    [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
         </nz-switch>
 
@@ -52,12 +46,12 @@
 
       <ng-container *ngIf="question.questionType == 'CH'">
         <nz-switch [ngModel]="!editCacheOption[option.id].edit"
-                   [nzCheckedChildren]="editCacheOption[option.id].edit ?
-                        editCacheOption[option.id].label :
-                        option.label"
-                   [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
-                        editCacheOption[option.id].label :
-                        option.label"
+                   [nzCheckedChildren]="editCacheOption[option.id].edit
+                    ? editCacheOption[option.id].label
+                    : option.label"
+                   [nzUnCheckedChildren]="editCacheOption[option.id].edit
+                    ? editCacheOption[option.id].label
+                    : option.label"
                    [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
         </nz-switch>
       </ng-container>

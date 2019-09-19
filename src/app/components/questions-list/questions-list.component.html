@@ -13,7 +13,7 @@
           [nzFrontPagination]="false"
           nzSize="small"
           nzShowSizeChanger
-          [nzShowPagination]="false"
+          [nzShowPagination]="!preview"
           >
   <thead>
   <tr>
@@ -50,12 +50,8 @@
         <ng-container *ngIf="!preview">
           <nz-divider [nzType]="'vertical'"></nz-divider>
           <app-action-buttons
-            [isEditing]="editCache[item.id]?.edit"
-            [isNewItem]="editCache[item.id]?.new_item"
-            (startEdit)="startEdit(item.id)"
-            (delete)="deleteItem(item.id)"
-            (save)="saveItem(editCache[item.id])"
-            (cancelEdit)="cancelEdit(item.id)">
+            (startEdit)="onEditQuestion(item.id)"
+            (delete)="onDeleteQuestion(item.id).finally()">
           </app-action-buttons>
         </ng-container>
       </td>
@@ -66,7 +62,6 @@
         <app-options-list
           [question]="item"
           [preview]="preview">
-
         </app-options-list>
       </td>
     </tr>

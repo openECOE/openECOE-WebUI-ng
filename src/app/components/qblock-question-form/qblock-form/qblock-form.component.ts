@@ -23,20 +23,24 @@ export class QblockFormComponent implements OnInit {
   constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
+    this.initQblockForm();
+    this.InitQblockRow();
+    this.setQblockCacheValue();
+  }
+
+  initQblockForm() {
     this.qblockForm = this.fb.group({
       qblockRow: this.fb.array([])
     });
 
     this.control = <FormArray>this.qblockForm.controls.qblockRow;
+  }
 
-    this.InitQblockRow();
-
+  setQblockCacheValue() {
     if (this.qblocks.length > 0) {
       this.getFormControl('name', 0).setValue(this.qblocks[0].name);
     }
-
   }
-
 
   /**
    * Obtains de formControl instance of any element in our form.
@@ -53,14 +57,6 @@ export class QblockFormComponent implements OnInit {
   private addQblockRow() {
      this.control.push(this.fb.group(this.rowQblock));
   }
-
-  /**
-   * Deletes selected row qblock whose was added previously
-   * @param index id field to find and remove.
-   */
-  /*private deleteRow(index) {
-    this.control.removeAt(index);
-  }*/
 
   /**
    *At first time when OnInit, adds new qblock row;
