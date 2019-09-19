@@ -1,4 +1,5 @@
 <nz-content>
+  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'STATIONS' | translate" [nzSubtitle]="'LIST' | translate"> </nz-page-header>
   <nz-table #table
             [nzData]="stations"
             [(nzPageIndex)]="page"

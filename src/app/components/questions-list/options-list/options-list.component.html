@@ -1,15 +1,13 @@
 <nz-table #optionTable
           [nzData]="question?.options"
           nzSize="middle"
-          [nzShowPagination]="false"
-          [nzFooter]="addOptionBtn">
+          [nzShowPagination]="false">
   <thead>
   <tr>
     <th nzWidth="40px">{{"ORDER" | translate}}</th>
     <th nzWidth="250px">{{"LABEL" | translate}}</th>
     <th nzWidth="150px">{{"POINTS" | translate}}</th>
     <th>{{"PREVIEW" | translate}}</th>
-    <th></th>
   </tr>
   </thead>
 
@@ -20,33 +18,38 @@
     </td>
 
     <td>
-      <ng-container *ngIf="!editCacheOption[option.id].edit else editLabel">
         {{option.label}}
-      </ng-container>
-
-      <ng-template #editLabel>
-        <input type="text"
-               nz-input
-               [nzSize]="'small'"
-               required
-               [(ngModel)]="editCacheOption[option.id].label">
-      </ng-template>
     </td>
 
     <td>
-      <ng-container *ngIf="!editCacheOption[option.id].edit else editPoints">
-        {{option.points}}
-      </ng-container>
-
-      <ng-template #editPoints>
-        <nz-input-number [nzStep]="0.1" [nzSize]="'small'" [(ngModel)]="editCacheOption[option.id].points">
-        </nz-input-number>
-      </ng-template>
+      {{option.points | number: '.0-2'}}
     </td>
 
-    <td *ngIf="((question.questionType == 'RS') && indexOption == 0)
-                || question.questionType == 'CH' || question.questionType == 'RB'"
+    <td *ngIf="(  (question.questionType == 'RS') && indexOption == 0)
+                || (question.questionType == 'CH')
+                || ((question.questionType == 'RB') && indexOption == 0)"
         [attr.rowspan]="(question.questionType == 'RS') ? question.options.length : 1">
+
+      <ng-container *ngIf="question.questionType == 'RB'">
+        <!--<nz-radio-group [(ngModel)]="option.id">
+          <label nz-radio [nzValue]="option.id"
+                 [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
+            {{editCacheOption[option.id].label}}
+          </label>
+        </nz-radio-group>-->
+
+        <nz-switch *ngIf="indexOption === 0" [ngModel]="!editCacheOption[option.id].edit"
+                   [nzCheckedChildren]="editCacheOption[option.id].edit ?
+                        editCacheOption[option.id].label :
+                        option.label"
+                   [nzUnCheckedChildren]="editCacheOption[option.id].edit ?
+                        editCacheOption[option.id].label :
+                        optionTable.data[1].label"
+                   [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
+        </nz-switch>
+
+      </ng-container>
+
       <ng-container *ngIf="question.questionType == 'CH'">
         <nz-switch [ngModel]="!editCacheOption[option.id].edit"
                    [nzCheckedChildren]="editCacheOption[option.id].edit ?
@@ -59,41 +62,13 @@
         </nz-switch>
       </ng-container>
 
-      <ng-container *ngIf="question.questionType == 'RB'">
-        <nz-radio-group [(ngModel)]="option.id">
-          <label nz-radio [nzValue]="option.id"
-                 [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
-            {{editCacheOption[option.id].label}}
-          </label>
-        </nz-radio-group>
-      </ng-container>
-
       <ng-container *ngIf="question.questionType == 'RS'">
-        <nz-rate [(ngModel)]="valueopt" [nzCount]="question.options.length"></nz-rate>
+        <nz-rate [(ngModel)]="valueopt" [nzCount]="optionTable.data.length"></nz-rate>
         <span class="ant-rate-text">{{valueopt}}</span>
       </ng-container>
-    </td>
-    <td text-right>
-      <app-action-buttons *ngIf="!preview"
-                          [isEditing]="editCacheOption[option.id].edit"
-                          [isNewItem]="editCacheOption[option.id].new_item"
-                          [index]="indexOption"
-                          [itemsLength]="optionTable.data.length"
-                          [showOrderButtons]="true"
-                          (changeOrder)="changeOptionOrder($event, option, indexOption, question)"
-                          (startEdit)="startEditOption(option.id)"
-                          (delete)="deleteOption(option, question)"
-                          (save)="saveOption(option, question, editCacheOption[option.id].new_item)"
-                          (cancelEdit)="cancelEditOption(option, question)">
-      </app-action-buttons>
+
     </td>
   </tr>
   </tbody>
 
-  <ng-template *ngIf="!preview" #addOptionBtn>
-    <button nz-button nzType="dashed" nzBlock (click)="addOption(question)">
-      <i nz-icon type="check-circle"></i>
-      {{"ADD_OPTION" | translate}}
-    </button>
-  </ng-template>
 </nz-table>

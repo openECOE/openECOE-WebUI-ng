@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {QBlock, Station} from '../../../../../models';
+import {QBlock, RowQuestion, Station} from '../../../../../models';
 import {Location} from '@angular/common';
+import {QblockQuestionFormComponent} from '../../../../../components/qblock-question-form/qblock-question-form.component';
 
 @Component({
   selector: 'app-station-details',
@@ -10,9 +11,13 @@ import {Location} from '@angular/common';
 })
 export class StationDetailsComponent implements OnInit {
 
+  private refreshQuestions: boolean = false;
   private id_station: number;
   private station: any;
+  private selectedQblock: {id: number, nQuestions: number} = {id: null, nQuestions: null};
+  private drawerQUestionVisible: boolean = false;
 
+  private questionToEdit: RowQuestion[] = [];
 
   stations: Station[] = [];
   editCache: { edit: boolean, new_item: boolean, item: QBlock, expand?: boolean }[] = [];
@@ -35,7 +40,8 @@ export class StationDetailsComponent implements OnInit {
    ngOnInit() {
 
     this.id_station = parseInt(this.route.snapshot.paramMap.get('id'), 10);
-    Station.first({where: {$uri: `/api/v1/stations/${this.id_station}`}}).then(response => this.station = response);
+    Station.first({where: {$uri: `/api/v1/stations/${this.id_station}`}})
+      .then(response => this.station = response);
 
     this.getQblocks();
   }
@@ -44,7 +50,7 @@ export class StationDetailsComponent implements OnInit {
     this.location.back();
   }
 
-   getQblocks() {
+   getQblocks() { console.log('getQblocks');
      this.loading = true;
 
       QBlock.query({
@@ -55,11 +61,8 @@ export class StationDetailsComponent implements OnInit {
       }, {
         paginate: true, cache: false
       })
-        .then((response: any) => {
-          this.editCache = [];
-          this.loadPage(response);
-          this.loading = false;
-        });
+        .then((response: any) => this.loadPage(response))
+        .finally(() => this.loading = false);
     }
   /**
    * Fired when the current page is changed
@@ -89,6 +92,7 @@ export class StationDetailsComponent implements OnInit {
    * Updates editCache variable with the same values of the resources array and adds a 'edit' key.
    */
   updateEditCache(): void {
+    this.editCache = [];
     this.qblocks.forEach( (item: QBlock)  => {
       this.editCache[item.id] = {
         edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
@@ -107,8 +111,6 @@ export class StationDetailsComponent implements OnInit {
     this.perPage = pageSize;
     this.getQblocks();
   }
-
-
 
   /**
    * Sets the editCache variable to true.
@@ -159,7 +161,6 @@ export class StationDetailsComponent implements OnInit {
     });
     request.catch( err => console.error(err));
   }
-
 
   /**
    * Creates or updates the resource passed.
@@ -216,8 +217,55 @@ export class StationDetailsComponent implements OnInit {
   /**
    * Closes the form qblock window
    */
-  closeDrawer() {
+  closeDrawer(type?: string) {
+    if (type) {
+      this.drawerQUestionVisible = false;
+      this.questionToEdit = [];
+      return;
+    }
     this.isVisible = false;
+    this.questionToEdit = [];
+    this.getQblocks();
+  }
+
+  onItemClicked(item: any) {
+    item['clicked'] = (item['clicked'] !== true);
+    item.expand = !item.expand;
+    this.selectedQblock.id = item.id;
+  }
+
+  onNewQuestion(n_questions: number) {
+    this.drawerQUestionVisible = true;
+    this.selectedQblock.nQuestions = n_questions;
+  }
+
+  onEditQuestion($event) {
+    this.questionToEdit = [];
+    this.drawerQUestionVisible = true;
+    this.questionToEdit.push($event);
+  }
+
+  sendRefreshQuestions() {
+    this.refreshQuestions = true;
+    setTimeout(() => this.refreshQuestions = false, 1000 );
+  }
+
+  onGetQuestions(questions: RowQuestion[]) {
+    const _qblockQuestionFormComponent = new QblockQuestionFormComponent();
+
+    questions.forEach((question) => {
+      if (question && question.id) {
+        _qblockQuestionFormComponent.updateQuestion(question)
+          .then(() => this.sendRefreshQuestions())
+          .catch(err => console.error('ERROR: ', err))
+          .finally(() => this.closeDrawer('question'));
+      } else {
+        _qblockQuestionFormComponent.addQuestions(questions, this.selectedQblock.id)
+          .then(() => this.sendRefreshQuestions())
+          .catch(err => console.error('ERROR: ', err))
+          .finally( () => this.closeDrawer('question'));
+      }
+    });
   }
 }
 

@@ -1,36 +1,40 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {Area, Option, QBlock, Question} from '../../models';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Area, Option, QBlock, Question, RowQuestion} from '../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {RowQblock} from '../../pages/admin/ecoe/questions/questions.component';
-import { QuestionFormComponent } from '.././qblock-question-form/question-form/question-form.component';
 
 @Component({
   selector: 'app-qblock-question-form',
   templateUrl: './qblock-question-form.component.html',
-  styleUrls: ['./qblock-question-form.component.less'],
-  providers: [QuestionFormComponent]
+  styleUrls: ['./qblock-question-form.component.less']
 })
 export class QblockQuestionFormComponent implements OnInit {
-  current = 0;
-  isVisible: boolean = false;
+
+  @Input() id_station: number;
+  @Input() n_qblocks: number;
+
+  @Output() saved: EventEmitter<boolean> = new EventEmitter();
+
+  @ViewChild('question') questionRef;
+  @ViewChild('qblock') qblockRef;
+
+  private current = 0;
 
   private qblocksToAdd: QBlock[] = [];
   private questionsToAdd: any[] = [];
 
-  qblockForm: FormGroup;
-  control: FormArray;
+  private qblockForm: FormGroup;
+  private control: FormArray;
 
-  rowQblock: RowQblock = {
+  private rowQblock: RowQblock = {
     name: ['', Validators.required]
   };
 
-  loading: boolean;
+  private loading: boolean;
+  private logPromisesERROR: any[] = [];
+  private logPromisesOK: any[] = [];
 
-
-  logPromisesERROR: any[] = [];
-  logPromisesOK: any[] = [];
-
-  readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
+  private readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
     order: 'order',
     description: 'description',
     reference: 'reference',
@@ -39,21 +43,12 @@ export class QblockQuestionFormComponent implements OnInit {
     type: 'questionType'
   };
 
-  readonly DEFAULT_LABEL = 'Sí';
-  readonly OPTIONS = 'options'; // PROPERTY NAME ADDED TO QUESTIONS ARRAY.
-  readonly OPTION = 'option';
-  readonly POINTS = 'points';
+  private readonly DEFAULT_LABEL = 'Sí';
+  private readonly OPTIONS = 'options'; // PROPERTY NAME ADDED TO QUESTIONS ARRAY.
+  private readonly OPTION = 'option';
+  private readonly POINTS = 'points';
 
-
-  /* FORM STEPS SETTINGS --END */
-
-  @Input() id_station: number;
-  @Input() n_qblocks: number;
-
-  @ViewChild('question') questionRef;
-  @ViewChild('qblock') qblockRef;
-
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb?: FormBuilder) { }
 
   ngOnInit() {
     this.qblockForm = this.fb.group({
@@ -69,10 +64,13 @@ export class QblockQuestionFormComponent implements OnInit {
    * Before save values in data base, in first time checks that
    * all fields are validates and then will save the values.
    */
-  submitForm(): void { console.log('click en submit');
-    if (this.questionRef.mySubmit()) {
-      console.log('station-details:onSubmit');
+  submitForm() {
+    if (this.getCurrent() !== 2) {
+      if (!this.validQuestions()) { return new Promise((resolve, reject) => reject(false)); }
     }
+    return this.saveArrayQblocks(this.qblocksToAdd)
+      .catch((err) => new Promise((resolve, reject) => reject(err)) )
+      .then(result => this.addQuestions(this.questionsToAdd, result[0].id) );
   }
 
   pre(): void {
@@ -83,26 +81,50 @@ export class QblockQuestionFormComponent implements OnInit {
     this.current += 1;
   }
 
-  done(): void {
-    console.log('done');
+  getCurrent() {
+    return this.current;
   }
 
-  submitQblocks() {
+  resetCurrent() {
+    this.current = 0;
+  }
+
+  save() {
+    this.submitForm()
+      .then( () => {
+        this.saved.next(true);
+        this.resetForm();
+      })
+      .catch((e) => console.warn(e));
+  }
+
+  resetForm() {
+    this.resetCurrent();
+    this.qblocksToAdd = [];
+    this.questionsToAdd = [];
+  }
+
+  validQblocks() {
+    let valid = false;
     if (this.qblockRef.submitForm()) {
       this.next();
+      valid = true;
+    }
+    return valid;
+  }
+
+  preview() {
+    if (this.validQuestions()) {
+      this.current++;
     }
   }
 
-  submitQuestions() {
+  validQuestions() {
+    let valid = false;
     if (this.questionRef.submitForm()) {
-      this.saveArrayQblocks(this.qblocksToAdd)
-        .catch(err => console.warn(err))
-        .then(result => {
-          this.addQuestions(this.questionsToAdd, result[0].id)
-            .then(response => console.log(response))
-            .catch(err => console.log(err));
-        });
+      valid = true;
     }
+    return valid;
   }
 
   onGetQblocks(data: QBlock[]) {
@@ -121,15 +143,15 @@ export class QblockQuestionFormComponent implements OnInit {
   cancelForm() {
     this.closeDrawer();
     this.InitQblockRow();
-
-    this.current = -1;
   }
 
   /**
    * Closes the form qblock window
    */
   closeDrawer() {
-    this.isVisible = false;
+    // this.isVisible = false;
+    this.saved.next(false);
+    this.resetForm();
   }
 
   /**
@@ -161,12 +183,12 @@ export class QblockQuestionFormComponent implements OnInit {
     items.forEach((item, idx) => {
       if (item.name) {
         item['station'] = this.id_station;
-        item['order'] = this.n_qblocks + idx;
+        item['order'] = this.n_qblocks + (idx + 1);
 
         const qblock = new QBlock(item);
 
         const promise = qblock.save()
-          .then(result => { console.log('after save qblock: ', result);
+          .then(result => {
             this.logPromisesOK.push(result);
             return result;
           })
@@ -299,7 +321,7 @@ export class QblockQuestionFormComponent implements OnInit {
       });
   }
 
- async getArea(area: any) {
+  async getArea(area: any) {
     return (area instanceof Area) ? area : (Area.first({where: {code: (area + '')}}));
   }
 
@@ -308,8 +330,8 @@ export class QblockQuestionFormComponent implements OnInit {
    * @param items array of questions
    * @param idBlock which questions will be asociated
    */
-  async addQuestions(items: any[], idBlock: number) {
-    for (const item of items) { console.log('pre area' , item[this.HEADER.ac]);
+  async addQuestions(items: any[], idBlock: number) { console.log('addQuestions', items, idBlock);
+    for (const item of items) {
       const body = {
         area: (await this.getArea(item[this.HEADER.ac])),
         description: item[this.HEADER.description],
@@ -320,13 +342,11 @@ export class QblockQuestionFormComponent implements OnInit {
         reference: item[this.HEADER.reference]
       };
 
-      console.log('Question Body before send:', body);
-
       await (new Question(body)).save()
-        .then((question) => {
-          this.addOptions(<Array<any>>item, question.id)
-            .then(result => console.log('Options saved succesfully!!!', result))
-            .catch(err => console.warn('options error:', err));
+        .then(async (question) => {
+          this.logPromisesOK.push(question);
+          // await this.addOptions(<Array<any>>item, question.id);
+          await this.addOptions(item, question.id);
         })
         .catch(reason => {
           this.logPromisesERROR.push({
@@ -336,8 +356,40 @@ export class QblockQuestionFormComponent implements OnInit {
           return reason;
         });
     }
+    return new Promise((resolve, reject) =>
+      this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK));
+  }
 
-    return new Promise((resolve) => resolve('ALL'));
+  /**
+   * Creates or updates the resource passed.
+   * Then updates the variables to avoid calling the backend again.
+   *
+   * @param item Resource selected
+   */
+  async updateQuestion(item: RowQuestion) {
+    const question = Question.fetch(item.id as number);
+
+    await question.then(async (questionResponse) => {
+      await questionResponse.update({
+        description: item.description,
+        area: item.area,
+        order: item.order,
+        questionType: item.questionType,
+        reference: item.reference
+      });
+
+      await this.deleteOptions(questionResponse.options);
+
+      await this.addOptions(item, questionResponse.id as number);
+    });
+  }
+
+  async deleteOptions(options: Option[]) {
+    // (options).forEach(option => {
+    for (const option of options) {
+      await new Option(option).destroy()
+        .catch(err => console.error(err));
+    }
   }
 
   /**
@@ -345,11 +397,10 @@ export class QblockQuestionFormComponent implements OnInit {
    * @param questionItem question object row
    * @param idQuestion to asociate with the options
    */
-  async addOptions(questionItem: any[], idQuestion: number) {
+  async addOptions(questionItem: RowQuestion, idQuestion: number) {
     const savePromises = [];
     const options = questionItem[this.OPTIONS];
-
-    if (options.length === 0) {
+    if (options && options.length === 0) {
       const body = {
         label: this.DEFAULT_LABEL,
         order: 1,
@@ -357,24 +408,24 @@ export class QblockQuestionFormComponent implements OnInit {
         question: idQuestion
       };
 
-      await (new Option(body)).save()
+      const promise = await (new Option(body)).save()
         .then(result => result)
         .catch(err => this.logPromisesERROR.push({
           value: body,
           reason: err
         }));
 
-      // savePromises.push(promise);
+      savePromises.push(promise);
     } else {
-      options.forEach(async (item, idx) => {
+      let idx = 0;
+      for (const item of options) {
         const body = {
           label: ((item[this.OPTION + (idx + 1)])) ? (item[this.OPTION + (idx + 1)]).toString() : item['label'],
           order: (item[this.HEADER.order]) ? item[this.HEADER.order] : idx,
           points: (item[this.POINTS + (idx + 1)]) ? (item[this.POINTS + (idx + 1)]) : item[this.POINTS],
           question: idQuestion
         };
-
-        await (new Option(body)).save()
+         await (new Option(body)).save()
           .then(result => {
             this.logPromisesOK.push(result);
             return result;
@@ -386,17 +437,11 @@ export class QblockQuestionFormComponent implements OnInit {
             });
             return err;
           });
-
-        console.log('option may be saved');
-        // savePromises.push(promise);
-      });
+        idx++;
+      }
     }
-    return Promise.all(savePromises)
-      .then(() =>
-        new Promise((resolve, reject) =>
-          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)))
-      .catch(err =>
-        new Promise(((resolve, reject) => reject(err))));
+    return new Promise((resolve, reject) =>
+      this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK));
   }
 
   /**
@@ -406,13 +451,6 @@ export class QblockQuestionFormComponent implements OnInit {
   clearImportErrors() {
     this.logPromisesERROR = [];
   }
-
-  preview() {
-    if (this.questionRef.submitForm()) {
-      this.current++;
-    }
-  }
-
 }
 
 

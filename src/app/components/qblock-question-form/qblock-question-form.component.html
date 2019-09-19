@@ -1,17 +1,15 @@
 <nz-steps [nzCurrent]="current">
   <nz-step [nzTitle]="'ADD_QBLOCK' | translate"></nz-step>
   <nz-step [nzTitle]="'ADD_QUESTIONS' | translate"></nz-step>
-  <nz-step [nzTitle]="'PREVIEW' | translate"></nz-step>
+  <nz-step [nzTitle]="'SUMMARY' | translate"></nz-step>
 </nz-steps>
 
 <div class="steps-action">
 
-  <!-- TODO: Every ng-container should be an component -->
-
   <ng-container *ngIf="current === 0">
     <div class="steps-content">
-      <app-qblock-form #qblock [qblocks]="[this.qblocksToAdd]" (returnData)="onGetQblocks($event)">
-        <button nz-button nzType="default" (click)="submitQblocks()">
+      <app-qblock-form #qblock [qblocks]="this.qblocksToAdd" (returnData)="onGetQblocks($event)">
+        <button nz-button nzType="default" (click)="validQblocks()">
           <span>{{'NEXT' | translate}}</span>
         </button>
       </app-qblock-form>
@@ -21,20 +19,23 @@
   <ng-container *ngIf="current === 1">
 
     <div class="steps-content">
-      <app-question-form #question (returnData)="onGetQuestions($event)">
-
+      <app-question-form
+        #question
+        [questionsCache]="questionsToAdd"
+        [action]="'ADD_WITH_QBLOCK'"
+        (returnData)="onGetQuestions($event)">
       </app-question-form>
     </div>
 
-    <button nz-button nzType="default" (click)="pre()">
-      <span>{{'BACK' | translate}}</span>
-    </button>
-    <button nz-button nzType="default" (click)="submitQuestions()" *ngIf="current < 2">
-      <span>{{'SAVE' | translate}}</span>
-    </button>
-    <button nz-button nzType="default" (click)="preview()" *ngIf="current < 2">
-      <span>{{'PREVIEW' | translate}}</span>
-    </button>
+    <nz-button-group margin-top>
+      <button nz-button nzType="default" (click)="pre()">
+        <span>{{'BACK' | translate}}</span>
+      </button>
+      <button nz-button nzType="primary" (click)="preview()" *ngIf="current < 2">
+        <span>{{'CONTINUE' | translate}}</span>
+      </button>
+    </nz-button-group>
+
   </ng-container>
 
   <ng-container *ngIf="current === 2">
@@ -44,12 +45,15 @@
       [preview]="true">
     </app-questions-list>
 
-    <button nz-button nzType="default" (click)="pre()">
-      <span>{{'BACK' | translate}}</span>
-    </button>
-    <button nz-button nzType="primary" (click)="done()" *ngIf="current === 2">
-      <span>{{'SAVE' | translate}}</span>
-    </button>
+    <nz-button-group margin-top>
+      <button nz-button nzType="default" (click)="pre()">
+        <span>{{'BACK' | translate}}</span>
+      </button>
+      <button nz-button nzType="primary" (click)="save()" *ngIf="current === 2">
+        <span>{{'SAVE' | translate}}</span>
+      </button>
+    </nz-button-group>
+
   </ng-container>
 </div>
 
@@ -57,9 +61,4 @@
 <div class="footer">
   <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;">
     <span>{{'CANCEL' | translate}}</span></button>
-  <button type="button"
-          class="ant-btn ant-btn-primary"
-          (click)="submitForm()"
-  ><span>{{'SAVE' | translate}}</span>
-  </button>
 </div>

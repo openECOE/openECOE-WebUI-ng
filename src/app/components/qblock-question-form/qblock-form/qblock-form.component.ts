@@ -11,13 +11,13 @@ import {QBlock} from '../../../models';
 export class QblockFormComponent implements OnInit {
 
   @Output() returnData = new EventEmitter();
-  @Input() qblocks?: QBlock;
+  @Input() qblocks?: QBlock[];
 
   private qblockForm: FormGroup;
   private control: FormArray;
 
   private rowQblock: RowQblock = {
-    name: ['', Validators.required]
+    name: ['', [Validators.required, Validators.maxLength(300)]]
   };
 
   constructor(private fb: FormBuilder) { }
@@ -30,6 +30,11 @@ export class QblockFormComponent implements OnInit {
     this.control = <FormArray>this.qblockForm.controls.qblockRow;
 
     this.InitQblockRow();
+
+    if (this.qblocks.length > 0) {
+      this.getFormControl('name', 0).setValue(this.qblocks[0].name);
+    }
+
   }
 
 
@@ -53,9 +58,9 @@ export class QblockFormComponent implements OnInit {
    * Deletes selected row qblock whose was added previously
    * @param index id field to find and remove.
    */
-  private deleteRow(index) {
+  /*private deleteRow(index) {
     this.control.removeAt(index);
-  }
+  }*/
 
   /**
    *At first time when OnInit, adds new qblock row;

@@ -3,10 +3,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Area, RowStation, Station} from '../../../../models';
+import {RowStation, Station} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID} from '@openecoe/potion-client';
-
+import {Location} from '@angular/common';
 
 /**
  * Component with stations and qblocks by station.
@@ -16,6 +16,7 @@ import {getPotionID} from '@openecoe/potion-client';
   templateUrl: './stations.component.html',
   styleUrls: ['./stations.component.less']
 })
+
 export class StationsComponent implements OnInit {
 
   stations: Station[] = [];
@@ -55,7 +56,8 @@ export class StationsComponent implements OnInit {
               private router: Router,
               private translate: TranslateService,
               public shared: SharedService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private location: Location) {
 
     this.stationForm = this.fb.group({
       stationRow: this.fb.array([])
@@ -72,6 +74,7 @@ export class StationsComponent implements OnInit {
   /**
    * Updates new results for parent select options
    * @param value string to search
+   * @param exclude item to exclude form select
    */
   searchInSelect(value: string, exclude?: string): void {
     if (value) {
@@ -90,6 +93,10 @@ export class StationsComponent implements OnInit {
     } else {
       this.loadOptions4Select(exclude);
     }
+  }
+
+  onBack() {
+    this.location.back();
   }
 
   updateOptions(response: any, exclude?: string) {
@@ -164,6 +171,7 @@ export class StationsComponent implements OnInit {
    * Changes text-view tags by input tags.
    *
    * @param item selected resource of stations list
+   * @param excludeItem exclude himself item
    */
   startEdit(item: Station, excludeItem?: string) { // console.log('StartEdit:station', item);
     this.editCache[item.id].edit = true;
@@ -463,7 +471,9 @@ export class StationsComponent implements OnInit {
       const body = {
         name: item.name,
         ecoe: this.ecoeId,
-        parentStation: (item.parentStation) ? (await Station.first({where: {name: (item['parentStation'] + ''), ecoe: this.ecoeId}}))['id'] : null
+        parentStation: ((item.parentStation)
+          ? (await Station.first({where: {name: (item['parentStation'] + ''), ecoe: this.ecoeId}}))['id']
+          : null)
       };
 
       const station = await new Station(primaryStation).update(body)

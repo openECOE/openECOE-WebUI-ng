@@ -1,4 +1,3 @@
-
 <button *ngIf="!preview" nz-button nzType="dashed" nzBlock (click)="addQuestion()">
   <i nz-icon [type]="'plus-circle'"></i>
   {{'ADD_QUESTION' | translate}}
@@ -14,7 +13,7 @@
           [nzFrontPagination]="false"
           nzSize="small"
           nzShowSizeChanger
-          [nzShowPagination]="preview ? false : true"
+          [nzShowPagination]="false"
           >
   <thead>
   <tr>
@@ -24,91 +23,29 @@
     <th>{{"AREA" | translate}}</th>
     <th>{{"QUESTION_TYPE" | translate}}</th>
     <th nzAlign="right">
-      <!---->
     </th>
   </tr>
   </thead>
 
   <tbody>
   <ng-template ngFor let-item let-index="index" [ngForOf]="table.data" >
-<!--  <ng-template *ngFor="let item of table.data; let index" >-->
-    <!--<h1>{{table.data.length}}</h1>-->
     <tr>
-      <td nzAlign="right">
-        <ng-template [ngIf]="!editCache[item.id]?.edit" [ngIfElse]="editOrder">
-          {{item.order || "-"}}
-        </ng-template>
+      <td nzAlign="right">{{item.order || "-"}}</td>
 
-        <ng-template #editOrder>
-          <nz-input-number [nzMin]="0"
-                           [nzSize]="'small'"
-                           [(ngModel)]="editCache[item.id].item.order">
-          </nz-input-number>
-        </ng-template>
-      </td>
+      <td>{{item.description}}</td>
 
-      <td>
-        <ng-container *ngIf="!editCache[item.id]?.edit else editDesc">
-          {{item.description}}
-        </ng-container>
+      <td>{{item.reference}}</td>
 
-        <ng-template #editDesc>
-          <textarea rows="1" [nzAutosize]="true" nz-input [(ngModel)]="editCache[item.id].item.description"></textarea>
-        </ng-template>
-      </td>
+      <td>{{item.area?.name}}</td>
 
-      <td>
-        <ng-container *ngIf="!editCache[item.id]?.edit else editRef">
-          {{item.reference}}
-        </ng-container>
-
-        <ng-template #editRef>
-          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.reference">
-        </ng-template>
-      </td>
-
-      <td>
-        <ng-container *ngIf="!editCache[item.id]?.edit else editArea">
-          {{item.area?.name}}
-        </ng-container>
-
-        <ng-template #editArea>
-          <nz-select style="width: 100%;"
-                     [nzSize]="'small'"
-                     [nzShowSearch]="true"
-                     [(ngModel)]="editCache[item.id].item.area"
-                     (nzScrollToBottom)="loadMoreAreas()"
-          >
-            <nz-option *ngFor="let area of areas" [nzLabel]="area.name" [nzValue]="area">
-            </nz-option>
-          </nz-select>
-        </ng-template>
-      </td>
-
-      <td>
-        <ng-container *ngIf="!editCache[item.id]?.edit">
-          {{getQuestionTypeLabel(item.questionType) | translate}}
-        </ng-container>
-
-        <ng-container *ngIf="editCache[item.id]?.edit">
-          <nz-select style="width: 100%;"
-                     [nzSize]="'small'"
-                     [nzShowSearch]="true"
-                     [(ngModel)]="editCache[item.id].item.questionType">
-            <nz-option *ngFor="let option of questionTypeOptions"
-                       [nzLabel]="option.label | translate"
-                       [nzValue]="option.type">
-            </nz-option>
-          </nz-select>
-        </ng-container>
-      </td>
+      <td>{{getQuestionTypeLabel(item.questionType) | translate}}</td>
 
       <td text-right>
         <nz-tag
           [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'"
           (click)="editCache[item.id].expand = !editCache[item.id].expand">
-          <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
-          {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
+            <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
+            {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
         </nz-tag>
         <ng-container *ngIf="!preview">
           <nz-divider [nzType]="'vertical'"></nz-divider>
@@ -137,4 +74,3 @@
 
   </tbody>
 </nz-table>
-

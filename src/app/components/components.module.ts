@@ -42,7 +42,8 @@ import {OptionsListComponent} from './questions-list/options-list/options-list.c
     ActionButtonsComponent,
     MenuComponent,
     QblockQuestionFormComponent,
-    QuestionsListComponent
+    QuestionsListComponent,
+    QuestionFormComponent
   ]
 })
 export class ComponentsModule {}

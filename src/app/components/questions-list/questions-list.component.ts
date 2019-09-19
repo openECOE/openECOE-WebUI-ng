@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Area, QBlock, Question} from '../../models';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Area, Option, QBlock, Question} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {ActivatedRoute} from '@angular/router';
 
@@ -8,27 +8,28 @@ import {ActivatedRoute} from '@angular/router';
   templateUrl: './questions-list.component.html',
   styleUrls: ['./questions-list.component.less']
 })
-export class QuestionsListComponent implements OnInit {
+export class QuestionsListComponent implements OnInit, OnChanges {
 
   @Input() qblock: QBlock = new QBlock();
   @Input() questionsList: Question[] = [];
   @Input() preview: boolean = false;
+  @Input() refreshQuestions: boolean = false;
 
-  param_id: number;
+  @Output() newQuestion: EventEmitter<number> = new EventEmitter<number>();
+  @Output() editQuestion: EventEmitter<any> = new EventEmitter<any>();
 
-  questionsPage: Pagination<Question>;
-
-  editCache: Array<any> = [];
-
-  areas: Area[] = [];
-  pagAreas: Pagination<Area>;
+  private param_id: number;
+  private questionsPage: Pagination<Question>;
+  private editCache: Array<any> = [];
+  private areas: Area[] = [];
+  private pagAreas: Pagination<Area>;
 
   page: number = 1;
   perPage: number = 20;
   totalItems: number = 0;
 
   loading: boolean = false;
-  defaultExpand: boolean = (this.preview) ? true : false;
+  defaultExpand: boolean = this.preview;
 
   questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -40,15 +41,19 @@ export class QuestionsListComponent implements OnInit {
   }
 
   ngOnInit() {
-
     if (this.questionsList.length > 0) {
-      this.defaultExpand = (this.preview) ? true : false;
+      this.defaultExpand = this.preview;
       this.updateEditCache(this.preview);
-      console.log(this.defaultExpand);
     } else {
       if (this.route.snapshot.params.id) { this.param_id = +this.route.snapshot.params.id; }
-
+      console.log(this.param_id);
       this.loadAreas().finally();
+      this.loadQuestions(this.page, this.perPage);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.refreshQuestions && changes.refreshQuestions.currentValue) {
       this.loadQuestions(this.page, this.perPage);
     }
   }
@@ -63,7 +68,8 @@ export class QuestionsListComponent implements OnInit {
 
   loadQuestions(page: number, perPage: number) {
     this.loading = true;
-
+    console.log('lets start loadQuestions: ', this.qblock.id);
+    this.questionsList = [];
     Question.query<Question, Pagination<Question>>({
         where: {qblocks: {$contains: this.qblock.id ? this.qblock.id : this.param_id}},
         sort: {order: false},
@@ -122,7 +128,8 @@ export class QuestionsListComponent implements OnInit {
    * @param id Id of the selected resource
    */
   startEdit(id: number) {
-    this.editCache[id].edit = true;
+    const idx = this.questionsList.map(item => item.id).indexOf(id);
+    this.editQuestion.next(this.questionsList[idx]);
   }
 
   /**
@@ -171,8 +178,23 @@ export class QuestionsListComponent implements OnInit {
    *
    * @param id Resource selected
    */
-  deleteItem(id: number) {
-    this.questionsList[id].destroy().then(() => this.updateArrayQuestions(id));
+  async deleteItem(id: number) {
+
+    const idx = this.questionsList.map(item => item.id).indexOf(id);
+    console.log('deleteItem:', id, idx, this.questionsList[idx]);
+
+    const options: Option[] = (this.questionsList[idx].options) ? this.questionsList[idx].options : [];
+
+    if (options.length > 0) {
+      for (const option of options) {
+        await option.destroy();
+      }
+    }
+    console.log('after delete all options go delete QUESTION');
+    this.questionsList[idx].destroy().then(() => {
+      this.updateArrayQuestions(id);
+      this.loadQuestions(this.page, this.perPage);
+    });
   }
 
   /**
@@ -182,7 +204,6 @@ export class QuestionsListComponent implements OnInit {
    */
   updateArrayQuestions(idx: number) {
     delete this.editCache[idx];
-    // delete this.questionShowQblocks[idx];
     this.questionsList = this.questionsList.filter(x => x !== this.questionsList[idx]);
 
   }
@@ -191,30 +212,8 @@ export class QuestionsListComponent implements OnInit {
    * Adds a new empty field to the resources array.
    * Then updates editCache with the new resource.
    */
-  async addQuestion() {
-    const newItem = {
-      order: this.questionsList.length + 1,
-      description: '',
-      reference: '',
-      questionType: '',
-      area: null,
-      qblocks: [this.qblock],
-      options: []
-    };
-
-    // Recover last item to make index
-    // const lastId: number = (await Question.first<Question>({sort: {'$uri': true}})).id;
-
-    const question = new Question(newItem);
-
-    this.questionsList = [...this.questionsList, question];
-
-    this.editCache[this.questionsList[this.questionsList.length - 2].id + 1] = {
-      edit: true,
-      new_item: true,
-      item: Object.assign(new Question(), question),
-      expand: this.defaultExpand
-    };
+  addQuestion() {
+    this.newQuestion.emit(this.questionsList.length);
   }
 
   getQuestionTypeLabel(questionType: string) {

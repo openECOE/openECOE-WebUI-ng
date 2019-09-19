@@ -1,9 +1,8 @@
 <form [formGroup]="qblockForm">
     <ng-container formArrayName="qblockRow" *ngFor=" let control of qblockForm.get('qblockRow')['controls']; let i = index">
-      <nz-page-header [nzTitle]="'Nuevo bloque'"></nz-page-header>
+      <nz-page-header [nzTitle]="'NEW_QBLOCK' | translate"></nz-page-header>
       <div nz-row nzType="flex" nzJustify="center">
         <div nz-col nzSpan="2">
-          <!--<nz-form-label>{{'NAME' | translate}}</nz-form-label>-->
         </div>
         <div nz-col nzSpan="7" [formGroupName]="+i">
           <nz-form-item>
@@ -17,7 +16,7 @@
           </nz-form-item>
         </div>
         <div nz-col nzSpan="2" nzOffset="0" style="bottom: 0">
-          <button  [hidden]="i == 0" nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
+          <!--<button  [hidden]="i == 0" nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>-->
         </div>
       </div>
     </ng-container>

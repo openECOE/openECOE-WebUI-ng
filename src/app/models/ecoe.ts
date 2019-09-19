@@ -59,14 +59,14 @@ export interface RowStation {
 }
 
 export class QBlock extends Item {
+  getQuestions = Route.GET<Pagination<Question>>('/questions');
+
   id: number;
   name: string;
   order: number;
 
   station: Station;
   questions?: Question[];
-
-  getQuestions = Route.GET<Pagination<Question>>('/questions');
 }
 
 export class Question extends Item {
@@ -82,20 +82,22 @@ export class Question extends Item {
   area: Area;
 
   options: Option[];
-  qblocks: QBlock[];
+  qblocks: QBlock[] | number[];
 
   getPoints ? = Route.GET<number>('/points');
 }
 
 export interface RowQuestion {
-  order:  any[];
-  description: any[];
-  reference: any[];
-  area: any[];
-  questionType: any[];
-  optionsNumber?: number;
+  order:  any[] | number;
+  description: any[] | string;
+  reference: any[] | string;
+  area: any[] | Area;
+  questionType: any[] | string;
+  optionsNumber?: number | number;
   points?: any[];
   options?: Option[];
+  qblocks?: number[];
+  id?: any[] | number;
 }
 
 export class Option extends Item {
@@ -106,10 +108,18 @@ export class Option extends Item {
   order: number;
 }
 
-export interface RowOption {
-  order: any;
-  label: any[];
-  points: any[];
+export class RowOption {
+  order: any | number;
+  label: any[] | string;
+  points: any[] | number;
+  rateCount?: number;
+  id?: number;
+
+  constructor(order, label, points) {
+    this.order = order;
+    this.label = label;
+    this.points = points;
+  }
 }
 
 export class Student extends Item {

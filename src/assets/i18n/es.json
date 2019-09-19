@@ -71,6 +71,7 @@
   "QUESTIONS": "Preguntas",
   "ADD_QUESTIONS": "Añadir preguntas",
   "ADD_QUESTION": "Añadir pregunta",
+  "EDIT_QUESTION": "Editar pregunta",
   "REFERENCE": "Referencia",
   "DESCRIPTION": "Descripción",
   "QUESTION_TYPE": "Tipo de pregunta",
@@ -90,6 +91,7 @@
   "SELECT_VALUE": "Seleccionar un valor...",
 
   "QBLOCK_NAME": "Nombre del bloque",
+  "NEW_QBLOCK": "Bloque nuevo",
   "QBLOCKS": "Bloques",
   "ASSIGN_QBLOCKS": "Asignar bloque",
   "SELECT_QBLOCKS": "Selecciona los bloques:",
@@ -132,6 +134,7 @@
 
   "GROUP": "Grupo",
   "GROUPS": "Grupos",
+  "LIST": "Listado",
 
   "REPORTS_AND_STATISTICS": "Informes y estadísticas",
 
@@ -159,6 +162,7 @@
   "MOVE_DOWN": "Bajar posición",
 
   "PREVIEW_EXAM": "Previsualizar examen",
+  "SUMMARY": "Resumen",
 
   "LOADING": "Cargando",
   "ACTIONS": "Acciones",
@@ -178,6 +182,7 @@
   "NEXT": "Siguiente",
   "BACK": "Volver",
   "CLOSE_EDITION": "Cerrar edición",
+  "CONTINUE": "Continuar",
 
   "IMPORT_ERRORS": "Errores Importación",
 
