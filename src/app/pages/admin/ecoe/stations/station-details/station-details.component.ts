@@ -1,8 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {QBlock, RowQuestion} from '../../../../../models';
+import {QBlock, Question, RowQuestion, Station} from '../../../../../models';
 import {Location} from '@angular/common';
 import {QuestionsService} from '../../../../../services/questions/questions.service';
+import {NzModalService} from 'ng-zorro-antd';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-station-details',
@@ -11,7 +13,7 @@ import {QuestionsService} from '../../../../../services/questions/questions.serv
 })
 export class StationDetailsComponent implements OnInit {
   private editCache: { edit: boolean, new_item: boolean, item: QBlock, expand?: boolean }[] = [];
-  private selectedQblock: {id: number, nQuestions: number} = {id: null, nQuestions: null};
+  private selectedQblock: {id: number, lastOrder: number} = {id: null, lastOrder: null};
   private drawerQUestionVisible: boolean = false;
   private questionToEdit: RowQuestion[] = [];
   private refreshQuestions: boolean = false;
@@ -26,14 +28,43 @@ export class StationDetailsComponent implements OnInit {
   private pagQblocks: any;
   private station: any;
 
+  private logPromisesERROR = [];
+  private logPromisesOK = [];
+
   constructor(private route: ActivatedRoute,
               private location: Location,
-              private questionService: QuestionsService) { }
+              private questionService: QuestionsService,
+              private modalService: NzModalService,
+              private translate: TranslateService ) { }
 
    ngOnInit() {
     this.id_station = parseInt(this.route.snapshot.paramMap.get('id'), 10);
+    Station.fetch(this.id_station).then(response => this.station = response);
 
     this.getQblocks(this.id_station);
+
+    /*const aux = new QuestionFormComponent();
+
+    aux.returnData.subscribe(res => {
+      console.log(res);
+    });*/
+  }
+
+  hola(questions: RowQuestion[]) {
+    questions.forEach((question) => {
+      if (question && question.id) {
+        this.questionService.updateQuestion(question)
+          .then(() => this.sendRefreshQuestions())
+          .catch(err => console.error('ERROR: ', err))
+          .finally(() => this.closeDrawer('question'));
+      } else {
+        console.log('onGetQuestion:addQuestions', questions);
+        this.questionService.addQuestions(questions, this.selectedQblock.id)
+          .then(() => this.sendRefreshQuestions())
+          .catch(err => console.error('ERROR: ', err))
+          .finally( () => this.closeDrawer('question'));
+      }
+    });
   }
 
   importQblocksWithQuestions(items: any[], stationId: number) {
@@ -125,11 +156,50 @@ export class StationDetailsComponent implements OnInit {
    *
    * @param qblock Resource selected
    */
-  deleteItem(qblock: any) {
-    qblock.destroy()
-      .then(() => {
-        this.getQblocks(this.id_station);
+  deleteItem(qblock: QBlock) {
+    this.modalService.confirm({
+      nzTitle: this.translate.instant('CONFIRM_ALSO_DELETE_QUESTIONS'),
+      nzOnOk: () => {
+        this.deleteQuestionsByQblock(qblock.id)
+          .then(() => qblock.destroy()
+              .then(() => this.getQblocks(this.id_station))
+          );
+      }},
+      'confirm');
+  }
+
+  deleteQuestionsByQblock(qblockId: number) {
+    const savePromises = [];
+    this.logPromisesERROR = [];
+    this.logPromisesOK = [];
+
+    this.questionService.loadQuestions(qblockId, false)
+      // @ts-ignore
+      .then( (result: Question[]) => {
+        console.log(result);
+        for (const question of result) {
+          const promise = this.questionService.deleteQuestion([question], question.id)
+            .catch(err => {
+              console.error(err);
+              this.logPromisesERROR.push(err);
+              return err;
+            })
+            .then((response) => {
+              this.logPromisesOK.push(response);
+              return response;
+            });
+          savePromises.push(promise);
+        }
+      })
+      .catch((err) => {
+        savePromises.push(err);
+        this.logPromisesERROR.push(err);
       });
+    return Promise.all(savePromises)
+      .then(() =>
+        new Promise((resolve, reject) =>
+          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)))
+      .catch(err => new Promise(((resolve, reject) => reject(err))));
   }
 
   /**
@@ -190,9 +260,9 @@ export class StationDetailsComponent implements OnInit {
     this.selectedQblock.id = item.id;
   }
 
-  onNewQuestion(n_questions: number) {
+  onNewQuestion(order: number) {
     this.drawerQUestionVisible = true;
-    this.selectedQblock.nQuestions = n_questions;
+    this.selectedQblock.lastOrder = order;
   }
 
   onEditQuestion($event) {
@@ -206,20 +276,21 @@ export class StationDetailsComponent implements OnInit {
     setTimeout(() => this.refreshQuestions = false, 1000 );
   }
 
-  onGetQuestions(questions: RowQuestion[]) {
-    questions.forEach((question) => {
-      if (question && question.id) {
-        this.questionService.updateQuestion(question)
-          .then(() => this.sendRefreshQuestions())
-          .catch(err => console.error('ERROR: ', err))
-          .finally(() => this.closeDrawer('question'));
-      } else {
-        this.questionService.addQuestions(questions, this.selectedQblock.id)
-          .then(() => this.sendRefreshQuestions())
-          .catch(err => console.error('ERROR: ', err))
-          .finally( () => this.closeDrawer('question'));
-      }
-    });
+  getQuestions(questions: RowQuestion[]) {
+      // questions.forEach((question) => {
+        if (questions[0] && questions[0].id) {
+          this.questionService.updateQuestion(questions[0])
+            .then(() => this.sendRefreshQuestions())
+            .catch(err => console.error('ERROR: ', err))
+            .finally(() => this.closeDrawer('question'));
+        } else {
+          console.log('onGetQuestion:addQuestions', questions);
+          this.questionService.addQuestions(questions, this.selectedQblock.id)
+            .then(() => this.sendRefreshQuestions())
+            .catch(err => console.error('ERROR: ', err))
+            .finally(() => this.closeDrawer('question'));
+        }
+      // });
   }
 }
 

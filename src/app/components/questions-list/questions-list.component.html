@@ -51,7 +51,7 @@
           <nz-divider [nzType]="'vertical'"></nz-divider>
           <app-action-buttons
             (startEdit)="onEditQuestion(item.id)"
-            (delete)="onDeleteQuestion(item.id).finally()">
+            (delete)="deleteQuestion(questionsList,item.id)">
           </app-action-buttons>
         </ng-container>
       </td>

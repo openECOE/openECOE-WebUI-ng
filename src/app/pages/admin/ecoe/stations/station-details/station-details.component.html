@@ -116,12 +116,12 @@
   [nzVisible]="drawerQUestionVisible"
   [nzTitle]="((questionToEdit.length > 0) ? 'EDIT_QUESTION' : 'ADD_QUESTION') | translate"
   (nzOnClose)="closeDrawer('question')">
-
+  <!--(returnData)="getQuestions($event)"-->
   <app-question-form
     [action]="((questionToEdit.length > 0) ? 'EDIT' : 'ADD')"
     [questionsCache]="questionToEdit"
     [formVisible]="drawerQUestionVisible"
     [qblock]="selectedQblock"
-    (returnData)="onGetQuestions($event)"
+    (returnData)="getQuestions($event)"
   ></app-question-form>
 </nz-drawer>

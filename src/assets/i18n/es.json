@@ -134,7 +134,7 @@
 
   "GROUP": "Grupo",
   "GROUPS": "Grupos",
-  "LIST": "Listado",
+  "LIST": "Lista",
 
   "REPORTS_AND_STATISTICS": "Informes y estadísticas",
 
@@ -167,6 +167,7 @@
   "LOADING": "Cargando",
   "ACTIONS": "Acciones",
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
+  "CONFIRM_ALSO_DELETE_QUESTIONS": "Se eliminarán también las preguntas asociadas al bloque.",
   "ACTION": "Acción",
   "DELETE": "Eliminar",
   "ADD": "Añadir",

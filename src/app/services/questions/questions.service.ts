@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Area, QBlock, Question, Option, RowQuestion} from '../../models';
+import {Pagination} from '@openecoe/potion-client';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,6 @@ export class QuestionsService {
    */
   importQblockWithQuestions(items: any[], stationId: number) {
     const blocksWithQuestions = this.mapFile(items);
-    console.log('importQuestions:', blocksWithQuestions);
     return this.saveImportedItems(blocksWithQuestions, stationId);
   }
 
@@ -177,41 +177,6 @@ export class QuestionsService {
     return (area instanceof Area) ? area : (Area.first({where: {code: (area + '')}}));
   }
 
-  /**
-   * Adds question by question with them options.
-   * @param items array of questions
-   * @param idBlock which questions will be asociated
-   */
-  async addQuestions(items: any[], idBlock: number) {
-    for (const item of items) {
-      const body = {
-        area: (await this.getArea(item[this.HEADER.ac])),
-        description: item[this.HEADER.description],
-        options: [],
-        order: item[this.HEADER.order],
-        qblocks: [idBlock],
-        question_type: item[this.HEADER.type],
-        reference: item[this.HEADER.reference]
-      };
-
-      await (new Question(body)).save()
-        .then(async (question) => {
-          this.logPromisesOK.push(question);
-          // await this.addOptions(<Array<any>>item, question.id);
-          await this.addOptions(item, question.id);
-        })
-        .catch(reason => {
-          this.logPromisesERROR.push({
-            value: new Question(body),
-            reason: reason
-          });
-          return reason;
-        });
-    }
-    return new Promise((resolve, reject) =>
-      this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK));
-  }
-
   async addOptions(questionItem: RowQuestion, idQuestion: number) {
     const savePromises = [];
     const options = questionItem[this.OPTIONS];
@@ -252,6 +217,40 @@ export class QuestionsService {
           });
         idx++;
       }
+    }
+    return new Promise((resolve, reject) =>
+      this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK));
+  }
+
+  /**
+   * Adds question by question with them options.
+   * @param items array of questions
+   * @param idBlock which questions will be asociated
+   */
+  async addQuestions(items: any[], idBlock: number) {
+    for (const item of items) {
+      const body = {
+        area: (await this.getArea(item[this.HEADER.ac])),
+        description: item[this.HEADER.description],
+        options: [],
+        order: item[this.HEADER.order],
+        qblocks: [idBlock],
+        question_type: item[this.HEADER.type],
+        reference: item[this.HEADER.reference]
+      };
+
+      await (new Question(body)).save()
+        .then(async (question) => {
+          this.logPromisesOK.push(question);
+          await this.addOptions(item, question.id);
+        })
+        .catch(reason => {
+          this.logPromisesERROR.push({
+            value: new Question(body),
+            reason: reason
+          });
+          return reason;
+        });
     }
     return new Promise((resolve, reject) =>
       this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK));
@@ -328,6 +327,38 @@ export class QuestionsService {
         new Promise((resolve, reject) =>
           this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)))
       .catch(err => new Promise(((resolve, reject) => reject(err))));
+  }
+
+  /**
+   * Calls ApiService to delete the resource passed.
+   * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
+   *
+   * @param id Resource selected
+   */
+  async deleteQuestion(questions: Question[], id: number) {
+    const idx = questions.map(item => item.id).indexOf(id);
+    const options: Option[] = (questions[idx].options) ? questions[idx].options : [];
+
+    if (options.length > 0) {
+      for (const option of options) {
+        await option.destroy();
+      }
+    }
+    return questions[idx].destroy();
+  }
+
+  loadQuestions(blockId: number, paginate: boolean, page: number = 1, perPage: number = 20) {
+
+    return Question.query<Question, Pagination<Question>>({
+        where: {qblocks: {$contains: blockId}},
+        sort: {order: false},
+        page: page,
+        perPage: perPage
+      },
+      {
+        paginate: paginate,
+        cache: false
+      });
   }
 }
 

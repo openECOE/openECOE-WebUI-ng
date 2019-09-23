@@ -1,7 +1,8 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Option, QBlock, Question} from '../../models';
+import {QBlock, Question} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {ActivatedRoute} from '@angular/router';
+import {QuestionsService} from '../../services/questions/questions.service';
 
 @Component({
   selector: 'app-questions-list',
@@ -18,7 +19,6 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   @Output() newQuestion: EventEmitter<number> = new EventEmitter<number>();
   @Output() editQuestion: EventEmitter<any> = new EventEmitter<any>();
 
-  private param_id: number;
   private questionsPage: Pagination<Question>;
   private editCache: Array<any> = [];
 
@@ -35,7 +35,8 @@ export class QuestionsListComponent implements OnInit, OnChanges {
     {type: 'RS', label: 'VALUE_RANGE'}
   ];
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute,
+              private questionService: QuestionsService) {
   }
 
   ngOnInit() {
@@ -43,45 +44,36 @@ export class QuestionsListComponent implements OnInit, OnChanges {
       this.defaultExpand = this.preview;
       this.updateEditCache(this.preview);
     } else {
-      if (this.route.snapshot.params.id) { this.param_id = +this.route.snapshot.params.id; }
-      this.loadQuestions(this.page, this.perPage);
+      this.loadQuestions(this.qblock.id, this.page, this.perPage);
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.refreshQuestions && changes.refreshQuestions.currentValue) {
-      this.loadQuestions(this.page, this.perPage);
+      this.loadQuestions(this.qblock.id, this.page, this.perPage);
     }
   }
 
   pageChange(page: number) {
-    this.loadQuestions(page, this.perPage);
+    this.loadQuestions(this.qblock.id, page, this.perPage);
   }
 
   pageSizeChange(pageSize: number) {
-    this.loadQuestions(this.page, pageSize);
+    this.loadQuestions(this.qblock.id, this.page, pageSize);
   }
 
-  loadQuestions(page: number, perPage: number) {
+  loadQuestions(idBlock: number, page: number, perPage: number) {
     this.loading = true;
     this.questionsList = [];
-    Question.query<Question, Pagination<Question>>({
-        where: {qblocks: {$contains: this.qblock.id ? this.qblock.id : this.param_id}},
-        sort: {order: false},
-        page: page,
-        perPage: perPage
-      },
-      {
-        paginate: true,
-        cache: false
-      }).then(pagQuestion => {
-        this.questionsPage = pagQuestion;
-        this.totalItems = pagQuestion.total;
-        this.questionsList = this.questionsPage != null ? [...this.questionsPage['items']] : [];
-        this.updateEditCache();
-        this.loading = false;
-      }
-    );
+
+    this.questionService.loadQuestions(idBlock, true, page, perPage)
+      .then(pagQuestion => {
+          this.questionsPage = pagQuestion;
+          this.totalItems = pagQuestion.total;
+          this.questionsList = this.questionsPage != null ? [...this.questionsPage['items']] : [];
+          this.updateEditCache();
+          this.loading = false;
+      });
   }
 
   /**
@@ -118,21 +110,15 @@ export class QuestionsListComponent implements OnInit, OnChanges {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
    *
+   * @param questions array where search the id question
    * @param id Resource selected
    */
-  async onDeleteQuestion(id: number) {
-    const idx = this.questionsList.map(item => item.id).indexOf(id);
-    const options: Option[] = (this.questionsList[idx].options) ? this.questionsList[idx].options : [];
-
-    if (options.length > 0) {
-      for (const option of options) {
-        await option.destroy();
-      }
-    }
-    this.questionsList[idx].destroy().then(() => {
-      this.updateArrayQuestions(id);
-      this.loadQuestions(this.page, this.perPage);
-    });
+  deleteQuestion(questions: Question[], id: number) {
+    this.questionService.deleteQuestion(questions, id)
+      .then(() => {
+        this.updateArrayQuestions(id);
+        this.loadQuestions(this.qblock.id, this.page, this.perPage);
+      });
   }
 
   /**
@@ -150,7 +136,7 @@ export class QuestionsListComponent implements OnInit, OnChanges {
    * Then updates editCache with the new resource.
    */
   addQuestion() {
-    this.newQuestion.emit(this.questionsList.length);
+    this.newQuestion.emit(this.questionsList[this.questionsList.length - 1].order);
   }
 
   getQuestionTypeLabel(questionType: string) {

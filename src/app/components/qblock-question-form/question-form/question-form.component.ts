@@ -15,10 +15,10 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   @ViewChildren(OptionFormComponent) optionsRef: QueryList<OptionFormComponent>;
 
   @Input()  questionsCache: RowQuestion[] = [];
-  @Input()  qblock: {id: number, nQuestions: number};
+  @Input()  qblock: {id: number, lastOrder: number};
   @Input()  formVisible: boolean = false;
   @Input()  action: 'ADD' | 'EDIT' | 'ADD_WITH_QBLOCK';
-  @Output() returnData = new EventEmitter();
+  @Output() returnData: EventEmitter<any> = new EventEmitter();
 
   private questionForm: FormGroup;
   private control: FormArray;
@@ -36,7 +36,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   private selectedQType: string = this.questionTypeOptions[0].type;
 
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb?: FormBuilder) { }
 
   ngOnInit() {
     this.questionForm = this.fb.group({
@@ -79,7 +79,8 @@ export class QuestionFormComponent implements OnInit, OnChanges {
    * @param idx the index of the field.
    */
   getFormControl(name: string, idx: number): AbstractControl {
-    return this.questionForm.get('questionRow')['controls'][idx].controls[name];
+    const form = this.questionForm.get('questionRow');
+    return (form && form['controls'][idx]) ? form['controls'][idx].controls[name] : null;
   }
 
   initRowQuestions(questions?: RowQuestion[]) {
@@ -87,16 +88,16 @@ export class QuestionFormComponent implements OnInit, OnChanges {
       questions.forEach(item => {
         this.addQuestionRow(item);
       });
-    } else {
+    } else if (this.control.controls.length === 0) {
       this.addQuestionRow();
     }
   }
 
   getRowQuestion(params = {}) {
     return <RowQuestion>({
-      order: [
-        params['order']
-      ],
+      order:
+        parseInt(params['order'], 10)
+      ,
       description: [
         params['description'],
         [
@@ -182,8 +183,6 @@ export class QuestionFormComponent implements OnInit, OnChanges {
 
   onGetOptions(event: any) {
     const questions = this.questionForm.get('questionRow').value;
-
-    questions[event.id].order = event.id;
     questions[event.id].options = event.options;
   }
 
@@ -225,23 +224,31 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         return;
       }
 
-      let n = 1;
-      this.returnData.next((this.questionForm.get('questionRow').value).map((item) => {
-        if (this.qblock && this.qblock.nQuestions) {
-          item['order'] = this.qblock.nQuestions + n;
-          n++;
-        } else  { item['order'] += 1; }
-
+      const auxQuestions = this.questionForm.get('questionRow').value.map((item, idx) => {
+      if (this.qblock && this.qblock.lastOrder) {
+        if (!item.order || item.order < 1) {
+          item.order = this.qblock.lastOrder + (idx + 1);
+        }
+      } else {
+        item.order = (idx + 1);
+      }
         return item;
-      }));
+      });
+
+      this.returnData.emit(auxQuestions);
     }
 
     return this.questionForm.valid;
   }
 
   onQuestionTypeChange(event: string, idx: number) {
-    this.selectedQType = event;
-    this.getFormControl('optionsNumber', idx).setValue(2);
+    if (event) {
+      this.selectedQType = event;
+      const control = this.getFormControl('optionsNumber', idx);
+      if (control) {
+        control.setValue(2);
+      }
+    }
   }
 
   onReceivePointValues($event: any[]) {
