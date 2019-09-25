@@ -1,0 +1,23 @@
+<nz-content padding>
+  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'ECOES' | translate" [nzSubtitle]="'LIST' | translate"> </nz-page-header>
+
+  <div nz-row padding>
+    <div nz-col>
+      <nz-list [nzDataSource]="ecoes" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 6, lg: 6, xl: 4 }">
+        <ng-template #item let-item>
+          <nz-list-item [nzContent]="nzContent">
+            <ng-template #nzContent>
+              <nz-card>
+                <a [routerLink]="['./ecoe', item.id]">{{item.name}}</a>
+              </nz-card>
+            </ng-template>
+          </nz-list-item>
+        </ng-template>
+      </nz-list>
+    </div>
+  </div>
+
+
+<!--  <nz-input-number style="float:right;" [nzMin]="0" [nzMax]="10" [(ngModel)]="selectedIndex"></nz-input-number>-->
+
+</nz-content>

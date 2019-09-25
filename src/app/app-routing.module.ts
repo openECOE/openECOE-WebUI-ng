@@ -15,7 +15,7 @@ const routes: Routes = [
     }
   },
   {
-    path: 'evaluation',
+    path: 'eval',
     loadChildren: './pages/evaluation/evaluation.module#EvaluationModule',
     data: {
       breadcrumb: 'Evaluación'

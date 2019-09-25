@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Area, QBlock, Question, Option, RowQuestion} from '../../models';
+import {Area, QBlock, Question, Option, RowQuestion, Station, BlockType} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 
 @Injectable({
@@ -7,7 +7,7 @@ import {Pagination} from '@openecoe/potion-client';
 })
 export class QuestionsService {
 
-  readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
+  private readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
     order: 'order',
     description: 'description',
     reference: 'reference',
@@ -16,10 +16,10 @@ export class QuestionsService {
     type: 'questionType'
   };
 
-  readonly DEFAULT_LABEL = 'Sí';
-  readonly OPTIONS = 'options'; // PROPERTY NAME ADDED TO QUESTIONS ARRAY.
-  readonly OPTION = 'option';
-  readonly POINTS = 'points';
+  private readonly DEFAULT_LABEL = 'Sí';
+  private readonly OPTIONS = 'options'; // PROPERTY NAME ADDED TO QUESTIONS ARRAY.
+  private readonly OPTION = 'option';
+  private readonly POINTS = 'points';
 
   private logPromisesERROR: any[] = [];
   private logPromisesOK: any[] = [];
@@ -173,11 +173,11 @@ export class QuestionsService {
       });
   }
 
-  async getArea(area: any) {
+  private async getArea(area: any) {
     return (area instanceof Area) ? area : (Area.first({where: {code: (area + '')}}));
   }
 
-  async addOptions(questionItem: RowQuestion, idQuestion: number) {
+  private async addOptions(questionItem: RowQuestion, idQuestion: number) {
     const savePromises = [];
     const options = questionItem[this.OPTIONS];
     if (options && options.length === 0) {
@@ -348,7 +348,6 @@ export class QuestionsService {
   }
 
   loadQuestions(blockId: number, paginate: boolean, page: number = 1, perPage: number = 20) {
-
     return Question.query<Question, Pagination<Question>>({
         where: {qblocks: {$contains: blockId}},
         sort: {order: false},
@@ -360,9 +359,22 @@ export class QuestionsService {
         cache: false
       });
   }
-}
 
-interface BlockType {
-  name: string;
-  questions: Question[];
+  async getQuestionsByStation(station: Station) {
+    const questionsByBlock: BlockType[] = [];
+    return await station.qblocks()
+      .then(async (qblocks: Pagination<QBlock>) => {
+        for (let n = 0; n < qblocks.length; n++) {
+          await (qblocks[n] as QBlock).getQuestions()
+            .then(questions => {
+              questionsByBlock.push({
+                name: qblocks[n].name,
+                // @ts-ignore
+                questions: (questions as Question[])
+              });
+            });
+        }
+        return questionsByBlock;
+      });
+  }
 }

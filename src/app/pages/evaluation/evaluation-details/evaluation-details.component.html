@@ -1,0 +1,81 @@
+<nz-content padding>
+  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoe?.name" [nzSubtitle]="'ECOE' | translate"></nz-page-header>
+  <nz-tabset
+    nzSize="large"
+    [nzTabPosition]="'top'"
+    [(nzSelectedIndex)]="selectedIndexShift"
+    (nzSelectChange)="log([$event])"
+  >
+    <nz-tab
+      *ngFor="let shift of shiftDays"
+      [nzTitle]="shift"
+      (nzSelect)="onChangeShiftDay(shift)"
+    >
+      <div nz-row>
+        <div nz-col nzSpan="3">
+          <nz-tabset
+            nzSize="default"
+            [nzTabPosition]="'left'"
+            [(nzSelectedIndex)]="selectedIndexRound"
+            (nzSelectChange)="log([$event])">
+            <nz-tab
+              *ngFor="let round of rounds"
+              [nzTitle]="round.description + ' - ' + round.roundCode"
+              (nzSelect)="log(['select', round])"
+              (nzClick)="log(['click', round])"
+              (nzDeselect)="log(['deselect', round])">
+            </nz-tab>
+          </nz-tabset>
+        </div>
+        <div nz-col nzSpan="21">
+          <div nz-row margin-top>
+            <div nz-col>
+              <ng-container *ngFor="let station of stations">
+                <h4 [innerHTML]="station.name"></h4>
+                <nz-list [nzDataSource]="filteredShifts" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 6, lg: 6, xl: 4 }">
+                  <ng-template #item let-item>
+                    <nz-list-item [nzContent]="nzContent">
+                      <ng-template #nzContent>
+                        <nz-card>
+                          <a [routerLink]="['./station', station.id, 'shift', item.id, 'round', this.rounds[this.selectedIndexRound].id]">{{item.timeStart | date:'H:mm'}}</a>
+                        </nz-card>
+                      </ng-template>
+                    </nz-list-item>
+                  </ng-template>
+                </nz-list>
+              </ng-container>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!--<ng-container *ngFor="let round of rounds">
+        <h2>{{round.description + ' - ' + round.roundCode}}</h2>
+        <ng-container *ngFor="let shift of shifts">
+          <summary>{{shift.timeStart | date}}</summary>
+&lt;!&ndash;          <ng-container *ngFor="let station of stations">&ndash;&gt;
+
+            <div nz-row padding>
+              <div nz-col>
+                <nz-list [nzDataSource]="stations" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 6, lg: 6, xl: 4 }">
+                  <ng-template #item let-item>
+                    <nz-list-item [nzContent]="nzContent">
+                      <ng-template #nzContent>
+                        <nz-card>
+                          <a [routerLink]="['./station', item.id]">{{item.name}}</a>
+                        </nz-card>
+                      </ng-template>
+                    </nz-list-item>
+                  </ng-template>
+                </nz-list>
+              </div>
+            </div>
+
+&lt;!&ndash;          </ng-container>&ndash;&gt;
+        </ng-container>
+      </ng-container>-->
+
+    </nz-tab>
+  </nz-tabset>
+</nz-content>

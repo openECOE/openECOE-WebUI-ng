@@ -132,6 +132,9 @@ export class Student extends Item {
   planner: Planner | Item;
   plannerOrder: number;
   planner_order: number;
+}
 
-
+export interface BlockType {
+  name: string;
+  questions: Question[];
 }
