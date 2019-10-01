@@ -333,6 +333,7 @@ export class QuestionsService {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
    *
+   * @param questions source where will be deleted
    * @param id Resource selected
    */
   async deleteQuestion(questions: Question[], id: number) {
@@ -362,10 +363,11 @@ export class QuestionsService {
 
   async getQuestionsByStation(station: Station) {
     const questionsByBlock: BlockType[] = [];
-    return await station.qblocks()
-      .then(async (qblocks: Pagination<QBlock>) => {
+    const savePromises = [];
+    await station.qblocks()
+      .then((qblocks: Pagination<QBlock>) => {
         for (let n = 0; n < qblocks.length; n++) {
-          await (qblocks[n] as QBlock).getQuestions()
+          const qPromise = (qblocks[n] as QBlock).getQuestions()
             .then(questions => {
               questionsByBlock.push({
                 name: qblocks[n].name,
@@ -373,8 +375,11 @@ export class QuestionsService {
                 questions: (questions as Question[])
               });
             });
+          savePromises.push(qPromise);
         }
-        return questionsByBlock;
+        // return questionsByBlock;
       });
+    return Promise.all(savePromises)
+      .then(() => questionsByBlock);
   }
 }

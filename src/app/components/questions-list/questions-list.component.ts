@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {QBlock, Question} from '../../models';
+import {Option, QBlock, Question} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {ActivatedRoute} from '@angular/router';
 import {QuestionsService} from '../../services/questions/questions.service';
@@ -14,10 +14,13 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   @Input() qblock: QBlock = new QBlock();
   @Input() questionsList: Question[] = [];
   @Input() preview: boolean = false;
+  @Input() evaluate: boolean = false;
   @Input() refreshQuestions: boolean = false;
+  @Input() answers: Option[] = [];
 
   @Output() newQuestion: EventEmitter<number> = new EventEmitter<number>();
   @Output() editQuestion: EventEmitter<any> = new EventEmitter<any>();
+  @Output() answerQuestion: EventEmitter<any> = new EventEmitter<any>();
 
   private questionsPage: Pagination<Question>;
   private editCache: Array<any> = [];
@@ -27,7 +30,7 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   totalItems: number = 0;
 
   loading: boolean = false;
-  defaultExpand: boolean = this.preview;
+  defaultExpand: boolean = false;
 
   questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -41,7 +44,9 @@ export class QuestionsListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     if (this.questionsList.length > 0) {
-      this.defaultExpand = this.preview;
+      if (this.preview || this.evaluate) {
+        this.defaultExpand = true;
+      }
       this.updateEditCache(this.preview);
     } else {
       this.loadQuestions(this.qblock.id, this.page, this.perPage);
@@ -141,5 +146,9 @@ export class QuestionsListComponent implements OnInit, OnChanges {
 
   getQuestionTypeLabel(questionType: string) {
     return this.questionTypeOptions.find(x => x.type === questionType).label;
+  }
+
+  onOptionChanged($event: any) {
+    this.answerQuestion.emit($event);
   }
 }

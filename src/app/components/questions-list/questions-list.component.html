@@ -1,7 +1,11 @@
-<button *ngIf="!preview" nz-button nzType="dashed" nzBlock (click)="addQuestion()">
-  <i nz-icon [type]="'plus-circle'"></i>
-  {{'ADD_QUESTION' | translate}}
-</button>
+<nz-content margin-top>
+  <button *ngIf="!preview && !evaluate" nz-button nzType="dashed" nzBlock (click)="addQuestion()">
+    <i nz-icon [type]="'plus-circle'"></i>
+    {{'ADD_QUESTION' | translate}}
+  </button>
+  <ng-container *ngIf="qblock && (preview || evaluate)">
+    <h4><b>{{qblock.name}}</b></h4>
+  </ng-container>
   <nz-table #table
             [nzData]="questionsList"
             [(nzPageIndex)]="page"
@@ -13,15 +17,23 @@
             [nzFrontPagination]="false"
             nzSize="small"
             nzShowSizeChanger
-            [nzShowPagination]="!preview"
+            [nzShowPagination]="!preview && !evaluate"
             >
     <thead>
     <tr>
-      <th nzWidth="40px">{{"ORDER" | translate}}</th>
+      <!--<th nzWidth="40px">{{"ORDER" | translate}}</th>
       <th nzWidth="400px">{{"DESCRIPTION" | translate}}</th>
-      <th nzWidth="150px">{{"REFERENCE" | translate}}</th>
-      <th>{{"AREA" | translate}}</th>
-      <th>{{"QUESTION_TYPE" | translate}}</th>
+      <th nzWidth="150px">{{"REFERENCE" | translate}}</th>-->
+      <th nzWidth="1%">{{"ORDER" | translate}}</th>
+      <th nzWidth="50%">{{"DESCRIPTION" | translate}}</th>
+      <th nzWidth="20%">{{"REFERENCE" | translate}}</th>
+      <ng-container *ngIf="!evaluate">
+        <th>{{"AREA" | translate}}</th>
+        <th>{{"QUESTION_TYPE" | translate}}</th>
+      </ng-container>
+      <ng-container *ngIf="evaluate">
+        <th nzWidth="5%">{{"ANSWER" | translate}}</th>
+      </ng-container>
       <th nzAlign="right">
       </th>
     </tr>
@@ -36,27 +48,39 @@
 
         <td>{{item.reference}}</td>
 
-        <td>{{item.area?.name}}</td>
+        <ng-container *ngIf="!evaluate">
+          <td>{{item.area?.name}}</td>
 
-        <td>{{getQuestionTypeLabel(item.questionType) | translate}}</td>
+          <td *ngIf="!evaluate">{{getQuestionTypeLabel(item.questionType) | translate}}</td>
 
-        <td text-right>
-          <nz-tag
-            [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'"
-            (click)="editCache[item.id].expand = !editCache[item.id].expand">
+          <td *ngIf="!evaluate" text-right>
+            <nz-tag
+              [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'"
+              (click)="editCache[item.id].expand = !editCache[item.id].expand">
               <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
               {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
-          </nz-tag>
-          <ng-container *ngIf="!preview">
-            <nz-divider [nzType]="'vertical'"></nz-divider>
-            <app-action-buttons
-              (startEdit)="onEditQuestion(item.id)"
-              (delete)="deleteQuestion(questionsList,item.id)">
-            </app-action-buttons>
-          </ng-container>
-        </td>
+            </nz-tag>
+            <ng-container *ngIf="!preview && !evaluate">
+              <nz-divider [nzType]="'vertical'"></nz-divider>
+              <app-action-buttons
+                (startEdit)="onEditQuestion(item.id)"
+                (delete)="deleteQuestion(questionsList,item.id)">
+              </app-action-buttons>
+            </ng-container>
+          </td>
+        </ng-container>
+        <ng-container *ngIf="evaluate">
+          <td colspan="5">
+            <app-options-list
+              [question]="item"
+              [evaluate]="evaluate"
+              [answers]="answers"
+              (optionChanged)="onOptionChanged($event)">
+            </app-options-list>
+          </td>
+        </ng-container>
       </tr>
-      <tr [nzExpand]="editCache[item.id]?.expand">
+      <tr [nzExpand]="editCache[item.id]?.expand" *ngIf="!evaluate">
         <td></td>
         <td colspan="5">
           <app-options-list
@@ -69,3 +93,4 @@
 
     </tbody>
   </nz-table>
+</nz-content>

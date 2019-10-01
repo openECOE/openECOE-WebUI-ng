@@ -107,6 +107,9 @@ export class Option extends Item {
   id_question: number;
   order: number;
 }
+export class Answer extends Item {
+  $ref: string;
+}
 
 export class RowOption {
   order: any | number;
@@ -130,8 +133,14 @@ export class Student extends Item {
 
   ecoe: ECOE | number;
   planner: Planner | Item;
-  plannerOrder: number;
-  planner_order: number;
+  plannerOrder?: number;
+  planner_order?: number;
+
+  addAnswer = Route.POST('/answers');
+
+  getAnswers = Route.GET('/answers');
+
+  removeAnswer: any = Route.DELETE('/answers');
 }
 
 export interface BlockType {

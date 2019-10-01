@@ -4,7 +4,6 @@
     nzSize="large"
     [nzTabPosition]="'top'"
     [(nzSelectedIndex)]="selectedIndexShift"
-    (nzSelectChange)="log([$event])"
   >
     <nz-tab
       *ngFor="let shift of shiftDays"
@@ -16,14 +15,10 @@
           <nz-tabset
             nzSize="default"
             [nzTabPosition]="'left'"
-            [(nzSelectedIndex)]="selectedIndexRound"
-            (nzSelectChange)="log([$event])">
+            [(nzSelectedIndex)]="selectedIndexRound">
             <nz-tab
               *ngFor="let round of rounds"
-              [nzTitle]="round.description + ' - ' + round.roundCode"
-              (nzSelect)="log(['select', round])"
-              (nzClick)="log(['click', round])"
-              (nzDeselect)="log(['deselect', round])">
+              [nzTitle]="round.description + ' - ' + round.roundCode">
             </nz-tab>
           </nz-tabset>
         </div>
@@ -37,7 +32,8 @@
                     <nz-list-item [nzContent]="nzContent">
                       <ng-template #nzContent>
                         <nz-card>
-                          <a [routerLink]="['./station', station.id, 'shift', item.id, 'round', this.rounds[this.selectedIndexRound].id]">{{item.timeStart | date:'H:mm'}}</a>
+                          <a *ngIf="station && shift && this.rounds[this.selectedIndexRound]"
+                            [routerLink]="['./station', station.id, 'shift', item.id, 'round', this.rounds[this.selectedIndexRound]?.id]">{{item['timeStart'] | date:'H:mm'}}</a>
                         </nz-card>
                       </ng-template>
                     </nz-list-item>
@@ -50,31 +46,6 @@
 
         </div>
       </div>
-      <!--<ng-container *ngFor="let round of rounds">
-        <h2>{{round.description + ' - ' + round.roundCode}}</h2>
-        <ng-container *ngFor="let shift of shifts">
-          <summary>{{shift.timeStart | date}}</summary>
-&lt;!&ndash;          <ng-container *ngFor="let station of stations">&ndash;&gt;
-
-            <div nz-row padding>
-              <div nz-col>
-                <nz-list [nzDataSource]="stations" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 6, lg: 6, xl: 4 }">
-                  <ng-template #item let-item>
-                    <nz-list-item [nzContent]="nzContent">
-                      <ng-template #nzContent>
-                        <nz-card>
-                          <a [routerLink]="['./station', item.id]">{{item.name}}</a>
-                        </nz-card>
-                      </ng-template>
-                    </nz-list-item>
-                  </ng-template>
-                </nz-list>
-              </div>
-            </div>
-
-&lt;!&ndash;          </ng-container>&ndash;&gt;
-        </ng-container>
-      </ng-container>-->
 
     </nz-tab>
   </nz-tabset>

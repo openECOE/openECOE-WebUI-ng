@@ -8,7 +8,7 @@
 
   <ng-container *ngIf="current === 0">
     <div class="steps-content">
-      <app-qblock-form #qblock [qblocks]="this.qblocksToAdd" (returnData)="onGetQblocks($event)">
+      <app-qblock-form #qblock [qblocks]="qblocksToAdd" (returnData)="onGetQblocks($event)">
         <button nz-button nzType="default" (click)="validQblocks()">
           <span>{{'NEXT' | translate}}</span>
         </button>
@@ -42,6 +42,7 @@
 
     <app-questions-list
       [questionsList]="questionsToAdd"
+      [qblock]="qblocksToAdd[0]"
       [preview]="true">
     </app-questions-list>
 

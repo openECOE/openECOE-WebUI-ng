@@ -2,7 +2,7 @@
           [nzData]="question?.options"
           nzSize="middle"
           [nzShowPagination]="false">
-  <thead>
+  <thead *ngIf="!evaluate">
   <tr>
     <th nzWidth="40px">{{"ORDER" | translate}}</th>
     <th nzWidth="250px">{{"LABEL" | translate}}</th>
@@ -13,52 +13,44 @@
 
   <tbody>
   <tr *ngFor="let option of optionTable.data; let indexOption = index">
-    <td>
-      {{option.order}}
-    </td>
+    <ng-container *ngIf="!evaluate">
+      <td>{{option.order}}</td>
+      <td>{{option.label}}</td>
+      <td>{{option.points | number: '.0-2'}}</td>
+    </ng-container>
 
-    <td>
-        {{option.label}}
-    </td>
-
-    <td>
-      {{option.points | number: '.0-2'}}
-    </td>
-
-    <td *ngIf="(  (question.questionType == 'RS') && indexOption == 0)
+    <td *ngIf="(  (question.questionType == 'RS' && indexOption === getIndex())
                 || (question.questionType == 'CH')
-                || ((question.questionType == 'RB') && indexOption == 0)"
+                || (question.questionType == 'RB' && indexOption == 0))"
         [attr.rowspan]="(question.questionType == 'RS') ? question.options.length : 1">
 
       <ng-container *ngIf="question.questionType == 'RB'">
 
-        <nz-switch *ngIf="indexOption === 0" [ngModel]="!editCacheOption[option.id].edit"
-                   [nzCheckedChildren]="editCacheOption[option.id].edit
-                    ? editCacheOption[option.id].label
-                    : option.label"
-                   [nzUnCheckedChildren]="editCacheOption[option.id].edit
-                    ? editCacheOption[option.id].label
-                    : optionTable.data[1].label"
+        <nz-switch (ngModelChange)="onOptionChange($event, option)"
+                   [ngModel]="editCacheOption[option.id]['checked']"
+                   [nzCheckedChildren]="option.label"
+                   [nzUnCheckedChildren]="optionTable.data[1].label"
                    [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
         </nz-switch>
 
       </ng-container>
 
       <ng-container *ngIf="question.questionType == 'CH'">
-        <nz-switch [ngModel]="!editCacheOption[option.id].edit"
-                   [nzCheckedChildren]="editCacheOption[option.id].edit
-                    ? editCacheOption[option.id].label
-                    : option.label"
-                   [nzUnCheckedChildren]="editCacheOption[option.id].edit
-                    ? editCacheOption[option.id].label
-                    : option.label"
-                   [ngClass]="editCacheOption[option.id].points < 0 ? 'negative-points' : 'positive-points'">
+        <nz-switch
+                   (ngModelChange)="onOptionChange($event, option)"
+                   [ngModel]="editCacheOption[option.id]['checked']"
+                   [nzCheckedChildren]="option.label"
+                   [nzUnCheckedChildren]="option.label"
+                   [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
         </nz-switch>
       </ng-container>
 
       <ng-container *ngIf="question.questionType == 'RS'">
-        <nz-rate [(ngModel)]="valueopt" [nzCount]="optionTable.data.length"></nz-rate>
-        <span class="ant-rate-text">{{valueopt}}</span>
+        <nz-rate
+          (ngModelChange)="onOptionChange($event, option, question.questionType)"
+          [ngModel]="option.order"
+          [nzCount]="optionTable.data.length"
+          nzAllowClear=false></nz-rate>
       </ng-container>
 
     </td>

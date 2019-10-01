@@ -9,6 +9,7 @@ import { EvaluationDetailsComponent } from './evaluation-details/evaluation-deta
 import {FormsModule} from '@angular/forms';
 import {PipesModule} from '../../pipes/pipes.module';
 import { EvaluateComponent } from './evaluate/evaluate.component';
+import {ComponentsModule} from '../../components/components.module';
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { EvaluateComponent } from './evaluate/evaluate.component';
     TranslateModule,
     FormsModule,
     PipesModule,
+    ComponentsModule,
   ],
   declarations: [EvaluationComponent, EvaluationDetailsComponent, EvaluateComponent]
 })

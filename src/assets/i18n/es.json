@@ -23,6 +23,7 @@
   "ALL_STATIONS": "Todas Estaciones",
 
   "INFORMATION": "Información",
+  "ANSWER": "Respuesta",
 
   "CONTROL_PANEL": "Panel de Control",
 
@@ -90,6 +91,9 @@
   "OPTIONAL": "opcional",
   "SELECT_VALUE": "Seleccionar un valor...",
 
+  "NUMB": "Num",
+  "DAY-SHIFT": "Dia - Turno",
+
   "QBLOCK_NAME": "Nombre del bloque",
   "NEW_QBLOCK": "Bloque nuevo",
   "QBLOCKS": "Bloques",
@@ -138,6 +142,7 @@
   "ECOE": "ECOE",
 
   "REPORTS_AND_STATISTICS": "Informes y estadísticas",
+  "THERE_ARE_NOT_STUDENTS": "No hay estudiantes",
 
   "TO_UPDATE": "actualizar",
   "UPDATED": "actualizado",

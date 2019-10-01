@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {map} from 'rxjs/operators';
 
@@ -21,12 +21,31 @@ export class ApiService {
 
   }
 
+  removeAnswer(studentId: number, option: Object) {
+    console.log('removeAnswer', studentId, option);
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/students/${studentId}/answers`;
+    const params: HttpParams = new HttpParams({fromObject: {'$ref': option['uri']}});
+    const options = {
+      headers: new HttpHeaders(),
+      body: {
+        '$ref': '/api/v1' + option['uri']
+      }
+    };
+
+    return this.http.delete(url, options)
+      .toPromise()
+      .then( response => {
+        console.log('deleted Ok', response);
+      })
+      .catch( err => console.log(err));
+  }
+
   /**
    * Makes a HTTP GET request to the backend and gets a list of items.
    *
    * @param resource Name of the resource
-   * @param {{}} requestParams? Optional params object
-   * @returns {Observable<any[]>} The array of items of the requested resource
+   * @param requestParams? Optional params object
+   * @returns Observable<any[]> The array of items of the requested resource
    */
   getResources(resource: string, requestParams?: {}): Observable<any[]> {
     const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}`;
@@ -47,7 +66,7 @@ export class ApiService {
    * Makes a HTTP GET request to the backend and gets an item.
    *
    * @param ref Reference path of the resource
-   * @returns {Observable<any>} The object of the reference passed
+   * @returns Observable<any> The object of the reference passed
    */
   getResource(ref: string): Observable<any> {
     return this.http.get<any>(environment.API_ROUTE + ref)
@@ -62,7 +81,7 @@ export class ApiService {
    *
    * @param resource Name of the resource
    * @param body Object with the elements of the resource
-   * @returns {Observable<any>} The object of the item created
+   * @returns Observable<any> The object of the item created
    */
   createResource(resource: string, body: any): Observable<any> {
     return this.http.post(`${environment.API_ROUTE}/${this.apiUrl}/${resource}`, body)
@@ -79,7 +98,7 @@ export class ApiService {
    *
    * @param ref Reference path of the resource
    * @param body? Id of the resource
-   * @returns {Observable<any>} An empty response
+   * @returns Observable<any> An empty response
    */
   deleteResource(ref: string, body?: any): Observable<any> {
     if (body) {
@@ -94,7 +113,7 @@ export class ApiService {
    *
    * @param ref Reference path of the resource
    * @param body Object with the elements of the resource
-   * @returns {Observable<any>} The object of the item updated
+   * @returns Observable<any> The object of the item updated
    */
   updateResource(ref: string, body: any): Observable<any> {
     return this.http.patch(environment.API_ROUTE + ref, body)
