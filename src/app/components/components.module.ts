@@ -14,6 +14,7 @@ import { OptionFormComponent } from './qblock-question-form/option-form/option-f
 import { QblockQuestionFormComponent } from './qblock-question-form/qblock-question-form.component';
 import {QuestionsListComponent} from './questions-list/questions-list.component';
 import {OptionsListComponent} from './questions-list/options-list/options-list.component';
+import { ChronoComponent } from './chrono/chrono.component';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -26,7 +27,8 @@ import {OptionsListComponent} from './questions-list/options-list/options-list.c
     OptionFormComponent,
     QblockQuestionFormComponent,
     QuestionsListComponent,
-    OptionsListComponent
+    OptionsListComponent,
+    ChronoComponent
   ],
   imports: [
     CommonModule,
@@ -43,7 +45,8 @@ import {OptionsListComponent} from './questions-list/options-list/options-list.c
     MenuComponent,
     QblockQuestionFormComponent,
     QuestionsListComponent,
-    QuestionFormComponent
+    QuestionFormComponent,
+    ChronoComponent
   ]
 })
 export class ComponentsModule {}

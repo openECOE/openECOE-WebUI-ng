@@ -1,0 +1,32 @@
+<div>
+
+  <ng-container *ngIf="!aborted">
+    <nz-tag [nzColor]="'#2db7f5'" class="my-tag" >
+      {{
+         (minutes | number:'2.') + ':' + (seconds | number:'2.')
+      }}
+      <ng-container *ngIf="stageName">
+        {{stageName}}
+      </ng-container>
+    </nz-tag> <br/>
+  </ng-container>
+
+  <ng-container *ngIf="aborted">
+    <nz-tag nzColor="red" class="my-tag" >
+      <ng-container *ngIf="stageName">
+        {{stageName | translate}}
+      </ng-container>
+    </nz-tag> <br/>
+  </ng-container>
+
+  <nz-progress
+    [nzPercent]="totalPercent"
+    [nzShowInfo]="false"
+    nzSize="default"
+    nzStatus="active"
+    style="height: 15px">
+  </nz-progress>
+
+  <ng-content></ng-content>
+
+</div>

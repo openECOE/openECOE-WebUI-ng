@@ -17,18 +17,15 @@
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">
         <h2>
           <a (click)="onBack()"><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
-          <a *ngIf="station"> {{station?.name}} </a></h2>
-        <div>
-          <nz-tag [nzColor]="'#2db7f5'" class="my-tag" >{{'00:00'}}</nz-tag> <br/>
-          <nz-progress
-            [nzPercent]="50"
-            [nzShowInfo]="false"
-            nzSize="default"
-            nzStatus="active"
-            style="height: 15px">
-
-          </nz-progress>
-        </div>
+          <a *ngIf="station"> {{station?.name}} </a>
+        </h2>
+        <app-chrono
+          [aborted]="aborted"
+          [currentSeconds]="currentSeconds"
+          [stageName]="stageName"
+          [totalDuration]="totalDuration"
+          [event]="event">
+        </app-chrono>
       </div>
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">
         <h2 uppercase text-right>

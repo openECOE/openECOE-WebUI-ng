@@ -4,6 +4,7 @@ import {Location} from '@angular/common';
 import {BlockType, Option, Planner, Round, Shift, Station, Student} from '../../../models';
 import {QuestionsService} from '../../../services/questions/questions.service';
 import {ApiService} from '../../../services/api/api.service';
+import {SocketService} from '../../../services/socket/socket.service';
 
 @Component({
   selector: 'app-evaluate',
@@ -29,17 +30,53 @@ export class EvaluateComponent implements OnInit {
     answers: []
   };
 
+  private minutes: string = '00';
+  private seconds: string = '00';
+  private currentSeconds: number = 0;
+  private totalDuration: number = 0;
+  private totalPercent: number = 0;
+  private stageName: string;
+  private aborted: boolean;
+
+
   loading: boolean;
+  private event: {};
 
   constructor(private route: ActivatedRoute,
               private location: Location,
               private questionService: QuestionsService,
-              private apiService: ApiService) { }
+              private apiService: ApiService,
+              private socket: SocketService) {
+  }
 
   ngOnInit() {
     this.getParams(this.route.snapshot.params);
     this.loading = true;
     this.getData().finally();
+
+    this.socket.onConnected(this.roundId).subscribe( () => {
+
+      this.socket.onReceive('init_stage').subscribe(data => {
+        console.log(data);
+      });
+      this.socket.onReceive('end_round').subscribe(data => {
+        console.log(data);
+      });
+      this.socket.onReceive('evento').subscribe(data =>
+        this.event = data[1]
+      );
+      this.socket.onReceive('aborted').subscribe(data => {
+        this.aborted = true;
+        this.stageName = (data[0] as string).toUpperCase();
+      });
+      this.socket.onReceive('tic_tac').subscribe(data => {
+        this.aborted        = false;
+        this.stageName      = data[1]['stage']['name'];
+        this.currentSeconds = parseInt(data[1]['t'], 10);
+        this.totalDuration  = parseInt(data[1]['stage']['duration'], 10);
+      });
+    });
+
   }
 
 
@@ -102,7 +139,6 @@ export class EvaluateComponent implements OnInit {
   setCurrentStudent(currentStudent: Student) {
     if (currentStudent) {
       Object.assign(this.currentStudent.student, currentStudent);
-      // this.currentStudent.answers = [...[]];
       this.getAnswers(currentStudent);
     }
   }
@@ -136,6 +172,7 @@ export class EvaluateComponent implements OnInit {
       this.removeAnswer(this.currentStudent.student.id, option);
     }
   }
+
   removeAnswer(studentId: number, option: Object) {
     this.apiService.removeAnswer(studentId, option)
       .then(() => 'OK');
