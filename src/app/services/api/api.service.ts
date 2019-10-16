@@ -22,22 +22,14 @@ export class ApiService {
   }
 
   removeAnswer(studentId: number, option: Object) {
-    console.log('removeAnswer', studentId, option);
     const url = `${environment.API_ROUTE}/${this.apiUrl}/students/${studentId}/answers`;
-    const params: HttpParams = new HttpParams({fromObject: {'$ref': option['uri']}});
     const options = {
       headers: new HttpHeaders(),
       body: {
         '$ref': '/api/v1' + option['uri']
       }
     };
-
-    return this.http.delete(url, options)
-      .toPromise()
-      .then( response => {
-        console.log('deleted Ok', response);
-      })
-      .catch( err => console.log(err));
+    return this.http.delete(url, options);
   }
 
   /**

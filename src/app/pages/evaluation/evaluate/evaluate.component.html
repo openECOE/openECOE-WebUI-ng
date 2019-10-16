@@ -1,9 +1,10 @@
-<nz-content padding>
-
+<nz-content padding >
+<!--  <button id="mytag" #tabsContentRef>TOP</button>-->
   <nz-card [nzLoading]="loading" [nzTitle]="extraTemplateTitle">
-    <ng-container *ngIf="questionsByQblock">
+    <ng-container *ngIf="questionsByQblock && currentStudent.student.id">
       <app-questions-list *ngFor="let qblock of questionsByQblock"
         [questionsList]="qblock.questions"
+        [qblock]="qblock"
         [evaluate]="true"
         [answers]="this.currentStudent.answers"
         (answerQuestion)="updateAnswer($event)"
@@ -13,11 +14,11 @@
   </nz-card>
 
   <ng-template #extraTemplateTitle>
-    <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32, xl: 32, xxl: 32 }">
+    <div #tabsContentRef nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32, xl: 32, xxl: 32 }">
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">
         <h2>
           <a (click)="onBack()"><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
-          <a *ngIf="station"> {{station?.name}} </a>
+          <a *ngIf="station"> {{station.name}} </a>
         </h2>
         <app-chrono
           [aborted]="aborted"
@@ -28,17 +29,16 @@
         </app-chrono>
       </div>
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">
-        <h2 uppercase text-right>
-          {{
-          (loading)
-            ? ((!currentStudent.student.name)
-              ? (('LOADING' | translate ) + '...' )
-              : (currentStudent?.student.surnames + ', ' + currentStudent?.student.name))
-            : ((!currentStudent.student.name)
-              ? ('THERE_ARE_NOT_STUDENTS' | translate)
-              : (currentStudent?.student.surnames + ', ' + currentStudent?.student.name))
-          }}
-        </h2>
+        <h2 uppercase text-right *ngIf="loading">{{(('LOADING' | translate ) + '...' )}}</h2>
+        <h2 uppercase text-right *ngIf="!loading && currentStudent.student.surnames">{{(currentStudent?.student.surnames + ', ' + currentStudent?.student.name)}}</h2>
+        <h2 uppercase text-right *ngIf="!loading && students.length === 0">{{('THERE_ARE_NOT_STUDENTS' | translate)}}</h2>
+        <ng-container *ngIf="!loading && !currentStudent?.student.surnames">
+<!--          <h5 text-right class="wrapword" >{{('STATION_DEPENDS_OF_STATION' | translate) + station.parentStation?.name}}</h5>-->
+          <nz-alert class="wrapword" nzType="info" [nzMessage]="('STATION_DEPENDS_OF_STATION_DESCRIPTION' | translate)"></nz-alert>
+        </ng-container>
+
+
+
         <div nz-row nzJustify="end">
           <div nz-col nzSpan="6" text-center>{{'DAY-SHIFT' | translate}}</div>
           <div nz-col nzSpan="6" text-center>{{'ROUND' | translate}}</div>
@@ -54,7 +54,7 @@
                 <button nzType="danger" (click)="previousStudent()" nzBlock nzSize="large" text-center nz-button><i nz-icon nzType="left" nzTheme="outline"></i></button>
               </div>
               <div nz-col  nzSpan="8">
-                <h3 text-center>{{currentStudent?.index + 1}}</h3>
+                <h3 text-center>{{currentStudent?.student.plannerOrder}}</h3>
               </div>
               <div nz-col nzSpan="8">
                 <button nzType="primary" (click)="nextStudent()" nzBlock nzSize="large" text-center nz-button><i nz-icon nzType="right" nzTheme="outline"></i></button>
@@ -66,5 +66,21 @@
       </div>
     </div>
   </ng-template>
+
+  <button
+    *ngIf="students.length > 0 && students.length !== (currentStudent.index + 1)"
+    (click)="nextStudent();"
+    nz-button nzType="primary" nzBlock>
+      {{'NEXT_STUDENT' | translate}}
+      <i nz-icon nzType="right" nzTheme="outline"></i>
+  </button>
+
+  <button
+    *ngIf="students.length > 0 && students.length === (currentStudent.index + 1)"
+    (click)="onBack()"
+    nz-button nzType="primary" nzBlock>
+    {{'ROUND_FINISHED' | translate}}
+    <i nz-icon nzType="right" nzTheme="outline"></i>
+  </button>
 
 </nz-content>

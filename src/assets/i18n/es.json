@@ -192,6 +192,8 @@
   "BACK": "Volver",
   "CLOSE_EDITION": "Cerrar edición",
   "CONTINUE": "Continuar",
+  "NEXT_STUDENT": "Siguiente alumno",
+  "ROUND_FINISHED": "Ronda finalizada",
 
   "IMPORT_ERRORS": "Errores Importación",
 
@@ -210,6 +212,9 @@
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",
   "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",
-  "LOG_IN_ERROR": "Error al iniciar sesión"
+  "LOG_IN_ERROR": "Error al iniciar sesión",
+
+  "STATION_DEPENDS_OF_STATION": "Esta estación depende de la estación: ",
+  "STATION_DEPENDS_OF_STATION_DESCRIPTION": "La primera vuelta no tiene asignado ningún alumno para su evaluación. El primer alumno se evalua en la última vuelta."
 
 }

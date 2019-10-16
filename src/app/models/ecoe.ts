@@ -136,11 +136,9 @@ export class Student extends Item {
   plannerOrder?: number;
   planner_order?: number;
 
-  addAnswer = Route.POST('/answers');
+  addAnswer ? = Route.POST('/answers');
 
-  getAnswers = Route.GET('/answers');
-
-  removeAnswer: any = Route.DELETE('/answers');
+  getAnswers ? = Route.GET('/answers');
 }
 
 export interface BlockType {

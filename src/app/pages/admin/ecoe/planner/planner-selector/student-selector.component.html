@@ -67,7 +67,7 @@
   nzBordered
   nzSize="small"
   [nzHeader]="groupName"
-  [nzFooter]="planner.students.length + '/' + maxStudents"
+  [nzFooter]="planner.students?.length + '/' + maxStudents"
   [nzRenderItem]="item">
   <ng-template #item let-item>
     <ng-template #delItem>

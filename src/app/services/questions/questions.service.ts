@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Area, QBlock, Question, Option, RowQuestion, Station, BlockType} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -174,7 +175,7 @@ export class QuestionsService {
   }
 
   private async getArea(area: any) {
-    return (area instanceof Area) ? area : (Area.first({where: {code: (area + '')}}));
+    return (area instanceof Area) ? area : (await Area.first({where: {code: (area + '')}}));
   }
 
   private async addOptions(questionItem: RowQuestion, idQuestion: number) {
@@ -361,25 +362,29 @@ export class QuestionsService {
       });
   }
 
-  async getQuestionsByStation(station: Station) {
+  getQuestionsByStation(station: Station): Observable<BlockType[]> {
     const questionsByBlock: BlockType[] = [];
     const savePromises = [];
-    await station.qblocks()
-      .then((qblocks: Pagination<QBlock>) => {
+    const questionsObservable = new BehaviorSubject<BlockType[]>(questionsByBlock);
+
+      QBlock.query({
+        where: {station: station.id},
+        sort: {order: false}
+      })
+      .then((qblocks: QBlock[]) => {
         for (let n = 0; n < qblocks.length; n++) {
           const qPromise = (qblocks[n] as QBlock).getQuestions()
-            .then(questions => {
+          // @ts-ignore
+            .then((questions: Question[]) => {
               questionsByBlock.push({
                 name: qblocks[n].name,
-                // @ts-ignore
-                questions: (questions as Question[])
+                questions: questions
               });
+              questionsObservable.next(questionsByBlock);
             });
           savePromises.push(qPromise);
         }
-        // return questionsByBlock;
       });
-    return Promise.all(savePromises)
-      .then(() => questionsByBlock);
+    return questionsObservable;
   }
 }

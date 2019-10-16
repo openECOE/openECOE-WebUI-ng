@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ECOE, Round, Shift, Station} from '../../../models';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
+import * as moment from 'moment';
+import {SharedService} from '../../../services/shared/shared.service';
 
 @Component({
   selector: 'app-evaluation-details',
@@ -20,11 +22,14 @@ export class EvaluationDetailsComponent implements OnInit {
   private ecoe: ECOE;
 
   private shiftDays: string[] = [];
+  momentRef = moment;
 
   constructor(private route: ActivatedRoute,
-              private location: Location) { }
+              private location: Location,
+              private shared: SharedService) { }
 
   async ngOnInit() {
+    this.momentRef.locale(this.shared.getUsersLocale('en-US'));
     this.ecoeId = +this.route.snapshot.params.id;
     this.ecoe = (await ECOE.fetch(this.ecoeId)) as ECOE;
     this.getData(this.ecoe);
@@ -74,9 +79,5 @@ export class EvaluationDetailsComponent implements OnInit {
   onBack() {
     this.location.back();
   }
-
-  /*log(args: any[]): void {
-    console.log(args);
-  }*/
 
 }

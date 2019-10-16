@@ -1,17 +1,19 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
 import {BlockType, Option, Planner, Round, Shift, Station, Student} from '../../../models';
 import {QuestionsService} from '../../../services/questions/questions.service';
 import {ApiService} from '../../../services/api/api.service';
 import {SocketService} from '../../../services/socket/socket.service';
+import {getPotionID} from '@openecoe/potion-client';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-evaluate',
   templateUrl: './evaluate.component.html',
   styleUrls: ['./evaluate.component.less']
 })
-export class EvaluateComponent implements OnInit {
+export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private ecoeId: number;
   private stationId: number;
@@ -23,6 +25,7 @@ export class EvaluateComponent implements OnInit {
   private round: Round;
   private students: Student[] = [];
   private questionsByQblock: BlockType[] = [];
+  private questionsByQblockSubscription: Subscription;
 
   private currentStudent: CurrentStudent = {
     index: 0,
@@ -30,32 +33,43 @@ export class EvaluateComponent implements OnInit {
     answers: []
   };
 
-  private minutes: string = '00';
-  private seconds: string = '00';
   private currentSeconds: number = 0;
   private totalDuration: number = 0;
-  private totalPercent: number = 0;
   private stageName: string;
   private aborted: boolean;
 
+  private event: {};
 
   loading: boolean;
-  private event: {};
+
+  // public tabsContentRef!: ElementRef;
+  @ViewChild('tabsContentRef') tabsContentRef: ElementRef;
 
   constructor(private route: ActivatedRoute,
               private location: Location,
               private questionService: QuestionsService,
               private apiService: ApiService,
-              private socket: SocketService) {
+              private socket: SocketService,
+              private renderer: Renderer2) {
   }
 
   ngOnInit() {
-    this.getParams(this.route.snapshot.params);
     this.loading = true;
+
+    this.getParams(this.route.snapshot.params);
+
     this.getData().finally();
 
-    this.socket.onConnected(this.roundId).subscribe( () => {
+    /*setInterval(() => {
+      console.log('scroll from evaluate');
+      window.scrollTo( {
+        top: 0
+      });
+    }, 4000);*/
+  }
 
+  ngAfterViewInit(): void {
+    this.socket.onConnected(this.roundId).subscribe( () => {
       this.socket.onReceive('init_stage').subscribe(data => {
         console.log(data);
       });
@@ -76,9 +90,11 @@ export class EvaluateComponent implements OnInit {
         this.totalDuration  = parseInt(data[1]['stage']['duration'], 10);
       });
     });
-
   }
 
+  ngOnDestroy(): void {
+    this.questionsByQblockSubscription.unsubscribe();
+  }
 
   getParams(params: {}) {
     this.stationId = params['stationId'];
@@ -87,49 +103,60 @@ export class EvaluateComponent implements OnInit {
     this.ecoeId = params['ecoeId'];
   }
 
-  async getData() {
-    this.shift = await Shift.fetch(this.shiftId) as Shift;
-    this.round = await Round.fetch(this.roundId) as Round;
-    this.station = await Station.fetch(this.stationId) as Station;
-    await this.getQuestions()
-      .then(() => {
-        this.loading = false;
-        return;
-      });
-    this.getPlanner()
-      .then( students => {
-        // @ts-ignore
-        this.students = students as Student[];
-        this.setCurrentStudent(students[0]);
-        this.currentStudent.index = 0;
-      });
+  getData() {
+    Shift.fetch(this.shiftId).then( (shift: Shift) => this.shift = shift);
+    Round.fetch(this.roundId).then( (round: Round) => this.round = round);
+    Station.fetch(this.stationId).then((station: Station) => {
+      this.station = station;
+      this.getParentStation();
+      this.getQuestions();
+    });
+    return this.getPlanner().then( (students: Student[]) => {
+      this.students = this.reorderStudents(students, this.station);
+      if (!this.station.parentStation) {
+        this.setCurrentStudent(this.students.filter(student => student.plannerOrder === this.station.order)[0] );
+      } else { this.setCurrentStudent({plannerOrder: 0} as Student); }
+      return;
+    });
   }
 
   getPlanner() {
     return Planner.query(
       {where: {
-          round: this.round,
-          shift: this.shift
+          round: +this.roundId,
+          shift: +this.shiftId
         }
       }
     ).then( (result: Planner[]) => {
-      return result[0]
-        .getStudents();
+      return (result && result.length > 0)
+        ? new Promise(resolve => resolve(
+
+          Student.query({
+            where: { planner: result[0].id },
+            sort: {plannerOrder: false}
+          })
+        ))
+        : new Promise(resolve => resolve([]));
     });
   }
 
   getAnswers(student: Student) {
-    student.getAnswers()
-      .then((response: any[]) => {
-        this.currentStudent.answers = [...response];
-      });
+    if (student.id) {
+      student.getAnswers()
+        .then((response: any[]) => {
+          this.currentStudent.answers = [...response];
+        });
+    } else { this.currentStudent.answers = []; }
   }
 
   getQuestions() {
-    return this.questionService.getQuestionsByStation(this.station)
-      .then(result => {
-        return this.questionsByQblock = result;
-      });
+    this.questionsByQblockSubscription = this.questionService.getQuestionsByStation(this.station)
+      .subscribe(questions => {
+        if (questions.length > 0) {
+          this.questionsByQblock = Object.create(questions);
+          this.loading = false;
+        }
+      }, error => console.log(error));
   }
 
   onBack() {
@@ -138,25 +165,75 @@ export class EvaluateComponent implements OnInit {
 
   setCurrentStudent(currentStudent: Student) {
     if (currentStudent) {
-      Object.assign(this.currentStudent.student, currentStudent);
+      this.currentStudent.student = Object.create(currentStudent);
+      this.currentStudent.index = (this.students.indexOf(currentStudent) >= 0 ? this.students.indexOf(currentStudent) : 0 );
       this.getAnswers(currentStudent);
     }
   }
 
+  reorderStudents(students: Student[], station: Station) {
+    const arrStudents: Student[] = [];
+    // if there aren't parent station, first student (ordered by plannerOrder) will be this same than
+    // station order. In other case first field will be empty.
+    if (!station.parentStation) {
+      arrStudents.push(students[station.order - 1]);
+    } else {
+      arrStudents.push(new Student());
+    }
+
+    let counter = 0;
+    while (counter < students.length) {
+      // if first element (previously) inserted in arrStudents is null --> idx will be -1
+      // in other case will be >= 0
+      const idx = students.indexOf(arrStudents[arrStudents.length - 1]);
+      // if student index is greater than 0 --> first student is equivalent to station.order and
+      // the next student will be the previous (ref. students array). If the first students is the
+      // first element on students then the next student will be the last element from students.
+      const auxStudent = idx > 0
+        ? students[idx - 1]
+        : (idx === 0)
+          ? students[students.length - 1]
+          : ((station.order - 1) - 1 >= 0)
+            ? students[(station.order - 1) - 1]
+            : students[students.length - 1];
+      arrStudents.push(auxStudent);
+      counter++;
+    }
+
+    if (arrStudents[0].dni) {
+      const lastIndex = arrStudents.lastIndexOf(students[station.order - 1]);
+      delete arrStudents[lastIndex];
+    } else {
+      arrStudents.push(students[station.order - 1]);
+    }
+
+    let cleanArrStudents = [...arrStudents];
+
+    cleanArrStudents = cleanArrStudents.slice(1, cleanArrStudents.length - 1).filter(Boolean);
+
+    cleanArrStudents.unshift(arrStudents[0]);
+
+    return cleanArrStudents;
+  }
+
+
   nextStudent() {
     if (this.students.length < 1) { return; }
-    this.currentStudent.index = ((this.currentStudent.index + 1) === this.students.length)
-      ? 0
-      : this.currentStudent.index + 1;
-    this.setCurrentStudent(this.students[this.currentStudent.index]);
+    if ( (this.currentStudent.index + 1) !== this.students.length ) {
+      this.currentStudent.index ++;
+      this.setCurrentStudent(this.students[this.currentStudent.index]);
+    }
+    console.log('before scroll');
+
+    this.scrollTabContentToTop();
   }
 
   previousStudent() {
     if (this.students.length < 1) { return; }
-    this.currentStudent.index = (this.currentStudent.index === 0)
-      ? (this.students.length - 1)
-      : this.currentStudent.index - 1;
-    this.setCurrentStudent(this.students[this.currentStudent.index]);
+    if ( this.currentStudent.index !== 0 ) {
+      this.currentStudent.index --;
+      this.setCurrentStudent(this.students[this.currentStudent.index]);
+    }
   }
 
   updateAnswer($event: any) {
@@ -173,9 +250,32 @@ export class EvaluateComponent implements OnInit {
     }
   }
 
-  removeAnswer(studentId: number, option: Object) {
+  removeAnswer(studentId: number, option: Object) { console.log(studentId);
+    if (!studentId || studentId < 0) { return; }
+    let count = 0;
     this.apiService.removeAnswer(studentId, option)
-      .then(() => 'OK');
+      .toPromise()
+      .catch( err => {
+        console.error(err);
+        count++;
+        if (count <= 2) {this.removeAnswer(studentId, option); }
+      });
+  }
+
+  getParentStation() {
+    if (this.station.parentStation !== null && !this.station.parentStation.name) {
+      Station.fetch<Station>(getPotionID(this.station.parentStation['$uri'], '/stations'))
+        .then(parentStation => this.station.parentStation = parentStation);
+    }
+  }
+
+  // I scroll the tab-content overflow-container back to the top.
+  private scrollTabContentToTop(): void {
+    console.log(this.tabsContentRef.nativeElement.scroll( 0, 0 ));
+    // this.tabsContentRef['nzTitle']['elementRef'].nativeElement.scroll( 0, 0 );
+    window.scrollTo(0, 0);
+    this.tabsContentRef.nativeElement.scroll( 0, 0 );
+
   }
 }
 

@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {Schedule} from '../../../../models/schedule';
-import {Stage, Event} from '../../../../models/schedule';
-import {ECOE} from '../../../../models/ecoe';
-import {FormGroup, FormControl, ValidationErrors, Validators, FormBuilder} from '@angular/forms';
-import {Observable, Observer} from 'rxjs';
+import {Schedule} from '../../../../models';
+import {Stage, Event} from '../../../../models';
+import {ECOE} from '../../../../models';
+import {FormGroup, Validators, FormBuilder} from '@angular/forms';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
@@ -138,6 +137,7 @@ export class ScheduleComponent implements OnInit {
     stage.duration = duration;
     stage.name = name;
     this.schedules.length === 0 ? stage.order = 0 : stage.order = (this.schedules[this.schedules.length - 1].stage.order) + 1;
+    console.log('firstly:stage', stage);
     stage.save()
       .then(new_stage => {
         console.log('stage save', new_stage);
@@ -149,7 +149,7 @@ export class ScheduleComponent implements OnInit {
             console.log('schedule save', ret_schedule);
             // Create Start and Finish Events
             this.createDefaultEvents(ret_schedule)
-              .then(value => {
+              .then(() => {
                 this.schedules = [...this.schedules, ret_schedule];
                 this.tabIndex = this.schedules.length;
               });
@@ -224,7 +224,7 @@ export class ScheduleComponent implements OnInit {
 
     if (events['items']) {
       events['items'].forEach(async event => await event.destroy()
-        .then(value => console.log('[DELETE] Event', event))
+        .then(() => console.log('[DELETE] Event', event))
         .catch(reason => console.error('delete Event error:', reason))
       );
     }
@@ -273,7 +273,7 @@ export class ScheduleComponent implements OnInit {
 
     this.createSchedule(value.stageName, stageDuration);
     this.handleStageCancel();
-  };
+  }
 
   resetForm(e: MouseEvent, form: FormGroup): void {
     e.preventDefault();

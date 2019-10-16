@@ -116,7 +116,6 @@ export class StationsComponent implements OnInit {
 
     return new Promise(resolve => {
       Station.query({
-        where: {ecoe: this.ecoeId},
         sort: {order: false},
         page: this.page,
         perPage: this.perPage
@@ -279,7 +278,7 @@ export class StationsComponent implements OnInit {
     this.stations.map(value => {
       // Fix for SelfReference Station Type
       if (value.parentStation !== null && !value.parentStation.name) {
-        Station.fetch<Station>(getPotionID(value.parentStation['$uri'], '/station'))
+        Station.fetch<Station>(getPotionID(value.parentStation['$uri'], '/stations'))
           .then(parentStation => value.parentStation = parentStation);
       }
     });
