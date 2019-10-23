@@ -18,16 +18,18 @@
             [(nzSelectedIndex)]="selectedIndexRound">
             <nz-tab
               *ngFor="let round of rounds"
-              [nzTitle]="round.description + ' - ' + round.roundCode">
+              [nzTitle]="round.description + ' - ' + round.roundCode"
+              (nzSelect)="onChangeRound(round)">
             </nz-tab>
           </nz-tabset>
         </div>
         <div nz-col nzSpan="21" nzXs="24" nzSm="18" nzLg="20" nzXl="21">
-          <div nz-row margin-top>
+          <nz-spin [nzSpinning]="isSpinning">
+            <div nz-row margin-top>
             <div nz-col>
               <ng-container *ngFor="let station of stations">
                 <h2 [innerHTML]="station.order + ' - ' + station.name"></h2>
-                <nz-list [nzDataSource]="filteredShifts" [nzRenderItem]="item" [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
+                <nz-list [ngClass]="{'refresh-hidden' : refresh}" [nzDataSource]="filteredShifts" [nzRenderItem]="item" [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
                   <ng-template #item let-item>
                     <nz-list-item [nzContent]="nzContent">
                       <ng-template #nzContent>
@@ -51,7 +53,7 @@
 
             </div>
           </div>
-
+          </nz-spin>
         </div>
       </div>
 

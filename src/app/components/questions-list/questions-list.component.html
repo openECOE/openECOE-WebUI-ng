@@ -1,9 +1,9 @@
 <nz-content margin-top>
-  <button *ngIf="!preview && !evaluate" nz-button nzType="dashed" nzBlock (click)="addQuestion()">
+  <button *ngIf="!preview" nz-button nzType="dashed" nzBlock (click)="addQuestion()">
     <i nz-icon [type]="'plus-circle'"></i>
     {{'ADD_QUESTION' | translate}}
   </button>
-  <ng-container *ngIf="qblock && (preview || evaluate)">
+  <ng-container *ngIf="qblock && preview">
     <h4><b>{{qblock.name}}</b></h4>
   </ng-container>
   <nz-table #table
@@ -17,50 +17,40 @@
             [nzFrontPagination]="false"
             nzSize="small"
             nzShowSizeChanger
-            [nzShowPagination]="!preview && !evaluate"
+            [nzShowPagination]="!preview"
             >
     <thead>
-    <tr>
-      <!--<th nzWidth="40px">{{"ORDER" | translate}}</th>
-      <th nzWidth="400px">{{"DESCRIPTION" | translate}}</th>
-      <th nzWidth="150px">{{"REFERENCE" | translate}}</th>-->
-      <th nzWidth="1%">{{"ORDER" | translate}}</th>
-      <th nzWidth="50%">{{"DESCRIPTION" | translate}}</th>
-      <th nzWidth="20%">{{"REFERENCE" | translate}}</th>
-      <ng-container *ngIf="!evaluate">
+      <tr>
+        <th nzWidth="1%">{{"ORDER" | translate}}</th>
+        <th nzWidth="50%">{{"DESCRIPTION" | translate}}</th>
+        <th nzWidth="20%">{{"REFERENCE" | translate}}</th>
         <th>{{"AREA" | translate}}</th>
         <th>{{"QUESTION_TYPE" | translate}}</th>
-      </ng-container>
-      <ng-container *ngIf="evaluate">
-        <th nzWidth="5%">{{"ANSWER" | translate}}</th>
-      </ng-container>
-      <th nzAlign="right">
-      </th>
-    </tr>
+        <th nzAlign="right"></th>
+      </tr>
     </thead>
 
     <tbody>
-    <ng-template ngFor let-item let-index="index" [ngForOf]="table.data" >
-      <tr>
-        <td nzAlign="right">{{item.order || "-"}}</td>
+      <ng-template ngFor let-item let-index="index" [ngForOf]="table.data" >
+        <tr>
+          <td nzAlign="right">{{item.order || "-"}}</td>
 
-        <td>{{item.description}}</td>
+          <td>{{item.description}}</td>
 
-        <td>{{item.reference}}</td>
+          <td>{{item.reference}}</td>
 
-        <ng-container *ngIf="!evaluate">
           <td>{{item.area?.name}}</td>
 
-          <td *ngIf="!evaluate">{{getQuestionTypeLabel(item.questionType) | translate}}</td>
+          <td>{{getQuestionTypeLabel(item.questionType) | translate}}</td>
 
-          <td *ngIf="!evaluate" text-right>
+          <td text-right>
             <nz-tag
               [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'"
               (click)="editCache[item.id].expand = !editCache[item.id].expand">
               <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
               {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
             </nz-tag>
-            <ng-container *ngIf="!preview && !evaluate">
+            <ng-container *ngIf="!preview">
               <nz-divider [nzType]="'vertical'"></nz-divider>
               <app-action-buttons
                 (startEdit)="onEditQuestion(item.id)"
@@ -68,29 +58,18 @@
               </app-action-buttons>
             </ng-container>
           </td>
-        </ng-container>
-        <ng-container *ngIf="evaluate">
+        </tr>
+
+        <tr [nzExpand]="editCache[item.id]?.expand">
+          <td></td>
           <td colspan="5">
             <app-options-list
               [question]="item"
-              [evaluate]="evaluate"
-              [answers]="answers"
-              (optionChanged)="onOptionChanged($event)">
+              [preview]="preview">
             </app-options-list>
           </td>
-        </ng-container>
-      </tr>
-      <tr [nzExpand]="editCache[item.id]?.expand" *ngIf="!evaluate">
-        <td></td>
-        <td colspan="5">
-          <app-options-list
-            [question]="item"
-            [preview]="preview">
-          </app-options-list>
-        </td>
-      </tr>
-    </ng-template>
-
+        </tr>
+      </ng-template>
     </tbody>
   </nz-table>
 </nz-content>

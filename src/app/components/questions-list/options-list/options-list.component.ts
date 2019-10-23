@@ -16,18 +16,20 @@ export class OptionsListComponent implements OnInit, OnChanges {
   @Output() optionChanged: EventEmitter<any> = new EventEmitter<any>();
 
   editCacheOption: Array<any> = [];
-  valueopt: number[] = [];
+  filtredAnswers: Option[] = [];
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit() {
-    this.setCheckedOptions();
+    this.initOptions();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.answers && changes.answers.currentValue) {
-      this.optionChecked(changes.answers.currentValue);
+    if (changes.answers && (changes.answers.currentValue as Option[]).length > 0) {
+      if (this.question.options.length > 0) {
+        this.filtredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
+        this.setAnswers(this.filtredAnswers);
+      }
     }
   }
 
@@ -35,15 +37,19 @@ export class OptionsListComponent implements OnInit, OnChanges {
    * Adds to the resource passed its array of options as a new key object.
    * Then updates the options cache.
    */
-  setCheckedOptions() {
-    this.question.options.forEach(option => {
+  initOptions() {
+    this.question.options.forEach((option) => {
       if (this.preview) {option.id = option.order; }
-      this.editCacheOption[option.id] = {
+      this.editCacheOption[option.order] = {
         option: option,
         checked: !this.evaluate,
         valueRS: 0
       };
     });
+  }
+
+  resetOptions() {
+    this.editCacheOption.forEach(cacheItem => cacheItem['checked'] = false);
   }
 
   updateAnswer(params) {
@@ -52,25 +58,22 @@ export class OptionsListComponent implements OnInit, OnChanges {
 
   onOptionChange($event: any, option: Option, questionType?: string) {
     if (questionType === 'RS') {
-      console.log('valueopt', $event, option);
       this.updateAnswer({
         option: this.question.options[$event - 1],
-        checked: $event
+        checked: !!(option)
       });
-      return;
+    } else {
+      this.updateAnswer({option: option, checked: $event});
+      this.editCacheOption[option.order]['checked'] = $event;
     }
-    this.editCacheOption[option.id]['checked'] = $event;
-    this.updateAnswer({option: option, checked: $event});
   }
 
-  optionChecked(options: Option[]) {
-    if (options && options.length > 0) {
-      this.setCheckedOptions();
-      this.question.options.forEach(option => {
-        const idx = this.answers.indexOf(option);
-        if (idx >= 0) {
-          this.editCacheOption[option.id]['checked'] = true;
-        }
+  setAnswers(answers: Option[]) {
+    this.resetOptions();
+    if (answers && answers.length > 0) {
+      answers.forEach((answer) => {
+        const idx = this.question.options.indexOf(answer);
+        this.editCacheOption[this.question.options[idx].order]['checked'] = true;
       });
     }
   }
@@ -78,7 +81,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
   getIndex(): number {
     if (this.answers.length > 0 && this.question.options.length > 0) {
       const res = this.question.options.filter(f => this.answers.includes(f));
-      return (res.length > 0) ? res[0].order - 1 : 0;
+      return (res.length > 0) ? res[0].order : 0;
     } else {
       return 0;
     }

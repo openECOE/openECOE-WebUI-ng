@@ -73,7 +73,6 @@ export class Question extends Item {
   id: number;
   reference: string;
   description: string;
-  // question_type: string;
   questionType: string;
   order: number;
 
@@ -108,7 +107,12 @@ export class Option extends Item {
   order: number;
 }
 export class Answer extends Item {
-  $ref: string;
+  id: number;
+  label: string;
+  order: number;
+  points: number;
+  uri: string;
+  question: Question;
 }
 
 export class RowOption {
@@ -143,5 +147,6 @@ export class Student extends Item {
 
 export interface BlockType {
   name: string;
+  order: number;
   questions: Question[];
 }

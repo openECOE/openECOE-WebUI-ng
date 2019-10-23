@@ -14,7 +14,6 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   @Input() qblock: QBlock = new QBlock();
   @Input() questionsList: Question[] = [];
   @Input() preview: boolean = false;
-  @Input() evaluate: boolean = false;
   @Input() refreshQuestions: boolean = false;
   @Input() answers: Option[] = [];
 
@@ -44,7 +43,7 @@ export class QuestionsListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     if (this.questionsList.length > 0) {
-      if (this.preview || this.evaluate) {
+      if (this.preview) {
         this.defaultExpand = true;
       }
       this.updateEditCache(this.preview);

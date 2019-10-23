@@ -8,6 +8,7 @@ import {Observable} from 'rxjs';
 export class SocketService {
 
   private socket: SocketIOClient.Socket;
+  // TODO: READ URL FROM ENV FILE
   private readonly url = 'http://openecoe.umh.es:6080/round';
 
   constructor() {}
@@ -33,9 +34,4 @@ export class SocketService {
     });
   }
 
-  onTitTak() { console.log('invoqued titTak');
-    this.socket.on('tic_tac', msg => {
-      console.log(msg);
-    });
-  }
 }

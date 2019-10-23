@@ -1,19 +1,19 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
-import {BlockType, Option, Planner, Round, Shift, Station, Student} from '../../../models';
+import {Answer, BlockType, Option, Planner, QBlock, Round, Shift, Station, Student} from '../../../models';
 import {QuestionsService} from '../../../services/questions/questions.service';
 import {ApiService} from '../../../services/api/api.service';
 import {SocketService} from '../../../services/socket/socket.service';
 import {getPotionID} from '@openecoe/potion-client';
-import {Subscription} from 'rxjs';
+import {AppComponent} from '../../../app.component';
 
 @Component({
   selector: 'app-evaluate',
   templateUrl: './evaluate.component.html',
   styleUrls: ['./evaluate.component.less']
 })
-export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
+export class EvaluateComponent implements OnInit, AfterViewInit {
 
   private ecoeId: number;
   private stationId: number;
@@ -25,7 +25,6 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
   private round: Round;
   private students: Student[] = [];
   private questionsByQblock: BlockType[] = [];
-  private questionsByQblockSubscription: Subscription;
 
   private currentStudent: CurrentStudent = {
     index: 0,
@@ -39,42 +38,35 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
   private aborted: boolean;
 
   private event: {};
+  private init_stage: any[] = [];
 
   loading: boolean;
+  getQuestionsCompleted: boolean;
+  auxAnswers = [];
+  isSpinning: boolean = true;
 
-  // public tabsContentRef!: ElementRef;
-  @ViewChild('tabsContentRef') tabsContentRef: ElementRef;
 
   constructor(private route: ActivatedRoute,
               private location: Location,
               private questionService: QuestionsService,
               private apiService: ApiService,
               private socket: SocketService,
-              private renderer: Renderer2) {
+              @Inject(AppComponent) private parent: AppComponent) {
   }
 
   ngOnInit() {
-    this.loading = true;
-
     this.getParams(this.route.snapshot.params);
-
+    this.loading = true;
     this.getData().finally();
-
-    /*setInterval(() => {
-      console.log('scroll from evaluate');
-      window.scrollTo( {
-        top: 0
-      });
-    }, 4000);*/
   }
 
   ngAfterViewInit(): void {
     this.socket.onConnected(this.roundId).subscribe( () => {
-      this.socket.onReceive('init_stage').subscribe(data => {
-        console.log(data);
+      this.socket.onReceive('init_stage').subscribe((data: any[]) => {
+        this.init_stage = data;
       });
-      this.socket.onReceive('end_round').subscribe(data => {
-        console.log(data);
+      this.socket.onReceive('end_round').subscribe((data: any[]) => {
+        this.stageName = (data[1]['data'] as string).toUpperCase();
       });
       this.socket.onReceive('evento').subscribe(data =>
         this.event = data[1]
@@ -90,10 +82,6 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.totalDuration  = parseInt(data[1]['stage']['duration'], 10);
       });
     });
-  }
-
-  ngOnDestroy(): void {
-    this.questionsByQblockSubscription.unsubscribe();
   }
 
   getParams(params: {}) {
@@ -113,8 +101,8 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     return this.getPlanner().then( (students: Student[]) => {
       this.students = this.reorderStudents(students, this.station);
-      if (!this.station.parentStation) {
-        this.setCurrentStudent(this.students.filter(student => student.plannerOrder === this.station.order)[0] );
+      if (this.station && !this.station.parentStation && this.students.length > 0) {
+        this.setCurrentStudent(this.students.filter(student => student && student.plannerOrder === this.station.order)[0] );
       } else { this.setCurrentStudent({plannerOrder: 0} as Student); }
       return;
     });
@@ -140,23 +128,50 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  getAnswers(student: Student) {
+  getAnswers(student: Student, page: number = 1) {
+    const stationId: number = +this.stationId;
+    const perPage = 20;
+
     if (student.id) {
-      student.getAnswers()
-        .then((response: any[]) => {
-          this.currentStudent.answers = [...response];
-        });
-    } else { this.currentStudent.answers = []; }
+      student.getAnswers({perPage: perPage, page: page}, {paginate: true, cache: false})
+        .then((response: any) => {
+          const filterResults = this.filterStudentAnswersByStation(response.items, stationId);
+          this.auxAnswers.push(...filterResults);
+          (response.pages > page) ? this.getAnswers(student, ++page) : this.currentStudent.answers = [...this.auxAnswers];
+        })
+        .finally(() => this.isSpinning = false);
+    } else {
+      this.currentStudent.answers = [];
+    }
+  }
+
+  filterStudentAnswersByStation(answers: Answer[], stationId: number) {
+    return answers.filter( answer => {
+      let sameStation = false;
+      (answer.question.qblocks as QBlock[]).forEach(qblock => {
+        if (qblock.station.id === stationId) {
+          sameStation = true;
+          return;
+        }
+      });
+      return sameStation;
+    });
   }
 
   getQuestions() {
-    this.questionsByQblockSubscription = this.questionService.getQuestionsByStation(this.station)
-      .subscribe(questions => {
+    this.questionService.getQuestionsByStation(this.station).subscribe(
+      questions => {
+        this.loading = false;
         if (questions.length > 0) {
           this.questionsByQblock = Object.create(questions);
-          this.loading = false;
         }
-      }, error => console.log(error));
+      },
+      (err) => console.warn(err),
+      () => {
+        console.log('completed');
+        this.getQuestionsCompleted = true;
+      }
+    );
   }
 
   onBack() {
@@ -165,14 +180,18 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setCurrentStudent(currentStudent: Student) {
     if (currentStudent) {
+      this.isSpinning = true;
+      this.auxAnswers = [];
       this.currentStudent.student = Object.create(currentStudent);
       this.currentStudent.index = (this.students.indexOf(currentStudent) >= 0 ? this.students.indexOf(currentStudent) : 0 );
-      this.getAnswers(currentStudent);
+      this.getAnswers(this.currentStudent.student);
     }
   }
 
   reorderStudents(students: Student[], station: Station) {
     const arrStudents: Student[] = [];
+    if (students.length < 1) { return  students; }
+
     // if there aren't parent station, first student (ordered by plannerOrder) will be this same than
     // station order. In other case first field will be empty.
     if (!station.parentStation) {
@@ -200,7 +219,7 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
       counter++;
     }
 
-    if (arrStudents[0].dni) {
+    if (arrStudents[0] && arrStudents[0].dni) {
       const lastIndex = arrStudents.lastIndexOf(students[station.order - 1]);
       delete arrStudents[lastIndex];
     } else {
@@ -211,11 +230,18 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
 
     cleanArrStudents = cleanArrStudents.slice(1, cleanArrStudents.length - 1).filter(Boolean);
 
-    cleanArrStudents.unshift(arrStudents[0]);
-
+    if (arrStudents[0] || cleanArrStudents.length > 0) {
+      cleanArrStudents.unshift(arrStudents[0]);
+    } else { // WHEN there are more stations than students.
+      cleanArrStudents.unshift(...students);
+      let n = cleanArrStudents.length;
+      while (n < this.station.order) {
+        cleanArrStudents.unshift(({plannerOrder: n + 1} as Student));
+        n++;
+      }
+    }
     return cleanArrStudents;
   }
-
 
   nextStudent() {
     if (this.students.length < 1) { return; }
@@ -223,8 +249,6 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentStudent.index ++;
       this.setCurrentStudent(this.students[this.currentStudent.index]);
     }
-    console.log('before scroll');
-
     this.scrollTabContentToTop();
   }
 
@@ -240,8 +264,7 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
     if ($event['checked']) {
       this.currentStudent.student.addAnswer(($event['option'] as Option))
         .then( () => {
-          this.currentStudent.student.getAnswers()
-            .catch( err => console.warn(err));
+          this.getAnswers(this.currentStudent.student);
         })
         .catch( err => console.warn(err));
     } else {
@@ -250,7 +273,7 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  removeAnswer(studentId: number, option: Object) { console.log(studentId);
+  removeAnswer(studentId: number, option: Object) {
     if (!studentId || studentId < 0) { return; }
     let count = 0;
     this.apiService.removeAnswer(studentId, option)
@@ -269,13 +292,9 @@ export class EvaluateComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // I scroll the tab-content overflow-container back to the top.
   private scrollTabContentToTop(): void {
-    console.log(this.tabsContentRef.nativeElement.scroll( 0, 0 ));
-    // this.tabsContentRef['nzTitle']['elementRef'].nativeElement.scroll( 0, 0 );
-    window.scrollTo(0, 0);
-    this.tabsContentRef.nativeElement.scroll( 0, 0 );
-
+    // @ts-ignore
+    this.parent.backTop.clickBackTop();
   }
 }
 

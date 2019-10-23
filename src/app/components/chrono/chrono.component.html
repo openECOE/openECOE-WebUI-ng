@@ -22,10 +22,27 @@
   <nz-progress
     [nzPercent]="totalPercent"
     [nzShowInfo]="false"
+    [nzStatus]="aborted ? 'exception' :  'active'"
     nzSize="default"
     nzStatus="active"
     style="height: 15px">
   </nz-progress>
+
+  <ng-container *ngIf="eventsToPlay">
+    <div class="events" nz-row>
+      <ng-container *ngFor="let eventItem of eventsToPlay['stage']['events']; let idx = index">
+        <span [style.margin-left.%]="((eventItem['t'] / eventsToPlay['stage']['duration']) * 100) > 0
+                                   ? ((eventItem['t'] / eventsToPlay['stage']['duration']) * 100) - 2
+                                   : (eventItem['t'] / eventsToPlay['stage']['duration']) * 100"
+        >
+          <i nz-col  nz-icon  nzType="notification" nzTheme="twotone"></i>
+          <span class="events-description"><br/>
+            <nz-tag nzColor="#f0ad4e">{{eventItem['message']}}</nz-tag>
+          </span>
+        </span>
+      </ng-container>
+    </div>
+  </ng-container>
 
   <ng-content></ng-content>
 

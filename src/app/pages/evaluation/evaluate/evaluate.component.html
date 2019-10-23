@@ -1,20 +1,46 @@
 <nz-content padding >
-<!--  <button id="mytag" #tabsContentRef>TOP</button>-->
-  <nz-card [nzLoading]="loading" [nzTitle]="extraTemplateTitle">
-    <ng-container *ngIf="questionsByQblock && currentStudent.student.id">
-      <app-questions-list *ngFor="let qblock of questionsByQblock"
-        [questionsList]="qblock.questions"
-        [qblock]="qblock"
-        [evaluate]="true"
-        [answers]="this.currentStudent.answers"
-        (answerQuestion)="updateAnswer($event)"
-      >
-      </app-questions-list>
-    </ng-container>
-  </nz-card>
+
+    <nz-card [nzLoading]="loading" [nzTitle]="extraTemplateTitle">
+      <ng-container *ngIf="questionsByQblock && currentStudent.student.id">
+
+        <ng-container *ngFor="let qblock of this.questionsByQblock; let i = index">
+          <nz-spin [nzSpinning]="isSpinning">
+          <nz-list
+            [nzDataSource]="qblock.questions"
+            nzBordered
+            nzSize="small"
+            [nzHeader]="headerlist"
+            [nzRenderItem]="smallItem">
+            <ng-template #headerlist > <h3>{{qblock.name}}</h3> </ng-template>
+            <ng-template #smallItem let-item>
+              <nz-list-item>
+                <div nz-row nzGutter="16" nzAlign="middle" style="width: 100%">
+                  <div nz-col nzXs="24" nzSm="1" [innerHTML]="item['order']"></div>
+                  <div nz-col nzXs="24" nzSm="14" [innerHTML]="item['description']"></div>
+                  <div nz-col nzXs="24" nzSm="5">
+                    <b>{{item['reference']}}</b>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="4">
+                    <app-options-list
+                    [answers]="getQuestionsCompleted ? currentStudent.answers : []"
+                    (optionChanged)="updateAnswer($event)"
+                    [evaluate]="true"
+                    [question]="item"
+                    ></app-options-list>
+                  </div>
+                </div>
+              </nz-list-item>
+            </ng-template>
+          </nz-list>
+          </nz-spin>
+        </ng-container>
+
+      </ng-container>
+    </nz-card>
+
 
   <ng-template #extraTemplateTitle>
-    <div #tabsContentRef nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32, xl: 32, xxl: 32 }">
+    <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32, xl: 32, xxl: 32 }">
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">
         <h2>
           <a (click)="onBack()"><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
@@ -25,19 +51,17 @@
           [currentSeconds]="currentSeconds"
           [stageName]="stageName"
           [totalDuration]="totalDuration"
-          [event]="event">
+          [event]="event"
+          [initStage]="init_stage">
         </app-chrono>
       </div>
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">
         <h2 uppercase text-right *ngIf="loading">{{(('LOADING' | translate ) + '...' )}}</h2>
         <h2 uppercase text-right *ngIf="!loading && currentStudent.student.surnames">{{(currentStudent?.student.surnames + ', ' + currentStudent?.student.name)}}</h2>
         <h2 uppercase text-right *ngIf="!loading && students.length === 0">{{('THERE_ARE_NOT_STUDENTS' | translate)}}</h2>
-        <ng-container *ngIf="!loading && !currentStudent?.student.surnames">
-<!--          <h5 text-right class="wrapword" >{{('STATION_DEPENDS_OF_STATION' | translate) + station.parentStation?.name}}</h5>-->
-          <nz-alert class="wrapword" nzType="info" [nzMessage]="('STATION_DEPENDS_OF_STATION_DESCRIPTION' | translate)"></nz-alert>
+        <ng-container *ngIf="!loading && students.length > 0 && !currentStudent?.student.surnames">
+          <nz-alert class="wrapword" nzType="info" text-center [nzMessage]="('STATION_DEPENDS_OF_STATION_DESCRIPTION' | translate)"></nz-alert>
         </ng-container>
-
-
 
         <div nz-row nzJustify="end">
           <div nz-col nzSpan="6" text-center>{{'DAY-SHIFT' | translate}}</div>
@@ -67,9 +91,10 @@
     </div>
   </ng-template>
 
+
   <button
     *ngIf="students.length > 0 && students.length !== (currentStudent.index + 1)"
-    (click)="nextStudent();"
+    (click)="nextStudent()"
     nz-button nzType="primary" nzBlock>
       {{'NEXT_STUDENT' | translate}}
       <i nz-icon nzType="right" nzTheme="outline"></i>
@@ -82,5 +107,4 @@
     {{'ROUND_FINISHED' | translate}}
     <i nz-icon nzType="right" nzTheme="outline"></i>
   </button>
-
 </nz-content>

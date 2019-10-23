@@ -6,7 +6,7 @@
       {{"open ECOE" | translate}}
     </a>
 
-    <nz-dropdown *ngIf="authService.userData" style="float: right;" right>
+    <nz-dropdown *ngIf="authService.userData" class="right">
       <a nz-dropdown>
         <i nz-icon nzType="user" nzTheme="outline"></i>
         {{authService.userData['user']['name'] + ' ' + this.authService.userData['user']['surname']}}
@@ -27,18 +27,17 @@
     </a>
   </nz-header>
 
-  <nz-content style="overflow-y: scroll; overflow-x: hidden; margin-top:64px;">
-<!--  <nz-content style="margin-top:64px;">-->
-
-    <router-outlet>
-
-    </router-outlet>
-
+  <nz-content style="margin-top:64px;">
+    <div class="long-div" [style.height.px]="clientHeight - 64 - 69" #divTarget>
+      <router-outlet>
+      </router-outlet>
+    </div>
   </nz-content>
-<!--  <nz-footer style="text-align: center; position: fixed; bottom: 0; right: 0; width: 100%">-->
-<!--  <nz-footer style="text-align: center; bottom: 0; position: fixed; width: 100%;">-->
+
+  <nz-back-top #backTop [nzTarget]="divTarget"></nz-back-top>
+
   <nz-footer style="text-align: center;">
-    open ECOE ©2019 Implement By UMH SIATDI
+    openECOE 2019 - Universitas Miguel Hernandez
   </nz-footer>
 </nz-layout>
 

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {ResourceIcons} from '../../constants/icons';
 import {BehaviorSubject} from 'rxjs';
-import {promise} from 'selenium-webdriver';
 import {mergeMap} from 'rxjs/operators';
 import {AuthenticationService} from '../authentication/authentication.service';
 import {ApiService} from '../api/api.service';
@@ -51,11 +50,11 @@ export class MenuService {
       icon: ResourceIcons.studentIcon,
       theme: 'outline'
     },
-    {
+    /*{
       title: 'QUESTIONS',
       path: './questions',
       icon: ResourceIcons.questionIcon
-    },
+    },*/
     {
       title: 'BACK',
       path: '/admin',
@@ -63,7 +62,7 @@ export class MenuService {
     }
   ];
 
-  getMenuFor(page: string): Promise<Array<any>> { // console.log('getMenuFor: ', page);
+  getMenuFor(page: string): Promise<Array<any>> {
     return new Promise(async (resolve) => {
       switch (page) {
         case 'AdminComponent':

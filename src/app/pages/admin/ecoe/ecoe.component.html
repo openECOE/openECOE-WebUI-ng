@@ -1,11 +1,5 @@
-<app-menu
-  [menu_options]="menu">
-</app-menu>
+<app-menu [menu_options]="menu"> </app-menu>
 
-
-<nz-layout [ngStyle]="{'margin-left.px': isCollapsed ? 80 : 200}"
-           style="padding:0 24px 24px;">
+<nz-layout padding [ngStyle]="{'margin-left.px': isCollapsed ? '80' : '200'}">
   <router-outlet></router-outlet>
-
-
 </nz-layout>

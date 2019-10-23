@@ -364,25 +364,37 @@ export class QuestionsService {
 
   getQuestionsByStation(station: Station): Observable<BlockType[]> {
     const questionsByBlock: BlockType[] = [];
-    const savePromises = [];
     const questionsObservable = new BehaviorSubject<BlockType[]>(questionsByBlock);
+    let counterNext = 0;
 
       QBlock.query({
         where: {station: station.id},
         sort: {order: false}
+        }, {
+        cache: false,
+        skip: []
       })
       .then((qblocks: QBlock[]) => {
-        for (let n = 0; n < qblocks.length; n++) {
-          const qPromise = (qblocks[n] as QBlock).getQuestions()
-          // @ts-ignore
-            .then((questions: Question[]) => {
-              questionsByBlock.push({
-                name: qblocks[n].name,
-                questions: questions
-              });
-              questionsObservable.next(questionsByBlock);
+        for (const qblock of qblocks) {
+          Question.query({
+            where: {qblocks: {$contains: qblock}},
+            sort: {order: false},
+        }, {paginate: false,
+            cache: false,
+            skip: ['area']
+          })
+          .then((questions: Question[]) => {
+            questionsByBlock.push({
+              name: qblock.name,
+              order: qblock.order,
+              questions: questions
             });
-          savePromises.push(qPromise);
+            counterNext++;
+            if (counterNext <= qblocks.length) {
+              questionsObservable.next(questionsByBlock.sort((a, b) => a['order'] - b['order']));
+              if (counterNext === qblocks.length) { setTimeout(() => questionsObservable.complete(), 200); }
+            }
+          });
         }
       });
     return questionsObservable;

@@ -9,6 +9,7 @@ import {Location} from '@angular/common';
   styleUrls: ['./evaluation.component.less']
 })
 export class EvaluationComponent implements OnInit {
+  // @ts-ignore
   private ecoes: ECOE[] = [];
 
   constructor(private authService: AuthenticationService,
@@ -24,11 +25,9 @@ export class EvaluationComponent implements OnInit {
       ECOE.query()
         .then( (ecoes: ECOE[]) => {
           this.ecoes = ecoes;
-          console.log(ecoes);
         });
     });
   }
-
 
   onBack() {
     this.location.back();

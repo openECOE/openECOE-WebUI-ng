@@ -46,7 +46,8 @@ import { ChronoComponent } from './chrono/chrono.component';
     QblockQuestionFormComponent,
     QuestionsListComponent,
     QuestionFormComponent,
-    ChronoComponent
+    ChronoComponent,
+    OptionsListComponent
   ]
 })
 export class ComponentsModule {}
