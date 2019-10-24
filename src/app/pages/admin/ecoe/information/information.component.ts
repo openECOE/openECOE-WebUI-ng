@@ -2,9 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ResourceIcons} from '../../../../constants/icons';
-import {EcoeComponent} from '../ecoe.component';
-import {Area, ECOE} from '../../../../models/ecoe';
-import {Pagination} from '@openecoe/potion-client';
+import {ECOE} from '../../../../models';
 
 /**
  * Component with general information of the ECOE.
@@ -21,8 +19,7 @@ export class InformationComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private router: Router,
-              private ecoeComp: EcoeComponent) {
+              private router: Router) {
   }
 
   areas: any;
@@ -63,5 +60,9 @@ export class InformationComponent implements OnInit {
    */
   deleteEcoe() {
     this.apiService.deleteResource(this.ecoe[0]['$uri']).subscribe(() => this.router.navigate(['/admin']));
+  }
+
+  onBack() {
+    this.router.navigate(['./home']).finally();
   }
 }

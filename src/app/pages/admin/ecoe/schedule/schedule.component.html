@@ -1,4 +1,5 @@
 <nz-content>
+  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'SCHEDULE' | translate"> </nz-page-header>
   <button nz-button [nzType]="'dashed'"
           [title]="(loading ? 'LOADING' : 'ADD_STAGE') | translate"
           (click)="showModalStage()"
@@ -76,10 +77,10 @@
                   nz-input
                   placeholder=":"
                   text-center
-                  style="width: 30px; border-left: 0px; pointer-events: none; background-color: rgb(255, 255, 255);"
+                  style="width: 30px; border-left: 0; pointer-events: none; background-color: rgb(255, 255, 255);"
                 />
                 <nz-input-number text-center
-                                 style="width: 80px; text-align: center; border-left: 0px;"
+                                 style="width: 80px; text-align: center; border-left: 0;"
                                  [(ngModel)]="editStageSec"
                                  (ngModelChange)="inputToSeconds(schedule)"
                                  [nzSize]="'large'"

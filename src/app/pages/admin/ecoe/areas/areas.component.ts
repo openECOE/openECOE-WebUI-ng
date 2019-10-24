@@ -322,4 +322,8 @@ export class AreasComponent implements OnInit {
     this.closeDrawer();
     this.InitAreaRow();
   }
+
+  onBack() {
+    this.router.navigate(['./home']).finally();
+  }
 }

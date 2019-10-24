@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../../services/api/api.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {forkJoin, from} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ECOE, Station, Student} from '../../../../models/ecoe';
-import {Planner, Round, Shift} from '../../../../models/planner';
+import {ECOE, Station, Student} from '../../../../models';
+import {Planner, Round, Shift} from '../../../../models';
 import {Item, Pagination} from '@openecoe/potion-client';
 
 /**
@@ -41,7 +41,8 @@ export class PlannerComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              private router: Router) {
 
     this.shiftForm = this.formBuilder.group({
       shift_code: [null, Validators.required],
@@ -469,4 +470,7 @@ export class PlannerComponent implements OnInit {
     return Promise.all(promises);
   }
 
+  onBack() {
+    this.router.navigate(['./home']).finally();
+  }
 }

@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../../services/api/api.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {SharedService} from '../../../../services/shared/shared.service';
-import {Area, RowArea, Student} from 'src/app/models/ecoe';
-import {valueFunctionProp} from 'ng-zorro-antd';
+import {Student} from 'src/app/models/ecoe';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
@@ -55,6 +54,7 @@ export class StudentsComponent implements OnInit {
               private route: ActivatedRoute,
               private shared: SharedService,
               private fb: FormBuilder,
+              private router: Router,
               private translate: TranslateService) {
 
     this.studentForm = this.fb.group({
@@ -77,7 +77,7 @@ export class StudentsComponent implements OnInit {
     this.loading = true;
 
     const sortDict = {};
-
+    // tslint:disable-next-line:forin
     for (const key in this.mapOfSort) {
       const value = this.mapOfSort[key];
       if (value !== null) {
@@ -406,6 +406,7 @@ export class StudentsComponent implements OnInit {
   }
 
   sort(sortName: string, value: string): void {
+    // tslint:disable-next-line:forin
     for (const key in this.mapOfSort) {
       this.mapOfSort[key] = key === sortName ? value : null;
     }
@@ -414,4 +415,7 @@ export class StudentsComponent implements OnInit {
   }
 
 
+  onBack() {
+    this.router.navigate(['./home']).finally();
+  }
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-menu',
@@ -13,11 +13,14 @@ export class MenuComponent implements OnInit {
   @Input() menu_options: any[];
   @Input() admin: boolean;
   @Input() icons: any[];
+  @Output() collapsedChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor() { }
 
   ngOnInit() {
-    console.log('ngOnInit menu component');
   }
 
+  onCollapsedChange($event: any) {
+    this.collapsedChanged.emit(!!$event);
+  }
 }

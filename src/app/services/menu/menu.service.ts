@@ -50,14 +50,9 @@ export class MenuService {
       icon: ResourceIcons.studentIcon,
       theme: 'outline'
     },
-    /*{
-      title: 'QUESTIONS',
-      path: './questions',
-      icon: ResourceIcons.questionIcon
-    },*/
     {
       title: 'BACK',
-      path: '/admin',
+      path: '/',
       icon: 'left-square'
     }
   ];

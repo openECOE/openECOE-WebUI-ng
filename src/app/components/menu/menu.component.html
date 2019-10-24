@@ -2,13 +2,13 @@
           [nzCollapsible]="true"
           [(nzCollapsed)]="isCollapsed"
           [nzWidth]="200"
-
+          (nzCollapsedChange)="onCollapsedChange($event)"
           [nzReverseArrow]="isReverseArrow"
           style="height: calc(100vh - 64px); overflow: auto; position: fixed; left: 0">
 
   <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
 
-    <li nz-menu-item *ngFor="let item of menu_options" [routerLink]="item.path">
+    <li nz-menu-item *ngFor="let item of menu_options" [routerLink]="[item.path]">
       <i nz-icon [type]="item.icon" [nzTheme]="item.theme ? item.theme : 'fill'"></i>
       <span class="nav-text">{{item.title | translate}}</span>
     </li>

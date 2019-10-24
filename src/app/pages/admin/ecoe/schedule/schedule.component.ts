@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {Schedule} from '../../../../models';
 import {Stage, Event} from '../../../../models';
@@ -42,6 +42,7 @@ export class ScheduleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private shared: SharedService,
     private translate: TranslateService
@@ -284,4 +285,7 @@ export class ScheduleComponent implements OnInit {
     this.shared.cleanForm(form);
   }
 
+  onBack() {
+    this.router.navigate(['./home']).finally();
+  }
 }

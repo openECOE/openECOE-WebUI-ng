@@ -1,8 +1,6 @@
+<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'AREAS' | translate"> </nz-page-header>
 <nz-content *ngIf="areas">
-
-<!--  <nz-breadcrumb [nzAutoGenerate]="true">
-  </nz-breadcrumb>-->
-
+<!--  <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>-->
   <nz-table #table
             [nzData]="areas"
             [nzShowPagination]="true"
@@ -14,7 +12,7 @@
 
             [(nzPageSize)]="per_page"
             [(nzPageIndex)]="current_page"
-
+            nzSize="small"
             (nzPageIndexChange)="pageChange()"
             (nzPageSizeChange)="pageSizeChange($event)">
     <thead>

@@ -5,7 +5,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID} from '@openecoe/potion-client';
-import {Location} from '@angular/common';
 
 /**
  * Component with stations and qblocks by station.
@@ -46,8 +45,7 @@ export class StationsComponent implements OnInit {
               private router: Router,
               private translate: TranslateService,
               public shared: SharedService,
-              private fb: FormBuilder,
-              private location: Location) {
+              private fb: FormBuilder) {
 
     this.stationForm = this.fb.group({
       stationRow: this.fb.array([])
@@ -86,7 +84,7 @@ export class StationsComponent implements OnInit {
   }
 
   onBack() {
-    this.location.back();
+    this.router.navigate(['./home']).finally();
   }
 
   updateOptions(response: any, exclude?: string) {

@@ -1,9 +1,7 @@
 import {Component, OnInit, AfterViewInit} from '@angular/core';
-import {SharedService} from '../../../services/shared/shared.service';
-import {ResourceIcons} from '../../../constants/icons';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ECOE} from '../../../models/ecoe';
+import {ECOE} from '../../../models';
 import {MenuService} from '../../../services/menu/menu.service';
 
 @Component({
@@ -15,15 +13,11 @@ export class EcoeComponent implements OnInit, AfterViewInit {
 
   ecoe: any;
   isCollapsed: boolean = false;
-  isReverseArrow: boolean = false;
-
   ecoeId: number;
-
   menu: any[];
   admin: boolean;
 
-  constructor(public sharedService: SharedService,
-              private apiService: ApiService,
+  constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
               private menuService: MenuService
@@ -40,14 +34,17 @@ export class EcoeComponent implements OnInit, AfterViewInit {
 
 
     ECOE.fetch(this.ecoeId)
-      .then(ecoe => {
-        this.ecoe = ecoe;
-        // this.ecoe_menu[0].title = this.ecoe.name;
+      .then(result => {
+        this.ecoe = result;
       });
   }
 
-  ngAfterViewInit() { console.log('from ECOE component do next');
+  ngAfterViewInit() {
     this.menuService.currentMenu.next(this.constructor.name);
     this.menuService.menuAdmin.next(false);
+  }
+
+  collapsedChanged($event: boolean) {
+    this.isCollapsed = $event;
   }
 }
