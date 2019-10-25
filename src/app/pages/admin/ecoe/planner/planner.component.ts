@@ -20,14 +20,11 @@ export class PlannerComponent implements OnInit {
   ecoeId: number;
   ecoe: ECOE | Item;
 
-  shifts: any[] = [];
-  rounds: any[] = [];
-  plannerRounds: any[] = [];
+  shifts: Shift[] = [];
+  rounds: Round[] = [];
   stations: any[] = [];
   stationsTotal: number;
-  listStudents: any[] = [];
 
-  plannerSelected: { shift: Shift, round: Round, planner: Planner };
 
   showAddShift: boolean = false;
   showAddRound: boolean = false;
@@ -206,7 +203,7 @@ export class PlannerComponent implements OnInit {
 
   /**
    * Load shifts and rounds by the passed ECOE.
-   * Then calls [buildPlanner]{@link #buildPlanner} function.
+   * Then calls [buildPlanner] function.
    */
   loadRoundsShifts(): Promise<any> {
     return new Promise(resolve => {
@@ -422,7 +419,7 @@ export class PlannerComponent implements OnInit {
 
 
       Promise.all(promises)
-        .then(value => this.loadRoundsShifts())
+        .then(() => this.loadRoundsShifts())
         .finally(() => this.loading = false);
     });
   }
@@ -446,6 +443,8 @@ export class PlannerComponent implements OnInit {
             newPlanner.round = round;
             newPlanner.save()
               .then(savedPlanner => {
+                if (!shift.planners) { shift.planners = []; }
+                if (!round.planners) { round.planners = []; }
                 shift.planners.push(newPlanner);
                 round.planners.push(newPlanner);
                 resolve(savedPlanner);
@@ -459,8 +458,8 @@ export class PlannerComponent implements OnInit {
     const promises = [];
 
 
-    this.rounds.forEach((round, round_index) => {
-      this.shifts.forEach((shift, shift_index) => {
+    this.rounds.forEach((round) => {
+      this.shifts.forEach((shift) => {
 
         // Create all planners, if created catch error and ignore
         promises.push(this.findPlanner(shift, round));

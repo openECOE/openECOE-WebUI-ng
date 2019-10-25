@@ -67,6 +67,7 @@ export class StudentsComponent implements OnInit {
   ngOnInit() {
     this.ecoeId = +this.route.snapshot.params.id;
     this.loadStudents();
+    this.InitStudentRow();
   }
 
   /**
@@ -87,7 +88,6 @@ export class StudentsComponent implements OnInit {
         }
       }
     }
-
 
     Student.query<Student, Pagination<Student>>({
         where: {ecoe: this.ecoeId},
@@ -110,10 +110,9 @@ export class StudentsComponent implements OnInit {
    *
    * @param student Resource selected
    */
-  deleteItem(student: any) {
-    this.apiService.deleteResource(student['$uri']).subscribe(() => {
-      this.updateArrayStudents(student.id);
-    });
+  deleteItem(student: Student) {
+    student.destroy()
+      .then(() => this.updateArrayStudents(student.id));
   }
 
   /**
@@ -147,68 +146,27 @@ export class StudentsComponent implements OnInit {
    * Creates or updates the resource passed.
    * Then updates the variables to avoid calling the backend again.
    *
-   * @param student Resource selected
-   * @param newItem determines if the resource is already saved
+   * @param item determines if the resource is already saved
    */
-  saveItem(student: any, newItem: boolean) {
-    const item = this.editCache[student.id];
-
-    if (!item.dni || !item.surnames || !item.name) {
+  updateItem(item: any): void {
+    if (!this.editCache[item.id].name || !this.editCache[item.id].surnames || !this.editCache[item.id].dni) {
       return;
     }
 
     const body = {
-      dni: item.dni,
-      surnames: item.surnames,
-      name: item.name,
-      ecoe: this.ecoeId
+      dni: this.editCache[item.id].dni,
+      surnames: this.editCache[item.id].surnames,
+      name: this.editCache[item.id].name,
     };
 
-    const request = (
-      newItem ?
-        this.apiService.createResource('student', body) :
-        this.apiService.updateResource(item['$uri'], body)
-    );
+    const request = item.update(body);
 
-    request.subscribe(response => {
-      delete this.editCache[student.id];
-      delete this.editCache[response['id']];
-
-      this.editCache[response['id']] = {
-        edit: false,
-        ...response
-      };
-
-      this.students = this.students.map(x => (x.id === student.id) ? response : x);
+    request.then(response => {
+      this.students = this.students.map(x => (x.id === item.id) ? response : x);
+      this.editCache[response.id].edit = false;
     });
   }
 
-  /**
-   * Adds a new empty field to the resources array.
-   * Then updates editCache with the new resource.
-   */
-  addStudent() {
-    this.apiService.getResources('student')
-      .subscribe(students => {
-        this.index += this.shared.getLastIndex(students);
-
-        const newItem = {
-          id: this.index,
-          dni: '',
-          surnames: '',
-          name: '',
-          ecoe: this.ecoeId
-        };
-
-        this.students = [...this.students, newItem];
-
-        this.editCache[this.index] = {
-          edit: true,
-          new_item: true,
-          ...newItem
-        };
-      });
-  }
 
   /**
    * Updates editCache variable with the same values of the resources array and adds a 'edit' key.
@@ -244,7 +202,7 @@ export class StudentsComponent implements OnInit {
    * in other cases resets the number of rows to 1 when the
    * form window was closed.
    */
-  InitAreaRow() {
+  InitStudentRow() {
     if (this.studentControl.length === 0) {
       this.addStudentRow();
     } else {
@@ -276,7 +234,7 @@ export class StudentsComponent implements OnInit {
    */
   cancelForm() {
     this.closeDrawer();
-    this.InitAreaRow();
+    this.InitStudentRow();
   }
 
 
@@ -310,6 +268,7 @@ export class StudentsComponent implements OnInit {
     };
 
     for (const item of items) {
+      console.log(item);
       if (item.dni && item.name && item.surnames) {
 
         let studentPlanner: Planner = null;
@@ -360,8 +319,13 @@ export class StudentsComponent implements OnInit {
    * Method for import students values from file.
    * @param parserResult values that was readed from file.
    */
-  importStudents(parserResult: Array<any>) {
-    this.saveStudents(parserResult)
+  importStudents(parserResult: any) {
+    const students: any[] = parserResult as Array<any>;
+    if (!students[students.length - 1]['name']) {
+      students.pop();
+    }
+
+    this.saveStudents(parserResult as Array<any>)
       .then(() => {
         this.loadStudents();
       })
@@ -392,14 +356,13 @@ export class StudentsComponent implements OnInit {
    * all fields are validates and then will save the values.
    */
   submitForm(): void {
-    this.shared.dirtForm(this.studentForm);
-
+    this.shared.doFormDirty(this.studentForm);
     if (this.studentForm.valid) {
-      this.saveStudents(this.studentForm.get('areaRow').value)
+      this.saveStudents(this.studentForm.get('studentRow').value)
         .finally(() => {
           this.loadStudents();
           this.closeDrawer();
-          this.InitAreaRow();
+          this.InitStudentRow();
           this.shared.cleanForm(this.studentForm);
         });
     }
@@ -414,8 +377,11 @@ export class StudentsComponent implements OnInit {
     this.loadStudents();
   }
 
-
   onBack() {
     this.router.navigate(['./home']).finally();
+  }
+
+  deleteRow(idx: number) {
+    this.studentControl.removeAt(idx);
   }
 }

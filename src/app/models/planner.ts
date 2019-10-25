@@ -9,6 +9,14 @@ export class Planner extends Item {
   students: Array<Student>;
 
   getStudents = Route.GET<Pagination<Student>>('/students');
+
+  /*constructor(order, label, points) {
+
+    this.id = order;
+    this.shift = label;
+    this.round = points;
+
+  }*/
 }
 
 export class Round extends Item {

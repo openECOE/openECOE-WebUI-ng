@@ -199,7 +199,7 @@ export class StationsComponent implements OnInit {
    *
    * @param cacheItem Resource selected
    */
-  updateItem(cacheItem: any): void { console.log('updateItem()', cacheItem);
+  updateItem(cacheItem: any): void {
     if (!cacheItem.name) {
       return;
     }

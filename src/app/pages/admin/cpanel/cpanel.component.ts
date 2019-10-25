@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {Item} from '@openecoe/potion-client';
 import {ResourceIcons} from '../../../constants/icons';
 import {SharedService} from '../../../services/shared/shared.service';
 
@@ -29,7 +28,7 @@ export class CpanelComponent implements OnInit {
     },
     {
       title: 'BACK',
-      path: '/admin',
+      path: '/',
       icon: 'left-square'
     }
   ];

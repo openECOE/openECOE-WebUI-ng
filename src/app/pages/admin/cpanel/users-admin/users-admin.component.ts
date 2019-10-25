@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {Station, User, UserLogged} from '../../../../models';
+import {User, UserLogged} from '../../../../models';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
-import {Item, Pagination} from '@openecoe/potion-client';
+import {Item} from '@openecoe/potion-client';
 import {SharedService} from '../../../../services/shared/shared.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
@@ -113,7 +113,7 @@ export class UsersAdminComponent implements OnInit {
       name: name,
       surname: surname,
       organization: this.activeUser.organization,
-      isSuperadmin: superAdmin,
+      isSuperadmin: !!superAdmin,
       password: password ? password : this.shared.generateRandomPassword()
     });
 
@@ -158,7 +158,7 @@ export class UsersAdminComponent implements OnInit {
     this.importErrors = [];
     const respPromises = [];
 
-    parserResult.forEach((value, index) => {
+    parserResult.forEach((value) => {
 
 
       const promise = this.addUser(

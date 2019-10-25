@@ -130,6 +130,7 @@
   "NO_STUDENTS": "No hay alumnos",
   "SELECT_STUDENTS": "Seleccionar estudiantes",
   "SURNAMES": "Apellidos",
+  "ID_CODE": "DNI",
 
   "PLANNER": "Planificador",
   "PLANNERS": "Planificadores",
@@ -163,6 +164,12 @@
   "NAME_PLACEHOLDER": "Introduzca el nombre...",
   "NAME_INPUT_REQUIRED": "El campo nombre es obligatorio.",
   "PARENT_PLACEHOLDER": "Seleccione el padre...",
+
+  "SURNAMES_PLACEHOLDER": "Introduzca los apellidos...",
+  "SURNAMES_INPUT_REQUIRED": "El campo apellidos es obligatorio.",
+
+  "ID_CODE_PLACEHOLDER": "Introduzca el DNI...",
+  "ID_CODE_REQUIRED": "El campo DNI es obligatorio.",
 
   "MOVE_UP": "Subir posición",
   "MOVE_DOWN": "Bajar posición",

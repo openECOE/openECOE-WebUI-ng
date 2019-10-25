@@ -23,8 +23,15 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
-    this.loadEcoes();
-    this.isAdmin = (this.authService.userData['role'] === 'Admin');
+    if (this.authService.userLogged) {
+      this.authService.loadUserData()
+        .subscribe(() => {
+          this.loadEcoes();
+          this.isAdmin = (this.authService.userData['role'] === 'Admin');
+        });
+    } else {
+      this.authService.logout();
+    }
   }
 
 
@@ -43,6 +50,7 @@ export class HomeComponent implements OnInit {
       })
     ).subscribe(ecoes => {
       this.ecoes = ecoes;
+      this.ecoes.unshift([undefined]);
       console.log('ecoes: ' , this.ecoes);
     });
   }

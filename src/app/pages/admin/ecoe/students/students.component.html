@@ -105,7 +105,7 @@
                               [isNewItem]="editCache[item.id].new_item"
                               (startEdit)="startEdit(item.id)"
                               (delete)="deleteItem(item)"
-                              (save)="saveItem(item, editCache[item.id].new_item)"
+                              (save)="updateItem(item)"
                               (cancelEdit)="cancelEdit(item)">
           </app-action-buttons>
         </td>
@@ -119,25 +119,28 @@
     <nz-drawer
       [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
       [nzMaskClosable]="false"
-      [nzWidth]="720"
+      [nzWidth]="750"
       [nzVisible]="addStudentDraw"
-      [nzTitle]="'ADD_AREA' | translate"
+      [nzTitle]="'ADD_STUDENT' | translate"
       (nzOnClose)="cancelForm()">
 
       <form [formGroup]="studentForm">
         <div nz-row nzGutter="8">
-          <div nz-col nzSpan="12">
+          <div nz-col nzSpan="7">
             <nz-form-label>{{'NAME' | translate}}</nz-form-label>
           </div>
           <div nz-col nzSpan="9">
-            <nz-form-label>{{'CODE' | translate}}</nz-form-label>
+            <nz-form-label>{{'SURNAMES' | translate}}</nz-form-label>
+          </div>
+          <div nz-col nzSpan="5">
+            <nz-form-label>{{'ID_CODE' | translate}}</nz-form-label>
           </div>
         </div>
 
         <ng-container formArrayName="studentRow"
                       *ngFor=" let control of studentForm.get('studentRow')['controls']; let i = index">
           <div nz-row nzGutter="8" [formGroupName]="+i">
-            <div nz-col nzSpan="12">
+            <div nz-col nzSpan="7">
               <nz-form-item>
                 <nz-form-control>
                   <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
@@ -150,16 +153,25 @@
             </div>
             <div nz-col nzSpan="9">
               <nz-form-control>
-                <input nz-input [placeholder]="('CODE_PLACEHOLDER' | translate)" formControlName="surnames"/>
+                <input nz-input [placeholder]="('SURNAMES_PLACEHOLDER' | translate)" formControlName="surnames"/>
                 <nz-form-explain
                   *ngIf="getFormControl('surnames',i)?.dirty && getFormControl('surnames', i)?.hasError('required')">
+                  {{'SURNAMES_INPUT_REQUIRED' | translate}}
+                </nz-form-explain>
+              </nz-form-control>
+            </div>
+            <div nz-col nzSpan="5">
+              <nz-form-control>
+                <input nz-input [placeholder]="('ID_CODE_PLACEHOLDER' | translate)" formControlName="dni"/>
+                <nz-form-explain
+                  *ngIf="getFormControl('dni',i)?.dirty && getFormControl('dni', i)?.hasError('required')">
                   {{'CODE_INPUT_REQUIRED' | translate}}
                 </nz-form-explain>
               </nz-form-control>
             </div>
             <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
-              <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete"
-                                                                                           nzTheme="outline"></i>
+              <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)">
+                <i nz-icon nzType="delete" nzTheme="outline"></i>
               </button>
             </div>
           </div>
@@ -168,7 +180,7 @@
         <nz-form-item>
           <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
             <button nz-button nzType="dashed" style="width:60%" (click)="addStudentRow()">
-              <i nz-icon type="plus"></i> {{'ADD_AREA' | translate}}
+              <i nz-icon type="plus"></i> {{'ADD_STUDENT' | translate}}
             </button>
           </nz-form-control>
         </nz-form-item>

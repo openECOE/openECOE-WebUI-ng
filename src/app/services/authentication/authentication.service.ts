@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subscription, throwError} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
@@ -43,7 +43,7 @@ export class AuthenticationService {
     );
   }
 
-  logout(route: string = '/') {
+  logout(route: string = '/login') {
     localStorage.removeItem('userLogged');
     localStorage.removeItem('userData');
     this.router.navigate([route]);
@@ -58,8 +58,8 @@ export class AuthenticationService {
   }
 
   loadUserData() {
-    this.apiService.getResource('/api/v1/users/me')
-      .subscribe(
+    return this.apiService.getResource('/api/v1/users/me')
+      .pipe( map(
         data => {
           const user = new UserLogged(data);
           localStorage.setItem('userData', JSON.stringify(user));
@@ -69,7 +69,7 @@ export class AuthenticationService {
             this.logout('/login');
           }
         }
-      );
+      ));
   }
 
   getUserData() {
