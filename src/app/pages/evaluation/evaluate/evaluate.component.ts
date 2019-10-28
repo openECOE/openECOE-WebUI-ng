@@ -68,9 +68,9 @@ export class EvaluateComponent implements OnInit, AfterViewInit {
       this.socket.onReceive('end_round').subscribe((data: any[]) => {
         this.stageName = (data[1]['data'] as string).toUpperCase();
       });
-      this.socket.onReceive('evento').subscribe(data =>
-        this.event = data[1]
-      );
+      this.socket.onReceive('evento').subscribe(data => {
+        this.event = data[1];
+      });
       this.socket.onReceive('aborted').subscribe(data => {
         this.aborted = true;
         this.stageName = (data[0] as string).toUpperCase();

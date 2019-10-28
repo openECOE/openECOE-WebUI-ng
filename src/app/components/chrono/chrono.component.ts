@@ -15,6 +15,8 @@ export class ChronoComponent implements OnChanges {
   @Input() initStage: [];
 
   eventsToPlay: {};
+  countDownEvents: {}[] = [];
+  currentCountDownEvent: {event: {}, minutes: number, seconds: number} = { event: null, minutes: 0, seconds: 0};
   totalPercent: number;
   minutes: number = 0;
   seconds: number = 0;
@@ -26,6 +28,8 @@ export class ChronoComponent implements OnChanges {
       this.totalPercent = ( this.currentSeconds / this.totalDuration) * 100;
       this.minutes = Math.trunc((this.totalDuration - this.currentSeconds) / 60);
       this.seconds = ((this.totalDuration - this.currentSeconds) % 60 );
+
+      this.setCurrentCountdownTimer();
     }
     if (changes.event && changes.event.currentValue) {
       this.playAudio(this.event['sound'])
@@ -34,6 +38,8 @@ export class ChronoComponent implements OnChanges {
     }
     if (changes.initStage && changes.initStage.currentValue) {
       this.eventsToPlay = undefined;
+      this.countDownEvents = [];
+      this.currentCountDownEvent = {event: null, minutes: 0, seconds: 0};
     }
   }
 
@@ -50,5 +56,22 @@ export class ChronoComponent implements OnChanges {
 
   setEvents(events: {}) {
     this.eventsToPlay = events;
+    this.countDownEvents = (events['stage']['events'] as Array<Object>).filter( e => e['is_countdown']);
+  }
+
+  setCurrentCountdownTimer() {
+    if (this.countDownEvents.length > 0) {
+      for (const countDownEvent of this.countDownEvents) {
+        if (countDownEvent['t'] >= this.currentSeconds) {
+          console.log(this.currentCountDownEvent);
+          this.currentCountDownEvent.event = countDownEvent;
+          this.currentCountDownEvent.minutes = Math.trunc((countDownEvent['t'] - this.currentSeconds) / 60);
+          this.currentCountDownEvent.seconds = (countDownEvent['t'] - this.currentSeconds) % 60;
+          break;
+        } else {
+          this.currentCountDownEvent = {event: null, minutes: 0, seconds: 0};
+        }
+      }
+    }
   }
 }

@@ -1,14 +1,28 @@
 <div>
 
   <ng-container *ngIf="!aborted">
-    <nz-tag [nzColor]="'#2db7f5'" class="my-tag" >
-      {{
-         (minutes | number:'2.') + ':' + (seconds | number:'2.')
-      }}
-      <ng-container *ngIf="stageName">
-        {{stageName}}
-      </ng-container>
-    </nz-tag> <br/>
+    <div nz-row>
+      <div nz-col nzSpan="11" nzXs="24" nzSm="11">
+        <nz-tag [nzColor]="'#2db7f5'" class="my-tag" >
+          {{
+            (minutes | number:'2.') + ':' + (seconds | number:'2.')
+          }}
+          <ng-container *ngIf="stageName">
+            {{stageName}}
+          </ng-container>
+        </nz-tag>
+      </div>
+      <div nz-col nzSpan="13" nzXs="24" nzSm="13">
+        <nz-tag  *ngIf="currentCountDownEvent?.event" [nzColor]="'orange'" no-margin class="my-tag right" >
+          {{
+            (currentCountDownEvent['minutes'] | number:'2.') + ':' + (this.currentCountDownEvent['seconds'] | number:'2.')
+          }}
+          <ng-container>
+            {{currentCountDownEvent['event']['message']}}
+          </ng-container>
+        </nz-tag>
+      </div>
+    </div>
   </ng-container>
 
   <ng-container *ngIf="aborted">
