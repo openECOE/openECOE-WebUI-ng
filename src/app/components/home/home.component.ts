@@ -51,7 +51,6 @@ export class HomeComponent implements OnInit {
     ).subscribe(ecoes => {
       this.ecoes = ecoes;
       this.ecoes.unshift([undefined]);
-      console.log('ecoes: ' , this.ecoes);
     });
   }
 

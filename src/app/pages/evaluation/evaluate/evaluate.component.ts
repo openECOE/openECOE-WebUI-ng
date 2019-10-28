@@ -1,12 +1,13 @@
 import {AfterViewInit, Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
-import {Answer, BlockType, Option, Planner, QBlock, Round, Shift, Station, Student} from '../../../models';
+import {Answer, BlockType, ECOE, Option, Planner, QBlock, Round, Shift, Station, Student} from '../../../models';
 import {QuestionsService} from '../../../services/questions/questions.service';
 import {ApiService} from '../../../services/api/api.service';
 import {SocketService} from '../../../services/socket/socket.service';
 import {getPotionID} from '@openecoe/potion-client';
 import {AppComponent} from '../../../app.component';
+import {AuthenticationService} from '../../../services/authentication/authentication.service';
 
 @Component({
   selector: 'app-evaluate',
@@ -51,13 +52,18 @@ export class EvaluateComponent implements OnInit, AfterViewInit {
               private questionService: QuestionsService,
               private apiService: ApiService,
               private socket: SocketService,
+              private authService: AuthenticationService,
               @Inject(AppComponent) private parent: AppComponent) {
   }
 
   ngOnInit() {
-    this.getParams(this.route.snapshot.params);
-    this.loading = true;
-    this.getData().finally();
+    if (this.authService.userLogged) {
+      this.getParams(this.route.snapshot.params);
+      this.loading = true;
+      this.getData().finally();
+    } else {
+      this.authService.logout();
+    }
   }
 
   ngAfterViewInit(): void {

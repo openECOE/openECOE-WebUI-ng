@@ -36,7 +36,6 @@ export class InformationComponent implements OnInit {
 
     ECOE.fetch<ECOE>(ecoeId, {cache: false}).then(value => {
       this.ecoe = value;
-      console.log(this.ecoe);
       this.ecoe.areas({perPage: 1}, {paginate: true})
         .then(response => this.areas = response);
 

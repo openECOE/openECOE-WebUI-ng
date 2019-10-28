@@ -59,8 +59,6 @@ export class AreasComponent implements OnInit {
     this.ecoeId = +this.route.snapshot.params.id;
     this.loadAreas();
     this.InitAreaRow();
-
-    console.log('this.router: ', this.router.url);
   }
 
   /**
@@ -74,11 +72,11 @@ export class AreasComponent implements OnInit {
       where: {'ecoe': this.ecoeId},
       page: this.current_page,
       perPage: this.per_page,
-      sort: {code: false}
+      sort: {$uri: false}
     }, {paginate: true, cache: false, skip: excludeItems})
       .then(response => {
         this.editCache = [];
-        this.areas = response['items'];
+        this.areas = response['items'].sort((a, b) => parseInt(a.code, 10) - parseInt(b.code, 10));
         this.totalItems = response['total'];
         this.updateEditCache();
       });
@@ -198,12 +196,10 @@ export class AreasComponent implements OnInit {
    */
   importAreas(parserResult: Array<any>) {
     this.saveArrayAreas(parserResult)
-      .then(() => {
-        this.loadAreas();
-      })
       .catch( err => {
         console.error('save ERROR: ', err);
-      });
+      })
+      .finally(() => this.loadAreas());
   }
 
   /**

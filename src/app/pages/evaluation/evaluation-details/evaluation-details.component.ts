@@ -4,6 +4,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
 import * as moment from 'moment';
 import {SharedService} from '../../../services/shared/shared.service';
+import {AuthenticationService} from '../../../services/authentication/authentication.service';
 
 @Component({
   selector: 'app-evaluation-details',
@@ -29,15 +30,20 @@ export class EvaluationDetailsComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private location: Location,
               private shared: SharedService,
-              private cdRef: ChangeDetectorRef) { }
+              private cdRef: ChangeDetectorRef,
+              private authService: AuthenticationService) { }
 
   async ngOnInit() {
-    this.momentRef.locale(this.shared.getUsersLocale('en-US'));
-    this.ecoeId = +this.route.snapshot.params.id;
-    this.ecoe = (await ECOE.fetch(this.ecoeId)) as ECOE;
-    this.getData(this.ecoe);
-    this.getSelectedShift();
-    this.getSelectedRound();
+    if (this.authService.userLogged) {
+      this.momentRef.locale(this.shared.getUsersLocale('en-US'));
+      this.ecoeId = +this.route.snapshot.params.id;
+      this.ecoe = (await ECOE.fetch(this.ecoeId)) as ECOE;
+      this.getData(this.ecoe);
+      this.getSelectedShift();
+      this.getSelectedRound();
+    } else {
+      this.authService.logout();
+    }
   }
 
   onChangeShiftDay($event) {
