@@ -6,9 +6,9 @@
     [(nzSelectedIndex)]="selectedIndexShift"
   >
     <nz-tab
-      *ngFor="let shift of shiftDays"
-      [nzTitle]="shift"
-      (nzSelect)="onChangeShiftDay(shift)"
+      *ngFor="let shift of shifts"
+      [nzTitle]="shift.timeStart | timeToDate"
+      (nzClick)="onChangeShiftDay(shift)"
     >
       <div nz-row >
         <div nz-col nzSpan="3" nzXs="24" nzSm="6" nzLg="4" nzXl="3">
@@ -17,9 +17,10 @@
             [nzTabPosition]="'left'"
             [(nzSelectedIndex)]="selectedIndexRound">
             <nz-tab
+              (nzClick)="onChangeRound(round)"
               *ngFor="let round of rounds"
               [nzTitle]="round.description + ' - ' + round.roundCode"
-              (nzSelect)="onChangeRound(round)">
+              >
             </nz-tab>
           </nz-tabset>
         </div>

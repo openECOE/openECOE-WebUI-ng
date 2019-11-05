@@ -12,5 +12,7 @@ export const ResourceIcons = {
   shiftIcon: 'clock-circle',
   userIcon: 'user',
   settingsIcon: 'setting',
-  addIcon: 'plus'
+  addIcon: 'plus',
+  history: 'history',
+  'play-square': 'play-square'
 };

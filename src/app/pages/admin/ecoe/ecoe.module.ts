@@ -18,9 +18,8 @@ import { EventsComponent } from './schedule/events/events.component';
 import {PipesModule} from '../../../pipes/pipes.module';
 import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner/planner-selector/planner-selector.component';
 import {ComponentsModule} from '../../../components/components.module';
-import { QuestionsListComponent } from '../../../components/questions-list/questions-list.component';
-import { OptionsListComponent } from '../../../components/questions-list/options-list/options-list.component';
 import { StationDetailsComponent } from './stations/station-details/station-details.component';
+import { StateComponent } from './state/state.component';
 
 @NgModule({
   imports: [
@@ -47,7 +46,8 @@ import { StationDetailsComponent } from './stations/station-details/station-deta
     EventsComponent,
     PlannerSelectorComponent,
     AppStudentSelectorComponent,
-    StationDetailsComponent
+    StationDetailsComponent,
+    StateComponent
   ],
   entryComponents: [AppStudentSelectorComponent]
 })

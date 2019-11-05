@@ -62,14 +62,23 @@ export class AuthenticationService {
       .pipe( map(
         data => {
           const user = new UserLogged(data);
-          localStorage.setItem('userData', JSON.stringify(user));
+          return localStorage.setItem('userData', JSON.stringify(user));
         },
         err => {
           if (err.status === 401) {
             this.logout('/login');
           }
+          return throwError(err);
         }
-      ));
+      ),
+      catchError(err => {
+        if (err.status === 401) {
+          localStorage.removeItem('userLogged');
+          this.logout('/login');
+        }
+
+        return throwError(err);
+      }));
   }
 
   getUserData() {

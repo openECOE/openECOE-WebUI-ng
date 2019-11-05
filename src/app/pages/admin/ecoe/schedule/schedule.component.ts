@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Subscription} from 'rxjs';
 import {Schedule} from '../../../../models';
 import {Stage, Event} from '../../../../models';
 import {ECOE} from '../../../../models';
@@ -21,13 +20,11 @@ export class ScheduleComponent implements OnInit {
 
   ecoeId: number;
   ecoe: any;
-  subscriptions: Subscription [] = [];
   schedules: any[];
   loading: boolean = false;
   new_item: boolean = false;
 
   modalStage: boolean = false;
-  modalEvent: boolean = false;
 
   editStage: boolean = false;
 
@@ -138,16 +135,13 @@ export class ScheduleComponent implements OnInit {
     stage.duration = duration;
     stage.name = name;
     this.schedules.length === 0 ? stage.order = 0 : stage.order = (this.schedules[this.schedules.length - 1].stage.order) + 1;
-    console.log('firstly:stage', stage);
     stage.save()
       .then(new_stage => {
-        console.log('stage save', new_stage);
         const schedule = new Schedule();
         schedule.stage = new_stage;
         schedule.ecoe = this.ecoe;
         schedule.save()
           .then(ret_schedule => {
-            console.log('schedule save', ret_schedule);
             // Create Start and Finish Events
             this.createDefaultEvents(ret_schedule)
               .then(() => {
@@ -248,12 +242,10 @@ export class ScheduleComponent implements OnInit {
   }
 
   handleStageOk(): void {
-    console.log('Button ok clicked!');
     this.modalStage = false;
   }
 
   handleStageCancel(): void {
-    console.log('Button cancel clicked!');
     this.modalStage = false;
     this.cleanForm(this.validateFormStage);
   }
@@ -268,8 +260,6 @@ export class ScheduleComponent implements OnInit {
       this.validateFormStage.controls[key].markAsDirty();
       this.validateFormStage.controls[key].updateValueAndValidity();
     }
-    console.log(value);
-
     const stageDuration = this.shared.toSeconds(value.stageDurationMin, value.stageDurationSec);
 
     this.createSchedule(value.stageName, stageDuration);

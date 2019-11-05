@@ -51,6 +51,12 @@ export class MenuService {
       theme: 'outline'
     },
     {
+      title: 'START_STOP_ECOE',
+      path: './state',
+      icon: ResourceIcons['play-square'],
+      theme: 'outline'
+    },
+    {
       title: 'BACK',
       path: '/',
       icon: 'left-square'

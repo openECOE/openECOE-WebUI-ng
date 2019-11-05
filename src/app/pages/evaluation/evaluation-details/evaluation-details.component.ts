@@ -5,6 +5,7 @@ import {Location} from '@angular/common';
 import * as moment from 'moment';
 import {SharedService} from '../../../services/shared/shared.service';
 import {AuthenticationService} from '../../../services/authentication/authentication.service';
+import {EvaluationService} from '../../../services/evaluation/evaluation.service';
 
 @Component({
   selector: 'app-evaluation-details',
@@ -22,7 +23,6 @@ export class EvaluationDetailsComponent implements OnInit {
   private ecoeId: number;
   private ecoe: ECOE;
 
-  private shiftDays: string[] = [];
   momentRef = moment;
   refresh: boolean = false;
   isSpinning: boolean = false;
@@ -31,28 +31,31 @@ export class EvaluationDetailsComponent implements OnInit {
               private location: Location,
               private shared: SharedService,
               private cdRef: ChangeDetectorRef,
-              private authService: AuthenticationService) { }
+              private authService: AuthenticationService,
+              private evalService: EvaluationService) { }
 
   async ngOnInit() {
     if (this.authService.userLogged) {
       this.momentRef.locale(this.shared.getUsersLocale('en-US'));
       this.ecoeId = +this.route.snapshot.params.id;
       this.ecoe = (await ECOE.fetch(this.ecoeId)) as ECOE;
-      this.getData(this.ecoe);
-      this.getSelectedShift();
-      this.getSelectedRound();
+      this.getData(this.ecoe).then(() => {
+          this.getSelectedShift();
+          this.onChangeShiftDay(this.shifts[this.selectedIndexShift]);
+          this.getSelectedRound();
+      });
     } else {
       this.authService.logout();
     }
   }
 
-  onChangeShiftDay($event) {
+  onChangeShiftDay(shift: Shift) {
     this.filteredShifts = this.shifts.filter( x => {
-        if (this.getStringDate(x.timeStart) === $event) {
+        if (x.timeStart === shift.timeStart) {
           return x;
         }
     });
-    this.setSelectedShift($event);
+    this.setSelectedShift(shift);
   }
 
   onChangeRound(round: Round) {
@@ -68,70 +71,51 @@ export class EvaluationDetailsComponent implements OnInit {
   }
 
   getSelectedShift() {
-    if (sessionStorage.getItem('selectedIndexShift')) {
-      const json = JSON.parse(sessionStorage.getItem('selectedIndexShift'));
-      if (json['ecoeId'] && json['ecoeId'] === this.ecoeId) {
-        this.selectedIndexShift = parseInt(json['selectedIndexShift'], 10);
-      }
+    const selectedShiftId = this.evalService.getSelectedShift(this.ecoeId);
+    if (selectedShiftId > 0) {
+      this.selectedIndexShift = this.shifts.indexOf(this.shifts.filter(s => s.id === selectedShiftId)[0]);
+    } else {
+      this.selectedIndexShift = 0;
     }
   }
 
   getSelectedRound() {
-    if (sessionStorage.getItem('selectedIndexRound')) {
-      const json = JSON.parse(sessionStorage.getItem('selectedIndexRound'));
-      if (json['ecoeId'] && json['ecoeId'] === this.ecoeId) {
-        this.selectedIndexRound = parseInt(json['selectedIndexRound'], 10);
-      }
+    const selectedRoundId = this.evalService.getSelectedRound(this.ecoeId);
+    if (selectedRoundId > 0) {
+      this.selectedIndexRound = this.rounds.indexOf(this.rounds.filter(r => r.id === selectedRoundId)[0]);
+    } else {
+      this.selectedIndexRound = 0;
     }
   }
 
-  setSelectedShift($event) {
-    const selectedIndexShift = JSON.stringify( {ecoeId: this.ecoeId, selectedIndexShift: this.shiftDays.indexOf($event)});
-    sessionStorage.setItem('selectedIndexShift', selectedIndexShift);
+  setSelectedShift(shift: Shift) {
+    this.evalService.setSelectedShift(shift, this.ecoeId);
   }
 
   setSelectedRound(round: Round) {
-    const sessionSelectedIndexRound = sessionStorage.getItem('selectedIndexRound');
-    let savedIndex;
-
-    if (sessionSelectedIndexRound) {
-      savedIndex = parseInt(JSON.parse(sessionSelectedIndexRound)['selectedIndexRound'], 10);
-    }
-
-    if (!sessionStorage.getItem('selectedIndexRound') || savedIndex !== this.rounds.indexOf(round) ) {
-      const selectedIndexRound = JSON.stringify( {ecoeId: this.ecoeId, selectedIndexRound: this.rounds.indexOf(round)});
-      sessionStorage.setItem('selectedIndexRound', selectedIndexRound);
-      this.doSpinning(300);
-    }
-  }
-
-  getStringDate(date: Date) {
-    return date.toLocaleString().split(' ', 1)[0];
+    this.evalService.setSelectedRound(round, this.ecoeId);
+    this.doSpinning(300);
   }
 
   getData(ecoe: ECOE) {
-    ecoe.rounds()
+    const roundsPromise = ecoe.rounds()
       .then((rounds: Round[]) => {
         this.rounds = rounds;
       });
-    ecoe.shifts()
+    const shiftsPromise = ecoe.shifts()
       .then((shifts: any[]) => {
         this.shifts = shifts;
-
-        const dates: string[] = this.shifts.map(x => this.getStringDate(x.timeStart) ) ;
-        this.shiftDays =  dates.filter((v, i, a) => a.indexOf(v) === i);
-
-        this.filteredShifts = this.shifts.filter( x => {
-          if ( this.getStringDate(x.timeStart) === this.shiftDays[this.selectedIndexShift]) {
-            return x;
-          }
-        });
       });
-    this.getStations();
+    const stationsPromise = this.getStations();
+
+    return Promise.all([roundsPromise, shiftsPromise, stationsPromise])
+      .then(() => new Promise((resolve) =>
+          resolve('OK')))
+      .catch((err) => new Promise((resolve, reject) =>  reject(err)));
   }
 
   getStations() {
-    Station.query({
+    return Station.query({
       where: {ecoe: this.ecoeId},
       sort: {order: false}
     }).then( (stations: Station[]) =>
@@ -141,5 +125,4 @@ export class EvaluationDetailsComponent implements OnInit {
   onBack() {
     this.location.back();
   }
-
 }

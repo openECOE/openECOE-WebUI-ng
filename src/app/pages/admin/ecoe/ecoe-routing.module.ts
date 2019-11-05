@@ -13,6 +13,7 @@ import {ScheduleComponent} from './schedule/schedule.component';
 import {Role} from '../../../models';
 import {StationDetailsComponent} from './stations/station-details/station-details.component';
 import {QuestionsListComponent} from '../../../components/questions-list/questions-list.component';
+import {StateComponent} from './state/state.component';
 
 const routes: Routes = [
   {
@@ -23,15 +24,16 @@ const routes: Routes = [
       {
         path: '',
         children: [
-          {path: 'areas', component: AreasComponent,                data: {title: 'AREAS',      roles: [Role.Admin]}},
-          {path: 'stations', component: StationsComponent,          data: {title: 'STATIONS',   roles: [Role.Admin]}},
-          {path: 'stations/:id', component: StationDetailsComponent,data: {title: 'STATIONS',   roles: [Role.Admin]}},
-          {path: 'stations/:id/qblocks/:id', component: QuestionsListComponent,        data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
-          {path: 'questions', component: QuestionsComponent,        data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
-          {path: 'exam', component: ExamComponent,                  data: {title: 'EXAM',       roles: [Role.Admin]}},
-          {path: 'planner', component: PlannerComponent,            data: {title: 'PLANNER',    roles: [Role.Admin]}},
-          {path: 'students', component: StudentsComponent,          data: {title: 'STUDENTS',   roles: [Role.Admin]}},
-          {path: 'schedule', component: ScheduleComponent,          data: {title: 'SCHEDULE',   roles: [Role.Admin]}},
+          {path: 'areas', component: AreasComponent,                            data: {title: 'AREAS',      roles: [Role.Admin]}},
+          {path: 'stations', component: StationsComponent,                      data: {title: 'STATIONS',   roles: [Role.Admin]}},
+          {path: 'stations/:id', component: StationDetailsComponent,            data: {title: 'STATIONS',   roles: [Role.Admin]}},
+          {path: 'stations/:id/qblocks/:id', component: QuestionsListComponent, data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
+          {path: 'questions', component: QuestionsComponent,                    data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
+          {path: 'exam', component: ExamComponent,                              data: {title: 'EXAM',       roles: [Role.Admin]}},
+          {path: 'planner', component: PlannerComponent,                        data: {title: 'PLANNER',    roles: [Role.Admin]}},
+          {path: 'students', component: StudentsComponent,                      data: {title: 'STUDENTS',   roles: [Role.Admin]}},
+          {path: 'schedule', component: ScheduleComponent,                      data: {title: 'SCHEDULE',   roles: [Role.Admin]}},
+          {path: 'state', component: StateComponent,                            data: {title: 'STATE',      roles: [Role.Admin]}},
           {path: '', component: InformationComponent},
           {path: '**', redirectTo: ''}
         ]

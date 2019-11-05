@@ -46,13 +46,7 @@
           <a (click)="onBack()"><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
           <a *ngIf="station"> {{station.name}} </a>
         </h2>
-        <app-chrono
-          [aborted]="aborted"
-          [currentSeconds]="currentSeconds"
-          [stageName]="stageName"
-          [totalDuration]="totalDuration"
-          [event]="event"
-          [initStage]="init_stage">
+        <app-chrono [round]="round" [station]="station">
         </app-chrono>
       </div>
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">

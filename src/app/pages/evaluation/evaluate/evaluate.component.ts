@@ -1,10 +1,9 @@
-import {AfterViewInit, Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
-import {Answer, BlockType, ECOE, Option, Planner, QBlock, Round, Shift, Station, Student} from '../../../models';
+import {Answer, BlockType, Option, Planner, QBlock, Round, Shift, Station, Student} from '../../../models';
 import {QuestionsService} from '../../../services/questions/questions.service';
 import {ApiService} from '../../../services/api/api.service';
-import {SocketService} from '../../../services/socket/socket.service';
 import {getPotionID} from '@openecoe/potion-client';
 import {AppComponent} from '../../../app.component';
 import {AuthenticationService} from '../../../services/authentication/authentication.service';
@@ -14,7 +13,7 @@ import {AuthenticationService} from '../../../services/authentication/authentica
   templateUrl: './evaluate.component.html',
   styleUrls: ['./evaluate.component.less']
 })
-export class EvaluateComponent implements OnInit, AfterViewInit {
+export class EvaluateComponent implements OnInit {
 
   private ecoeId: number;
   private stationId: number;
@@ -33,14 +32,6 @@ export class EvaluateComponent implements OnInit, AfterViewInit {
     answers: []
   };
 
-  private currentSeconds: number = 0;
-  private totalDuration: number = 0;
-  private stageName: string;
-  private aborted: boolean;
-
-  private event: {};
-  private init_stage: any[] = [];
-
   loading: boolean;
   getQuestionsCompleted: boolean;
   auxAnswers = [];
@@ -51,7 +42,6 @@ export class EvaluateComponent implements OnInit, AfterViewInit {
               private location: Location,
               private questionService: QuestionsService,
               private apiService: ApiService,
-              private socket: SocketService,
               private authService: AuthenticationService,
               @Inject(AppComponent) private parent: AppComponent) {
   }
@@ -64,30 +54,6 @@ export class EvaluateComponent implements OnInit, AfterViewInit {
     } else {
       this.authService.logout();
     }
-  }
-
-  ngAfterViewInit(): void {
-    this.socket.onConnected(this.roundId).subscribe( () => {
-      this.socket.onReceive('init_stage').subscribe((data: any[]) => {
-        this.init_stage = data;
-      });
-      this.socket.onReceive('end_round').subscribe((data: any[]) => {
-        this.stageName = (data[1]['data'] as string).toUpperCase();
-      });
-      this.socket.onReceive('evento').subscribe(data => {
-        this.event = data[1];
-      });
-      this.socket.onReceive('aborted').subscribe(data => {
-        this.aborted = true;
-        this.stageName = (data[0] as string).toUpperCase();
-      });
-      this.socket.onReceive('tic_tac').subscribe(data => {
-        this.aborted        = false;
-        this.stageName      = data[1]['stage']['name'];
-        this.currentSeconds = parseInt(data[1]['t'], 10);
-        this.totalDuration  = parseInt(data[1]['stage']['duration'], 10);
-      });
-    });
   }
 
   getParams(params: {}) {

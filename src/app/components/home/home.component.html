@@ -16,9 +16,7 @@
 
   <div nz-row padding>
     <div nz-col>
-      <nz-list>
-      </nz-list>
-      <nz-list  [nzDataSource]="ecoes" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 6, lg: 6, xl: 4 }">
+      <nz-list [nzDataSource]="ecoes" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 6, lg: 6, xl: 4 }">
         <ng-template #item let-item let-index="index">
           <nz-list-item *ngIf="index === 0" [nzContent]="first">
             <ng-template #first>

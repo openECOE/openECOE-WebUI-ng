@@ -17,9 +17,7 @@ export class ApiService {
   */
   apiUrl: string = 'api/v1';
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) {}
 
   removeAnswer(studentId: number, option: Object) {
     const url = `${environment.API_ROUTE}/${this.apiUrl}/students/${studentId}/answers`;
