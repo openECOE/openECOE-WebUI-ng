@@ -85,12 +85,7 @@ export class PlannerComponent implements OnInit {
    * @param planner Reference of the selected planner
    */
   deletePlanner(planner: Planner): Promise<any> {
-    this.loading = true;
-    return planner.destroy()
-      .then(value => {
-        console.log('Planner deleted', value);
-        this.loadRoundsShifts().then(() => this.loading = false);
-      });
+    return planner.destroy();
   }
 
   saveRound(round: Round | Item): Promise<any> {
@@ -117,22 +112,26 @@ export class PlannerComponent implements OnInit {
    * @param round Reference of the selected round
    */
   deleteRound(round: Round): Promise<void> {
+    let planners: Planner[];
+
     return new Promise((resolve, reject) => {
       const promises = [];
 
-      // Delete all planners linked
-      round.planners.forEach(planner => {
-        promises.push(this.deletePlanner(planner));
-      });
+      Planner.query({where: {round: +round.id}})
+        .then((result: Planner[]) => {
+          planners = result;
 
-      Promise.all(promises)
-        .then(() => {
-          round.destroy()
-            .then(value => {
-              console.log('Round deleted', value);
-              resolve(value);
-            })
-            .catch(reason => reject(reason));
+          // Delete all planners linked
+          planners.forEach(planner => {
+            promises.push(this.deletePlanner(planner));
+          });
+
+          Promise.all(promises)
+            .then(() => {
+              round.destroy()
+                .then(() => resolve())
+                .catch(reason => reject(reason));
+            });
         });
     });
   }
@@ -180,22 +179,27 @@ export class PlannerComponent implements OnInit {
    */
   deleteShift(shift: Shift): Promise<void> {
     return new Promise((resolve, reject) => {
+      let planners: Planner[];
       const promises = [];
 
-      // Delete all planners linked
-      shift.planners.forEach(planner => {
-        promises.push(this.deletePlanner(planner));
-      });
+      Planner.query({where: {shift: +shift.id}})
+        .then((result: Planner[]) => {
+          planners = result;
 
-      Promise.all(promises)
-        .then(() => {
-          shift.destroy()
-            .then(value => {
-              console.log('Shift deleted', value);
-              resolve(value);
-            })
-            .catch(reason => reject(reason));
-        });
+          // Delete all planners linked
+          planners.forEach(planner => {
+            promises.push(this.deletePlanner(planner));
+          });
+
+          console.log(shift, this.shifts);
+
+          Promise.all(promises)
+            .then(() => {
+              shift.destroy()
+                .then(value => resolve(value))
+                .catch(reason => reject(reason));
+            });
+      });
     });
 
 
@@ -349,11 +353,13 @@ export class PlannerComponent implements OnInit {
    * @param round Reference of the selected round
    */
   modalDeleteRound(round: any) {
+    this.loading = true;
     this.deleteRound(round)
       .then(() => {
-        this.loadRoundsShifts();
-        this.closeModalRound();
-      });
+        this.loadRoundsShifts().finally(() =>
+          this.closeModalRound());
+      })
+      .finally(() => this.loading = false);
   }
 
   /**
@@ -408,7 +414,7 @@ export class PlannerComponent implements OnInit {
         pageStudents.changePageTo(i)
           .then(page => {
               page['items'].forEach(student => {
-                const freePlanner = listPlanners.find(value => value.students.length < listStations.length);
+                const freePlanner = listPlanners.find(value => (value.students ? value.students.length : 0) < listStations.length);
                 if (freePlanner) {
                   promises.push(this.assignStudentToPlanner(student, freePlanner));
                 }
@@ -425,8 +431,9 @@ export class PlannerComponent implements OnInit {
   }
 
   assignStudentToPlanner(itemStudent: Student, itemPlanner: Planner): Promise<any> {
+    itemPlanner.students = itemPlanner.students || [];
     itemStudent.planner = itemPlanner;
-    itemStudent.plannerOrder = itemPlanner.students.length + 1;
+    itemStudent.plannerOrder = (itemPlanner.students.length || 0) + 1;
     itemPlanner.students.push(itemStudent);
     return itemStudent.save();
   }
