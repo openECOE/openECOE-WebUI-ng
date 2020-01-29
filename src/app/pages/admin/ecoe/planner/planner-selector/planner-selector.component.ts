@@ -1,9 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, OnChanges, Output, TemplateRef} from '@angular/core';
-import {Planner, Round, Shift} from '../../../../../models/planner';
-import {ECOE, Station, Student} from '../../../../../models/ecoe';
+import {Planner, Round, Shift} from '../../../../../models';
+import {Student} from '../../../../../models';
 import {Item, Pagination} from '@openecoe/potion-client';
-import {forkJoin, from} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 import {SharedService} from '../../../../../services/shared/shared.service';
@@ -55,12 +53,6 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   modalStudentSelector: NzModalRef;
   modalStudentSelectorWidth: number = 768;
 
-  listStudents: any[];
-  private plannerSelected: { round: Round; shift: Shift; planner: Planner };
-  private isEditing: { itemRef: Planner; edit: boolean };
-
-  showStudentsSelector: boolean = false;
-
   loading: boolean = false;
 
   constructor(private modalService: NzModalService,
@@ -77,7 +69,6 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
 
   loadPlanner() {
     this.loading = true;
-
     // TODO: Review planner query
     Planner.first<Planner>({where: {'round': this.plannerRound, 'shift': this.plannerShift}})
       .then(async response => {
@@ -105,15 +96,8 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
     return new Promise((resolve, reject) => {
       planner.save()
         .then(savedPlanner => {
-          console.log('Planner created', savedPlanner);
           this.planner = savedPlanner;
           resolve(savedPlanner);
-          // planner.students.forEach((student, index) => {
-          //   student.plannerOrder = index + 1;
-          //   student.save()
-          //     .then(value => console.log('Student assigned to planner', value, savedPlanner)
-          //     );
-          // });
         })
         .catch(reason => {
           console.error('Planner create error', reason);
@@ -158,7 +142,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
    */
   deletePlanner(planner: Planner | Item): Promise<any> {
     return planner.destroy()
-      .then(value => {
+      .then(() => {
         console.log('Planner deleted', planner);
         this.planner = null;
         this.destroyModal();
@@ -253,8 +237,7 @@ export class AppStudentSelectorComponent implements OnInit {
 
   searchString: string = null;
 
-  constructor(private modal: NzModalRef,
-              public shared: SharedService) {
+  constructor(public shared: SharedService) {
   }
 
   ngOnInit() {
@@ -362,17 +345,6 @@ export class AppStudentSelectorComponent implements OnInit {
     }
   }
 
-  // change(ret: { from: string, to: string, list: Array<any> }): void {
-  //   console.log('nzChange', ret);
-  //   ret.list.forEach(value => {
-  //     ret.to === 'right' ?
-  //       this.addPlannerStudent(value.student) :
-  //       this.removePlannerStudent(value.student);
-  //   });
-  //
-  //   this.orderStudents(this.searchListStudents);
-  // }
-
   getLeftStudentsNoPlanner(excludeList?: Array<any>): Array<any> {
     let leftStudents = this.searchListStudents.filter(value => value.direction === 'left' && !value.student.planner);
 
@@ -389,28 +361,5 @@ export class AppStudentSelectorComponent implements OnInit {
       value.checked = false;
     });
   }
-
-  // addPlannerStudent(itemStudent: Student) {
-  //   itemStudent.planner = this.planner;
-  //   itemStudent.plannerOrder = this.planner.students.length + 1;
-  //   this.planner.students.push(itemStudent);
-  //   itemStudent.save()
-  //     .then(value => console.log('Student planner change', value))
-  //     .catch(reason => console.error('ERROR Student planner change', reason));
-  //   this.planner.save();
-  // }
-  //
-  // removePlannerStudent(itemStudent: Student) {
-  //   this.disableStudents(this.getLeftStudentsNoPlanner(), false);
-  //   itemStudent.planner = null;
-  //   itemStudent.plannerOrder = null;
-  //   itemStudent.save()
-  //     .then(saveStudent => {
-  //       this.planner.students = this.planner.students.filter(value => value !== saveStudent);
-  //       // this.ngOnInit();
-  //       this.planner.save();
-  //     });
-  // }
-
 
 }
