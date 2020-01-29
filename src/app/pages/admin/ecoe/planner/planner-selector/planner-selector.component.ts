@@ -120,8 +120,6 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
           reject(reason);
         });
     });
-
-
   }
 
   /**
