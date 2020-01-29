@@ -24,11 +24,15 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
 
-    this.authService.loadUserData()
+    if (this.authService.userLogged){
+      this.authService.loadUserData()
       .subscribe(() => {
         this.loadEcoes();
         this.isAdmin = (this.authService.userData['role'] === 'Admin');
       });
+    } else {
+      this.authService.logout('/login');
+    }
   }
 
 
