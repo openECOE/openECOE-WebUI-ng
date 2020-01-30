@@ -26,6 +26,10 @@ export class InformationComponent implements OnInit {
   ecoe_name_form: FormGroup;
   // --
 
+  // Eliminar ECOE
+  eliminando: Boolean = false;
+  //--
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
@@ -72,10 +76,24 @@ export class InformationComponent implements OnInit {
 
   /**
    * Calls ApiService to delete the actual ECOE.
-   * Then navigates to /admin page.
+   * Then navigates to /home page.
    */
   deleteEcoe() {
-    this.apiService.deleteResource(this.ecoe[0]['$uri']).subscribe(() => this.router.navigate(['/admin']));
+    this.eliminando = true;
+
+    new ECOE(this.ecoe).destroy().then(
+      result => {
+        this.router.navigate(['/home']);
+      }
+    ).catch(
+      error => {
+        this.message.error(this.translate.instant('ERROR_REQUEST_CONTENT'), { nzDuration: 5000 });
+      }
+    ).finally(
+      () => {
+        this.eliminando = false;
+      }
+    )
   }
 
   /**
