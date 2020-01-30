@@ -114,6 +114,7 @@ export class StationsComponent implements OnInit {
 
     return new Promise(resolve => {
       Station.query({
+        where: {ecoe: this.ecoeId},
         sort: {order: false},
         page: this.page,
         perPage: this.perPage
