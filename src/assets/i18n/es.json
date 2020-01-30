@@ -8,6 +8,7 @@
   "ECOE_NAME": "Nombre de la ECOE",
   "DELETE_ECOE": "Eliminar ECOE",
   "START_STOP_ECOE": "Iniciar/Detener ECOE",
+  "EDIT_ECOE": "Editar ECOE",
 
   "ORGANIZATION": "Organización",
 
@@ -231,6 +232,9 @@
   "STATION_DEPENDS_OF_STATION_DESCRIPTION": "La primera vuelta no tiene asignado ningún alumno para su evaluación. El primer alumno se evalua en la última vuelta.",
   "ESTIMATED_TIME_TO_FINISH": "Hora estimada de finalización: ",
   "ECOE_ALREADY_RUNNING": "La ECOE ya está en marcha.",
-  "WARNING": "Atención"
+  "WARNING": "Atención",
+
+  "OK_REQUEST_CONTENT": "Petición procesada correctamente.",
+  "ERROR_REQUEST_CONTENT": "Error al procesar petición."
 
 }
