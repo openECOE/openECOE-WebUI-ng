@@ -40,7 +40,6 @@
       nzPlaceHolder="Select users"
       nzAllowClear
       nzShowSearch
-      (ngModelChange)="selected($event)"
       [nzServerSearch]="true"
       (nzOnSearch)="searchStudents($event)"
       (nzScrollToBottom)="loadMore()"
