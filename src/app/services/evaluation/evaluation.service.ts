@@ -38,10 +38,12 @@ export class EvaluationService {
   }
 
   setSelectedShift(shift: Shift, ecoeId: number) {
-    sessionStorage.setItem('selectedShift', JSON.stringify( {
-      ecoeId: ecoeId,
-      selectedShift: shift.id
-    }));
+    if (shift && shift.id) {
+      sessionStorage.setItem('selectedShift', JSON.stringify( {
+        ecoeId: ecoeId,
+        selectedShift: shift.id
+      }));
+    }
   }
 }
 

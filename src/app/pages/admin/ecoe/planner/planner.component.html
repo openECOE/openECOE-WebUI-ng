@@ -92,6 +92,7 @@
 <nz-modal [(nzVisible)]="showAddShift"
           [nzTitle]="'ADD_SHIFT' | translate"
           (nzOnCancel)="closeModalShift()"
+          nzMaskClosable="false"
           [nzFooter]="modalFooterShift">
   <form nz-form [formGroup]="shiftForm">
     <nz-form-item>
@@ -139,6 +140,7 @@
 <nz-modal [(nzVisible)]="showAddRound"
           [nzTitle]="'ADD_ROUND' | translate"
           (nzOnCancel)="closeModalRound()"
+          nzMaskClosable="false"
           [nzFooter]="modalFooterRound">
   <form nz-form [formGroup]="roundForm">
     <nz-form-item>
