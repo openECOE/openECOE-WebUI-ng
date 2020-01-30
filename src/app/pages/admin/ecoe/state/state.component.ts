@@ -40,7 +40,7 @@ export class StateComponent implements OnInit {
   }
 
   getRounds() {
-    Round.query({}, {cache: false})
+    Round.query({where: {ecoe: +this.ecoeId}}, {cache: false})
       .then( (result: Round[]) => this.rounds = result);
   }
 
