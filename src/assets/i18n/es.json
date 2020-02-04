@@ -231,6 +231,8 @@
   "STATION_DEPENDS_OF_STATION_DESCRIPTION": "La primera vuelta no tiene asignado ningún alumno para su evaluación. El primer alumno se evalua en la última vuelta.",
   "ESTIMATED_TIME_TO_FINISH": "Hora estimada de finalización: ",
   "ECOE_ALREADY_RUNNING": "La ECOE ya está en marcha.",
-  "WARNING": "Atención"
+  "WARNING": "Atención",
 
+  "TIME_TODAY": "Hoy",
+  "TIME_YESTERDAY": "Ayer"
 }

@@ -39,7 +39,9 @@ export class ChronoService {
   }
 
   disconect() {
-    this.socket.disconnect();
+    if (this.socket) {
+      this.socket.disconnect();
+    }
   }
 
   startECOE(ecoeId: number) {

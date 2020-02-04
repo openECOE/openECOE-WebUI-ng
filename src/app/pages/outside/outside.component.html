@@ -1,0 +1,72 @@
+<nz-content padding>
+  <nz-page-header class="margin-top margin-bottom" [nzTitle]="'Próximas ECOEs' | translate"></nz-page-header>
+
+  <nz-tabset
+  nzSize="large"
+  nzTabPosition="top"
+  [(nzSelectedIndex)]="selectedOrganizationIdx"
+  >
+    <nz-tab
+      *ngFor="let item of groupedEcoes"
+      [nzTitle]="item.organization.name"
+      (nzClick)="onChangeOrganization(item.organization)">
+
+      <div nz-row >
+        <div nz-col nzSpan="3" nzXs="24" nzSm="11" nzLg="6" nzXl="5">
+          <nz-tabset *ngIf="filtredECOEs"
+            nzSize="default"
+            [nzTabPosition]="'left'"
+            [(nzSelectedIndex)]="selectedDateIndex">
+            <nz-tab
+              (nzClick)="onChangeDate(ecoeItem)"
+              *ngFor="let ecoeItem of filtredECOEs.ecoes | filter: 'finished': false"
+              [nzTitle]="(ecoeItem.date | textdate) + ' - ' + ecoeItem.ecoe.name"
+            >
+            </nz-tab>
+          </nz-tabset>
+        </div>
+        <div nz-col nzSpan="21" nzXs="24" nzSm="13" nzLg="18" nzXl="19">
+<!--          <nz-spin [nzSpinning]="isSpinning">-->
+            <div nz-row margin-top>
+              <div nz-col *ngIf="selectedECOE">
+                <ng-container >
+                  <nz-tabset>
+                    <nz-tab *ngFor="let round of selectedECOE.rounds; let i = index" [nzTitle]="round.description">
+                      <!--Contenido rueda {{i + 1}}-->
+                      <app-chrono
+                        [round]="round"
+                        [outside]="false">
+                        <!--<nz-button-group nzSize="default">
+                          <button (click)="pauseRound(round.id)" nz-button nzType="danger"><i nz-icon nzType="pause-circle" nzTheme="outline"></i>{{'PAUSE' | translate}}</button>
+                          <button (click)="playRound(round.id)" nz-button nzType="primary"><i nz-icon nzType="play-circle" nzTheme="outline"></i>{{'CONTINUE' | translate}}</button>
+                        </nz-button-group>-->
+                      </app-chrono>
+                    </nz-tab>
+                  </nz-tabset>
+                </ng-container>
+              </div>
+            </div>
+<!--          </nz-spin>-->
+        </div>
+      </div>
+
+
+
+    </nz-tab>
+
+  </nz-tabset>
+
+  <!--<ng-container *ngFor="let organization of groupedEcoes">
+    <ng-container *ngFor="let ecoe of organization.ecoes">
+      <ng-container *ngIf="ecoe.date && !ecoe.finished">
+        <h3>
+          {{ecoe.date | textdate}} {{ecoe.ecoe.name}}
+        </h3>
+        <ng-container *ngFor="let round of ecoe.rounds">
+          <a nz-button [innerHTML]="round.description"></a>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-container>-->
+
+</nz-content>

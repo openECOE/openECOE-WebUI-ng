@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { EvaluationRoutingModule } from './evaluation-routing.module';
-import { EvaluationComponent } from './evaluation.component';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import { EvaluationDetailsComponent } from './evaluation-details/evaluation-details.component';
@@ -21,6 +20,6 @@ import {ComponentsModule} from '../../components/components.module';
     PipesModule,
     ComponentsModule,
   ],
-  declarations: [EvaluationComponent, EvaluationDetailsComponent, EvaluateComponent]
+  declarations: [EvaluationDetailsComponent, EvaluateComponent]
 })
 export class EvaluationModule { }

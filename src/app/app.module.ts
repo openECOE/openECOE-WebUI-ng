@@ -21,6 +21,8 @@ import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-cl
 
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';
+import { OutsideComponent } from './pages/outside/outside.component';
+import {ComponentsModule} from './components/components.module';
 
 
 registerLocaleData(localeEs, 'es', localeEsExtra);
@@ -33,7 +35,8 @@ export function createTranslateLoader(http: HttpClient) {
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginComponent
+    LoginComponent,
+    OutsideComponent
   ],
   imports: [
     BrowserModule,
@@ -52,6 +55,7 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     PotionModule,
     PipesModule,
+    ComponentsModule,
   ],
   providers: [
     {
