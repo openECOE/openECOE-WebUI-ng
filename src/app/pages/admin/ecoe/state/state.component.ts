@@ -40,12 +40,20 @@ export class StateComponent implements OnInit {
   }
 
   getRounds() {
-    Round.query({where: {ecoe: +this.ecoeId}}, {cache: false})
+    Round.query({where: {ecoe: +this.ecoeId}}, {cache: false, skip: ['ecoe']})
       .then( (result: Round[]) => this.rounds = result);
   }
 
   onBack() {
     this.router.navigate(['./home']).finally();
+  }
+
+  publishECOE(ecoeId: number) {
+    this.chronoService.publishECOE(ecoeId).toPromise()
+      .then(result => {
+        console.log('published', result);
+      })
+      .catch(err => console.warn(err));
   }
 
   startECOE() {

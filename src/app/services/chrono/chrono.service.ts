@@ -4,6 +4,7 @@ import {Observable, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
+import {ECOEConfig} from '../../models/chrono';
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +57,13 @@ export class ChronoService {
       ));
   }
 
+  publishECOE(ecoeId: number) {
+    return this.getConfigrationECOE((ecoeId))
+      .pipe( switchMap(result =>
+        this.loadConfigurationECOE(result)
+      ));
+  }
+
   pauseECOE(round?: number) {
     const command = (round) ? '/pause/' + round : '/pause';
     const url = this.URL_CHRONO + command;
@@ -88,6 +96,16 @@ export class ChronoService {
       .pipe(
         map((response: any) => response.toString()),
         catchError( err => throwError(err) )
+      );
+  }
+
+  getChronoConfiguration(ecoeId?: number) {
+    const command = '/configurations';
+    const url = this.URL_CHRONO + command;
+
+    return this.http.get(url)
+      .pipe(
+        map((response: ECOEConfig[]) => ecoeId ? response.filter(config => config.ecoe.id === ecoeId) : response)
       );
   }
 

@@ -65,7 +65,7 @@ export class EvaluateComponent implements OnInit {
 
   getData() {
     Shift.fetch(this.shiftId).then( (shift: Shift) => this.shift = shift);
-    Round.fetch(this.roundId).then( (round: Round) => this.round = round);
+    Round.fetch(this.roundId, {cache: false, skip: ['ecoe']}).then( (round: Round) => this.round = round);
     Station.fetch(this.stationId).then((station: Station) => {
       this.station = station;
       this.getParentStation();

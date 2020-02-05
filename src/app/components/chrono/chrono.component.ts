@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {ChronoService} from '../../services/chrono/chrono.service';
-import {ECOE, Round, Station} from '../../models';
+import {Round, Station} from '../../models';
 import * as moment from 'moment';
 import {Router} from '@angular/router';
 import {EvaluationService} from '../../services/evaluation/evaluation.service';
@@ -14,7 +14,9 @@ export class ChronoComponent implements OnChanges, OnDestroy {
 
   @Input() private round: Round;
   @Input() private station: Station;
-  @Input() private outside: boolean = false;
+  @Input() private showDetails: boolean = true;
+  @Input() private mute: boolean = false;
+  @Input() private idEcoe: number = 1;
 
   private aborted: boolean;
   private stageName: string;
@@ -41,15 +43,15 @@ export class ChronoComponent implements OnChanges, OnDestroy {
               private evalService: EvaluationService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.round.currentValue) {
-      this.getChronoData(changes.round.currentValue);
+    if (changes.round && changes.round.currentValue) {
+      this.getChronoData(changes.round.currentValue, this.idEcoe);
     }
   }
 
-  getChronoData(round) {
+  getChronoData(round: Round, idEcoe: number) {
     this.chronoService.onConnected(round.id).subscribe( () => {
 
-      this.getConfigurationECOE(round.ecoe.id);
+      this.getConfigurationECOE(idEcoe);
 
       this.chronoService.onReceive('init_stage').subscribe((data: any[]) => {
         this.initStage = data;
@@ -82,7 +84,7 @@ export class ChronoComponent implements OnChanges, OnDestroy {
 
   onGetEvent(event: {}) {
     // changed event
-    if (!this.outside) {
+    if (!this.mute) {
       this.playAudio(this.event['sound'])
         .catch(err => console.log(err));
     }
@@ -157,9 +159,11 @@ export class ChronoComponent implements OnChanges, OnDestroy {
   }
 
   getConfigurationECOE(ecoeId: number) {
-    this.chronoService.getConfigrationECOE(ecoeId).subscribe(next => {
-      this.configurationECOE = next;
-      this.calcRoundDuration(next);
+    this.chronoService.getChronoConfiguration(ecoeId).subscribe(next => {
+      if (next && next[0]) {
+        this.configurationECOE = next[0];
+        this.calcRoundDuration(next[0]);
+      }
     });
   }
 
@@ -167,10 +171,10 @@ export class ChronoComponent implements OnChanges, OnDestroy {
     this.rerunsDescription = data['num_rerun'] + '/' + data['total_reruns'];
   }
 
-  goEvaluation(round: Round) {
-    if (round.ecoe instanceof ECOE) {
-      this.evalService.setSelectedRound(round, round.ecoe.id);
-      this.router.navigate(['/eval/ecoe/', round.ecoe.id]).finally();
+  goEvaluation(roundId, ecoeId: number) {
+    if (ecoeId) {
+      this.evalService.setSelectedRound(roundId, ecoeId);
+      this.router.navigate(['/eval/ecoe/', ecoeId]).finally();
     }
   }
 

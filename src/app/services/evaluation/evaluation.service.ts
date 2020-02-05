@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Round, Shift} from '../../models';
+import {Shift} from '../../models';
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +8,10 @@ export class EvaluationService {
 
   constructor() { }
 
-  setSelectedRound(round: Round, ecoeId: number) {
+  setSelectedRound(roundId: number, ecoeId: number) {
     sessionStorage.setItem('selectedRound', JSON.stringify({
       ecoeId: ecoeId,
-      selectedRound: round.id
+      selectedRound: roundId
     }));
   }
 

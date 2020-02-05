@@ -93,7 +93,7 @@ export class EvaluationDetailsComponent implements OnInit {
   }
 
   setSelectedRound(round: Round) {
-    this.evalService.setSelectedRound(round, this.ecoeId);
+    this.evalService.setSelectedRound(round.id, this.ecoeId);
     this.doSpinning(300);
   }
 

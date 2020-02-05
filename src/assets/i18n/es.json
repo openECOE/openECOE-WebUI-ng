@@ -234,5 +234,8 @@
   "WARNING": "Atención",
 
   "TIME_TODAY": "Hoy",
-  "TIME_YESTERDAY": "Ayer"
+  "TIME_YESTERDAY": "Ayer",
+  "ANY_ECOE_CONFIGURED": "Actualmente no hay ninguna ECOE programada",
+  "PUBLISH_ECOE": "Publicar ECOE",
+  "UPDATE_PUBLISHED_ECOE": "Actualizar publicación"
 }
