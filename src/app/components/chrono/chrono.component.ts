@@ -1,9 +1,7 @@
-import {Component, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, TemplateRef} from '@angular/core';
 import {ChronoService} from '../../services/chrono/chrono.service';
 import {Round, Station} from '../../models';
 import * as moment from 'moment';
-import {Router} from '@angular/router';
-import {EvaluationService} from '../../services/evaluation/evaluation.service';
 
 @Component({
   selector: 'app-chrono',
@@ -17,6 +15,9 @@ export class ChronoComponent implements OnChanges, OnDestroy {
   @Input() private showDetails: boolean = true;
   @Input() private mute: boolean = false;
   @Input() private idEcoe: number = 1;
+  @Input() private withPreview: boolean = false;
+  @Input() private templateBeforeStart: TemplateRef<void>;
+  @Output() private started: EventEmitter<number> = new EventEmitter<number>();
 
   private aborted: boolean;
   private stageName: string;
@@ -35,12 +36,14 @@ export class ChronoComponent implements OnChanges, OnDestroy {
   private roundDurationSeconds: number;
   private remainingTime: number;
 
+  connectedFlag: boolean;
+  tictacFlag: boolean;
+
+
   momentRef = moment;
   private configurationECOE: Object;
 
-  constructor(private chronoService: ChronoService,
-              private router: Router,
-              private evalService: EvaluationService) { }
+  constructor(private chronoService: ChronoService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.round && changes.round.currentValue) {
@@ -50,7 +53,7 @@ export class ChronoComponent implements OnChanges, OnDestroy {
 
   getChronoData(round: Round, idEcoe: number) {
     this.chronoService.onConnected(round.id).subscribe( () => {
-
+      this.connectedFlag = true;
       this.getConfigurationECOE(idEcoe);
 
       this.chronoService.onReceive('init_stage').subscribe((data: any[]) => {
@@ -70,6 +73,8 @@ export class ChronoComponent implements OnChanges, OnDestroy {
         this.stageName = (data[0] as string).toUpperCase();
       });
       this.chronoService.onReceive('tic_tac').subscribe((data: any[]) => {
+        this.tictacFlag = true;
+        this.started.next(this.idEcoe);
         this.onTicTac(data);
       });
     });
@@ -96,12 +101,10 @@ export class ChronoComponent implements OnChanges, OnDestroy {
     this.stageName      = data[1]['stage']['name'];
     this.currentSeconds = parseInt(data[1]['t'], 10);
     this.totalDuration  = parseInt(data[1]['stage']['duration'], 10);
-
-    this.calcRemainingTime(data[1]['num_rerun'], data[1]['total_reruns'], data[1]['t']);
-
-    this.totalPercent = ( this.currentSeconds / this.totalDuration) * 100;
-    this.minutes = Math.trunc((this.totalDuration - this.currentSeconds) / 60);
-    this.seconds = ((this.totalDuration - this.currentSeconds) % 60 );
+    this.remainingTime  = this.calcRemainingTime(data[1]['num_rerun'], data[1]['total_reruns'], data[1]['t']);
+    this.totalPercent   = (this.currentSeconds / this.totalDuration) * 100;
+    this.minutes        = Math.trunc((this.totalDuration - this.currentSeconds) / 60);
+    this.seconds        = ((this.totalDuration - this.currentSeconds) % 60 );
 
     // Sets events only firt time (ex: when page is reloaded)
     if (!this.eventsToPlay || this.eventsToPlay.length < 0) {
@@ -148,7 +151,7 @@ export class ChronoComponent implements OnChanges, OnDestroy {
   }
 
   calcRemainingTime(num_rerun: number, total_reruns: number, t: number) {
-    this.remainingTime = (((total_reruns - num_rerun + 1) * this.roundDurationSeconds) - t);
+   return (((total_reruns - num_rerun + 1) * this.roundDurationSeconds) - t);
   }
 
   calcRoundDuration(configuration: Object) {
@@ -171,14 +174,9 @@ export class ChronoComponent implements OnChanges, OnDestroy {
     this.rerunsDescription = data['num_rerun'] + '/' + data['total_reruns'];
   }
 
-  goEvaluation(roundId, ecoeId: number) {
-    if (ecoeId) {
-      this.evalService.setSelectedRound(roundId, ecoeId);
-      this.router.navigate(['/eval/ecoe/', ecoeId]).finally();
-    }
-  }
-
   ngOnDestroy() {
-    this.chronoService.disconect();
+    if (this.chronoService) {
+      this.chronoService.disconect();
+    }
   }
 }

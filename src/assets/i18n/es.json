@@ -237,5 +237,6 @@
   "TIME_YESTERDAY": "Ayer",
   "ANY_ECOE_CONFIGURED": "Actualmente no hay ninguna ECOE programada",
   "PUBLISH_ECOE": "Publicar ECOE",
-  "UPDATE_PUBLISHED_ECOE": "Actualizar publicación"
+  "UPDATE_PUBLISHED_ECOE": "Actualizar publicación",
+  "NOT_STARTED_YET": " todavia no ha comenzado"
 }

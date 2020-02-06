@@ -15,6 +15,8 @@ import { QblockQuestionFormComponent } from './qblock-question-form/qblock-quest
 import {QuestionsListComponent} from './questions-list/questions-list.component';
 import {OptionsListComponent} from './questions-list/options-list/options-list.component';
 import { ChronoComponent } from './chrono/chrono.component';
+import { ProgressBarComponent } from './chrono/progress-bar/progress-bar.component';
+import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.component';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -28,7 +30,9 @@ import { ChronoComponent } from './chrono/chrono.component';
     QblockQuestionFormComponent,
     QuestionsListComponent,
     OptionsListComponent,
-    ChronoComponent
+    ChronoComponent,
+    ProgressBarComponent,
+    ChronoHeaderComponent
   ],
   imports: [
     CommonModule,

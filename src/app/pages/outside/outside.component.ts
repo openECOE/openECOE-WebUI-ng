@@ -10,11 +10,13 @@ import {Subscription} from 'rxjs';
 })
 export class OutsideComponent implements OnInit, OnDestroy {
   private ecoesConfig: ECOEConfig[] = [];
+  private filtredEcoesConfig: ECOEConfig[] = [];
   private selectedRound: InfoData;
   private selectedRoundIndex: number;
   private selectedConfig: ECOEConfig;
 
   private  chronoSubs: Subscription;
+  private ecoesStatusRunning = [];
 
   constructor(private chronoService: ChronoService) {}
 
@@ -39,6 +41,20 @@ export class OutsideComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.chronoSubs) {
       this.chronoSubs.unsubscribe();
+    }
+  }
+
+  onStartedECOE($event: number) {
+    if (this.ecoesStatusRunning.indexOf($event) <= -1) {
+      this.ecoesStatusRunning.push($event);
+
+      this.ecoesStatusRunning.forEach(id => {
+        this.ecoesConfig.forEach(config => {
+          if (config.ecoe.id === id) {
+            this.filtredEcoesConfig.push(config);
+          }
+        });
+      });
     }
   }
 }

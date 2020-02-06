@@ -1,99 +1,61 @@
- <div class="chrono-component">
-  <ng-container *ngIf="!aborted">
-    <div nz-row>
-      <div nz-col nzSpan="11" nzXs="24" nzSm="11">
-        <h2 *ngIf="!showDetails" uppercase>{{round.description}}</h2>
-        <nz-tag [nzColor]="'#2db7f5'" class="my-tag" >
-          {{
-            (minutes | number:'2.') + ':' + (seconds | number:'2.')
-          }}
-          <ng-container *ngIf="stageName">
-            {{stageName}}
-          </ng-container>
-        </nz-tag>
-        <h4 *ngIf="rerunsDescription">({{'RERUN'| translate}} {{rerunsDescription}})</h4>
-      </div>
-      <div nz-col nzSpan="13" nzXs="0" nzSm="13">
-        <ng-container *ngIf="showDetails; else Outside" >
-          <nz-tag  *ngIf="showDetails && currentCountDownEvent?.event" [nzColor]="'orange'" no-margin class="my-tag right" >
-            {{
-              (currentCountDownEvent['minutes'] | number:'2.') + ':' + (this.currentCountDownEvent['seconds'] | number:'2.')
-            }}
-            <ng-container >
-              {{currentCountDownEvent['event']['message']}}
-            </ng-container>
-          </nz-tag>
-        </ng-container>
+<div class="chrono-component">
 
-        <ng-template #Outside>
-          <div nz-row text-right>
-            <a (click)="goEvaluation(round.id, idEcoe)">
+  <ng-container *ngIf="(tictacFlag && connectedFlag || !withPreview) else BeforeStart">
 
-              <i nz-icon nzType="link" nzTheme="outline"></i>
-            </a>
-          </div>
-        </ng-template>
-
-      </div>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="aborted">
-    <h2 *ngIf="!showDetails" uppercase>{{round.description}}</h2>
-    <h4 *ngIf="!showDetails && initStage">({{'RERUN'| translate}} {{rerunsDescription}})</h4>
-    <nz-tag nzColor="red" class="my-tag" >
-      <ng-container *ngIf="stageName">
-        {{stageName | translate}}
-      </ng-container>
-    </nz-tag> <br/>
-  </ng-container>
-
-  <ng-container *ngIf="showDetails">
-    <nz-progress
-      [nzPercent]="totalPercent"
-      [nzShowInfo]="false"
-      [nzStatus]="aborted ? 'exception' :  'active'"
-      nzSize="default"
-      nzStatus="active"
-      style="height: 15px">
-    </nz-progress>
-
-    <ng-container *ngIf="eventsToPlay">
-      <div class="events" nz-row>
-        <ng-container *ngFor="let eventItem of eventsToPlay; let idx = index">
-          <span *ngIf="idx < eventsToPlay.length -1" [style.left.%]="((eventItem['t'] / totalDuration) * 100) > 0
-                                                   ? ((eventItem['t'] / totalDuration) * 100) - 2
-                                                   : (eventItem['t'] / totalDuration) * 100"
-          >
-            <ng-container *ngTemplateOutlet="eventContent"></ng-container>
-          </span>
-
-          <span *ngIf="idx === eventsToPlay.length -1" [style.right.px]="0" text-right>
-            <ng-container *ngTemplateOutlet="eventContent"></ng-container>
-          </span>
-
-          <ng-template #eventContent>
-            <i nz-col  nz-icon  nzType="notification" nzTheme="twotone"></i>
-            <span class="events-description"><br/>
-              <nz-tag [style.margin-right]="idx === eventsToPlay.length -1 ? 0 : 'initial'" nzColor="#f0ad4e">
-                {{eventItem['message']}}
-              </nz-tag>
-            </span>
-          </ng-template>
-        </ng-container>
-      </div>
+    <ng-container *ngIf="!aborted else ECOEAborted">
+      <app-chrono-header
+      [showDetails]="showDetails"
+      [idEcoe]="idEcoe"
+      [currentCountDownEvent]="currentCountDownEvent"
+      [minutes]="minutes"
+      [rerunsDescription]="rerunsDescription"
+      [round]="round"
+      [seconds]="seconds"
+      [stageName]="stageName"
+      >
+      </app-chrono-header>
     </ng-container>
-  </ng-container>
-  <div *ngIf="!showDetails" margin-top>
-    <ng-content></ng-content>
-  </div>
 
-  <div nz-row>
-    <div nz-col nzXs="0" nzSm="24">
-      <nz-tag margin-top-18 *ngIf="!station && showDetails && !aborted && stageName"
-              style="font-size: 1.7em; padding: 0.20em; height: 1.3em; font-weight: bold" nzColor="#108ee9">
-        {{('ESTIMATED_TIME_TO_FINISH' | translate) + momentRef().add(remainingTime, "seconds").format("HH:mm")}}
-      </nz-tag>
+    <ng-template #ECOEAborted>
+      <h2 *ngIf="!showDetails" uppercase>{{round.description}}</h2>
+      <h4 *ngIf="!showDetails && initStage">({{'RERUN'| translate}} {{rerunsDescription}})</h4>
+      <nz-tag nzColor="red" class="my-tag">
+        <ng-container *ngIf="stageName">
+          {{stageName | translate}}
+        </ng-container>
+      </nz-tag> <br/>
+    </ng-template>
+
+    <!--CHRONO BODY CONTENT-->
+    <ng-container *ngIf="showDetails else DetailsHidden">
+      <app-progress-bar
+        [aborted]="aborted"
+        [eventsToPlay]="eventsToPlay"
+        [totalDuration]="totalDuration"
+        [totalPercent]="totalPercent">
+      </app-progress-bar>
+    </ng-container>
+
+    <ng-template #DetailsHidden>
+      <div margin-top>
+        <ng-content></ng-content>
+      </div>
+    </ng-template>
+    <!-- END--CHRONO BODY CONTENT-->
+
+    <!--CHRONO FOOOTER-->
+    <div nz-row>
+      <div nz-col nzXs="0" nzSm="24">
+        <nz-tag *ngIf="!station && showDetails && !aborted && stageName"
+                margin-top-18  class="footer-tag" nzColor="#108ee9">
+          {{('ESTIMATED_TIME_TO_FINISH' | translate) + momentRef().add(remainingTime, "seconds").format("HH:mm")}}
+        </nz-tag>
+      </div>
     </div>
-  </div>
- </div>
+
+  </ng-container>
+
+  <ng-template #BeforeStart>
+    <ng-container *ngIf="templateBeforeStart" [ngTemplateOutlet]="templateBeforeStart"></ng-container>
+  </ng-template>
+</div>

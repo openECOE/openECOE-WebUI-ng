@@ -4,11 +4,11 @@
 
     <div nz-row>
       <div nz-col  nzXs="24" nzSm="6" nzLg="4" nzXl="3">
-        <nz-tabset *ngIf="ecoesConfig"
+        <nz-tabset *ngIf="filtredEcoesConfig"
                    nzSize="default"
                    [nzTabPosition]="'left'"
                    [(nzSelectedIndex)]="selectedRoundIndex">
-          <ng-container *ngFor="let item of ecoesConfig">
+          <ng-container *ngFor="let item of filtredEcoesConfig">
             <nz-tab
               (nzClick)="onChangeRound(round)"
               *ngFor="let round of item.rounds"
@@ -25,16 +25,23 @@
       <div nz-col  nzXs="24" nzSm="18" nzLg="20" nzXl="21">
         <div nz-row margin-top>
           <div nz-col>
-            <h3><strong>{{selectedRound.name}}</strong></h3>
             <app-chrono
+              withPreview = true
               [round]="selectedRound"
-              [idEcoe]="selectedConfig.ecoe.id">
+              [idEcoe]="selectedConfig.ecoe.id"
+              [templateBeforeStart]="BeforeStartContent"
+              (started)="onStartedECOE($event)"
+            >
             </app-chrono>
           </div>
         </div>
       </div>
     </div>
   </ng-container>
+
+  <ng-template #BeforeStartContent>
+    <h2><i nz-icon nzType="info-circle" nzTheme="outline"></i> {{selectedConfig.ecoe.name + "NOT_STARTED_YET"}}</h2>
+  </ng-template>
 
   <ng-template #noData>
     <nz-empty [nzNotFoundContent]="'ANY_ECOE_CONFIGURED' | translate"></nz-empty>
