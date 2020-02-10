@@ -17,6 +17,7 @@ export class StateComponent implements OnInit {
   private rounds: Round[] = [];
   private disabledBtnStart: boolean;
   private errorAlert: string;
+  doSpin: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private translate: TranslateService,
@@ -49,11 +50,15 @@ export class StateComponent implements OnInit {
   }
 
   publishECOE(ecoeId: number) {
+    this.setSpin(true);
     this.chronoService.publishECOE(ecoeId).toPromise()
-      .then(result => {
-        console.log('published', result);
-      })
       .catch(err => console.warn(err));
+  }
+
+  private setSpin(value: boolean) {
+    this.doSpin =  value;
+
+    setTimeout(() => this.doSpin = false, 1000);
   }
 
   startECOE() {

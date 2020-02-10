@@ -1,7 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ChronoService} from '../../services/chrono/chrono.service';
-import {ECOEConfig, InfoData} from '../../models/chrono';
+
+import {ECOEConfig, InfoData} from '../../../models/chrono';
 import {Subscription} from 'rxjs';
+import {ChronoService} from '../../../services/chrono/chrono.service';
+import {AuthenticationService} from '../../../services/authentication/authentication.service';
 
 @Component({
   selector: 'app-outside',
@@ -10,18 +12,19 @@ import {Subscription} from 'rxjs';
 })
 export class OutsideComponent implements OnInit, OnDestroy {
   private ecoesConfig: ECOEConfig[] = [];
-  private filtredEcoesConfig: ECOEConfig[] = [];
   private selectedRound: InfoData;
   private selectedRoundIndex: number;
   private selectedConfig: ECOEConfig;
 
-  private  chronoSubs: Subscription;
-  private ecoesStatusRunning = [];
+  private chronoSubs: Subscription;
+  private authenticated: boolean;
 
-  constructor(private chronoService: ChronoService) {}
+  constructor(private chronoService: ChronoService,
+              private authenticationService: AuthenticationService) {}
 
   ngOnInit() {
-    this.chronoSubs = this.chronoService.getChronoConfiguration().subscribe(
+    this.chronoSubs = this.chronoService.getChronoConfiguration()
+      .subscribe(
       (result: ECOEConfig[]) => {
         if (result && result.length > 0) {
           this.ecoesConfig = result;
@@ -31,6 +34,8 @@ export class OutsideComponent implements OnInit, OnDestroy {
         console.warn(error);
       }
     );
+    this.authenticated = this.authenticationService.userLogged;
+    console.log(this.authenticated);
   }
 
   onChangeRound(round: InfoData) {
@@ -44,17 +49,7 @@ export class OutsideComponent implements OnInit, OnDestroy {
     }
   }
 
-  onStartedECOE($event: number) {
-    if (this.ecoesStatusRunning.indexOf($event) <= -1) {
-      this.ecoesStatusRunning.push($event);
-
-      this.ecoesStatusRunning.forEach(id => {
-        this.ecoesConfig.forEach(config => {
-          if (config.ecoe.id === id) {
-            this.filtredEcoesConfig.push(config);
-          }
-        });
-      });
-    }
+  onChangeECOE(ecoe: InfoData) {
+    this.selectedConfig = this.ecoesConfig.filter(item => item.ecoe.id === ecoe.id)[0];
   }
 }

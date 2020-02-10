@@ -4,7 +4,8 @@
     <div nz-col>
       <button (click)="publishECOE(ecoeId)" [disabled]="disabledBtnStart"
                 nzSize="large" nz-button nzBlock nzType="primary">
-          <i nz-icon nzType="upload" nzTheme="outline"></i>
+          <i *ngIf="!doSpin" nz-icon nzType="upload" nzTheme="outline"></i>
+        <i *ngIf="doSpin" nz-icon nzSpin="true" nzType="sync" nzTheme="outline"></i>
           {{'PUBLISH_ECOE' | translate}}
         </button>
     </div>

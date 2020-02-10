@@ -17,7 +17,7 @@
     </ng-container>
 
     <ng-template #ECOEAborted>
-      <h2 *ngIf="!showDetails" uppercase>{{round.description}}</h2>
+      <h2 *ngIf="!showDetails && round" uppercase>{{round.description}}</h2>
       <h4 *ngIf="!showDetails && initStage">({{'RERUN'| translate}} {{rerunsDescription}})</h4>
       <nz-tag nzColor="red" class="my-tag">
         <ng-container *ngIf="stageName">

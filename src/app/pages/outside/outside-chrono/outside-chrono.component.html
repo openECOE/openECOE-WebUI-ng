@@ -1,0 +1,28 @@
+<nz-content padding>
+  <nz-page-header class="margin-top margin-bottom"
+                  (nzBack)="onBack()" nzBackIcon
+                  [nzTitle]="Title">
+  </nz-page-header>
+
+  <ng-template #Title>
+    <h1>{{('EVALUATION' | translate)}}</h1>
+    <h2 *ngIf="ecoeName && roundDescription">
+      {{ecoeName + ' - ' + roundDescription}}
+    </h2>
+  </ng-template>
+
+  <app-chrono
+    [idEcoe]="ecoeId"
+    [roundId]="roundId"
+    withPreview="true"
+    [templateBeforeStart]="ChronoPreview"
+  >
+  </app-chrono>
+
+  <ng-template #ChronoPreview>
+    <h2>
+      <i nz-icon nzType="info-circle" nzTheme="outline"></i>
+      {{('STATUS' | translate) + ': ' + ('PENDING_TO_START' | translate)}}
+    </h2>
+  </ng-template>
+</nz-content>

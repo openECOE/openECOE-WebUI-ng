@@ -21,8 +21,9 @@ import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-cl
 
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';
-import { OutsideComponent } from './pages/outside/outside.component';
+import { OutsideComponent } from './pages/outside/list-rounds/outside.component';
 import {ComponentsModule} from './components/components.module';
+import { OutsideChronoComponent } from './pages/outside/outside-chrono/outside-chrono.component';
 
 
 registerLocaleData(localeEs, 'es', localeEsExtra);
@@ -36,7 +37,8 @@ export function createTranslateLoader(http: HttpClient) {
     AppComponent,
     HomeComponent,
     LoginComponent,
-    OutsideComponent
+    OutsideComponent,
+    OutsideChronoComponent
   ],
   imports: [
     BrowserModule,
@@ -90,6 +92,9 @@ export function createTranslateLoader(http: HttpClient) {
       useValue: resources,
       multi: true
     }
+  ],
+  exports: [
+    LoginComponent
   ],
   bootstrap: [AppComponent]
 })

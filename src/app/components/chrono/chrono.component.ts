@@ -11,10 +11,11 @@ import * as moment from 'moment';
 export class ChronoComponent implements OnChanges, OnDestroy {
 
   @Input() private round: Round;
+  @Input() private roundId: number;
   @Input() private station: Station;
   @Input() private showDetails: boolean = true;
   @Input() private mute: boolean = false;
-  @Input() private idEcoe: number = 1;
+  @Input() private idEcoe: number;
   @Input() private withPreview: boolean = false;
   @Input() private templateBeforeStart: TemplateRef<void>;
   @Output() private started: EventEmitter<number> = new EventEmitter<number>();
@@ -46,13 +47,15 @@ export class ChronoComponent implements OnChanges, OnDestroy {
   constructor(private chronoService: ChronoService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.round && changes.round.currentValue) {
-      this.getChronoData(changes.round.currentValue, this.idEcoe);
+    if ((changes.round && changes.round.currentValue) ||
+        (changes.roundId && changes.roundId.currentValue)) {
+      const roundId = changes.round ? changes.round.currentValue : changes.roundId.currentValue;
+      this.getChronoData(roundId, this.idEcoe);
     }
   }
 
   getChronoData(round: Round, idEcoe: number) {
-    this.chronoService.onConnected(round.id).subscribe( () => {
+    this.chronoService.onConnected(round.id || this.roundId).subscribe( () => {
       this.connectedFlag = true;
       this.getConfigurationECOE(idEcoe);
 

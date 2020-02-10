@@ -1,0 +1,54 @@
+<nz-content padding>
+  <ng-container *ngIf="selectedConfig && selectedRound; else noData">
+    <nz-page-header class="margin-top margin-bottom" [nzTitle]="'ECOE(s)' | translate"></nz-page-header>
+
+    <div nz-row padding>
+      <div nz-col  nzXs="24" nzSm="6" nzLg="4" nzXl="3">
+        <nz-tabset *ngIf="ecoesConfig"
+                   nzSize="default"
+                   [nzTabPosition]="'left'"
+                   [(nzSelectedIndex)]="selectedRoundIndex">
+          <ng-container *ngFor="let item of ecoesConfig">
+            <nz-tab
+              (nzClick)="onChangeECOE(item.ecoe)"
+              [nzTitle]="titleTemplate"
+            >
+              <ng-template #titleTemplate>
+                <h2>{{item.ecoe.name}}</h2>
+                <!--<h5>{{'30/05/2020 - 08:00'}}</h5>-->
+              </ng-template>
+            </nz-tab>
+          </ng-container>
+        </nz-tabset>
+      </div>
+      <div nz-col  nzXs="24" nzSm="18" nzLg="20" nzXl="21">
+        <div nz-row>
+            <nz-list [nzDataSource]="selectedConfig.rounds" [nzRenderItem]="item" [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
+              <ng-template #item let-item>
+                <nz-list-item [nzContent]="nzContent">
+                  <ng-template #nzContent>
+                    <nz-card success-color no-padding pointer nzHoverable
+                             class="not-completed"
+                             [routerLink]="['./ecoe', selectedConfig.ecoe.id, 'round' , item.id]"
+                    >
+                      <h3 text-center class="color-white bold">
+                        {{item.name}}
+                      </h3>
+                    </nz-card>
+                  </ng-template>
+                </nz-list-item>
+              </ng-template>
+            </nz-list>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <h4 text-center *ngIf="!authenticated && ecoesConfig.length > 0">{{'OUTSIDE_DESCRIPTION' | translate}}<a [routerLink]="['/login']"> {{'HERE' | translate | lowercase}}</a></h4>
+
+  <ng-template #noData>
+    <app-login></app-login>
+    <nz-empty [nzNotFoundContent]="'ANY_ECOE_CONFIGURED' | translate"></nz-empty>
+  </ng-template>
+
+</nz-content>

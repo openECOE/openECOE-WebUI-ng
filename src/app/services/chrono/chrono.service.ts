@@ -81,7 +81,7 @@ export class ChronoService {
     return this.http.post(this.URL_CHRONO + command, null, {});
   }
 
-  getConfigrationECOE(ecoeId: number) {
+  private getConfigrationECOE(ecoeId: number) {
     const command = '/configuration';
     const url = `${environment.API_ROUTE}/${this.URL_API}/ecoes/${ecoeId + command}`;
     return this.http.get(url);
@@ -105,7 +105,7 @@ export class ChronoService {
 
     return this.http.get(url)
       .pipe(
-        map((response: ECOEConfig[]) => ecoeId ? response.filter(config => config.ecoe.id === ecoeId) : response)
+        map((response: ECOEConfig[]) => ecoeId ? response.filter(config => +config.ecoe.id === +ecoeId) : response)
       );
   }
 
