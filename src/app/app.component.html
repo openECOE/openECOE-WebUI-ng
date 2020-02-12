@@ -1,6 +1,8 @@
 <nz-layout class="layout">
 
   <nz-header style="width:100%; z-index: 1000; position:fixed;">
+    <a  (click)="router.navigate(['/outside'])">Outside</a>
+    <nz-divider nzType="vertical"></nz-divider>
     <a
        (click)="router.navigate(['/'])">
       {{"open ECOE" | translate}}

@@ -26,13 +26,12 @@ export class HomeComponent implements OnInit {
 
     if (this.authService.userLogged) {
       this.authService.loadUserData()
-      .subscribe((asd) => {
-        console.log('asd', asd);
+      .subscribe(() => {
         this.loadEcoes();
         this.isAdmin = (this.authService.userData['role'] === 'Admin');
       });
     } else {
-      this.authService.logout('/outside');
+      this.authService.logout('/login');
     }
   }
 

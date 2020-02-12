@@ -1,50 +1,38 @@
 <nz-content padding>
   <ng-container *ngIf="selectedConfig && selectedRound; else noData">
     <nz-page-header class="margin-top margin-bottom" [nzTitle]="'ECOE(s)' | translate"></nz-page-header>
+    <nz-list padding
+      [nzDataSource]="ecoesConfig"
+      [nzRenderItem]="ListItem"
+    >
+    </nz-list>
+    <ng-template #ListItem let-ecoeConfig>
+      <nz-list-item>
+        <nz-row width-100>
+          <nz-col nzMd="6">
+            <h2>{{ecoeConfig.ecoe.name | uppercase}}<br>
+              <small>{{'30/05/2020 - 08:00'}}</small>
+            </h2>
+          </nz-col>
+          <ng-container *ngFor="let round of ecoeConfig.rounds">
+            <nz-col [nzMd]="18 / (ecoeConfig.rounds.length || 1)">
 
-    <div nz-row padding>
-      <div nz-col  nzXs="24" nzSm="6" nzLg="4" nzXl="3">
-        <nz-tabset *ngIf="ecoesConfig"
-                   nzSize="default"
-                   [nzTabPosition]="'left'"
-                   [(nzSelectedIndex)]="selectedRoundIndex">
-          <ng-container *ngFor="let item of ecoesConfig">
-            <nz-tab
-              (nzClick)="onChangeECOE(item.ecoe)"
-              [nzTitle]="titleTemplate"
-            >
-              <ng-template #titleTemplate>
-                <h2>{{item.ecoe.name}}</h2>
-<!--                <h5>{{'30/05/2020 - 08:00'}}</h5>-->
-              </ng-template>
-            </nz-tab>
+              <nz-card success-color no-padding pointer nzHoverable margin-left
+                       class="not-completed"
+                       [routerLink]="['./ecoe', selectedConfig.ecoe.id, 'round' , round.id]"
+              >
+                <h3 text-center class="color-white bold">
+                  {{round.name}}
+                </h3>
+              </nz-card>
+            </nz-col>
           </ng-container>
-        </nz-tabset>
-      </div>
-      <div nz-col  nzXs="24" nzSm="18" nzLg="20" nzXl="21">
-        <div nz-row>
-            <nz-list [nzDataSource]="selectedConfig.rounds" [nzRenderItem]="item" [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
-              <ng-template #item let-item>
-                <nz-list-item [nzContent]="nzContent">
-                  <ng-template #nzContent>
-                    <nz-card success-color no-padding pointer nzHoverable
-                             class="not-completed"
-                             [routerLink]="['./ecoe', selectedConfig.ecoe.id, 'round' , item.id]"
-                    >
-                      <h3 text-center class="color-white bold">
-                        {{item.name}}
-                      </h3>
-                    </nz-card>
-                  </ng-template>
-                </nz-list-item>
-              </ng-template>
-            </nz-list>
-        </div>
-      </div>
-    </div>
-  </ng-container>
+        </nz-row>
+      </nz-list-item>
 
-  <h4 text-center *ngIf="!authenticated && ecoesConfig.length > 0">{{'OUTSIDE_DESCRIPTION' | translate}}<a [routerLink]="['/login']"> {{'HERE' | translate | lowercase}}</a></h4>
+    </ng-template>
+
+  </ng-container>
 
   <ng-template #noData>
     <nz-empty [nzNotFoundContent]="'ANY_ECOE_CONFIGURED' | translate"></nz-empty>
