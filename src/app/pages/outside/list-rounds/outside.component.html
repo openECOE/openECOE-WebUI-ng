@@ -15,7 +15,7 @@
             >
               <ng-template #titleTemplate>
                 <h2>{{item.ecoe.name}}</h2>
-                <!--<h5>{{'30/05/2020 - 08:00'}}</h5>-->
+<!--                <h5>{{'30/05/2020 - 08:00'}}</h5>-->
               </ng-template>
             </nz-tab>
           </ng-container>
@@ -47,7 +47,6 @@
   <h4 text-center *ngIf="!authenticated && ecoesConfig.length > 0">{{'OUTSIDE_DESCRIPTION' | translate}}<a [routerLink]="['/login']"> {{'HERE' | translate | lowercase}}</a></h4>
 
   <ng-template #noData>
-    <app-login></app-login>
     <nz-empty [nzNotFoundContent]="'ANY_ECOE_CONFIGURED' | translate"></nz-empty>
   </ng-template>
 
