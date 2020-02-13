@@ -10,8 +10,8 @@
       <nz-list-item>
         <nz-row width-100>
           <nz-col nzMd="6">
-            <h2>{{ecoeConfig.ecoe.name | uppercase}}<br>
-              <small>{{'30/05/2020 - 08:00'}}</small>
+            <h2><strong>{{ecoeConfig.ecoe.name | uppercase}}</strong><br>
+              <small>{{ecoeConfig.ecoe.time_start | textdate: true}}</small>
             </h2>
           </nz-col>
           <ng-container *ngFor="let round of ecoeConfig.rounds">

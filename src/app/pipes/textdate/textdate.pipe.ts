@@ -10,11 +10,23 @@ export class TextDatePipe implements PipeTransform {
 
   }
 
-  transform(value: string, ...args) {
+  transform(val: string, fullDate?: boolean, separator?: string, ...args) {
 
-    if (value == null) {
+    if (val == null) {
       return '';
     }
+
+    const value = new Date(val).toString();
+
+
+    const hhMMss2hhMM = (( str ) => {
+      const sept = separator || ' ';
+      const fullHour = str.split(sept)[4];
+      const hhmm = fullHour ? fullHour.substring(0, 5) : '';
+
+      return ', ' + hhmm;
+    });
+
 
     let date;
 
@@ -54,6 +66,6 @@ export class TextDatePipe implements PipeTransform {
       date = inputDate.toLocaleDateString(this.translate.currentLang, dateOptions);
     }
 
-    return date;
+    return fullDate ? date + hhMMss2hhMM(value) : date;
   }
 }

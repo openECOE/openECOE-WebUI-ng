@@ -14,6 +14,7 @@ export interface ECOEConfig {
 export interface InfoData {
   id: number;
   name: string;
+  time_start?: string;
 }
 
 export interface Event {

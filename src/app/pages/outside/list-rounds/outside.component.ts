@@ -35,7 +35,6 @@ export class OutsideComponent implements OnInit, OnDestroy {
       }
     );
     this.authenticated = this.authenticationService.userLogged;
-    console.log(this.authenticated);
   }
 
   onChangeRound(round: InfoData) {
