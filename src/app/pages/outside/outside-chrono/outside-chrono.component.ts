@@ -7,7 +7,8 @@ import {ChronoService} from '../../../services/chrono/chrono.service';
 @Component({
   selector: 'app-outside-chrono',
   templateUrl: './outside-chrono.component.html',
-  styleUrls: ['./outside-chrono.component.less']
+  styleUrls: ['./outside-chrono.component.less'],
+  providers: [ChronoService]
 })
 export class OutsideChronoComponent implements OnInit {
 

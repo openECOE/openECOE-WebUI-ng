@@ -8,12 +8,12 @@ import {AuthenticationService} from '../../../services/authentication/authentica
 @Component({
   selector: 'app-outside',
   templateUrl: './outside.component.html',
-  styleUrls: ['./outside.component.less']
+  styleUrls: ['./outside.component.less'],
+  providers: [ChronoService]
 })
 export class OutsideComponent implements OnInit, OnDestroy {
   private ecoesConfig: ECOEConfig[] = [];
   private selectedRound: InfoData;
-  private selectedRoundIndex: number;
   private selectedConfig: ECOEConfig;
 
   private chronoSubs: Subscription;
@@ -47,9 +47,5 @@ export class OutsideComponent implements OnInit, OnDestroy {
     if (this.chronoSubs) {
       this.chronoSubs.unsubscribe();
     }
-  }
-
-  onChangeECOE(ecoe: InfoData) {
-    this.selectedConfig = this.ecoesConfig.filter(item => item.ecoe.id === ecoe.id)[0];
   }
 }

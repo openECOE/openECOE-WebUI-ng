@@ -6,7 +6,8 @@ import * as moment from 'moment';
 @Component({
   selector: 'app-chrono',
   templateUrl: './chrono.component.html',
-  styleUrls: ['./chrono.component.less']
+  styleUrls: ['./chrono.component.less'],
+  providers: [ChronoService]
 })
 export class ChronoComponent implements OnChanges, OnDestroy {
 
@@ -179,7 +180,7 @@ export class ChronoComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy() {
     if (this.chronoService) {
-      this.chronoService.disconect();
+      this.chronoService.disconnect();
     }
   }
 }

@@ -9,7 +9,8 @@ import {ChronoService} from '../../../../services/chrono/chrono.service';
 @Component({
   selector: 'app-state',
   templateUrl: './state.component.html',
-  styleUrls: ['./state.component.less']
+  styleUrls: ['./state.component.less'],
+  providers: [ChronoService]
 })
 export class StateComponent implements OnInit {
   private ecoe: ECOE;
@@ -55,10 +56,9 @@ export class StateComponent implements OnInit {
       .catch(err => console.warn(err));
   }
 
-  private setSpin(value: boolean) {
-    this.doSpin =  value;
-
-    setTimeout(() => this.doSpin = false, 1000);
+  draftECOE(ecoeId: number) {
+    this.chronoService.draftECOE(ecoeId).toPromise()
+      .catch(err => console.warn(err));
   }
 
   startECOE() {
@@ -71,8 +71,18 @@ export class StateComponent implements OnInit {
       });
   }
 
-  stopECOE() {
-    this.chronoService.abortECOE()
+  pauseECOE(id: number) {
+    this.chronoService.pauseECOE(id)
+      .subscribe(null, err => error(err));
+  }
+
+  playECOE(id: number) {
+    this.chronoService.playECOE(id)
+      .subscribe(null, err => error(err));
+  }
+
+  stopECOE(id: number) {
+    this.chronoService.abortECOE(id)
       .subscribe(null, err => error(err));
 
     this.disabledBtnStart = true;
@@ -83,17 +93,23 @@ export class StateComponent implements OnInit {
     }, 1000);
   }
 
-  clearAlertError() {
+  playRound(round: number) {
+    this.chronoService.playRound(round)
+      .subscribe(null, err => error(err));
+  }
+
+  pauseRound(roundId: number) {
+    this.chronoService.pauseRound(roundId)
+      .subscribe(null, err => error(err));
+  }
+
+  private clearAlertError() {
     this.errorAlert = null;
   }
 
-  pauseRound(round?: number) {
-    this.chronoService.pauseECOE(round)
-      .subscribe(null, err => error(err));
-  }
+  private setSpin(value: boolean) {
+    this.doSpin =  value;
 
-  playRound(round?: number) {
-    this.chronoService.playECOE(round)
-      .subscribe(null, err => error(err));
+    setTimeout(() => this.doSpin = false, 1000);
   }
 }
