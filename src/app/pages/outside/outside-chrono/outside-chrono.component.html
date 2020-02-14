@@ -1,4 +1,4 @@
-<nz-content padding>
+<nz-content padding class="container">
   <nz-page-header class="margin-top margin-bottom"
                   (nzBack)="onBack()" nzBackIcon
                   [nzTitle]="Title">
@@ -20,9 +20,11 @@
   </app-chrono>
 
   <ng-template #ChronoPreview>
-    <h2>
-      <i nz-icon nzType="info-circle" nzTheme="outline"></i>
-      {{('STATUS' | translate) + ': ' + ('PENDING_TO_START' | translate)}}
-    </h2>
+    <nz-alert
+      nzType="info"
+      [nzMessage]="('STATUS' | translate) + ':'"
+      [nzDescription]="('PENDING_TO_START' | translate)"
+      nzShowIcon
+    ></nz-alert>
   </ng-template>
 </nz-content>

@@ -1,4 +1,4 @@
-<nz-content padding>
+<nz-content padding class="container">
   <ng-container *ngIf="selectedConfig && selectedRound; else noData">
     <nz-page-header class="margin-top margin-bottom" [nzTitle]="'ECOE(s)' | translate"></nz-page-header>
     <nz-list padding
@@ -15,7 +15,7 @@
             </h2>
           </nz-col>
           <ng-container *ngFor="let round of ecoeConfig.rounds">
-            <nz-col [nzMd]="18 / (ecoeConfig.rounds.length || 1)">
+            <nz-col [nzMd]="ecoeConfig.rounds.length > 2 ? +(18 / ecoeConfig.rounds.length).toString().substring(0,1) : 6">
 
               <nz-card success-color no-padding pointer nzHoverable margin-left
                        class="not-completed"
