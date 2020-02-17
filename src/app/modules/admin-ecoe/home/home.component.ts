@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
-import {AuthenticationService} from '../../services/authentication/authentication.service';
-import {ApiService} from '../../services/api/api.service';
+import {AuthenticationService} from '../../../services/authentication/authentication.service';
+import {ApiService} from '../../../services/api/api.service';
 
 @Component({
   selector: 'app-home',
