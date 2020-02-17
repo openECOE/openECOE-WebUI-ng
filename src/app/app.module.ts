@@ -13,7 +13,7 @@ import localeEsExtra from '@angular/common/locales/extra/es';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AuthInterceptor} from './interceptors/auth.interceptor';
-import { HomeComponent } from './modules/admin-ecoe/home/home.component';
+import { HomeComponent } from './modules/ecoe/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import {environment} from '../environments/environment';
 
