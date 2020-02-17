@@ -235,6 +235,11 @@
   "WARNING": "Atención",
 
   "OK_REQUEST_CONTENT": "Petición procesada correctamente.",
-  "ERROR_REQUEST_CONTENT": "Error al procesar petición."
+  "ERROR_REQUEST_CONTENT": "Error al procesar petición.",
+
+  "OUTSIDERS": "OUTSIDERS",
+  "ECOES": "ECOE's",
+
+  "CONFIGURATION": "Configuración"
 
 }
