@@ -21,12 +21,11 @@
                       <b>{{item['reference']}}</b>
                     </div>
                     <div nz-col nzXs="24" nzSm="4">
-                      <app-options-list
+                      <app-options-eval
                       [answers]="getQuestionsCompleted ? currentStudent.answers : []"
                       (optionChanged)="updateAnswer($event)"
-                      [evaluate]="true"
                       [question]="item"
-                      ></app-options-list>
+                      ></app-options-eval>
                     </div>
                   </div>
                 </nz-list-item>

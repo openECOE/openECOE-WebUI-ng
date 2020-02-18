@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Question, Option} from '../../../models';
+import {Question, Option} from '../../../../models';
 
 @Component({
   selector: 'app-options-list',
@@ -18,7 +18,6 @@ export class OptionsListComponent implements OnInit, OnChanges {
   editCacheOption: Array<any> = [];
   filtredAnswers: Option[] = [];
 
-  rateNumber: 5;
 
   constructor() {}
 
@@ -31,6 +30,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
       if (this.question.options.length > 0) {
         this.question.options = Object.create(this.parseOptions(this.question.options));
 
+        console.log('onChanges', this.question.options);
         this.filtredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
         this.setAnswers(this.filtredAnswers);
       }
@@ -44,6 +44,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
   initOptions() {
     this.question.options = this.parseOptions(this.question.options);
 
+    console.log('onInit', this.question.options);
     this.question.options.forEach((option) => {
       if (this.preview) {option.id = option.order; }
       this.editCacheOption[option.order] = {
@@ -87,29 +88,24 @@ export class OptionsListComponent implements OnInit, OnChanges {
   }
 
   setAnswers(answers: Option[]) {
-    console.log(this.question.options);
     this.resetOptions();
     if (answers && answers.length > 0) {
       answers.forEach((answer) => {
         const idx = this.question.options.indexOf(answer);
-        console.log(this.question.order, 'idx:' +  idx,  this.editCacheOption.length, this.question.options[idx].order);
         this.editCacheOption[idx]['checked'] = true;
       });
     }
   }
 
-  getIndex(idx): number {
-    // const options_idx_start_in = +this.question.options[0].order;
-
+  getIndex(): number {
     if (this.answers.length > 0 && this.question.options.length > 0) {
       if (this.question.options[0].order > 0) {
         this.question.options = this.parseOptions(this.question.options);
       }
       const res = this.question.options.filter(f => this.answers.includes(f));
-      // console.log('getIndex()', this.question.order + '::' +  this.question.questionType , res );
-      return (res.length > 0) ? (this.question.options.indexOf(res[0]) /*- options_idx_start_in*/) : 0;
+
+      return (res.length > 0) ? (this.question.options.indexOf(res[0]) ) : 0;
     } else {
-      // console.log('getIndex()', this.question.order + '::' +  this.question.questionType , '(idx vs getIndex())' + idx + 'vs ' + 0 );
       return 0;
     }
   }

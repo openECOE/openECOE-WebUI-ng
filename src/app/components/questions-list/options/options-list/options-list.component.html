@@ -1,0 +1,60 @@
+<nz-table #optionTable *ngIf="!evaluate"
+          [nzData]="question?.options"
+          nzSize="small"
+          [nzShowPagination]="false"
+          nzBordered="false">
+  <thead>
+  <tr>
+    <th nzWidth="40px">{{"ORDER" | translate}}</th>
+    <th nzWidth="250px">{{"LABEL" | translate}}</th>
+    <th nzWidth="150px">{{"POINTS" | translate}}</th>
+    <th>{{"PREVIEW" | translate}}</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let option of optionTable.data; let indexOption = index">
+    <ng-container>
+      <td>{{option.order}}</td>
+      <td>{{option.label}}</td>
+      <td>{{option.points | number: '.0-2'}}</td>
+    </ng-container>
+
+    <td *ngIf="(  (question.questionType == 'RS' && indexOption === getIndex())
+                || (question.questionType == 'CH')
+                || (question.questionType == 'RB' && indexOption == 0))"
+        [attr.rowspan]="(question.questionType == 'RS') ? question.options.length : 1">
+
+      <ng-container *ngIf="question.questionType == 'RB'">
+
+        <nz-switch (ngModelChange)="onOptionChange($event, option)"
+                   [ngModel]="editCacheOption[option.order]['checked']"
+                   [nzCheckedChildren]="option.label"
+                   [nzUnCheckedChildren]="optionTable.data[1].label"
+                   [ngClass]="editCacheOption[option.order].points < 0 ? 'negative-points' : 'positive-points'">
+        </nz-switch>
+
+      </ng-container>
+
+      <ng-container *ngIf="question.questionType == 'CH'">
+        <nz-switch
+                   (ngModelChange)="onOptionChange($event, option)"
+                   [ngModel]="editCacheOption[option.order]['checked']"
+                   [nzCheckedChildren]="option.label"
+                   [nzUnCheckedChildren]="option.label"
+                   [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
+        </nz-switch>
+      </ng-container>
+
+      <ng-container *ngIf="question.questionType == 'RS'">
+        <nz-rate
+          (ngModelChange)="onOptionChange($event, option, question.questionType)"
+          [ngModel]="option.order"
+          [nzCount]="optionTable.data.length"
+          nzAllowClear=false></nz-rate>
+      </ng-container>
+
+    </td>
+  </tr>
+  </tbody>
+</nz-table>

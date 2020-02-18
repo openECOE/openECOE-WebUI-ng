@@ -13,10 +13,10 @@ import { QuestionFormComponent } from './qblock-question-form/question-form/ques
 import { OptionFormComponent } from './qblock-question-form/option-form/option-form.component';
 import { QblockQuestionFormComponent } from './qblock-question-form/qblock-question-form.component';
 import {QuestionsListComponent} from './questions-list/questions-list.component';
-import {OptionsListComponent} from './questions-list/options-list/options-list.component';
+import {OptionsListComponent} from './questions-list/options/options-list/options-list.component';
 import { ChronoComponent } from './chrono/chrono.component';
 import {PipesModule} from '../pipes/pipes.module';
-import {BarRatingModule} from 'ngx-bar-rating';
+import { OptionsEvalComponent } from './questions-list/options/options-eval/options-eval.component';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -30,7 +30,8 @@ import {BarRatingModule} from 'ngx-bar-rating';
     QblockQuestionFormComponent,
     QuestionsListComponent,
     OptionsListComponent,
-    ChronoComponent
+    ChronoComponent,
+    OptionsEvalComponent
   ],
     imports: [
         CommonModule,
@@ -40,8 +41,7 @@ import {BarRatingModule} from 'ngx-bar-rating';
         RouterModule,
         ReactiveFormsModule,
         FormsModule,
-        PipesModule,
-        BarRatingModule
+        PipesModule
     ],
   exports: [
     UploadAndParseComponent,
@@ -51,7 +51,8 @@ import {BarRatingModule} from 'ngx-bar-rating';
     QuestionsListComponent,
     QuestionFormComponent,
     ChronoComponent,
-    OptionsListComponent
+    OptionsListComponent,
+    OptionsEvalComponent
   ]
 })
 export class ComponentsModule {}
