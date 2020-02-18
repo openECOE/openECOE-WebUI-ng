@@ -18,6 +18,8 @@ export class OptionsListComponent implements OnInit, OnChanges {
   editCacheOption: Array<any> = [];
   filtredAnswers: Option[] = [];
 
+  rateNumber: 5;
+
   constructor() {}
 
   ngOnInit() {
@@ -27,6 +29,8 @@ export class OptionsListComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.answers && (changes.answers.currentValue as Option[]).length > 0) {
       if (this.question.options.length > 0) {
+        this.question.options = Object.create(this.parseOptions(this.question.options));
+
         this.filtredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
         this.setAnswers(this.filtredAnswers);
       }
@@ -38,6 +42,8 @@ export class OptionsListComponent implements OnInit, OnChanges {
    * Then updates the options cache.
    */
   initOptions() {
+    this.question.options = this.parseOptions(this.question.options);
+
     this.question.options.forEach((option) => {
       if (this.preview) {option.id = option.order; }
       this.editCacheOption[option.order] = {
@@ -46,6 +52,18 @@ export class OptionsListComponent implements OnInit, OnChanges {
         valueRS: 0
       };
     });
+  }
+
+  parseOptions(options: Option[]) {
+    options.sort((a, b) => a.order - b.order);
+
+    const options_idx_start_in = +options[0].order;
+    // console.log('parseOptions()::options_idx_start_in', options_idx_start_in );
+    if (options_idx_start_in > 0) {
+      options.map((option, i) => {options[i].order = option.order - options_idx_start_in; });
+    }
+
+    return options;
   }
 
   resetOptions() {
@@ -69,20 +87,29 @@ export class OptionsListComponent implements OnInit, OnChanges {
   }
 
   setAnswers(answers: Option[]) {
+    console.log(this.question.options);
     this.resetOptions();
     if (answers && answers.length > 0) {
       answers.forEach((answer) => {
         const idx = this.question.options.indexOf(answer);
-        this.editCacheOption[this.question.options[idx].order]['checked'] = true;
+        console.log(this.question.order, 'idx:' +  idx,  this.editCacheOption.length, this.question.options[idx].order);
+        this.editCacheOption[idx]['checked'] = true;
       });
     }
   }
 
-  getIndex(): number {
+  getIndex(idx): number {
+    // const options_idx_start_in = +this.question.options[0].order;
+
     if (this.answers.length > 0 && this.question.options.length > 0) {
+      if (this.question.options[0].order > 0) {
+        this.question.options = this.parseOptions(this.question.options);
+      }
       const res = this.question.options.filter(f => this.answers.includes(f));
-      return (res.length > 0) ? res[0].order : 0;
+      // console.log('getIndex()', this.question.order + '::' +  this.question.questionType , res );
+      return (res.length > 0) ? (this.question.options.indexOf(res[0]) /*- options_idx_start_in*/) : 0;
     } else {
+      // console.log('getIndex()', this.question.order + '::' +  this.question.questionType , '(idx vs getIndex())' + idx + 'vs ' + 0 );
       return 0;
     }
   }

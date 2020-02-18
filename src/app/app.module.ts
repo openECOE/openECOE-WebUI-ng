@@ -21,6 +21,7 @@ import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-cl
 
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';
+import {BarRatingModule} from 'ngx-bar-rating';
 
 
 registerLocaleData(localeEs, 'es', localeEsExtra);
@@ -52,6 +53,7 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     PotionModule,
     PipesModule,
+    BarRatingModule
   ],
   providers: [
     {

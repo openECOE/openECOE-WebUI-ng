@@ -15,6 +15,8 @@ import { QblockQuestionFormComponent } from './qblock-question-form/qblock-quest
 import {QuestionsListComponent} from './questions-list/questions-list.component';
 import {OptionsListComponent} from './questions-list/options-list/options-list.component';
 import { ChronoComponent } from './chrono/chrono.component';
+import {PipesModule} from '../pipes/pipes.module';
+import {BarRatingModule} from 'ngx-bar-rating';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -30,15 +32,17 @@ import { ChronoComponent } from './chrono/chrono.component';
     OptionsListComponent,
     ChronoComponent
   ],
-  imports: [
-    CommonModule,
-    PapaParseModule,
-    NgZorroAntdModule,
-    TranslateModule,
-    RouterModule,
-    ReactiveFormsModule,
-    FormsModule,
-  ],
+    imports: [
+        CommonModule,
+        PapaParseModule,
+        NgZorroAntdModule,
+        TranslateModule,
+        RouterModule,
+        ReactiveFormsModule,
+        FormsModule,
+        PipesModule,
+        BarRatingModule
+    ],
   exports: [
     UploadAndParseComponent,
     ActionButtonsComponent,

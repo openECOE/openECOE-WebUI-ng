@@ -112,7 +112,7 @@ export class Answer extends Item {
   order: number;
   points: number;
   uri: string;
-  question: Question;
+  question?: Question;
 }
 
 export class RowOption {
@@ -143,6 +143,7 @@ export class Student extends Item {
   addAnswer ? = Route.POST('/answers');
 
   getAnswers ? = Route.GET('/answers');
+  getAllAnswers ? = Route.GET('/answers/all');
 }
 
 export interface BlockType {
