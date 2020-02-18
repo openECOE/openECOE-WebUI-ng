@@ -23,10 +23,10 @@ export class EvaluateComponent implements OnInit {
   private station: Station;
   private shift: Shift;
   private round: Round;
-  private students: Student[] = [];
-  private questionsByQblock: BlockType[] = [];
+  students: Student[] = [];
+  questionsByQblock: BlockType[] = [];
 
-  private currentStudent: CurrentStudent = {
+  currentStudent: CurrentStudent = {
     index: 0,
     student: new Student(),
     answers: []

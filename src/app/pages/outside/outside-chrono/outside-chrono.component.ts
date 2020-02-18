@@ -12,8 +12,8 @@ import {ChronoService} from '../../../services/chrono/chrono.service';
 })
 export class OutsideChronoComponent implements OnInit {
 
-  private ecoeId: number;
-  private roundId: number;
+  ecoeId: number;
+  roundId: number;
   private ecoeName: string;
   private roundDescription: string;
 

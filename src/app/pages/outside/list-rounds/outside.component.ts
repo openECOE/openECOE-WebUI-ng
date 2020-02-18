@@ -13,8 +13,8 @@ import {AuthenticationService} from '../../../services/authentication/authentica
 })
 export class OutsideComponent implements OnInit, OnDestroy {
   private ecoesConfig: ECOEConfig[] = [];
-  private selectedRound: InfoData;
-  private selectedConfig: ECOEConfig;
+  selectedRound: InfoData;
+  selectedConfig: ECOEConfig;
 
   private chronoSubs: Subscription;
   private authenticated: boolean;

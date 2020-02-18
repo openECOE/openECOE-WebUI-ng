@@ -17,17 +17,17 @@ import {getPotionID} from '@openecoe/potion-client';
 
 export class StationsComponent implements OnInit {
 
-  private stations: Station[] = [];
+  stations: Station[] = [];
+  page: number = 1;
+  totalItems: number = 0;
+  perPage: number = 10;
+  loading: boolean = false;
+  isVisible: boolean;
+  stationForm: FormGroup;
   private ecoeId: number;
   private editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
   public  index: number = 1;
-  private page: number = 1;
-  private totalItems: number = 0;
-  private perPage: number = 10;
   private pagStations: any;
-  private loading: boolean = false;
-  private isVisible: boolean;
-  private stationForm: FormGroup;
   private control: FormArray;
   private selectOptions: any [] = [];
   private rowStation: RowStation = {

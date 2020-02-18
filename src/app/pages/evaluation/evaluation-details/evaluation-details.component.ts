@@ -18,10 +18,10 @@ export class EvaluationDetailsComponent implements OnInit {
 
   selectedIndexRound = 0;
   selectedIndexShift = 0;
-  private shifts: Shift[];
+  shifts: Shift[];
   private filteredShifts: Shift[] = [];
   private ecoeId: number;
-  private ecoe: ECOE;
+  ecoe: ECOE;
 
   momentRef = moment;
   refresh: boolean = false;

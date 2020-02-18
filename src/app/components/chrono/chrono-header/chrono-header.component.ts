@@ -10,13 +10,13 @@ import {Router} from '@angular/router';
 })
 export class ChronoHeaderComponent implements OnInit {
 
-  @Input() private showDetails: boolean = true;
+  @Input() showDetails: boolean = true;
+  @Input() minutes: number = 0;
+  @Input() seconds: number = 0;
+  @Input() stageName: string;
+  @Input() rerunsDescription: string;
   @Input() private round: Round;
-  @Input() private minutes: number = 0;
-  @Input() private seconds: number = 0;
   @Input() private idEcoe: number;
-  @Input() private stageName: string;
-  @Input() private rerunsDescription: string;
   @Input() private currentCountDownEvent: {event: {}, minutes: number, seconds: number} = { event: null, minutes: 0, seconds: 0};
 
   constructor(private evalService: EvaluationService,

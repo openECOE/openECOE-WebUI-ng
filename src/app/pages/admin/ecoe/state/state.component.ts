@@ -13,11 +13,11 @@ import {ChronoService} from '../../../../services/chrono/chrono.service';
   providers: [ChronoService]
 })
 export class StateComponent implements OnInit {
-  private ecoe: ECOE;
-  private ecoeId: number;
-  private rounds: Round[] = [];
-  private disabledBtnStart: boolean;
-  private errorAlert: string;
+  ecoe: ECOE;
+  ecoeId: number;
+  rounds: Round[] = [];
+  disabledBtnStart: boolean;
+  errorAlert: string;
   doSpin: boolean = false;
 
   constructor(private route: ActivatedRoute,

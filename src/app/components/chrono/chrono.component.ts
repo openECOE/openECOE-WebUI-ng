@@ -17,7 +17,7 @@ export class ChronoComponent implements OnChanges, OnDestroy {
   @Input() private showDetails: boolean = true;
   @Input() private mute: boolean = false;
   @Input() private idEcoe: number;
-  @Input() private withPreview: boolean = false;
+  @Input() withPreview: boolean = false;
   @Input() private templateBeforeStart: TemplateRef<void>;
   @Output() private started: EventEmitter<number> = new EventEmitter<number>();
 

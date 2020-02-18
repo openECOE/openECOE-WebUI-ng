@@ -26,7 +26,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     current: 10
   };
 
-  private current_number_options: number = 0;
+  current_number_options: number = 0;
   private arrPoints: Array<{ option: number, value: number }> = [];
   private defaultTextValues: string[] = ['Sí', 'No'];
   private questionTypeOptions: string[] = ['RB', 'CH', 'RS'];
