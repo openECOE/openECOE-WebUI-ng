@@ -3,6 +3,10 @@
     <div nz-col nzSpan="24" >
       <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()" style="margin: 0 auto">
         <nz-form-item>
+          <nz-alert nzShowIcon *ngIf="error_login" nzType="error" nzMessage="Login incorrecto"></nz-alert>
+        </nz-form-item>
+        
+        <nz-form-item>
           <nz-form-control>
             <nz-input-group [nzPrefix]="prefixUser">
               <input type="text" nz-input [formControlName]="'email'" placeholder="Email">

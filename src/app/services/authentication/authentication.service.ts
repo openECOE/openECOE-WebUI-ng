@@ -26,18 +26,18 @@ export class AuthenticationService {
 
     return this.http.post(environment.API_ROUTE + this.authUrl, userData).pipe(
       map((data: any) => {
+        localStorage.removeItem('userLogged');
+        
         if (data) {
           localStorage.setItem('userLogged', JSON.stringify(data));
           this.loadUserData();
+          return true;
+        } else {
+          return false;
         }
-
-        return data;
       }),
       catchError(err => {
-        if (err.status === 401) {
-          localStorage.removeItem('userLogged');
-        }
-
+        localStorage.removeItem('userLogged');
         return throwError(err);
       })
     );

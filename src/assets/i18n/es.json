@@ -8,6 +8,7 @@
   "ECOE_NAME": "Nombre de la ECOE",
   "DELETE_ECOE": "Eliminar ECOE",
   "START_STOP_ECOE": "Iniciar/Detener ECOE",
+  "EDIT_ECOE": "Editar ECOE",
 
   "ORGANIZATION": "Organización",
 
@@ -58,13 +59,13 @@
   "SELECT_HOUR": "Elegir hora...",
   "HOUR": "Hora",
 
-  "AREAS": "Areas",
-  "AREA": "Area",
-  "NO_AREAS": "No hay areas",
-  "ADD_AREA": "Añadir area",
-  "AREAS_NUMBER": "Número de areas",
-  "AREA_NAME": "Nombre del area",
-  "CHANGE_AREA": "Cambiar area",
+  "AREAS": "Áreas",
+  "AREA": "Área",
+  "NO_AREAS": "No hay áreas",
+  "ADD_AREA": "Añadir área",
+  "AREAS_NUMBER": "Número de áreas",
+  "AREA_NAME": "Nombre del área",
+  "CHANGE_AREA": "Cambiar área",
 
   "CODE": "Código",
   "CODE_PLACEHOLDER": "Introduzca el código...",
@@ -232,6 +233,9 @@
   "ESTIMATED_TIME_TO_FINISH": "Hora estimada de finalización: ",
   "ECOE_ALREADY_RUNNING": "La ECOE ya está en marcha.",
   "WARNING": "Atención",
+
+  "OK_REQUEST_CONTENT": "Petición procesada correctamente.",
+  "ERROR_REQUEST_CONTENT": "Error al procesar petición."
 
   "TIME_TODAY": "Hoy",
   "TIME_YESTERDAY": "Ayer",
