@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {SharedService} from '../../../../services/shared/shared.service';
+import {SharedService} from '../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
-import {RowStation, Station} from '../../../../models';
+import {RowStation, Station} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID} from '@openecoe/potion-client';
 

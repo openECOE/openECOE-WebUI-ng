@@ -5,8 +5,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import {EcoeRoutingModule} from './ecoe-routing.module';
-import { AreasComponent } from '../../../modules/admin-ecoe/areas/areas.component';
-import { StationsComponent } from './stations/stations.component';
 import { InformationComponent } from './information/information.component';
 import { ItemInfoComponent } from './information/item-info/item-info.component';
 import { QuestionsComponent } from './questions/questions.component';
@@ -18,7 +16,6 @@ import { EventsComponent } from './schedule/events/events.component';
 import {PipesModule} from '../../../pipes/pipes.module';
 import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner/planner-selector/planner-selector.component';
 import {ComponentsModule} from '../../../components/components.module';
-import { StationDetailsComponent } from './stations/station-details/station-details.component';
 import { StateComponent } from './state/state.component';
 
 @NgModule({
@@ -34,7 +31,6 @@ import { StateComponent } from './state/state.component';
   ],
   declarations: [
     EcoeComponent,
-    StationsComponent,
     InformationComponent,
     ItemInfoComponent,
     QuestionsComponent,
@@ -45,7 +41,6 @@ import { StateComponent } from './state/state.component';
     EventsComponent,
     PlannerSelectorComponent,
     AppStudentSelectorComponent,
-    StationDetailsComponent,
     StateComponent
   ],
   entryComponents: [AppStudentSelectorComponent]

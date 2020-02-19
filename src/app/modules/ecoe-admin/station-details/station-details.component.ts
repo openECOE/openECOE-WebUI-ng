@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {QBlock, Question, RowQuestion, Station} from '../../../../../models';
+import {QBlock, Question, RowQuestion, Station} from '../../../models';
 import {Location} from '@angular/common';
-import {QuestionsService} from '../../../../../services/questions/questions.service';
+import {QuestionsService} from '../../../services/questions/questions.service';
 import {NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 

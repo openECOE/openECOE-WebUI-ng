@@ -7,11 +7,15 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { ComponentsModule } from 'src/app/components/components.module';
-import { AreasComponent } from '../admin-ecoe/areas/areas.component';
+import { AreasComponent } from './areas/areas.component';
+import { StationsComponent } from './stations/stations.component';
+import { StationDetailsComponent } from './station-details/station-details.component';
 
 @NgModule({
   declarations: [
-    AreasComponent
+    AreasComponent,
+    StationsComponent,
+    StationDetailsComponent
   ],
   imports: [
     CommonModule,
