@@ -17,6 +17,7 @@ import {OptionsListComponent} from './questions-list/options/options-list/option
 import { ChronoComponent } from './chrono/chrono.component';
 import {PipesModule} from '../pipes/pipes.module';
 import { OptionsEvalComponent } from './questions-list/options/options-eval/options-eval.component';
+import {BarRatingModule} from 'ngx-bar-rating';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -33,16 +34,17 @@ import { OptionsEvalComponent } from './questions-list/options/options-eval/opti
     ChronoComponent,
     OptionsEvalComponent
   ],
-    imports: [
-        CommonModule,
-        PapaParseModule,
-        NgZorroAntdModule,
-        TranslateModule,
-        RouterModule,
-        ReactiveFormsModule,
-        FormsModule,
-        PipesModule
-    ],
+  imports: [
+    CommonModule,
+    PapaParseModule,
+    NgZorroAntdModule,
+    TranslateModule,
+    RouterModule,
+    ReactiveFormsModule,
+    FormsModule,
+    PipesModule,
+    BarRatingModule
+  ],
   exports: [
     UploadAndParseComponent,
     ActionButtonsComponent,
