@@ -22,6 +22,7 @@ const routes: Routes = [
       breadcrumb: 'Evaluación'
     }
   },
+  { path: 'info-ecoe', component: EcoeInfoComponent},
   { path: '**', redirectTo: 'home'}
 ];
 
