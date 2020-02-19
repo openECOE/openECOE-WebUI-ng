@@ -9,7 +9,6 @@ import { InformationComponent } from './information/information.component';
 import { ItemInfoComponent } from './information/item-info/item-info.component';
 import { QuestionsComponent } from './questions/questions.component';
 import { ExamComponent } from './exam/exam.component';
-import { StudentsComponent } from './students/students.component';
 import { PlannerComponent } from './planner/planner.component';
 import {PipesModule} from '../../../pipes/pipes.module';
 import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner/planner-selector/planner-selector.component';
@@ -33,7 +32,6 @@ import { StateComponent } from './state/state.component';
     ItemInfoComponent,
     QuestionsComponent,
     ExamComponent,
-    StudentsComponent,
     PlannerComponent,
     PlannerSelectorComponent,
     AppStudentSelectorComponent,

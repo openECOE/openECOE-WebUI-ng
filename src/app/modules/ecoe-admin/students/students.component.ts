@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../../../services/api/api.service';
+import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {SharedService} from '../../../../services/shared/shared.service';
+import {SharedService} from '../../../services/shared/shared.service';
 import {Student} from 'src/app/models/ecoe';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
-import {Planner, Round, Shift} from '../../../../models';
+import {Planner, Round, Shift} from '../../../models';
 
 /**
  * Component with students.
