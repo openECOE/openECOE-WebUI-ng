@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Round, Shift} from '../../models';
+import {Round} from '../../models';
 
 @Injectable({
   providedIn: 'root'
@@ -27,21 +27,21 @@ export class EvaluationService {
   }
 
   getSelectedShift(ecoeId: number) {
-    let selectedShiftId = -1;
+    let selectedShiftId = null;
     if (sessionStorage.getItem('selectedShift')) {
       const json = JSON.parse(sessionStorage.getItem('selectedShift'));
       if (json['ecoeId'] && json['ecoeId'] === ecoeId) {
-        selectedShiftId = parseInt(json['selectedShift'], 10);
+        selectedShiftId = json['selectedShift'];
       }
     }
     return selectedShiftId;
   }
 
-  setSelectedShift(shift: Shift, ecoeId: number) {
-    if (shift && shift.id) {
+  setSelectedShift(shift: string, ecoeId: number) {
+    if (shift) {
       sessionStorage.setItem('selectedShift', JSON.stringify( {
         ecoeId: ecoeId,
-        selectedShift: shift.id
+        selectedShift: shift
       }));
     }
   }
