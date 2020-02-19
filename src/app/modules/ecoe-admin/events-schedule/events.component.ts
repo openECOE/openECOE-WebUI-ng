@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Event, Schedule} from '../../../../../models/schedule';
-import {Station} from '../../../../../models/ecoe';
+import {Event, Schedule} from '../../../models/schedule';
+import {Station} from '../../../models/ecoe';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {SharedService} from '../../../../../services/shared/shared.service';
+import {SharedService} from '../../../services/shared/shared.service';
 import {Item, Pagination} from '@openecoe/potion-client';
 
 @Component({

@@ -7,7 +7,6 @@ import {ExamComponent} from './exam/exam.component';
 import {PlannerComponent} from './planner/planner.component';
 import {StudentsComponent} from './students/students.component';
 import {AuthenticationGuard} from '../../../guards/authentication/authentication.guard';
-import {ScheduleComponent} from './schedule/schedule.component';
 import {Role} from '../../../models';
 import {QuestionsListComponent} from '../../../components/questions-list/questions-list.component';
 import {StateComponent} from './state/state.component';
@@ -26,7 +25,6 @@ const routes: Routes = [
           {path: 'exam', component: ExamComponent,                              data: {title: 'EXAM',       roles: [Role.Admin]}},
           {path: 'planner', component: PlannerComponent,                        data: {title: 'PLANNER',    roles: [Role.Admin]}},
           {path: 'students', component: StudentsComponent,                      data: {title: 'STUDENTS',   roles: [Role.Admin]}},
-          {path: 'schedule', component: ScheduleComponent,                      data: {title: 'SCHEDULE',   roles: [Role.Admin]}},
           {path: 'state', component: StateComponent,                            data: {title: 'STATE',      roles: [Role.Admin]}},
           {path: '', component: InformationComponent},
           {path: '**', redirectTo: ''}

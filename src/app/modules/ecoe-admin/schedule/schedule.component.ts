@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Schedule} from '../../../../models';
-import {Stage, Event} from '../../../../models';
-import {ECOE} from '../../../../models';
+import {Schedule} from '../../../models';
+import {Stage, Event} from '../../../models';
+import {ECOE} from '../../../models';
 import {FormGroup, Validators, FormBuilder} from '@angular/forms';
-import {SharedService} from '../../../../services/shared/shared.service';
+import {SharedService} from '../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
 

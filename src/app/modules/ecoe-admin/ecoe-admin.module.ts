@@ -10,12 +10,16 @@ import { ComponentsModule } from 'src/app/components/components.module';
 import { AreasComponent } from './areas/areas.component';
 import { StationsComponent } from './stations/stations.component';
 import { StationDetailsComponent } from './station-details/station-details.component';
+import { ScheduleComponent } from './schedule/schedule.component';
+import { EventsComponent } from './events-schedule/events.component';
 
 @NgModule({
   declarations: [
     AreasComponent,
     StationsComponent,
-    StationDetailsComponent
+    StationDetailsComponent,
+    ScheduleComponent,
+    EventsComponent
   ],
   imports: [
     CommonModule,
