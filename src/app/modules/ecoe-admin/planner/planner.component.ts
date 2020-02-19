@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../../../services/api/api.service';
+import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {forkJoin, from} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ECOE, Station, Student} from '../../../../models';
-import {Planner, Round, Shift} from '../../../../models';
+import {ECOE, Station, Student} from '../../../models';
+import {Planner, Round, Shift} from '../../../models';
 import {Item, Pagination} from '@openecoe/potion-client';
 
 /**

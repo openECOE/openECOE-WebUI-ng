@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, OnChanges, Output, TemplateRef} from '@angular/core';
-import {Planner, Round, Shift} from '../../../../../models';
-import {Student} from '../../../../../models';
+import {Planner, Round, Shift} from '../../../models';
+import {Student} from '../../../models';
 import {Item, Pagination} from '@openecoe/potion-client';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
-import {SharedService} from '../../../../../services/shared/shared.service';
+import {SharedService} from '../../../services/shared/shared.service';
 import {formatDate} from '@angular/common';
 
 /**

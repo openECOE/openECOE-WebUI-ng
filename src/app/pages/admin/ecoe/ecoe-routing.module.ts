@@ -4,7 +4,6 @@ import {EcoeComponent} from './ecoe.component';
 import {InformationComponent} from './information/information.component';
 import {QuestionsComponent} from './questions/questions.component';
 import {ExamComponent} from './exam/exam.component';
-import {PlannerComponent} from './planner/planner.component';
 import {AuthenticationGuard} from '../../../guards/authentication/authentication.guard';
 import {Role} from '../../../models';
 import {QuestionsListComponent} from '../../../components/questions-list/questions-list.component';
@@ -22,7 +21,6 @@ const routes: Routes = [
           {path: 'stations/:id/qblocks/:id', component: QuestionsListComponent, data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
           {path: 'questions', component: QuestionsComponent,                    data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
           {path: 'exam', component: ExamComponent,                              data: {title: 'EXAM',       roles: [Role.Admin]}},
-          {path: 'planner', component: PlannerComponent,                        data: {title: 'PLANNER',    roles: [Role.Admin]}},
           {path: 'state', component: StateComponent,                            data: {title: 'STATE',      roles: [Role.Admin]}},
           {path: '', component: InformationComponent},
           {path: '**', redirectTo: ''}

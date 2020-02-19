@@ -9,9 +9,7 @@ import { InformationComponent } from './information/information.component';
 import { ItemInfoComponent } from './information/item-info/item-info.component';
 import { QuestionsComponent } from './questions/questions.component';
 import { ExamComponent } from './exam/exam.component';
-import { PlannerComponent } from './planner/planner.component';
 import {PipesModule} from '../../../pipes/pipes.module';
-import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner/planner-selector/planner-selector.component';
 import {ComponentsModule} from '../../../components/components.module';
 import { StateComponent } from './state/state.component';
 
@@ -32,11 +30,7 @@ import { StateComponent } from './state/state.component';
     ItemInfoComponent,
     QuestionsComponent,
     ExamComponent,
-    PlannerComponent,
-    PlannerSelectorComponent,
-    AppStudentSelectorComponent,
     StateComponent
-  ],
-  entryComponents: [AppStudentSelectorComponent]
+  ]
 })
 export class EcoeModule { }

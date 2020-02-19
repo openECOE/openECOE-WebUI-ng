@@ -13,6 +13,8 @@ import { StationDetailsComponent } from './station-details/station-details.compo
 import { ScheduleComponent } from './schedule/schedule.component';
 import { EventsComponent } from './events-schedule/events.component';
 import { StudentsComponent } from './students/students.component';
+import { PlannerComponent } from './planner/planner.component';
+import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner-selector/planner-selector.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,10 @@ import { StudentsComponent } from './students/students.component';
     StationDetailsComponent,
     ScheduleComponent,
     EventsComponent,
-    StudentsComponent
+    StudentsComponent,
+    PlannerComponent,
+    PlannerSelectorComponent,
+    AppStudentSelectorComponent
   ],
   imports: [
     CommonModule,
@@ -32,6 +37,7 @@ import { StudentsComponent } from './students/students.component';
     TranslateModule,
     PipesModule,
     ComponentsModule
-  ]
+  ],
+  entryComponents: [AppStudentSelectorComponent]
 })
 export class EcoeAdminModule { }
