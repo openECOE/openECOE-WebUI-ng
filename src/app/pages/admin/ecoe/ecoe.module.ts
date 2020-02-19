@@ -5,7 +5,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import {EcoeRoutingModule} from './ecoe-routing.module';
-import { AreasComponent } from './areas/areas.component';
+import { AreasComponent } from '../../../modules/admin-ecoe/areas/areas.component';
 import { StationsComponent } from './stations/stations.component';
 import { InformationComponent } from './information/information.component';
 import { ItemInfoComponent } from './information/item-info/item-info.component';
@@ -34,7 +34,6 @@ import { StateComponent } from './state/state.component';
   ],
   declarations: [
     EcoeComponent,
-    AreasComponent,
     StationsComponent,
     InformationComponent,
     ItemInfoComponent,

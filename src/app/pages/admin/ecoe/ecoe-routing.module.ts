@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import {EcoeComponent} from './ecoe.component';
 import {InformationComponent} from './information/information.component';
 import {StationsComponent} from './stations/stations.component';
-import {AreasComponent} from './areas/areas.component';
 import {QuestionsComponent} from './questions/questions.component';
 import {ExamComponent} from './exam/exam.component';
 import {PlannerComponent} from './planner/planner.component';
@@ -24,7 +23,6 @@ const routes: Routes = [
       {
         path: '',
         children: [
-          {path: 'areas', component: AreasComponent,                            data: {title: 'AREAS',      roles: [Role.Admin]}},
           {path: 'stations', component: StationsComponent,                      data: {title: 'STATIONS',   roles: [Role.Admin]}},
           {path: 'stations/:id', component: StationDetailsComponent,            data: {title: 'STATIONS',   roles: [Role.Admin]}},
           {path: 'stations/:id/qblocks/:id', component: QuestionsListComponent, data: {title: 'QUESTIONS',  roles: [Role.Admin]}},

@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ApiService} from '../../../../services/api/api.service';
-import {SharedService} from '../../../../services/shared/shared.service';
-import {Area, EditCache, RowArea} from '../../../../models';
+import {ApiService} from '../../../services/api/api.service';
+import {SharedService} from '../../../services/shared/shared.service';
+import {Area, EditCache, RowArea} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 
