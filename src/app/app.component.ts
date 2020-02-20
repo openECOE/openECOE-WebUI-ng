@@ -15,6 +15,9 @@ import {AuthenticationService} from './services/authentication/authentication.se
 export class AppComponent implements OnInit {
 
   language: string = 'es';
+  year:string = "";
+  isCollapsed: Boolean = false;
+  visible: Boolean = false;
 
   clientHeight: number;
 
@@ -45,6 +48,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.clientHeight = window.innerHeight;
+    this.year = new Date().getFullYear().toString();
   }
 
 }

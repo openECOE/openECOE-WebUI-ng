@@ -1,43 +1,29 @@
-<nz-layout class="layout">
-
-  <nz-header style="width:100%; z-index: 1000; position:fixed;">
-    <a
-       (click)="router.navigate(['/'])">
-      {{"open ECOE" | translate}}
-    </a>
-
-    <nz-dropdown *ngIf="authService.userData" class="right">
-      <a nz-dropdown>
-        <i nz-icon nzType="user" nzTheme="outline"></i>
-        {{authService.userData['user']['name'] + ' ' + this.authService.userData['user']['surname']}}
-        <i nz-icon type="down"></i> </a>
-      <ul nz-menu nzSelectable>
-        <li nz-menu-item>
-          <a [routerLink]="'admin/cpanel/users'">{{"Ajustes" | translate}}</a>
-        </li>
-        <li nz-menu-item>
-          <a (click)="authService.logout()" >{{"LOG_OUT" | translate}}</a>
-        </li>
-      </ul>
-    </nz-dropdown>
-    <a *ngIf="!authService.userData"
-       style="float: right;"
-       (click)="router.navigate(['/login'])">
-      {{"LOG_IN" | translate}}
-    </a>
+<nz-layout class="layout" >
+  <nz-header>
+    <div class="logo">
+      <button nz-button (click)="isCollapsed = !isCollapsed">
+        <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i> <b>{{"openECOE" | translate}}</b>
+      </button>
+    </div>
+    
+    <app-submenu [submenuSelected]="'ECOE'" ></app-submenu>
+    
+    <app-usermenu></app-usermenu>
+    
   </nz-header>
 
-  <nz-content style="margin-top:64px;">
-    <div class="long-div" [style.height.px]="clientHeight - 64 - 69" #divTarget>
-      <router-outlet>
-      </router-outlet>
+  <nz-content>
+    <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320" [nzClosable]="'false'" (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
+      <app-menu></app-menu>
+    </nz-drawer>
+    
+    <div class="inner-content">
+      <router-outlet></router-outlet>
     </div>
   </nz-content>
 
-  <nz-back-top #backTop [nzTarget]="divTarget"></nz-back-top>
-
-  <nz-footer style="text-align: center;">
-    openECOE 2019 - Universitas Miguel Hernández
+  <nz-footer>
+    <label>openECOE {{year}} - Universitas Miguel Hernández</label>
   </nz-footer>
-</nz-layout>
 
+</nz-layout>
