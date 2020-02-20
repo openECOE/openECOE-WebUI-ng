@@ -6,7 +6,7 @@
 
   "CREATE_ECOE": "Crear nueva ECOE",
   "ECOE_NAME": "Nombre de la ECOE",
-  "DELETE_ECOE": "Eliminar ECOE",
+  "DELETE_ECOE": "Archivar ECOE",
   "START_STOP_ECOE": "Iniciar/Detener ECOE",
   "EDIT_ECOE": "Editar ECOE",
 
@@ -185,10 +185,10 @@
 
   "LOADING": "Cargando",
   "ACTIONS": "Acciones",
-  "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
+  "DELETE_CONFIRMATION": "¿Estás seguro de archivar este elemento?",
   "CONFIRM_ALSO_DELETE_QUESTIONS": "Se eliminarán también las preguntas asociadas al bloque.",
   "ACTION": "Acción",
-  "DELETE": "Eliminar",
+  "DELETE": "Archivar",
   "ADD": "Añadir",
   "MOVE_TO": "Mover a",
   "SAVE": "Guardar",
@@ -238,7 +238,7 @@
   "ERROR_REQUEST_CONTENT": "Error al procesar petición.",
 
   "OUTSIDERS": "OUTSIDERS",
-  "ECOES": "ECOE's",
+  "ECOES": "ECOES",
 
   "CONFIGURATION": "Configuración"
 

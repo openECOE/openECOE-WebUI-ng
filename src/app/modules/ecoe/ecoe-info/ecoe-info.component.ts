@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {Location} from '@angular/common';
 import { ECOE } from 'src/app/models';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService } from 'ng-zorro-antd';
 
@@ -12,8 +12,7 @@ import { NzMessageService } from 'ng-zorro-antd';
 })
 export class EcoeInfoComponent implements OnInit {
 
-  @Input() ecoeId: number;
-
+  ecoeId: number;
   ecoe: ECOE;
 
   areas: any;
@@ -26,11 +25,15 @@ export class EcoeInfoComponent implements OnInit {
   eliminando: Boolean = false;
   //--
 
-  constructor(private location: Location, private router: Router, private translate: TranslateService, private message: NzMessageService) { }
+  constructor(private location: Location, private router: Router, private translate: TranslateService, private message: NzMessageService, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.ecoeId = params.ecoeId;
+    });
+
     if (!this.ecoeId){
-      console.log('Error EcoeInfoComponent: @Input() required');
+      console.log('Error EcoeInfoComponent: params required');
       this.location.back();
     }
 
@@ -41,20 +44,22 @@ export class EcoeInfoComponent implements OnInit {
       //   ecoe_name_2edit: [this.ecoe.name, [Validators.required]]
       // });
 
-      this.ecoe.areas({perPage: 1}, {paginate: true})
-        .then(response => this.areas = response);
+      this.ecoe.areas()
+        .then(response => {
+          this.areas = response
+        });
 
-      this.ecoe.stations({perPage: 1}, {paginate: true})
+      this.ecoe.stations()
         .then(response => this.stations = response);
 
-      this.ecoe.rounds({perPage: 1}, {paginate: true})
+      this.ecoe.rounds()
         .then(response => this.rounds = response);
 
-      this.ecoe.shifts({perPage: 1}, {paginate: true})
+      this.ecoe.shifts()
         .then(response => this.shifts = response);
 
-      // this.ecoe.students({perPage: 1}, {paginate: true})
-      //   .then(response => this.students = response);
+      this.ecoe.students()
+        .then(response => this.students = response);
     });
   }
 
@@ -79,5 +84,4 @@ export class EcoeInfoComponent implements OnInit {
       }
     )
   }
-
 }
