@@ -13,7 +13,6 @@ import localeEsExtra from '@angular/common/locales/extra/es';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AuthInterceptor} from './interceptors/auth.interceptor';
-import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import {environment} from '../environments/environment';
 
@@ -21,6 +20,8 @@ import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-cl
 
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';
+import { CoreModule } from './core/core.module';
+import { EcoeModule } from './modules/ecoe/ecoe.module';
 
 
 registerLocaleData(localeEs, 'es', localeEsExtra);
@@ -32,10 +33,10 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     LoginComponent
   ],
   imports: [
+    CoreModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -52,6 +53,7 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     PotionModule,
     PipesModule,
+    EcoeModule
   ],
   providers: [
     {
