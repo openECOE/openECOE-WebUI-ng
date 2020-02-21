@@ -45,7 +45,7 @@
         <nz-alert *ngIf="areas && areas.length > 0" nzType="info" nzMessage="{{stations?stations.length:0}} Estaciones"></nz-alert> 
       </nz-card> 
       <ng-template #linkEstaciones> 
-        <a *ngIf="areas && areas.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/estaciones']"><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
+        <a disabled="areas && areas.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/estaciones']"><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
       </ng-template> 
     </div>
   
@@ -55,7 +55,7 @@
        <nz-alert *ngIf="stations && stations.length > 0" nzType="info" nzMessage="{{rounds?rounds.length:0}} Cronómetros"></nz-alert> 
       </nz-card> 
       <ng-template #linkCronometros> 
-        <a *ngIf="stations && stations.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/cronometros']" ><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
+        <a disabled="stations && stations.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/cronometros']" ><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
       </ng-template> 
     </div>
   
@@ -65,7 +65,7 @@
        <nz-alert *ngIf="rounds && rounds.length > 0" nzType="info" nzMessage="{{students?students.length:0}} Estudiantes"></nz-alert> 
       </nz-card> 
       <ng-template #linkEstudiantes> 
-        <a *ngIf="rounds && rounds.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/estudiantes']"><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
+        <a disabled="rounds && rounds.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/estudiantes']"><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
       </ng-template> 
     </div>
   
@@ -75,7 +75,7 @@
        <nz-alert *ngIf="rounds && rounds.length > 0" nzType="info" nzMessage="{{shifts?shifts.length:0}} Planificaciones"></nz-alert> 
       </nz-card> 
       <ng-template #linkPlanificador> 
-        <a *ngIf="rounds && rounds.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/planificadores']"><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
+        <a disabled="rounds && rounds.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/planificadores']"><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
       </ng-template> 
     </div>
 
