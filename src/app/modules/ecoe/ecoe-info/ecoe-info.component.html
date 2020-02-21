@@ -45,19 +45,19 @@
         <nz-alert *ngIf="areas && areas.length > 0" nzType="info" nzMessage="{{stations?stations.length:0}} Estaciones"></nz-alert> 
       </nz-card> 
       <ng-template #linkEstaciones> 
-        <a disabled="areas && areas.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/estaciones']"><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
+        <button [disabled]="(! areas || areas.length == 0) && (!stations || stations.length == 0)" nz-button [nzType]="primary" [routerLink]="['admin/stations']"><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</button> 
       </ng-template> 
     </div>
   
-   <div nz-col [nzMd]="8"> 
-     <nz-card nzTitle="Cronómetros" [nzExtra]="linkCronometros"> 
-       <nz-alert *ngIf="stations && stations.length == 0" nzType="error" nzMessage="No existen Estaciones"></nz-alert> 
-       <nz-alert *ngIf="stations && stations.length > 0" nzType="info" nzMessage="{{rounds?rounds.length:0}} Cronómetros"></nz-alert> 
-      </nz-card> 
-      <ng-template #linkCronometros> 
-        <a disabled="stations && stations.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/cronometros']" ><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
-      </ng-template> 
-    </div>
+    <div nz-col [nzMd]="8"> 
+      <nz-card nzTitle="Cronómetros" [nzExtra]="linkCronometros"> 
+        <nz-alert *ngIf="stations && stations.length == 0" nzType="error" nzMessage="No existen Estaciones"></nz-alert> 
+        <nz-alert *ngIf="stations && stations.length > 0" nzType="info" nzMessage="{{rounds?rounds.length:0}} Cronómetros"></nz-alert> 
+       </nz-card> 
+       <ng-template #linkCronometros> 
+         <a disabled="stations && stations.length > 0" nz-button [nzType]="primary" [routerLink]="['/ecoe/cronometros']" ><i nz-icon nzType="edit" nzTheme="outline"></i> Configurar</a> 
+       </ng-template> 
+     </div>
   
    <div nz-col [nzMd]="8"> 
      <nz-card nzTitle="Estudiantes" [nzExtra]="linkEstudiantes"> 

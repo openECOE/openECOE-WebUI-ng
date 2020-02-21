@@ -7,7 +7,7 @@
   </nz-breadcrumb>
   <nz-page-header-extra>  
     <a nz-button [routerLink]="['/ecoe/info', ecoeId]"><span><i nz-icon nzType="arrow-left" nzTheme="outline"></i> {{"BACK" | translate}}</span></a>
-    <a nz-button [nzType]="'primary'"><span>{{"CONFIGURATION" | translate}} {{"STATIONS" | translate}} <i nz-icon nzType="arrow-right" nzTheme="outline"></i></span></a>
+    <button [disabled]="areas.length == 0" [routerLink]="['ecoe/info/ecoeId/admin/stations', ecoeId]" nz-button [nzType]="'primary'"><span>{{"CONFIGURATION" | translate}} {{"STATIONS" | translate}} <i nz-icon nzType="arrow-right" nzTheme="outline"></i></span></button>
   </nz-page-header-extra>
 </nz-page-header>
 

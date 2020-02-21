@@ -1,5 +1,6 @@
 <nz-content>
-  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'STATIONS' | translate"> </nz-page-header>
+  <nz-page-header class="margin-bottom" [nzTitle]="'STATIONS' | translate"> </nz-page-header>
+
   <nz-table #table
             [nzData]="stations"
             [(nzPageIndex)]="page"
@@ -16,7 +17,7 @@
     <tr>
       <th [nzExpand]="true">
         <a (click)="loadStations().finally()">
-          <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+          <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="85px">{{"ORDER" | translate}}</th>
