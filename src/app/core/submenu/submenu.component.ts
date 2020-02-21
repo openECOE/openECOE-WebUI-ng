@@ -20,12 +20,11 @@ export class SubmenuComponent implements OnInit {
   constructor(private translate: TranslateService, private router: Router, private location: Location, private authService: AuthenticationService) { }
 
   ngOnInit() {
-    var cucu = this.translate.instant('CONFIGURATION');
     const submenus = {
       ECOE: [
-        { title: this.translate.instant('CONFIGURATION'), redirecTo: '/ecoe/info' },
-        { title: this.translate.instant('EVALUATION'), redirecTo: '/ecoe/evaluate' },
-        { title: this.translate.instant('SCHEDULE'), redirectTo: '/ecoe/chrono' }
+        { title: 'CONFIGURATION', redirecTo: '/ecoe/info' },
+        { title:'EVALUATION', redirecTo: '/ecoe/evaluate' },
+        { title: 'SCHEDULE', redirectTo: '/ecoe/chrono' }
       ]
     };
 
