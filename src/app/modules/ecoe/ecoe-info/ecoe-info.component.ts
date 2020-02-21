@@ -4,6 +4,7 @@ import { ECOE } from 'src/app/models';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService } from 'ng-zorro-antd';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-ecoe-info',
@@ -13,6 +14,7 @@ import { NzMessageService } from 'ng-zorro-antd';
 export class EcoeInfoComponent implements OnInit {
 
   ecoeId: number;
+  ecoeName: String ;
   ecoe: ECOE;
 
   areas: any;
@@ -25,7 +27,21 @@ export class EcoeInfoComponent implements OnInit {
   eliminando: Boolean = false;
   //--
 
-  constructor(private location: Location, private router: Router, private translate: TranslateService, private message: NzMessageService, private route: ActivatedRoute) { }
+  // Form ECOE name
+  show_ecoe_name_drawer: Boolean = false;
+  ecoe_name_form_loading: Boolean = false;
+  ecoe_name_form: FormGroup;
+  cucu: FormGroup;
+  // --
+  
+
+  constructor(
+    private location: Location, 
+    private router: Router, 
+    private translate: TranslateService, 
+    private message: NzMessageService, 
+    private route: ActivatedRoute,
+    private fb: FormBuilder) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -39,14 +55,15 @@ export class EcoeInfoComponent implements OnInit {
 
     ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
       this.ecoe = value;
+      this.ecoeName = this.ecoe.name;
 
-      // this.ecoe_name_form = this.fb.group({
-      //   ecoe_name_2edit: [this.ecoe.name, [Validators.required]]
-      // });
+      this.ecoe_name_form = this.fb.group({
+        ecoe_name_2edit: [this.ecoe.name, [Validators.required]]
+      });
 
       this.ecoe.areas()
         .then(response => {
-          this.areas = response
+          this.areas = response;
         });
 
       this.ecoe.stations()
@@ -84,4 +101,38 @@ export class EcoeInfoComponent implements OnInit {
       }
     )
   }
+
+    /**
+   * Show/Hide form to edit ECOE name
+   * 
+   * @param show If true show drawer, if false hide drawer
+   */
+  showECOENameDrawer(show: Boolean) {
+    this.show_ecoe_name_drawer = show;
+  }
+
+  /**
+   * Submit edit ECOE name form
+   */
+  submitECOENameForm() {
+    this.ecoe_name_form_loading = true;
+
+    new ECOE(this.ecoe).update({name: this.ecoe_name_form.get('ecoe_name_2edit').value}).then(
+      response => {
+        this.message.success(this.translate.instant('OK_REQUEST_CONTENT'), { nzDuration: 5000 });
+        this.ecoe = response;
+      }
+    ).catch(
+      error => {
+        this.message.error(this.translate.instant('ERROR_REQUEST_CONTENT'), { nzDuration: 5000 });
+        this.ecoe_name_form.get('ecoe_name_2edit').setValue(this.ecoe.name);
+      }
+    ).finally(
+      () => {
+        this.ecoe_name_form_loading = false;
+        this.showECOENameDrawer(false);
+      }
+    );
+  }
+
 }

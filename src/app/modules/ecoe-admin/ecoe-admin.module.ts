@@ -38,6 +38,17 @@ import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner
     PipesModule,
     ComponentsModule
   ],
+  exports: [
+    AreasComponent,
+    StationsComponent,
+    StationDetailsComponent,
+    ScheduleComponent,
+    EventsComponent,
+    StudentsComponent,
+    PlannerComponent,
+    PlannerSelectorComponent,
+    AppStudentSelectorComponent
+  ],
   entryComponents: [AppStudentSelectorComponent]
 })
 export class EcoeAdminModule { }

@@ -9,6 +9,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, data: {breadcrumb: 'Login'} },
   { path: 'home', component: HomeComponent },
   { path: 'ecoe/info/:ecoeId', component: EcoeInfoComponent },
+  { path: 'ecoe/info/:ecoeId/admin', loadChildren: './modules/ecoe-admin/ecoe-admin.module#EcoeAdminModule' },
   { path: '**', redirectTo: 'home'}
 ];
 
