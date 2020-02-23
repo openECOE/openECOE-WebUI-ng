@@ -22,6 +22,7 @@ export class EcoeInfoComponent implements OnInit {
   students: any;
   rounds: any;
   shifts: any;
+  schedules: any;
 
   // Eliminar ECOE
   eliminando: Boolean = false;
@@ -33,13 +34,13 @@ export class EcoeInfoComponent implements OnInit {
   ecoe_name_form: FormGroup;
   cucu: FormGroup;
   // --
-  
+
 
   constructor(
-    private location: Location, 
-    private router: Router, 
-    private translate: TranslateService, 
-    private message: NzMessageService, 
+    private location: Location,
+    private router: Router,
+    private translate: TranslateService,
+    private message: NzMessageService,
     private route: ActivatedRoute,
     private fb: FormBuilder) { }
 
@@ -77,6 +78,9 @@ export class EcoeInfoComponent implements OnInit {
 
       this.ecoe.students()
         .then(response => this.students = response);
+
+      this.ecoe.schedules()
+        .then(response => this.schedules = response);
     });
   }
 
@@ -104,7 +108,7 @@ export class EcoeInfoComponent implements OnInit {
 
     /**
    * Show/Hide form to edit ECOE name
-   * 
+   *
    * @param show If true show drawer, if false hide drawer
    */
   showECOENameDrawer(show: Boolean) {

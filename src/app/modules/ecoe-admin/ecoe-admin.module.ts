@@ -15,6 +15,7 @@ import { EventsComponent } from './events-schedule/events.component';
 import { StudentsComponent } from './students/students.component';
 import { PlannerComponent } from './planner/planner.component';
 import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner-selector/planner-selector.component';
+import { EcoeModule } from '../ecoe/ecoe.module';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner
     NgZorroAntdModule,
     TranslateModule,
     PipesModule,
-    ComponentsModule
+    ComponentsModule,
+    EcoeModule
   ],
   exports: [
     AreasComponent,
