@@ -39,7 +39,7 @@ export class EvaluationDetailsComponent implements OnInit {
   async ngOnInit() {
     if (this.authService.userLogged) {
       this.momentRef.locale(this.shared.getUsersLocale('en-US'));
-      this.ecoeId = +this.route.snapshot.params.id;
+      this.ecoeId = +this.route.snapshot.params.ecoeId;
       this.ecoe = (await ECOE.fetch(this.ecoeId)) as ECOE;
       this.getData(this.ecoe).then(() => {
           this.getShiftDays(this.shifts);

@@ -5,11 +5,9 @@ import {EvaluateComponent} from './evaluate/evaluate.component';
 
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full'},
-  { path: 'ecoe/:ecoeId/station/:stationId/shift/:shiftId/round/:roundId', component: EvaluateComponent},
-  { path: 'ecoe/:id', component: EvaluationDetailsComponent},
-  { path: 'home', redirectTo: '/'},
-  { path: '**', redirectTo: '/home'}
+  { path: '', component: EvaluationDetailsComponent, pathMatch: 'full'},
+  { path: 'station/:stationId/shift/:shiftId/round/:roundId', component: EvaluateComponent},
+  { path: '**', redirectTo: '/'}
 ];
 
 @NgModule({

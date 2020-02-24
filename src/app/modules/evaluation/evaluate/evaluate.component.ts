@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
-import {Answer, BlockType, Option, Planner, QBlock, Round, Shift, Station, Student} from '../../../models';
+import {Answer, BlockType, Option, Planner, Round, Shift, Station, Student} from '../../../models';
 import {QuestionsService} from '../../../services/questions/questions.service';
 import {ApiService} from '../../../services/api/api.service';
 import {getPotionID} from '@openecoe/potion-client';
@@ -99,7 +99,7 @@ export class EvaluateComponent implements OnInit {
     });
   }
 
-  getAnswers(student: Student, page: number = 1) {
+  getAnswers(student: Student) {
     if (student.id) {
       student.getAllAnswers({cache: false})
         .then((response: Answer[]) => this.currentStudent.answers = [...response])
