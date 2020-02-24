@@ -5,6 +5,7 @@ import { StationsComponent } from './stations/stations.component';
 import {EcoeInfoComponent} from '../ecoe/ecoe-info/ecoe-info.component';
 import { StationDetailsComponent } from './station-details/station-details.component';
 import { ScheduleComponent } from './schedule/schedule.component';
+import { StudentsComponent } from './students/students.component';
 
 const routes: Routes = [
   { 
@@ -14,7 +15,8 @@ const routes: Routes = [
       { path: 'areas', component: AreasComponent },
       { path: 'stations', component: StationsComponent },
       { path: 'stations/:stationId', component: StationDetailsComponent },
-      { path: 'schedule', component: ScheduleComponent }
+      { path: 'schedule', component: ScheduleComponent },
+      { path: 'students', component: StudentsComponent }
     ]
   }
 ];
