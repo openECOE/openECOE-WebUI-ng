@@ -14,7 +14,7 @@ import {AuthenticationService} from './services/authentication/authentication.se
 })
 export class AppComponent implements OnInit {
   language: string = 'es';
-  year:string = "";
+  year: string = '';
   isCollapsed: Boolean = false;
   visible: Boolean = false;
 
