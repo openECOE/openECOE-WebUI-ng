@@ -180,4 +180,8 @@ export class EcoeInfoComponent implements OnInit {
     );
   }
 
+  onBack() {
+    this.router.navigate(['/ecoe']).finally();
+  }
+
 }

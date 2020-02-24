@@ -1,6 +1,5 @@
 <nz-spin [nzSpinning]="eliminando">
-  <nz-page-header class="margin-bottom">
-    <nz-page-header-title>{{ecoeName}}</nz-page-header-title>
+  <nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoeName">
     <nz-page-header-extra>
 
       <a nz-button (click)="showECOENameDrawer(true)">
@@ -10,12 +9,12 @@
         nz-button
         [nzType]="'danger'"
         nz-popconfirm
-        [nzTitle]="'DELETE_CONFIRMATION' | translate"
+        [nzTitle]="'ARCHIVE_CONFIRMATION' | translate"
         (nzOnConfirm)="deleteEcoe()"
         [nzPlacement]="'top'"
         [nzType]="'danger'"
         [nzOkType]="'danger'"
-        [nzOkText]="'DELETE' | translate" [nzCancelText]="'CANCEL' | translate"
+        [nzOkText]="'ARCHIVE' | translate" [nzCancelText]="'CANCEL' | translate"
         [nzIcon]="iconDeleteTpl">
           <span>{{"DELETE_ECOE" | translate}}</span>
       </a>
