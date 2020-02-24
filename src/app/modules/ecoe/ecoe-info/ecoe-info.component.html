@@ -55,7 +55,7 @@
         <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{schedules?schedules.length:0}} {{ 'SCHEDULE' | translate }}"></nz-alert>
        </nz-card>
        <ng-template #linkCronometros>
-         <button [disabled]="!show_schedules" nz-button [nzType]="primary" [routerLink]="['schedules']" ><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+         <button [disabled]="!show_schedules" nz-button [nzType]="primary" [routerLink]="['schedule']" ><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
        </ng-template>
      </div>
 

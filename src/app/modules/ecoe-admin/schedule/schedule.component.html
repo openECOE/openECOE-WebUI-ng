@@ -1,5 +1,17 @@
 <nz-content>
-  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'SCHEDULE' | translate"> </nz-page-header>
+  <nz-page-header class="margin-bottom" [nzTitle]="'SCHEDULE' | translate"> 
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item>{{ecoe_name}}</nz-breadcrumb-item>
+      <nz-breadcrumb-item><a [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ 'SETUP' | translate}}</a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><nz-tag nzColor="blue">{{"SCHEDULE" | translate}}</nz-tag></nz-breadcrumb-item>
+    </nz-breadcrumb>
+    <nz-page-header-extra>  
+      <a nz-button [routerLink]="['/ecoe/' + ecoeId + '/admin']"><span><i nz-icon nzType="arrow-left" nzTheme="outline"></i> {{"BACK" | translate}}</span></a>
+      <button [disabled]="schedules.length == 0" [routerLink]="['/ecoe/' + ecoeId + '/admin/students']" nz-button [nzType]="'primary'"><span>{{"CONFIGURATION" | translate}} {{"STUDENTS" | translate}} <i nz-icon nzType="arrow-right" nzTheme="outline"></i></span></button>
+    </nz-page-header-extra>
+  </nz-page-header>
+
+
   <button nz-button [nzType]="'dashed'"
           [title]="(loading ? 'LOADING' : 'ADD_STAGE') | translate"
           (click)="showModalStage()"

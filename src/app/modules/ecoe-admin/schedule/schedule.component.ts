@@ -20,7 +20,8 @@ export class ScheduleComponent implements OnInit {
 
   ecoeId: number;
   ecoe: any;
-  schedules: any[];
+  ecoe_name: String;
+  schedules: any[] = [];
   loading: boolean = false;
   new_item: boolean = false;
 
@@ -54,14 +55,17 @@ export class ScheduleComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
-    this.ecoeId = +this.route.snapshot.params.id;
-    ECOE.fetch(this.ecoeId)
-      .then(value => {
-        this.ecoe = value;
-        this.getSchedules();
-      })
-      .catch(reason => console.log(reason))
-      .finally(() => this.loading = false);
+    this.route.params.subscribe(params => {
+      this.ecoeId = +params.ecoeId;
+      ECOE.fetch(this.ecoeId)
+        .then(value => {
+          this.ecoe = value;
+          this.ecoe_name = this.ecoe.name;
+          this.getSchedules();
+        })
+        .catch(reason => console.log(reason))
+        .finally(() => this.loading = false);
+    });
   }
 
   updateEditCache() {
