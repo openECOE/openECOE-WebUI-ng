@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ECOE, Round, Shift, Station} from '../../../models';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import * as moment from 'moment';
 import {SharedService} from '../../../services/shared/shared.service';
@@ -31,6 +31,7 @@ export class EvaluationDetailsComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private location: Location,
+              private router: Router,
               private shared: SharedService,
               private cdRef: ChangeDetectorRef,
               private authService: AuthenticationService,
@@ -140,6 +141,6 @@ export class EvaluationDetailsComponent implements OnInit {
   }
 
   onBack() {
-    this.location.back();
+    this.router.navigate(['/ecoe']);
   }
 }
