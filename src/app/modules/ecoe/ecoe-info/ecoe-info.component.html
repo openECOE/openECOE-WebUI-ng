@@ -41,41 +41,41 @@
 
    <div nz-col [nzMd]="8">
       <nz-card nzTitle="{{ 'STATIONS' | translate }}" [nzExtra]="linkEstaciones">
-        <nz-alert *ngIf="areas && areas.length == 0" nzType="error" nzMessage="No existen Áreas"></nz-alert>
-        <nz-alert *ngIf="areas && areas.length > 0" nzType="info" nzMessage="{{stations?stations.length:0}} {{ 'STATIONS' | translate }}"></nz-alert>
+        <nz-alert *ngIf="!show_stations" nzType="error" nzMessage="{{ 'NO_EXIST_AREAS' | translate }}"></nz-alert>
+        <nz-alert *ngIf="show_stations" nzType="info" nzMessage="{{stations?stations.length:0}} {{ 'STATIONS' | translate }}"></nz-alert>
       </nz-card>
       <ng-template #linkEstaciones>
-        <button [disabled]="(!areas || areas.length == 0) && (!stations || stations.length == 0)" nz-button [nzType]="primary" [routerLink]="['admin/stations']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+        <button [disabled]="!show_stations" nz-button [nzType]="primary" [routerLink]="['stations']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
       </ng-template>
     </div>
 
     <div nz-col [nzMd]="8">
       <nz-card nzTitle="{{ 'SCHEDULE' | translate }}" [nzExtra]="linkCronometros">
-        <nz-alert *ngIf="stations && stations.length == 0" nzType="error" nzMessage="No existen Estaciones"></nz-alert>
-        <nz-alert *ngIf="stations && stations.length > 0" nzType="info" nzMessage="{{schedules?schedules.length:0}} {{ 'SCHEDULE' | translate }}"></nz-alert>
+        <nz-alert *ngIf="!show_schedules" nzType="error" nzMessage="{{ 'NO_EXIST_STATIONS' | translate }}"></nz-alert>
+        <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{schedules?schedules.length:0}} {{ 'SCHEDULE' | translate }}"></nz-alert>
        </nz-card>
        <ng-template #linkCronometros>
-         <button [disabled]="(!stations || stations.length == 0) && (!schedules || schedules.length == 0)" nz-button [nzType]="primary" [routerLink]="['/ecoe/cronometros']" ><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+         <button [disabled]="!show_schedules" nz-button [nzType]="primary" [routerLink]="['schedules']" ><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
        </ng-template>
      </div>
 
    <div nz-col [nzMd]="8">
      <nz-card nzTitle="{{ 'STUDENTS' | translate}}" [nzExtra]="linkEstudiantes">
-       <nz-alert *ngIf="schedules && schedules.length == 0" nzType="error" nzMessage="No existen Cronómetros"></nz-alert>
-       <nz-alert *ngIf="schedules && schedules.length > 0" nzType="info" nzMessage="{{students?students.length:0}} {{ 'STUDENTS' | translate}}"></nz-alert>
+       <nz-alert *ngIf="!show_students" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate}}"></nz-alert>
+       <nz-alert *ngIf="show_students" nzType="info" nzMessage="{{students?students.length:0}} {{ 'STUDENTS' | translate}}"></nz-alert>
       </nz-card>
       <ng-template #linkEstudiantes>
-        <button [disabled]="(!schedules || schedules.length == 0) && (!students || students.length == 0)" nz-button [nzType]="primary" [routerLink]="['/ecoe/estudiantes']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+        <button [disabled]="!show_students" nz-button [nzType]="primary" [routerLink]="['students']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
       </ng-template>
     </div>
 
    <div nz-col [nzMd]="8">
      <nz-card nzTitle="Planificador" [nzExtra]="linkPlanificador">
-       <nz-alert *ngIf="schedules && schedules.length == 0" nzType="error" nzMessage="No existen Cronómetros"></nz-alert>
-       <nz-alert *ngIf="schedules && schedules.length > 0" nzType="info" nzMessage="{{rounds?rounds.length:0}} Rondas, {{shifts?shifts.length:0}} Turnos"></nz-alert>
+       <nz-alert *ngIf="!show_planner" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate }}"></nz-alert>
+       <nz-alert *ngIf="show_planner" nzType="info" nzMessage="{{rounds?rounds.length:0}} {{ 'ROUNDS' | translate }}, {{shifts?shifts.length:0}} {{ 'SHIFTS' | translate }}"></nz-alert>
       </nz-card>
       <ng-template #linkPlanificador>
-        <button [disabled]="(!schedules || schedules.length == 0) && (!rounds || rounds.length == 0) && (!shifts || shifts.length == 0)" nz-button [nzType]="primary" [routerLink]="['/ecoe/planificadores']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+        <button [disabled]="!show_planner" nz-button [nzType]="primary" [routerLink]="['planner']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
       </ng-template>
     </div>
 

@@ -241,6 +241,11 @@
   "ECOES": "ECOES",
 
   "CONFIGURATION": "Configuración",
-  "SETUP": "Configurar"
+  "SETUP": "Configurar",
+  "NO_EXIST_AREAS": "No existen Áreas",
+  "NO_EXIST_STATIONS": "No existen Estaciones",
+  "NO_EXIST_SCHEDULES": "No existen Cronómetros",
+  "NO_EXIST_AREAS": "No existen Áreas",
+  "NO_EXIST_AREAS": "No existen Áreas"
 
 }

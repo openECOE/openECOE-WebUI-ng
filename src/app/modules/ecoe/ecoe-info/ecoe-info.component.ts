@@ -23,6 +23,11 @@ export class EcoeInfoComponent implements OnInit {
   rounds: any;
   shifts: any;
   schedules: any;
+  show_areas: Boolean = true;
+  show_stations: Boolean;
+  show_schedules: Boolean;
+  show_students: Boolean;
+  show_planner: Boolean;
 
   // Eliminar ECOE
   eliminando: Boolean = false;
@@ -62,25 +67,58 @@ export class EcoeInfoComponent implements OnInit {
         ecoe_name_2edit: [this.ecoe.name, [Validators.required]]
       });
 
-      this.ecoe.areas()
-        .then(response => {
+      this.ecoe.areas().then(response => {
           this.areas = response;
-        });
+          if (this.stations) {
+            this.show_stations = (this.areas && this.areas.length > 0) || (this.stations && this.stations.length > 0);
+          }
+      });
 
-      this.ecoe.stations()
-        .then(response => this.stations = response);
+      this.ecoe.stations().then(response => {
+        this.stations = response;
+        if (this.areas) {
+          this.show_stations = (this.areas && this.areas.length > 0) || (this.stations && this.stations.length > 0);
+        }
+        if (this.schedules) {
+          this.show_schedules = (this.stations && this.stations.length > 0) || (this.schedules && this.schedules.length > 0);
+        }
+      });
 
-      this.ecoe.rounds()
-        .then(response => this.rounds = response);
+      this.ecoe.rounds().then(response => {
+        this.rounds = response;
+        if (this.shifts && this.schedules){
+          this.show_planner = (this.schedules && this.schedules.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
+        }
+      });
 
-      this.ecoe.shifts()
-        .then(response => this.shifts = response);
+      this.ecoe.shifts().then(response => {
+        this.shifts = response;
+        if (this.rounds && this.schedules){
+          this.show_planner = (this.schedules && this.schedules.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
+        }
+      });
 
       this.ecoe.students()
-        .then(response => this.students = response);
+        .then(response => {
+          this.students = response;
+          if (this.schedules){
+            this.show_students = (this.schedules && this.schedules.length > 0) || (this.students && this.students.length > 0);
+          }
+        });
 
-      this.ecoe.schedules()
-        .then(response => this.schedules = response);
+      this.ecoe.schedules().then(response => {
+        this.schedules = response;
+        if (this.students){
+          this.show_students = (this.schedules && this.schedules.length > 0) || (this.students && this.students.length > 0);
+        }
+        if (this.rounds && this.shifts) {
+          this.show_planner = (this.schedules && this.schedules.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
+        }
+        if (this.stations) {
+          this.show_schedules = (this.stations && this.stations.length > 0) || (this.schedules && this.schedules.length > 0);
+        }
+      });
+
     });
   }
 
