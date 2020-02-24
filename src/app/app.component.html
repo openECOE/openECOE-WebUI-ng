@@ -17,10 +17,12 @@
       <app-menu></app-menu>
     </nz-drawer>
 
-    <div class="inner-content">
+    <div class="long-div" [style.height.px]="clientHeight - 64 - 69" #divTarget>
       <router-outlet></router-outlet>
     </div>
   </nz-content>
+
+  <nz-back-top #backTop [nzTarget]="divTarget"></nz-back-top>
 
   <nz-footer>
     <label>openECOE {{year}} - Universitas Miguel Hernández</label>
