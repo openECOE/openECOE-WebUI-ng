@@ -140,7 +140,10 @@ export class QuestionsListComponent implements OnInit, OnChanges {
    * Then updates editCache with the new resource.
    */
   addQuestion() {
-    this.newQuestion.emit(this.questionsList[this.questionsList.length - 1].order);
+    const pos = this.questionsList.length > 0 ? this.questionsList.length - 1 : 0;
+    const order = this.questionsList[pos] ? this.questionsList[pos].order : 0;
+    console.log(pos, order);
+    this.newQuestion.emit(order);
   }
 
   getQuestionTypeLabel(questionType: string) {

@@ -1,47 +1,59 @@
 <nz-content padding>
   <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoe?.name" [nzSubtitle]="'ECOE' | translate"></nz-page-header>
+
+  <!--TOP SECTION (LIST OF SHIFTS)-->
   <nz-tabset
-    nzSize="large"
-    [nzTabPosition]="'top'"
-    [(nzSelectedIndex)]="selectedIndexShift"
-  >
+              nzSize="large"
+              [nzTabPosition]="'top'"
+              [(nzSelectedIndex)]="selectedIndexShift">
     <nz-tab
-      *ngFor="let shift of shifts"
-      [nzTitle]="shift.timeStart | timeToDate"
-      (nzClick)="onChangeShiftDay(shift)"
-    >
+            *ngFor="let day of ecoeDays"
+            [nzTitle]="(day | date)"
+            (nzClick)="onChangeECOEDay(day)">
+
       <div nz-row >
         <div nz-col nzSpan="3" nzXs="24" nzSm="6" nzLg="4" nzXl="3">
-          <nz-tabset
-            nzSize="default"
-            [nzTabPosition]="'left'"
-            [(nzSelectedIndex)]="selectedIndexRound">
-            <nz-tab
-              (nzClick)="onChangeRound(round)"
-              *ngFor="let round of rounds"
-              [nzTitle]="round.description + ' - ' + round.roundCode"
+          <!--LEFT SECTION (LIST OF ROUNDS)-->
+          <nz-tabset nzSize="default"
+                     [nzTabPosition]="'left'"
+                     [(nzSelectedIndex)]="selectedIndexRound">
+              <nz-tab *ngFor="let round of rounds"
+                      (nzClick)="onChangeRound(round)"
+                      [nzTitle]="RoundTitleRef"
               >
-            </nz-tab>
+                <ng-template #RoundTitleRef>
+                  <h2><a>{{round.description}}</a></h2>
+                </ng-template>
+              </nz-tab>
           </nz-tabset>
+          <!--END ---- LEFT SECTION (LIST OF ROUNDS)-->
         </div>
         <div nz-col nzSpan="21" nzXs="24" nzSm="18" nzLg="20" nzXl="21">
           <nz-spin [nzSpinning]="isSpinning">
             <div nz-row margin-top>
-            <div nz-col>
               <ng-container *ngFor="let station of stations">
-                <h2 [innerHTML]="station.order + ' - ' + station.name"></h2>
-                <nz-list [ngClass]="{'refresh-hidden' : refresh}" [nzDataSource]="filteredShifts" [nzRenderItem]="item" [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
+                <ng-template #StationTitleRef>
+                  <h3 [innerHTML]="station.order + ' - ' + station.name"></h3>
+                </ng-template>
+                <nz-divider nzOrientation="left" [nzText]="StationTitleRef" ></nz-divider>
+                <nz-list
+                         [ngClass]="{'refresh-hidden' : refresh}"
+                         [nzDataSource]="filteredShifts"
+                         [nzRenderItem]="item"
+                         [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
+
                   <ng-template #item let-item>
                     <nz-list-item [nzContent]="nzContent">
                       <ng-template #nzContent>
                         <nz-card success-color no-padding pointer nzHoverable
+                                 *ngIf="station && item && this.rounds[this.selectedIndexRound]"
                                  [ngClass]="(item['timeStart'] < momentRef()) ? 'completed' : 'not-completed'"
-                                 *ngIf="station && shift && this.rounds[this.selectedIndexRound]"
-                                 [routerLink]="['./station', station.id, 'shift', item.id, 'round', this.rounds[this.selectedIndexRound]?.id]"
-                        >
+
+                                 [routerLink]="['./station', station.id, 'shift', item.id, 'round', this.rounds[this.selectedIndexRound]?.id]">
                           <h3 text-center class="color-white bold">
                             {{item['shiftCode'] + ' - ' +  (item['timeStart'] | date:'H:mm')}}
                           </h3>
+
                           <h4 text-center  class="color-white">
                             {{momentRef(item['timeStart']).fromNow() | titlecase}}
                           </h4>
@@ -51,9 +63,7 @@
                   </ng-template>
                 </nz-list>
               </ng-container>
-
             </div>
-          </div>
           </nz-spin>
         </div>
       </div>

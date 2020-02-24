@@ -76,7 +76,7 @@ export class Question extends Item {
   questionType: string;
   order: number;
 
-  addOption ? = Route.POST<Option>('/option');
+  addOption ? = Route.POST<Option>('/options');
 
   area: Area;
 
@@ -92,7 +92,7 @@ export interface RowQuestion {
   reference: any[] | string;
   area: any[] | Area;
   questionType: any[] | string;
-  optionsNumber?: number | number;
+  optionsNumber?: number;
   points?: any[];
   options?: Option[];
   qblocks?: number[];
@@ -112,7 +112,7 @@ export class Answer extends Item {
   order: number;
   points: number;
   uri: string;
-  question: Question;
+  question?: Question;
 }
 
 export class RowOption {
@@ -143,6 +143,7 @@ export class Student extends Item {
   addAnswer ? = Route.POST('/answers');
 
   getAnswers ? = Route.GET('/answers');
+  getAllAnswers ? = Route.GET('/answers/all');
 }
 
 export interface BlockType {

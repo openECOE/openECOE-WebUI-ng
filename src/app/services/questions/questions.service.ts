@@ -243,6 +243,7 @@ export class QuestionsService {
       await (new Question(body)).save()
         .then(async (question) => {
           this.logPromisesOK.push(question);
+
           await this.addOptions(item, question.id);
         })
         .catch(reason => {
@@ -266,7 +267,7 @@ export class QuestionsService {
   async updateQuestion(item: RowQuestion) {
     const question = Question.fetch(item.id as number);
 
-    await question.then(async (questionResponse) => {
+    await question.then(async (questionResponse: Question) => {
       await questionResponse.update({
         description: item.description,
         area: item.area,
@@ -277,7 +278,7 @@ export class QuestionsService {
 
       await this.deleteOptions(questionResponse.options);
 
-      await this.addOptions(item, questionResponse.id as number);
+      await this.addOptions(item, questionResponse.id);
     });
   }
 

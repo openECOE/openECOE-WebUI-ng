@@ -33,7 +33,16 @@
             ],
             "styles": [
               "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
-              "src/styles.less"
+              "src/styles.less",
+              "node_modules/ngx-bar-rating/themes/br-default-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-bootstrap-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-fontawesome-o-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-fontawesome-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-horizontal-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-movie-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-square-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-stars-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-vertical-theme.css",
             ],
             "scripts": []
           },

@@ -13,8 +13,11 @@ import { QuestionFormComponent } from './qblock-question-form/question-form/ques
 import { OptionFormComponent } from './qblock-question-form/option-form/option-form.component';
 import { QblockQuestionFormComponent } from './qblock-question-form/qblock-question-form.component';
 import {QuestionsListComponent} from './questions-list/questions-list.component';
-import {OptionsListComponent} from './questions-list/options-list/options-list.component';
+import {OptionsListComponent} from './questions-list/options/options-list/options-list.component';
 import { ChronoComponent } from './chrono/chrono.component';
+import {PipesModule} from '../pipes/pipes.module';
+import { OptionsEvalComponent } from './questions-list/options/options-eval/options-eval.component';
+import {BarRatingModule} from 'ngx-bar-rating';
 import { ProgressBarComponent } from './chrono/progress-bar/progress-bar.component';
 import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.component';
 
@@ -30,6 +33,7 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     QblockQuestionFormComponent,
     QuestionsListComponent,
     OptionsListComponent,
+    OptionsEvalComponent,
     ChronoComponent,
     ProgressBarComponent,
     ChronoHeaderComponent
@@ -42,6 +46,8 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     RouterModule,
     ReactiveFormsModule,
     FormsModule,
+    PipesModule,
+    BarRatingModule
   ],
   exports: [
     UploadAndParseComponent,
@@ -51,7 +57,8 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     QuestionsListComponent,
     QuestionFormComponent,
     ChronoComponent,
-    OptionsListComponent
+    OptionsListComponent,
+    OptionsEvalComponent
   ]
 })
 export class ComponentsModule {}

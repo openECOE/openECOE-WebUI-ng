@@ -34,7 +34,6 @@ export class EvaluateComponent implements OnInit {
 
   loading: boolean;
   getQuestionsCompleted: boolean;
-  auxAnswers = [];
   isSpinning: boolean = true;
 
 
@@ -101,33 +100,13 @@ export class EvaluateComponent implements OnInit {
   }
 
   getAnswers(student: Student, page: number = 1) {
-    const stationId: number = +this.stationId;
-    const perPage = 20;
-
     if (student.id) {
-      student.getAnswers({perPage: perPage, page: page}, {paginate: true, cache: false})
-        .then((response: any) => {
-          const filterResults = this.filterStudentAnswersByStation(response.items, stationId);
-          this.auxAnswers.push(...filterResults);
-          (response.pages > page) ? this.getAnswers(student, ++page) : this.currentStudent.answers = [...this.auxAnswers];
-        })
+      student.getAllAnswers({cache: false})
+        .then((response: Answer[]) => this.currentStudent.answers = [...response])
         .finally(() => this.isSpinning = false);
     } else {
       this.currentStudent.answers = [];
     }
-  }
-
-  filterStudentAnswersByStation(answers: Answer[], stationId: number) {
-    return answers.filter( answer => {
-      let sameStation = false;
-      (answer.question.qblocks as QBlock[]).forEach(qblock => {
-        if (qblock.station.id === stationId) {
-          sameStation = true;
-          return;
-        }
-      });
-      return sameStation;
-    });
   }
 
   getQuestions() {
@@ -153,7 +132,6 @@ export class EvaluateComponent implements OnInit {
   setCurrentStudent(currentStudent: Student) {
     if (currentStudent) {
       this.isSpinning = true;
-      this.auxAnswers = [];
       this.currentStudent.student = Object.create(currentStudent);
       this.currentStudent.index = (this.students.indexOf(currentStudent) >= 0 ? this.students.indexOf(currentStudent) : 0 );
       this.getAnswers(this.currentStudent.student);

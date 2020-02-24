@@ -16,6 +16,8 @@ export class EvaluationDetailsComponent implements OnInit {
   private rounds: Round[] = [];
   private stations: Station[] = [];
 
+  ecoeDays: any[] = [];
+
   selectedIndexRound = 0;
   selectedIndexShift = 0;
   shifts: Shift[];
@@ -40,8 +42,9 @@ export class EvaluationDetailsComponent implements OnInit {
       this.ecoeId = +this.route.snapshot.params.id;
       this.ecoe = (await ECOE.fetch(this.ecoeId)) as ECOE;
       this.getData(this.ecoe).then(() => {
+          this.getShiftDays(this.shifts);
           this.getSelectedShift();
-          this.onChangeShiftDay(this.shifts[this.selectedIndexShift]);
+          this.onChangeECOEDay(this.ecoeDays[this.selectedIndexShift]);
           this.getSelectedRound();
       });
     } else {
@@ -49,13 +52,27 @@ export class EvaluationDetailsComponent implements OnInit {
     }
   }
 
-  onChangeShiftDay(shift: Shift) {
-    this.filteredShifts = this.shifts.filter( x => {
-        if (x.timeStart === shift.timeStart) {
-          return x;
-        }
+  getShiftDays(shifts: Shift[]) {
+    const aux_arr = [];
+    shifts.forEach(shift => {
+      const date = shift.timeStart.toISOString().split('T')[0];
+      if ( aux_arr.indexOf(date) < 0 ) {
+        aux_arr.push(date);
+      }
     });
-    this.setSelectedShift(shift);
+    this.ecoeDays = aux_arr;
+  }
+
+  onChangeECOEDay(shiftDate: string) {
+    this.filteredShifts = this.shifts.filter( x => {
+      const x_date = new Date(x.timeStart);
+      const x_str_date =  x_date.toISOString().split('T')[0];
+
+      if (x_str_date === shiftDate) {
+        return x;
+      }
+    });
+    this.setSelectedShift(shiftDate);
   }
 
   onChangeRound(round: Round) {
@@ -71,9 +88,9 @@ export class EvaluationDetailsComponent implements OnInit {
   }
 
   getSelectedShift() {
-    const selectedShiftId = this.evalService.getSelectedShift(this.ecoeId);
-    if (selectedShiftId > 0) {
-      this.selectedIndexShift = this.shifts.indexOf(this.shifts.filter(s => s.id === selectedShiftId)[0]);
+    const selectedShift = this.evalService.getSelectedShift(this.ecoeId);
+    if (selectedShift) {
+      this.selectedIndexShift = this.ecoeDays.indexOf(selectedShift);
     } else {
       this.selectedIndexShift = 0;
     }
@@ -88,7 +105,7 @@ export class EvaluationDetailsComponent implements OnInit {
     }
   }
 
-  setSelectedShift(shift: Shift) {
+  setSelectedShift(shift: string) {
     this.evalService.setSelectedShift(shift, this.ecoeId);
   }
 

@@ -42,29 +42,6 @@ export class StationDetailsComponent implements OnInit {
     Station.fetch(this.id_station).then(response => this.station = response);
 
     this.getQblocks(this.id_station);
-
-    /*const aux = new QuestionFormComponent();
-
-    aux.returnData.subscribe(res => {
-      console.log(res);
-    });*/
-  }
-
-  hola(questions: RowQuestion[]) {
-    questions.forEach((question) => {
-      if (question && question.id) {
-        this.questionService.updateQuestion(question)
-          .then(() => this.sendRefreshQuestions())
-          .catch(err => console.error('ERROR: ', err))
-          .finally(() => this.closeDrawer('question'));
-      } else {
-        console.log('onGetQuestion:addQuestions', questions);
-        this.questionService.addQuestions(questions, this.selectedQblock.id)
-          .then(() => this.sendRefreshQuestions())
-          .catch(err => console.error('ERROR: ', err))
-          .finally( () => this.closeDrawer('question'));
-      }
-    });
   }
 
   importQblocksWithQuestions(items: any[], stationId: number) {
@@ -277,20 +254,17 @@ export class StationDetailsComponent implements OnInit {
   }
 
   getQuestions(questions: RowQuestion[]) {
-      // questions.forEach((question) => {
-        if (questions[0] && questions[0].id) {
-          this.questionService.updateQuestion(questions[0])
-            .then(() => this.sendRefreshQuestions())
-            .catch(err => console.error('ERROR: ', err))
-            .finally(() => this.closeDrawer('question'));
-        } else {
-          console.log('onGetQuestion:addQuestions', questions);
-          this.questionService.addQuestions(questions, this.selectedQblock.id)
-            .then(() => this.sendRefreshQuestions())
-            .catch(err => console.error('ERROR: ', err))
-            .finally(() => this.closeDrawer('question'));
-        }
-      // });
+    if (questions[0] && questions[0].id) {
+      this.questionService.updateQuestion(questions[0])
+        .then(() => this.sendRefreshQuestions())
+        .catch(err => console.error('ERROR: ', err))
+        .finally(() => this.closeDrawer('question'));
+    } else {
+      this.questionService.addQuestions(questions, this.selectedQblock.id)
+        .then(() => this.sendRefreshQuestions())
+        .catch(err => console.error('ERROR: ', err))
+        .finally(() => this.closeDrawer('question'));
+    }
   }
 }
 

@@ -18,6 +18,8 @@
             nzSize="small"
             nzShowSizeChanger
             [nzShowPagination]="!preview"
+            [nzShowQuickJumper]="false"
+
             >
     <thead>
       <tr>
@@ -63,10 +65,19 @@
         <tr [nzExpand]="editCache[item.id]?.expand">
           <td></td>
           <td colspan="5">
-            <app-options-list
-              [question]="item"
-              [preview]="preview">
-            </app-options-list>
+            <ng-container *ngIf="preview; else EvaluateTemplateRef" >
+              <app-options-list
+                [question]="item"
+                [preview]="preview">
+              </app-options-list>
+            </ng-container>
+
+            <ng-template #EvaluateTemplateRef>
+              <app-options-eval
+                [question]="item">
+              </app-options-eval>
+            </ng-template>
+
           </td>
         </tr>
       </ng-template>
