@@ -18,10 +18,10 @@ export class EvaluationDetailsComponent implements OnInit {
 
   selectedIndexRound = 0;
   selectedIndexShift = 0;
-  private shifts: Shift[];
+  shifts: Shift[];
   private filteredShifts: Shift[] = [];
   private ecoeId: number;
-  private ecoe: ECOE;
+  ecoe: ECOE;
 
   momentRef = moment;
   refresh: boolean = false;
@@ -93,7 +93,7 @@ export class EvaluationDetailsComponent implements OnInit {
   }
 
   setSelectedRound(round: Round) {
-    this.evalService.setSelectedRound(round, this.ecoeId);
+    this.evalService.setSelectedRound(round.id, this.ecoeId);
     this.doSpinning(300);
   }
 

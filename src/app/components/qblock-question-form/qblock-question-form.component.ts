@@ -19,7 +19,7 @@ export class QblockQuestionFormComponent implements OnInit {
   @ViewChild('question') questionRef;
   @ViewChild('qblock') qblockRef;
 
-  private current = 0;
+  current = 0;
 
   private qblocksToAdd: QBlock[] = [];
   private questionsToAdd: any[] = [];

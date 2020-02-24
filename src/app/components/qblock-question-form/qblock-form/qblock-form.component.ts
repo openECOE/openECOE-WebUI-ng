@@ -13,7 +13,7 @@ export class QblockFormComponent implements OnInit {
   @Output() returnData = new EventEmitter();
   @Input() qblocks?: QBlock[];
 
-  private qblockForm: FormGroup;
+  qblockForm: FormGroup;
   private control: FormArray;
 
   private rowQblock: RowQblock = {

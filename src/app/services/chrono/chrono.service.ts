@@ -1,21 +1,29 @@
 import {Injectable} from '@angular/core';
 import * as io from 'socket.io-client';
-import {Observable, throwError} from 'rxjs';
+import {Observable} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
+import {ECOEConfig} from '../../models/chrono';
 
-@Injectable({
-  providedIn: 'root'
-})
+/**
+ * Service for manage the status of ECOE evaluation
+ */
+@Injectable()
 export class ChronoService {
 
   private socket: SocketIOClient.Socket;
   private readonly URL_CHRONO = environment.CHRONO_ROUTE;
-  private readonly URL_API: string = 'api/v1';
+  private readonly API_ROUTE = environment.API_ROUTE;
+  private readonly API_V1: string = '/api/v1';
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Try to connect to the socket server and then send event when it was success.
+   * @param round: Round id to do the connection
+   * @return event when is connected.
+   */
   onConnected(round: number) {
     const command = '/round';
     this.socket = io.connect(this.URL_CHRONO + command + round, {
@@ -30,6 +38,11 @@ export class ChronoService {
     );
   }
 
+  /**
+   *Any event received will be caught with this method (excluding onConnected).
+   * @param event: the name of event whose want to be subscribed
+   * @return an observable from the event name
+   */
   onReceive(event: string) {
     return new Observable(observer => {
       this.socket.on(event, data => {
@@ -38,57 +51,117 @@ export class ChronoService {
     });
   }
 
-  disconect() {
-    if (this.socket){
+  /**
+   * Tries to disconnect the current instance from the web socket
+   */
+  disconnect() {
+    if (this.socket) {
       this.socket.disconnect();
     }
   }
 
-  startECOE(ecoeId: number) {
-    const command = '/start';
+  /**
+   * Runs/starts the ECOE
+   * @param id ECOE identifier
+   * @return http response
+   */
+  startECOE(id: number) {
+    const COMMAND = '/ecoes/:id/start';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
 
-    return this.getConfigrationECOE((ecoeId))
-      .pipe( switchMap(result =>
-        this.loadConfigurationECOE(result)
-          .pipe(switchMap(() =>
-            this.http.get(this.URL_CHRONO + command, {responseType: 'text'})
-          ), catchError( err => throwError(err)) )
-      ));
+    return this.http.post(URL_V1, null);
   }
 
-  pauseECOE(round?: number) {
-    const command = (round) ? '/pause/' + round : '/pause';
+  /**
+   * Pause all chronos
+   * @param id ECOE identifier
+   * @return http response
+   */
+  pauseECOE(id: number) {
+    const COMMAND = '/ecoes/:id/pause';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
+
+    return this.http.post(URL_V1, null);
+  }
+
+  /**
+   * Resume an ECOE that was started before
+   * @param id ECOE identifier
+   */
+  playECOE(id: number) {
+    const COMMAND = '/ecoes/:id/play';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
+
+    return this.http.post(URL_V1, null);
+  }
+
+  /**
+   * Stop/abort current ECOE. Caution all timer progress will be lost
+   * @param id ECOE identifier
+   */
+  abortECOE(id: number) {
+    const COMMAND = '/ecoes/:id/abort';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
+
+    return this.http.post(URL_V1, null);
+  }
+
+  /**
+   * Method for set visible an ECOE on outsider module,
+   * Also is required for start this same ECOE
+   * @param id ECOE identifier
+   */
+  publishECOE(id: number) {
+    const COMMAND = '/ecoes/:id';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
+    const BODY = {'status': 'published'};
+
+    return this.http.patch(URL_V1, BODY);
+  }
+
+  /**
+   * Set to no public ECOE (draft)
+   * @param id ECOE identifier
+   */
+  draftECOE(id: number) {
+    const COMMAND = '/ecoes/:id';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
+    const BODY = {'status': 'draft'};
+
+    return this.http.patch(URL_V1, BODY);
+  }
+
+  /**
+   * Pause chrono timer of an round
+   * @param id Round identifier
+   */
+  pauseRound(id: number) {
+    const COMMAND = '/rounds/:id/pause';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
+    return this.http.post(URL_V1, null);
+  }
+
+  /**
+   * Resume round chrono
+   * @param id Round identifier
+   */
+  playRound(id: number) {
+    const COMMAND = '/rounds/:id/play';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
+    return this.http.post(URL_V1, null);
+  }
+
+  /**
+   * Get back the configuration/s on an/all ECOE
+   * @param id ECOE identifier
+   */
+  getChronoConfiguration(id?: number) {
+    const command = '/configurations';
     const url = this.URL_CHRONO + command;
-    return this.http.get(url);
-  }
 
-  playECOE(round?: number) {
-    const command = (round) ? '/play/' + round : '/play';
-    const url = this.URL_CHRONO + command;
-    return this.http.get(url);
-  }
-
-  abortECOE(): Observable<Object> {
-    const command = '/abort';
-    return this.http.post(this.URL_CHRONO + command, null, {});
-  }
-
-  getConfigrationECOE(ecoeId: number) {
-    const command = '/configuration';
-    const url = `${environment.API_ROUTE}/${this.URL_API}/ecoes/${ecoeId + command}`;
-    return this.http.get(url);
-  }
-
-  private loadConfigurationECOE(configuration: any): Observable<Object> {
-    const command = '/load';
-    const url = this.URL_CHRONO + command;
-
-    // @ts-ignore
-    return this.http.post<string>(url, JSON.parse(JSON.stringify(configuration)), {responseType: 'text'})
+    return this.http.get(url)
       .pipe(
-        map((response: any) => response.toString()),
-        catchError( err => throwError(err) )
+        map((response: ECOEConfig[]) => id ? response.filter(config => +config.ecoe.id === +id) : response)
       );
   }
-
 }

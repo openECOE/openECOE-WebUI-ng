@@ -13,7 +13,6 @@ import {AuthenticationService} from './services/authentication/authentication.se
   styleUrls: ['./app.component.less']
 })
 export class AppComponent implements OnInit {
-
   language: string = 'es';
   year:string = "";
   isCollapsed: Boolean = false;
@@ -31,7 +30,9 @@ export class AppComponent implements OnInit {
 
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => this.sharedService.setPageChanged(event.url));
+      .subscribe((event: NavigationEnd) => {
+        this.sharedService.setPageChanged(event.url);
+      });
 
     if (this.authService.userLogged) {
       this.authService.loadUserData();

@@ -1,0 +1,27 @@
+<div nz-row>
+  <div nz-col nzSpan="11" nzXs="24" nzSm="11">
+    <h2 *ngIf="!showDetails" uppercase>{{round.description}}</h2>
+    <nz-tag [nzColor]="'#2db7f5'" class="my-tag" >
+      {{(minutes | number:'2.') + ':' + (seconds | number:'2.')}}
+      <ng-container *ngIf="stageName">{{stageName}}</ng-container>
+    </nz-tag>
+    <h4 *ngIf="rerunsDescription">({{'RERUN'| translate}} {{rerunsDescription}})</h4>
+  </div>
+
+  <div nz-col nzSpan="13" nzXs="0" nzSm="13">
+    <ng-container *ngIf="showDetails; else Outside" >
+      <nz-tag  *ngIf="showDetails && currentCountDownEvent?.event" [nzColor]="'orange'" no-margin class="my-tag right">
+        {{(currentCountDownEvent['minutes'] | number:'2.') + ':' + (currentCountDownEvent['seconds'] | number:'2.')}}
+        <ng-container>{{currentCountDownEvent['event']['message']}}</ng-container>
+      </nz-tag>
+    </ng-container>
+
+    <ng-template #Outside>
+      <div nz-row text-right>
+        <a (click)="goEvaluation(round.id, idEcoe)">
+          <i nz-icon nzType="link" nzTheme="outline"></i>
+        </a>
+      </div>
+    </ng-template>
+  </div>
+</div>

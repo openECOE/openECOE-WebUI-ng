@@ -13,20 +13,20 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class StationDetailsComponent implements OnInit {
   private editCache: { edit: boolean, new_item: boolean, item: QBlock, expand?: boolean }[] = [];
-  private selectedQblock: {id: number, lastOrder: number} = {id: null, lastOrder: null};
-  private drawerQUestionVisible: boolean = false;
-  private questionToEdit: RowQuestion[] = [];
   private refreshQuestions: boolean = false;
   private defaultExpand: boolean = false;
-  private isVisible: boolean = false;
-  private totalItems: number = 0;
-  private qblocks: QBlock[] = [];
-  private perPage: number = 20;
-  private id_station: number;
-  private page: number = 1;
-  private loading: boolean;
   private pagQblocks: any;
-  private station: any;
+  selectedQblock: {id: number, lastOrder: number} = {id: null, lastOrder: null};
+  drawerQUestionVisible: boolean = false;
+  questionToEdit: RowQuestion[] = [];
+  isVisible: boolean = false;
+  totalItems: number = 0;
+  qblocks: QBlock[] = [];
+  perPage: number = 20;
+  id_station: number;
+  page: number = 1;
+  loading: boolean;
+  station: any;
 
   private logPromisesERROR = [];
   private logPromisesOK = [];

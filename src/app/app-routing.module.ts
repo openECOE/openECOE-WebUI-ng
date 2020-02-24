@@ -2,9 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {HomeComponent} from './modules/ecoe/home/home.component';
 import {LoginComponent} from './components/login/login.component';
-import { EcoeInfoComponent } from './modules/ecoe/ecoe-info/ecoe-info.component';
-import { EvaluationComponent } from './pages/evaluation/evaluation.component';
-import { ChronoComponent } from './components/chrono/chrono.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'ecoe', pathMatch: 'full'},

@@ -1,31 +1,43 @@
 <nz-page-header class="margin-top"  (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoe?.name"> </nz-page-header>
-<nz-content>
+
+<nz-content padding>
+  <div nz-row>
+    <div nz-col>
+      <button (click)="publishECOE(ecoeId)" [disabled]="disabledBtnStart"
+                nzSize="large" nz-button nzBlock nzType="primary">
+          <i *ngIf="!doSpin" nz-icon nzType="upload" nzTheme="outline"></i>
+        <i *ngIf="doSpin" nz-icon nzSpin="true" nzType="sync" nzTheme="outline"></i>
+          {{'PUBLISH_ECOE' | translate}}
+        </button>
+    </div>
+  </div>
+
   <div nz-row nzJustify="space-between" nzGutter="8" nzAlign="top">
     <div nz-col margin-top nzXs="24" nzLg="24" nzXl="7">
       <div padding background-white>
         <button (click)="startECOE()" [disabled]="disabledBtnStart"
-                nzSize="large" nz-button nzBlock nzType="primary">
+                nzSize="large" nz-button nzBlock margin-top nzType="primary">
           <i nz-icon nzType="play-circle"></i>
           {{'START' | translate}}
         </button>
         <nz-button-group nz-row margin-top>
           <div nz-col nzXs="24" nzSm="12">
-            <button (click)="pauseRound()"
+            <button (click)="pauseECOE(ecoeId)"
                     nzSize="small" nzBlock nz-button>
               <i nz-icon nzType="pause" nzTheme="outline"></i>
               {{'PAUSE_ALL' | translate}}
             </button>
           </div>
           <div nz-col nzXs="24" nzSm="12">
-            <button (click)="playRound()"
+            <button (click)="playECOE(ecoeId)"
                     nzSize="small" nzBlock nz-button>
               <i nz-icon nzType="play-circle" nzTheme="outline"></i>
               {{'CONTINUE_ALL' | translate}}
             </button>
           </div>
         </nz-button-group>
-        <button (click)="stopECOE()"
-                nzSize="large" nz-button nzBlock nzType="danger" nzGhost margin-top>
+        <button (click)="stopECOE(ecoeId)"
+                nzSize="small" nz-button nzBlock nzType="danger" nzGhost margin-top>
           <i nz-icon nzType="stop"></i>
           {{'STOP' | translate}}
         </button>
@@ -34,8 +46,10 @@
 
     <div nz-col margin-top nzXs="24" nzLg="24" nzXl="17">
       <div class="outside-chrono" padding text-left >
-        <app-chrono
-          [round]="rounds[0]">
+        <app-chrono *ngIf="ecoe"
+          [idEcoe]="ecoe.id"
+          [round]="rounds[0]"
+          [mute]="true">
         </app-chrono>
         <nz-alert *ngIf="errorAlert"
                   nzType="warning"
@@ -55,7 +69,9 @@
       <div nz-col nzXs="24" nzSm="12" nzMd="8" nzXl="6" padding class="c-card">
         <app-chrono
           [round]="round"
-          [outside]="true">
+          [idEcoe]="ecoeId"
+          [showDetails]="false"
+          [mute]="true">
           <nz-button-group nzSize="default">
             <button (click)="pauseRound(round.id)" nz-button nzType="danger"><i nz-icon nzType="pause-circle" nzTheme="outline"></i>{{'PAUSE' | translate}}</button>
             <button (click)="playRound(round.id)" nz-button nzType="primary"><i nz-icon nzType="play-circle" nzTheme="outline"></i>{{'CONTINUE' | translate}}</button>

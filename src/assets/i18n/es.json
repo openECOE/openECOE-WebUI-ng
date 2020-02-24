@@ -242,4 +242,14 @@
 
   "CONFIGURATION": "Configuración"
 
+  "TIME_TODAY": "Hoy",
+  "TIME_YESTERDAY": "Ayer",
+  "ANY_ECOE_CONFIGURED": "Actualmente no hay ninguna ECOE programada",
+  "PUBLISH_ECOE": "Publicar ECOE",
+  "UPDATE_PUBLISHED_ECOE": "Actualizar publicación",
+  "NOT_STARTED_YET": " todavia no ha comenzado",
+  "OUTSIDE_DESCRIPTION": "Si es usted el responsable o un evaluador de la ECOE, puede iniciar sesión",
+  "HERE": "Aquí",
+  "STATUS": "Estado",
+  "PENDING_TO_START": "Pendiente de comenzar..."
 }

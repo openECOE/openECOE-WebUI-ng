@@ -20,7 +20,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   @Input()  action: 'ADD' | 'EDIT' | 'ADD_WITH_QBLOCK';
   @Output() returnData: EventEmitter<any> = new EventEmitter();
 
-  private questionForm: FormGroup;
+  questionForm: FormGroup;
   private control: FormArray;
   private totalItems: number = 0;
   private totalPoints: number = 0;

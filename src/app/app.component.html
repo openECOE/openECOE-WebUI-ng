@@ -5,18 +5,18 @@
         <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i> <b>{{"openECOE" | translate}}</b>
       </button>
     </div>
-    
+
     <app-submenu [submenuSelected]="'ECOE'" ></app-submenu>
-    
+
     <app-usermenu></app-usermenu>
-    
+
   </nz-header>
 
   <nz-content>
     <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320" [nzClosable]="'false'" (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
       <app-menu></app-menu>
     </nz-drawer>
-    
+
     <div class="inner-content">
       <router-outlet></router-outlet>
     </div>

@@ -9,14 +9,16 @@ import {ChronoService} from '../../../../services/chrono/chrono.service';
 @Component({
   selector: 'app-state',
   templateUrl: './state.component.html',
-  styleUrls: ['./state.component.less']
+  styleUrls: ['./state.component.less'],
+  providers: [ChronoService]
 })
 export class StateComponent implements OnInit {
-  private ecoe: ECOE;
-  private ecoeId: number;
-  private rounds: Round[] = [];
-  private disabledBtnStart: boolean;
-  private errorAlert: string;
+  ecoe: ECOE;
+  ecoeId: number;
+  rounds: Round[] = [];
+  disabledBtnStart: boolean;
+  errorAlert: string;
+  doSpin: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private translate: TranslateService,
@@ -40,12 +42,23 @@ export class StateComponent implements OnInit {
   }
 
   getRounds() {
-    Round.query({where: {ecoe: +this.ecoeId}}, {cache: false})
+    Round.query({where: {ecoe: +this.ecoeId}}, {cache: false, skip: ['ecoe']})
       .then( (result: Round[]) => this.rounds = result);
   }
 
   onBack() {
     this.router.navigate(['./home']).finally();
+  }
+
+  publishECOE(ecoeId: number) {
+    this.setSpin(true);
+    this.chronoService.publishECOE(ecoeId).toPromise()
+      .catch(err => console.warn(err));
+  }
+
+  draftECOE(ecoeId: number) {
+    this.chronoService.draftECOE(ecoeId).toPromise()
+      .catch(err => console.warn(err));
   }
 
   startECOE() {
@@ -58,8 +71,18 @@ export class StateComponent implements OnInit {
       });
   }
 
-  stopECOE() {
-    this.chronoService.abortECOE()
+  pauseECOE(id: number) {
+    this.chronoService.pauseECOE(id)
+      .subscribe(null, err => error(err));
+  }
+
+  playECOE(id: number) {
+    this.chronoService.playECOE(id)
+      .subscribe(null, err => error(err));
+  }
+
+  stopECOE(id: number) {
+    this.chronoService.abortECOE(id)
       .subscribe(null, err => error(err));
 
     this.disabledBtnStart = true;
@@ -70,17 +93,23 @@ export class StateComponent implements OnInit {
     }, 1000);
   }
 
-  clearAlertError() {
+  playRound(round: number) {
+    this.chronoService.playRound(round)
+      .subscribe(null, err => error(err));
+  }
+
+  pauseRound(roundId: number) {
+    this.chronoService.pauseRound(roundId)
+      .subscribe(null, err => error(err));
+  }
+
+  private clearAlertError() {
     this.errorAlert = null;
   }
 
-  pauseRound(round?: number) {
-    this.chronoService.pauseECOE(round)
-      .subscribe(null, err => error(err));
-  }
+  private setSpin(value: boolean) {
+    this.doSpin =  value;
 
-  playRound(round?: number) {
-    this.chronoService.playECOE(round)
-      .subscribe(null, err => error(err));
+    setTimeout(() => this.doSpin = false, 1000);
   }
 }
