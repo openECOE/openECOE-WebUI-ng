@@ -17,7 +17,7 @@ import {getPotionID} from '@openecoe/potion-client';
 
 export class StationsComponent implements OnInit {
 
-  private stations: Station[] = [];
+  stations: Station[] = [];
   ecoeId: number;
   private ecoe: ECOE;
   ecoe_name: String;
@@ -92,7 +92,7 @@ export class StationsComponent implements OnInit {
   }
 
   onBack() {
-    this.router.navigate(['./home']).finally();
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
   }
 
   updateOptions(response: any, exclude?: string) {

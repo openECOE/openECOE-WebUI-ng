@@ -280,6 +280,6 @@ export class ScheduleComponent implements OnInit {
   }
 
   onBack() {
-    this.router.navigate(['./home']).finally();
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
   }
 }

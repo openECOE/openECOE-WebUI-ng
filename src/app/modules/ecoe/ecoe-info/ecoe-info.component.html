@@ -52,7 +52,7 @@
     <div nz-col [nzMd]="8">
       <nz-card nzTitle="{{ 'SCHEDULE' | translate }}" [nzExtra]="linkCronometros">
         <nz-alert *ngIf="!show_schedules" nzType="error" nzMessage="{{ 'NO_EXIST_STATIONS' | translate }}"></nz-alert>
-        <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{schedules?schedules.length:0}} {{ 'SCHEDULE' | translate }}"></nz-alert>
+        <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{stages?stages.length:0}} {{ 'STAGES' | translate }}"></nz-alert>
        </nz-card>
        <ng-template #linkCronometros>
          <button [disabled]="!show_schedules" nz-button [nzType]="primary" [routerLink]="['schedule']" ><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>

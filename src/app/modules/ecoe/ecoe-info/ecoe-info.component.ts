@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
+import {map} from 'rxjs/operators';
 import {Location} from '@angular/common';
-import { ECOE } from 'src/app/models';
+import { ECOE, Schedule } from 'src/app/models';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService } from 'ng-zorro-antd';
@@ -22,7 +23,7 @@ export class EcoeInfoComponent implements OnInit {
   students: any;
   rounds: any;
   shifts: any;
-  schedules: any;
+  stages: any;
   show_areas: Boolean = true;
   show_stations: Boolean;
   show_schedules: Boolean;
@@ -79,43 +80,43 @@ export class EcoeInfoComponent implements OnInit {
         if (this.areas) {
           this.show_stations = (this.areas && this.areas.length > 0) || (this.stations && this.stations.length > 0);
         }
-        if (this.schedules) {
-          this.show_schedules = (this.stations && this.stations.length > 0) || (this.schedules && this.schedules.length > 0);
+        if (this.stages) {
+          this.show_schedules = (this.stations && this.stations.length > 0) || (this.stages && this.stages.length > 0);
         }
       });
 
       this.ecoe.rounds().then(response => {
         this.rounds = response;
-        if (this.shifts && this.schedules){
-          this.show_planner = (this.schedules && this.schedules.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
+        if (this.shifts && this.stages){
+          this.show_planner = (this.stages && this.stages.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
         }
       });
 
       this.ecoe.shifts().then(response => {
         this.shifts = response;
-        if (this.rounds && this.schedules){
-          this.show_planner = (this.schedules && this.schedules.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
+        if (this.rounds && this.stages){
+          this.show_planner = (this.stages && this.stages.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
         }
       });
 
       this.ecoe.students()
         .then(response => {
           this.students = response;
-          if (this.schedules){
-            this.show_students = (this.schedules && this.schedules.length > 0) || (this.students && this.students.length > 0);
+          if (this.stages){
+            this.show_students = (this.stages && this.stages.length > 0) || (this.students && this.students.length > 0);
           }
         });
 
-      this.ecoe.schedules().then(response => {
-        this.schedules = response;
+      this.ecoe.schedules().then((response:Schedule[]) => {
+        this.stages = Array.from(new Set(response.map(m => m.stage)));
         if (this.students){
-          this.show_students = (this.schedules && this.schedules.length > 0) || (this.students && this.students.length > 0);
+          this.show_students = (this.stages && this.stages.length > 0) || (this.students && this.students.length > 0);
         }
         if (this.rounds && this.shifts) {
-          this.show_planner = (this.schedules && this.schedules.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
+          this.show_planner = (this.stages && this.stages.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
         }
         if (this.stations) {
-          this.show_schedules = (this.stations && this.stations.length > 0) || (this.schedules && this.schedules.length > 0);
+          this.show_schedules = (this.stations && this.stations.length > 0) || (this.stages && this.stages.length > 0);
         }
       });
 
