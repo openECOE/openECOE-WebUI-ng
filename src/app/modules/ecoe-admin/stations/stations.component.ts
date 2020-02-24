@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SharedService} from '../../../services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
-import {RowStation, Station} from '../../../models';
+import {RowStation, Station, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID} from '@openecoe/potion-client';
 
@@ -18,7 +18,9 @@ import {getPotionID} from '@openecoe/potion-client';
 export class StationsComponent implements OnInit {
 
   private stations: Station[] = [];
-  private ecoeId: number;
+  ecoeId: number;
+  private ecoe: ECOE;
+  ecoe_name: String;
   private editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
   public  index: number = 1;
   private page: number = 1;
@@ -55,8 +57,14 @@ export class StationsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.ecoeId = +this.route.snapshot.params.id;
-    this.loadStations().finally();
+    this.route.params.subscribe(params => {
+      this.ecoeId = +params.ecoeId;
+      ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
+        this.ecoe = value;
+        this.ecoe_name = this.ecoe.name;
+      });
+      this.loadStations().finally();
+    });
   }
 
   /**

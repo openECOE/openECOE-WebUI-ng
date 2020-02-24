@@ -38,10 +38,12 @@ export class StationDetailsComponent implements OnInit {
               private translate: TranslateService ) { }
 
    ngOnInit() {
-    this.id_station = parseInt(this.route.snapshot.paramMap.get('id'), 10);
-    Station.fetch(this.id_station).then(response => this.station = response);
+    this.route.params.subscribe(params => {
+      this.id_station = +params.stationId;
+      Station.fetch(this.id_station).then(response => this.station = response);
 
-    this.getQblocks(this.id_station);
+      this.getQblocks(this.id_station);
+    });
 
     /*const aux = new QuestionFormComponent();
 
