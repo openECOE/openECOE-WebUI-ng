@@ -75,7 +75,7 @@
           <ng-container>
             <nz-tag *ngIf="item.planner?.shift && item.planner?.round"
                     [nzColor]="shared.stringToColour(item.planner?.shift.shiftCode + item.planner?.round.roundCode)">
-              {{item.planner?.shift?.shiftCode}}{{item.planner?.round?.roundCode}}{{item?.plannerOrder}}
+              {{item.planner?.shift?.shiftCode}} - {{item.planner?.round?.roundCode}} - {{item?.plannerOrder}}
             </nz-tag>
           </ng-container>
         </td>
