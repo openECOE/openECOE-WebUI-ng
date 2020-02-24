@@ -38,7 +38,6 @@ export class EcoeInfoComponent implements OnInit {
   show_ecoe_name_drawer: Boolean = false;
   ecoe_name_form_loading: Boolean = false;
   ecoe_name_form: FormGroup;
-  cucu: FormGroup;
   // --
 
 
@@ -51,6 +50,10 @@ export class EcoeInfoComponent implements OnInit {
     private fb: FormBuilder) { }
 
   ngOnInit() {
+    this.ecoe_name_form = this.fb.group({
+      ecoe_name_2edit: ['', [Validators.required]]
+    });
+
     this.route.params.subscribe(params => {
       this.ecoeId = params.ecoeId;
     });
@@ -64,9 +67,7 @@ export class EcoeInfoComponent implements OnInit {
       this.ecoe = value;
       this.ecoeName = this.ecoe.name;
 
-      this.ecoe_name_form = this.fb.group({
-        ecoe_name_2edit: [this.ecoe.name, [Validators.required]]
-      });
+      this.ecoe_name_form.get('ecoe_name_2edit').setValue(this.ecoe.name);
 
       this.ecoe.areas().then(response => {
           this.areas = response;
@@ -132,7 +133,7 @@ export class EcoeInfoComponent implements OnInit {
 
     new ECOE(this.ecoe).destroy().then(
       result => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/']);
       }
     ).catch(
       error => {
@@ -164,6 +165,7 @@ export class EcoeInfoComponent implements OnInit {
       response => {
         this.message.success(this.translate.instant('OK_REQUEST_CONTENT'), { nzDuration: 5000 });
         this.ecoe = response;
+        this.ecoeName = this.ecoe.name;
       }
     ).catch(
       error => {
