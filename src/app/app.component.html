@@ -1,31 +1,34 @@
 <nz-layout class="layout" >
   <nz-header>
-    <div class="logo">
-      <button nz-button (click)="isCollapsed = !isCollapsed">
-        <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i> <b>{{"openECOE" | translate}}</b>
-      </button>
+    <div class="logo" style="vertical-align: middle;float: left;">
+      <a (click)="isCollapsed = !isCollapsed" style="margin-right: 13px;font-size: 30px;">
+        <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+      </a>
+      <img src="../assets/logo.png">
     </div>
+    
+    <app-usermenu style="margin: auto;"></app-usermenu>
 
-    <app-submenu [submenuSelected]="'ECOE'" ></app-submenu>
+    <app-submenu [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>
 
-    <app-usermenu></app-usermenu>
+
 
   </nz-header>
 
   <nz-content>
-    <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320" [nzClosable]="'false'" (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
-      <app-menu></app-menu>
-    </nz-drawer>
-
-    <div class="long-div" [style.height.px]="clientHeight - 64 - 69" #divTarget>
-      <router-outlet></router-outlet>
+    <div class="inner-nz-content">
+      <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320" [nzClosable]="'false'" (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
+        <app-menu></app-menu>
+      </nz-drawer>
+  
+      <div class="long-div">
+        <router-outlet></router-outlet>
+      </div>
     </div>
+    <nz-footer>
+      <label>openECOE {{year}} - Universitas Miguel Hernández</label>
+    </nz-footer>
   </nz-content>
 
-  <nz-back-top #backTop [nzTarget]="divTarget"></nz-back-top>
-
-  <nz-footer>
-    <label>openECOE {{year}} - Universitas Miguel Hernández</label>
-  </nz-footer>
 
 </nz-layout>

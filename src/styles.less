@@ -16,6 +16,21 @@
 //  background: rgba(255, 255, 255, .2);
 //  margin: 16px;
 //}
+@import "../node_modules/ng-zorro-antd/ng-zorro-antd.less";
+
+@blue-6: #008aa4;
+
+@primary-color: @blue-6;
+@info-color: @blue-6;
+@success-color: @green-6;
+@processing-color: @blue-6;
+@error-color: @red-6;
+@highlight-color: @red-6;
+@warning-color: @gold-6;
+@normal-color: #d9d9d9;
+@white: #fff;
+@black: #000;
+
 
 i[icon-25] {
   font-size: 25px;
@@ -56,7 +71,7 @@ app-ecoe {
 }
 
 .margin-top, [margin-top] {
-  margin-top: 8px !important;
+  margin-top: 15px !important;
 }
 
 .margin-top-18, [margin-top-18] {
@@ -180,14 +195,10 @@ nz-collapse-panel {
   visibility: hidden;
 }
 
+nz-header {
+  margin-bottom: 18px;
+}
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  border-top: 1px solid rgb(232, 232, 232);
-  padding: 10px 16px;
-  text-align: right;
-  left: 0;
-  background: #fff;
+nz-content {
+  overflow: auto;
 }
