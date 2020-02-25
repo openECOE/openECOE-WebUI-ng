@@ -30,6 +30,17 @@
 @normal-color: #d9d9d9;
 @white: #fff;
 @black: #000;
+@secondary: #F67280;
+
+.secondary-tag {
+  color: @secondary;
+  background-color: fade(@secondary, 30%);
+  border-color: fade(@secondary, 85%);
+}
+
+a.secondary-link:hover {
+  color: @secondary;
+}
 
 
 i[icon-25] {

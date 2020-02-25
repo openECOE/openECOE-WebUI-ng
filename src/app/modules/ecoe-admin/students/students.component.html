@@ -1,8 +1,7 @@
 <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'STUDENTS' | translate"> 
   <nz-breadcrumb nz-page-header-breadcrumb>
-    <nz-breadcrumb-item>{{ecoe_name}}</nz-breadcrumb-item>
-    <nz-breadcrumb-item><a [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ 'SETUP' | translate}}</a></nz-breadcrumb-item>
-    <nz-breadcrumb-item><nz-tag nzColor="blue">{{"STUDENTS" | translate}}</nz-tag></nz-breadcrumb-item>
+    <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ecoe_name}}</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"STUDENTS" | translate}}</nz-tag></nz-breadcrumb-item>
   </nz-breadcrumb>
   <nz-page-header-extra>  
     <button [disabled]="students.length == 0" [routerLink]="['/ecoe/' + ecoeId + '/admin/planner']" nz-button [nzType]="'primary'"><span>{{"CONFIGURATION" | translate}} {{"PLANNER" | translate}} <i nz-icon nzType="arrow-right" nzTheme="outline"></i></span></button>
