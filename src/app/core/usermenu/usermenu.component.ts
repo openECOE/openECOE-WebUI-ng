@@ -13,4 +13,9 @@ export class UsermenuComponent implements OnInit {
   ngOnInit() {
   }
 
+  logout(){
+    this.authService.logout();
+    window.location.reload();
+  }
+
 }

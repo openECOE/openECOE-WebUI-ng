@@ -43,11 +43,10 @@ export class AuthenticationService {
     );
   }
 
-  logout(route: string = '/outside') {
+  logout(route: string = '/') {
     localStorage.removeItem('userLogged');
     localStorage.removeItem('userData');
     this.router.navigate([route]);
-    // window.location.reload();
   }
 
   get userLogged(): any {
