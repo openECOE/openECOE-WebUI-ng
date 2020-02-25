@@ -26,20 +26,20 @@ export class EvaluationDetailsComponent implements OnInit {
   ecoe: ECOE;
 
   momentRef = moment;
-  refresh: boolean = false;
-  isSpinning: boolean = false;
+  isSpinning: boolean = true;
   currentStep: number = 0;
 
   selectedEcoeDay;
   selectedRound: Round;
   selectedStation: Station;
-  showStepsForm: boolean = true;
+  // showStepsForm: boolean = true;
 
   constructor(private route: ActivatedRoute,
               private location: Location,
               private router: Router,
               private shared: SharedService,
               private cdRef: ChangeDetectorRef,
+
               private authService: AuthenticationService,
               private evalService: EvaluationService) { }
 
@@ -47,12 +47,13 @@ export class EvaluationDetailsComponent implements OnInit {
     if (this.authService.userLogged) {
       this.momentRef.locale(this.shared.getUsersLocale('en-US'));
       await this.getUrlParams();
-      this.initComboFilter();
+      this.setupCurrentStep();
       this.getData(this.ecoe).then(() => {
           this.getShiftDays(this.shifts);
           this.getSelectedShift();
           this.onChangeECOEDay(this.ecoeDays[this.selectedIndexShift]);
           this.getSelectedRound();
+          this.isSpinning = false;
       });
     } else {
       this.authService.logout();
@@ -86,9 +87,16 @@ export class EvaluationDetailsComponent implements OnInit {
     });
   }
 
-  initComboFilter() {
-    if (this.selectedEcoeDay && this.selectedRound && this.selectedStation) {
-      this.showStepsForm = false;
+  setupCurrentStep() {
+    this.currentStep = 0;
+    if (this.selectedEcoeDay) {
+      this.currentStep++;
+    }
+    if (this.selectedRound) {
+      this.currentStep++;
+    }
+    if (this.selectedStation) {
+      this.currentStep++;
     }
   }
 
@@ -101,7 +109,6 @@ export class EvaluationDetailsComponent implements OnInit {
       }
     });
     this.ecoeDays = aux_arr;
-    this.selectedEcoeDay = this.ecoeDays[0];
   }
 
   onChangeECOEDay(shiftDate: string) {
@@ -113,11 +120,6 @@ export class EvaluationDetailsComponent implements OnInit {
         return x;
       }
     });
-    // this.setSelectedShift(shiftDate);
-  }
-
-  onChangeRound(round: Round) {
-    this.setSelectedRound(round);
   }
 
   doSpinning(timeout: number) {
@@ -146,10 +148,6 @@ export class EvaluationDetailsComponent implements OnInit {
     }
   }
 
-  setSelectedShift(shift: string) {
-    this.evalService.setSelectedShift(shift, this.ecoeId);
-  }
-
   setSelectedRound(round: Round) {
     this.evalService.setSelectedRound(round.id, this.ecoeId);
     this.doSpinning(300);
@@ -159,9 +157,6 @@ export class EvaluationDetailsComponent implements OnInit {
     const roundsPromise = ecoe.rounds()
       .then((rounds: Round[]) => {
         this.rounds = rounds;
-        if (!this.selectedRound && rounds.length > 0) {
-          this.selectedRound = rounds[0];
-        }
       });
     const shiftsPromise = ecoe.shifts()
       .then((shifts: any[]) => {
@@ -181,9 +176,6 @@ export class EvaluationDetailsComponent implements OnInit {
       sort: {order: false}
     }).then( (stations: Station[]) => {
       this.stations = stations;
-      if (!this.selectedStation) {
-        this.selectedStation = this.stations[0];
-      }
     });
   }
 
@@ -191,21 +183,41 @@ export class EvaluationDetailsComponent implements OnInit {
     this.router.navigate(['/ecoe']);
   }
 
-  onStepChange($event: any) {
-    if ($event === 'NEXT') {
-      this.currentStep++;
-    } else if ($event === 'BACK') {
-      this.currentStep--;
+  finish() {
+    this.onChangeECOEDay(this.selectedEcoeDay);
+  }
+
+  onEcoeDateSelected(item) {
+    this.selectedEcoeDay = item;
+    this.setupCurrentStep();
+  }
+
+  onRoundSelected(item) {
+    this.selectedRound = item;
+    this.setupCurrentStep();
+  }
+
+  onStationSelected(item) {
+    this.selectedStation = item;
+    this.finish();
+    this.setupCurrentStep();
+  }
+
+  onClickDate() {
+    if (this.selectedEcoeDay) {
+      this.currentStep = 0;
     }
   }
 
-  finish() {
-    this.onChangeECOEDay(this.selectedEcoeDay);
-    this.setVisibleSteps(false);
+  onClickRound() {
+    if (this.selectedRound) {
+      this.currentStep = 1;
+    }
   }
 
-  setVisibleSteps(val: boolean) {
-    this.showStepsForm = val;
-    this.currentStep = 0;
+  onClickStation() {
+    if (this.selectedStation) {
+      this.currentStep = 2;
+    }
   }
 }
