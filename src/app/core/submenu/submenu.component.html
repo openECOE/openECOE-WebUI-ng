@@ -1,15 +1,15 @@
 <ul *ngIf="authService.userData && location.path().indexOf('/ecoe/') === 0"
-  nz-menu
-  nzTheme="dark"
-  nzMode="horizontal"
-  class="header-menu"
-  style="float: left; width: 70%;">
+    nz-menu
+    nzTheme="dark"
+    nzMode="horizontal"
+    class="header-menu"
+    style="float: left; width: 70%;">
 
   <li *ngFor="let item of submenu2build"
-    nz-menu-item
-    [nzSelected]="item.active"
-    [routerLink]="[item.redirecTo]">
-    
+      nz-menu-item
+      [nzSelected]="item.active"
+      [routerLink]="[item.redirecTo]">
+
     {{item.title | translate}}
   </li>
 

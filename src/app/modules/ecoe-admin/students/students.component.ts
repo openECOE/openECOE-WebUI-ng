@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SharedService} from '../../../services/shared/shared.service';
-import {Student} from 'src/app/models/ecoe';
+import {Student, ECOE} from 'src/app/models/ecoe';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
@@ -20,6 +20,8 @@ export class StudentsComponent implements OnInit {
 
   students: any[] = [];
   ecoeId: number;
+  ecoe: ECOE;
+  ecoe_name: String;
   editCache = {};
   index: number = 1;
 
@@ -65,9 +67,16 @@ export class StudentsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.ecoeId = +this.route.snapshot.params.id;
-    this.loadStudents();
-    this.InitStudentRow();
+    this.route.params.subscribe(params => {
+      this.ecoeId = +params.ecoeId;
+      ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
+        this.ecoe = value;
+        this.ecoe_name = this.ecoe.name;
+      });
+
+      this.loadStudents();
+      this.InitStudentRow();
+    });
   }
 
   /**
@@ -378,7 +387,7 @@ export class StudentsComponent implements OnInit {
   }
 
   onBack() {
-    this.router.navigate(['./home']).finally();
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
   }
 
   deleteRow(idx: number) {

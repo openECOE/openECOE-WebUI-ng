@@ -38,10 +38,35 @@ export class StationDetailsComponent implements OnInit {
               private translate: TranslateService ) { }
 
    ngOnInit() {
-    this.id_station = parseInt(this.route.snapshot.paramMap.get('id'), 10);
-    Station.fetch(this.id_station).then(response => this.station = response);
+    this.route.params.subscribe(params => {
+      this.id_station = +params.stationId;
+      Station.fetch(this.id_station).then(response => this.station = response);
 
-    this.getQblocks(this.id_station);
+      this.getQblocks(this.id_station);
+    });
+
+    /*const aux = new QuestionFormComponent();
+
+    aux.returnData.subscribe(res => {
+      console.log(res);
+    });*/
+  }
+
+  hola(questions: RowQuestion[]) {
+    questions.forEach((question) => {
+      if (question && question.id) {
+        this.questionService.updateQuestion(question)
+          .then(() => this.sendRefreshQuestions())
+          .catch(err => console.error('ERROR: ', err))
+          .finally(() => this.closeDrawer('question'));
+      } else {
+        console.log('onGetQuestion:addQuestions', questions);
+        this.questionService.addQuestions(questions, this.selectedQblock.id)
+          .then(() => this.sendRefreshQuestions())
+          .catch(err => console.error('ERROR: ', err))
+          .finally( () => this.closeDrawer('question'));
+      }
+    });
   }
 
   importQblocksWithQuestions(items: any[], stationId: number) {

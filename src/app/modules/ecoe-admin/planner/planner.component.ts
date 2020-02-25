@@ -19,6 +19,7 @@ export class PlannerComponent implements OnInit {
 
   ecoeId: number;
   ecoe: ECOE | Item;
+  ecoe_name: String;
 
   shifts: Shift[] = [];
   rounds: Round[] = [];
@@ -54,18 +55,20 @@ export class PlannerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
+    this.route.params.subscribe(params => {
+      this.loading = true;
 
-    const excludeItems = [];
-
-    this.ecoeId = +this.route.snapshot.params.id;
-    ECOE.fetch(this.ecoeId, {skip: excludeItems})
-      .then(ecoe => {
-        this.ecoe = ecoe;
-        this.loadStations();
-        this.loadRoundsShifts().then(() => this.loading = false);
-      });
-
+      const excludeItems = [];
+  
+      this.ecoeId = +params.ecoeId;
+      ECOE.fetch(this.ecoeId, {skip: excludeItems})
+        .then(value => {
+          this.ecoe = value;
+          this.ecoe_name = this.ecoe.name;
+          this.loadStations();
+          this.loadRoundsShifts().then(() => this.loading = false);
+        });
+    });
   }
 
   loadStations() {
@@ -477,6 +480,6 @@ export class PlannerComponent implements OnInit {
   }
 
   onBack() {
-    this.router.navigate(['./home']).finally();
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
   }
 }

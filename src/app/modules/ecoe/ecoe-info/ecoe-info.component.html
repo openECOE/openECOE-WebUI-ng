@@ -1,13 +1,106 @@
-<nz-page-header> 
-  <nz-page-header-title>Nombre ECOE</nz-page-header-title> 
-  <nz-page-header-extra> 
-    <button nz-button>{{ 'EDIT_ECOE' | translate }}</button> 
-    <button nz-button nzType="danger">{{ 'DELETE_ECOE' | translate }}</button> 
-    <ng-template #iconDeleteTpl>
-      <i nz-icon nzType="question-circle" style="color: red;" nzTheme="outline"></i>
-    </ng-template>
-  </nz-page-header-extra>
-</nz-page-header>
+<nz-spin [nzSpinning]="eliminando">
+  <nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoeName">
+    <nz-page-header-extra>
+
+      <a nz-button (click)="showECOENameDrawer(true)">
+          <span>{{"EDIT_ECOE" | translate}}</span>
+      </a>
+      <a
+        nz-button
+        [nzType]="'danger'"
+        nz-popconfirm
+        [nzTitle]="'ARCHIVE_CONFIRMATION' | translate"
+        (nzOnConfirm)="deleteEcoe()"
+        [nzPlacement]="'top'"
+        [nzType]="'danger'"
+        [nzOkType]="'danger'"
+        [nzOkText]="'ARCHIVE' | translate" [nzCancelText]="'CANCEL' | translate"
+        [nzIcon]="iconDeleteTpl">
+          <span>{{"DELETE_ECOE" | translate}}</span>
+      </a>
+      <ng-template #iconDeleteTpl>
+        <i nz-icon nzType="question-circle" style="color: red;" nzTheme="outline"></i>
+      </ng-template>
+    </nz-page-header-extra>
+  </nz-page-header>
 
 
+  <nz-content>
 
+   <div nz-col [nzMd]="8">
+     <nz-card nzTitle="{{ 'AREAS' | translate }}" [nzExtra]="linkAreas">
+       <div nz-row>
+        <nz-alert nzType="info" nzMessage="{{areas?areas.length:0}} {{ 'AREAS' | translate }}"></nz-alert>
+       </div>
+      </nz-card>
+      <ng-template #linkAreas>
+        <a  nz-button [nzType]="primary" [routerLink]="['areas']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</a>
+      </ng-template>
+    </div>
+
+   <div nz-col [nzMd]="8">
+      <nz-card nzTitle="{{ 'STATIONS' | translate }}" [nzExtra]="linkEstaciones">
+        <nz-alert *ngIf="!show_stations" nzType="error" nzMessage="{{ 'NO_EXIST_AREAS' | translate }}"></nz-alert>
+        <nz-alert *ngIf="show_stations" nzType="info" nzMessage="{{stations?stations.length:0}} {{ 'STATIONS' | translate }}"></nz-alert>
+      </nz-card>
+      <ng-template #linkEstaciones>
+        <button [disabled]="!show_stations" nz-button [nzType]="primary" [routerLink]="['stations']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzMd]="8">
+      <nz-card nzTitle="{{ 'SCHEDULE' | translate }}" [nzExtra]="linkCronometros">
+        <nz-alert *ngIf="!show_schedules" nzType="error" nzMessage="{{ 'NO_EXIST_STATIONS' | translate }}"></nz-alert>
+        <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{stages?stages.length:0}} {{ 'STAGES' | translate }}"></nz-alert>
+       </nz-card>
+       <ng-template #linkCronometros>
+         <button [disabled]="!show_schedules" nz-button [nzType]="primary" [routerLink]="['schedule']" ><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+       </ng-template>
+     </div>
+
+   <div nz-col [nzMd]="8">
+     <nz-card nzTitle="{{ 'STUDENTS' | translate}}" [nzExtra]="linkEstudiantes">
+       <nz-alert *ngIf="!show_students" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate}}"></nz-alert>
+       <nz-alert *ngIf="show_students" nzType="info" nzMessage="{{students?students.length:0}} {{ 'STUDENTS' | translate}}"></nz-alert>
+      </nz-card>
+      <ng-template #linkEstudiantes>
+        <button [disabled]="!show_students" nz-button [nzType]="primary" [routerLink]="['students']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+      </ng-template>
+    </div>
+
+   <div nz-col [nzMd]="8">
+     <nz-card nzTitle="Planificador" [nzExtra]="linkPlanificador">
+       <nz-alert *ngIf="!show_planner" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate }}"></nz-alert>
+       <nz-alert *ngIf="show_planner" nzType="info" nzMessage="{{rounds?rounds.length:0}} {{ 'ROUNDS' | translate }}, {{shifts?shifts.length:0}} {{ 'SHIFTS' | translate }}"></nz-alert>
+      </nz-card>
+      <ng-template #linkPlanificador>
+        <button [disabled]="!show_planner" nz-button [nzType]="primary" [routerLink]="['planner']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+      </ng-template>
+    </div>
+
+    <ng-container>
+      <nz-drawer
+        [nzMaskClosable]="false"
+        [nzClosable]="false"
+        [nzVisible]="show_ecoe_name_drawer"
+        [nzTitle]="'EDIT_ECOE' | translate">
+
+
+        <form nz-form [formGroup]="ecoe_name_form">
+          <nz-form-item>
+            <nz-form-label style="text-align: left;" [nzXs]="24" nzRequired nzFor="ecoe_name_2edit">{{ 'ECOE_NAME' | translate}}</nz-form-label>
+            <nz-form-control [nzXs]="24">
+              <input nz-input formControlName="ecoe_name_2edit" id="ecoe_name_2edit" />
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+
+        <div class="footer">
+          <button [disabled]="ecoe_name_form_loading" type="button" (click)="showECOENameDrawer(false)" class="ant-btn" style="margin-right: 8px;"><span>{{'CANCEL' | translate}}</span></button>
+          <button nz-button type="button" [disabled]="!ecoe_name_form || !ecoe_name_form.valid" [nzLoading]="ecoe_name_form_loading" (click)="submitECOENameForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span></button>
+        </div>
+      </nz-drawer>
+    </ng-container>
+
+  </nz-content>
+</nz-spin>

@@ -1,5 +1,14 @@
+<!-- #TODO Cambiar breadcrumb a dinamico -->
 <nz-content>
-  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="station?.name" nzSubtitle="Estación"> </nz-page-header>
+  <nz-page-header class="margin-bottom" [nzTitle]="station?.name" nzSubtitle="{{ 'DETAILS' | translate }} {{ 'STATION' | translate }}">
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item><a [routerLink]="['../']">{{station?.name}} </a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><nz-tag nzColor="blue">{{"DETAILS" | translate}}</nz-tag></nz-breadcrumb-item>
+    </nz-breadcrumb>
+    <nz-page-header-extra>  
+      <a nz-button [routerLink]="['../']"><span><i nz-icon nzType="arrow-left" nzTheme="outline"></i> {{"BACK" | translate}}</span></a>
+    </nz-page-header-extra>
+  </nz-page-header>
 
     <button class="margin-bottom" nz-button nzType="dashed" nzBlock (click)="showDrawer()">
       {{'ADD_QBLOCK' | translate}}
@@ -22,7 +31,7 @@
     <tr>
       <th [nzExpand]="true">
         <a (click)="getQblocks(id_station)">
-          <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+          <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="5%">{{"ORDER" | translate}}</th>
