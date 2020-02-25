@@ -17,8 +17,8 @@
 
   <nz-content>
     <div class="inner-nz-content">
-      <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320" [nzClosable]="'false'" (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
-        <app-menu></app-menu>
+      <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320" (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
+        <app-menu (menu_close_event)="toCollapse($event)"></app-menu>
       </nz-drawer>
   
       <div class="long-div">

@@ -259,5 +259,7 @@
   "OUTSIDE_DESCRIPTION": "Si es usted el responsable o un evaluador de la ECOE, puede iniciar sesión",
   "HERE": "Aquí",
   "STATUS": "Estado",
-  "PENDING_TO_START": "Pendiente de comenzar..."
+  "PENDING_TO_START": "Pendiente de comenzar...",
+
+  "MENU": "Menú"
 }
