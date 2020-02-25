@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../services/api/api.service';
 import {SharedService} from '../../../services/shared/shared.service';
-import {Area, EditCache, RowArea} from '../../../models';
+import {Area, EditCache, RowArea, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 
@@ -19,6 +19,8 @@ export class AreasComponent implements OnInit {
   areas:        any[] = [];
   editCache:    EditCache[] = [];
   ecoeId:       number;
+  ecoe:         ECOE;
+  ecoe_name:    String;
 
   current_page: number = 1;
   per_page:     number = 10;
@@ -56,8 +58,27 @@ export class AreasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.ecoeId = +this.route.snapshot.params.id;
-    this.loadAreas();
+    this.route.params.subscribe(params => {
+      this.ecoeId = +params.ecoeId;
+      ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
+        this.ecoe = value;
+        this.ecoe_name = this.ecoe.name;
+
+        const excludeItems = [];
+        this.ecoe.areas({
+          where: {'ecoe': this.ecoeId},
+          page: this.current_page,
+          perPage: this.per_page,
+          sort: {$uri: false}
+        }, {paginate: true, cache: false, skip: excludeItems})
+        .then(response => {
+          this.editCache = [];
+          this.areas = response['items'].sort((a, b) => parseInt(a.code, 10) - parseInt(b.code, 10));
+          this.totalItems = response['total'];
+          this.updateEditCache();
+        });
+      });
+    });
     this.InitAreaRow();
   }
 
@@ -320,6 +341,6 @@ export class AreasComponent implements OnInit {
   }
 
   onBack() {
-    this.router.navigate(['./home']).finally();
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
   }
 }

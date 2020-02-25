@@ -1,4 +1,16 @@
-<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'AREAS' | translate"> </nz-page-header>
+<!-- #TODO Cambiar breadcrumb a dinamico -->
+<nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'AREAS' | translate" > 
+  <nz-breadcrumb nz-page-header-breadcrumb>
+    <nz-breadcrumb-item>{{ecoe_name}}</nz-breadcrumb-item>
+    <nz-breadcrumb-item><a [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ 'SETUP' | translate}}</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item><nz-tag nzColor="blue">{{"AREAS" | translate}}</nz-tag></nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <nz-page-header-extra>  
+    <button [disabled]="areas.length == 0" [routerLink]="['/ecoe/' + ecoeId + '/admin/stations']" nz-button [nzType]="'primary'"><span>{{"CONFIGURATION" | translate}} {{"STATIONS" | translate}} <i nz-icon nzType="arrow-right" nzTheme="outline"></i></span></button>
+  </nz-page-header-extra>
+</nz-page-header>
+
+
 <nz-content *ngIf="areas">
 <!--  <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>-->
   <nz-table #table
@@ -19,7 +31,7 @@
       <tr>
         <th [nzExpand]="true">
           <a (click)="loadAreas()">
-            <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+            <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
           </a>
         </th>
         <th>{{"NAME" | translate}}</th>

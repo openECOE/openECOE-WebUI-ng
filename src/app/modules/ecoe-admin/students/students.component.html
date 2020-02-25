@@ -1,4 +1,14 @@
-<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'STUDENTS' | translate"> </nz-page-header>
+<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'STUDENTS' | translate"> 
+  <nz-breadcrumb nz-page-header-breadcrumb>
+    <nz-breadcrumb-item>{{ecoe_name}}</nz-breadcrumb-item>
+    <nz-breadcrumb-item><a [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ 'SETUP' | translate}}</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item><nz-tag nzColor="blue">{{"STUDENTS" | translate}}</nz-tag></nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <nz-page-header-extra>  
+    <button [disabled]="students.length == 0" [routerLink]="['/ecoe/' + ecoeId + '/admin/planner']" nz-button [nzType]="'primary'"><span>{{"CONFIGURATION" | translate}} {{"PLANNER" | translate}} <i nz-icon nzType="arrow-right" nzTheme="outline"></i></span></button>
+  </nz-page-header-extra>
+</nz-page-header>
+
 <nz-content *ngIf="students">
   <nz-table #table
             [nzData]="students"
@@ -21,7 +31,7 @@
     <tr>
       <th [nzExpand]="true">
         <a (click)="loadStudents()">
-          <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+          <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="150px"
@@ -65,7 +75,7 @@
           <ng-container>
             <nz-tag *ngIf="item.planner?.shift && item.planner?.round"
                     [nzColor]="shared.stringToColour(item.planner?.shift.shiftCode + item.planner?.round.roundCode)">
-              {{item.planner?.shift?.shiftCode}}{{item.planner?.round?.roundCode}}{{item?.plannerOrder}}
+              {{item.planner?.shift?.shiftCode}} - {{item.planner?.round?.roundCode}} - {{item?.plannerOrder}}
             </nz-tag>
           </ng-container>
         </td>

@@ -7,6 +7,7 @@
   "CREATE_ECOE": "Crear nueva ECOE",
   "ECOE_NAME": "Nombre de la ECOE",
   "DELETE_ECOE": "Archivar ECOE",
+  "ARCHIVE": "Archivar",
   "START_STOP_ECOE": "Iniciar/Detener ECOE",
   "EDIT_ECOE": "Editar ECOE",
 
@@ -185,10 +186,11 @@
 
   "LOADING": "Cargando",
   "ACTIONS": "Acciones",
-  "DELETE_CONFIRMATION": "¿Estás seguro de archivar este elemento?",
+  "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
+  "ARCHIVE_CONFIRMATION": "¿Estás seguro de archivar este elemento?",
   "CONFIRM_ALSO_DELETE_QUESTIONS": "Se eliminarán también las preguntas asociadas al bloque.",
   "ACTION": "Acción",
-  "DELETE": "Archivar",
+  "DELETE": "Eliminar",
   "ADD": "Añadir",
   "MOVE_TO": "Mover a",
   "SAVE": "Guardar",
@@ -241,6 +243,12 @@
   "ECOES": "ECOES",
 
   "CONFIGURATION": "Configuración",
+  "SETUP": "Configurar",
+  "NO_EXIST_AREAS": "No existen Áreas",
+  "NO_EXIST_STATIONS": "No existen Estaciones",
+  "NO_EXIST_SCHEDULES": "No existen Cronómetros",
+  "DETAILS": "Detalles",
+  "STAGES": "Fases",
 
   "TIME_TODAY": "Hoy",
   "TIME_YESTERDAY": "Ayer",
