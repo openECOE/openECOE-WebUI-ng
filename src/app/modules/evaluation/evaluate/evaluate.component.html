@@ -45,7 +45,7 @@
     <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32, xl: 32, xxl: 32 }">
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">
         <h2>
-          <a (click)="onBack()"><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
+          <a (click)="onBack()" ><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
           <a *ngIf="station"> {{station.name}} </a>
         </h2>
         <app-chrono [round]="round" [station]="station" [idEcoe]="ecoeId">

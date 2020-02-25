@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {Answer, BlockType, Option, Planner, Round, Shift, Station, Student} from '../../../models';
 import {QuestionsService} from '../../../services/questions/questions.service';
@@ -35,9 +35,11 @@ export class EvaluateComponent implements OnInit {
   loading: boolean;
   getQuestionsCompleted: boolean;
   isSpinning: boolean = true;
+  ecoeDay: string;
 
 
   constructor(private route: ActivatedRoute,
+              private router: Router,
               private location: Location,
               private questionService: QuestionsService,
               private apiService: ApiService,
@@ -60,6 +62,7 @@ export class EvaluateComponent implements OnInit {
     this.shiftId = params['shiftId'];
     this.roundId = params['roundId'];
     this.ecoeId = params['ecoeId'];
+    this.ecoeDay = params['date'];
   }
 
   getData() {
@@ -126,7 +129,7 @@ export class EvaluateComponent implements OnInit {
   }
 
   onBack() {
-    this.location.back();
+    this.router.navigate(['/ecoe', this.ecoeId, 'eval', 'date', this.ecoeDay, 'round', this.roundId, 'station', this.stationId]);
   }
 
   setCurrentStudent(currentStudent: Student) {

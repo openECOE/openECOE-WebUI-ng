@@ -26,30 +26,77 @@ export class EvaluationDetailsComponent implements OnInit {
   ecoe: ECOE;
 
   momentRef = moment;
-  refresh: boolean = false;
-  isSpinning: boolean = false;
+  isSpinning: boolean = true;
+  currentStep: number = 0;
+
+  selectedEcoeDay;
+  selectedRound: Round;
+  selectedStation: Station;
+  // showStepsForm: boolean = true;
 
   constructor(private route: ActivatedRoute,
               private location: Location,
               private router: Router,
               private shared: SharedService,
               private cdRef: ChangeDetectorRef,
+
               private authService: AuthenticationService,
               private evalService: EvaluationService) { }
 
   async ngOnInit() {
     if (this.authService.userLogged) {
       this.momentRef.locale(this.shared.getUsersLocale('en-US'));
-      this.ecoeId = +this.route.snapshot.params.ecoeId;
-      this.ecoe = (await ECOE.fetch(this.ecoeId)) as ECOE;
+      await this.getUrlParams();
+      this.setupCurrentStep();
       this.getData(this.ecoe).then(() => {
           this.getShiftDays(this.shifts);
           this.getSelectedShift();
           this.onChangeECOEDay(this.ecoeDays[this.selectedIndexShift]);
           this.getSelectedRound();
+          this.isSpinning = false;
       });
     } else {
       this.authService.logout();
+    }
+  }
+
+  getUrlParams() {
+    const params = this.route.snapshot.params;
+
+    this.ecoeId = +params['ecoeId'];
+    this.selectedEcoeDay = params['date'];
+
+    return  new Promise((resolve, reject) => {
+      const ecoePromise = ECOE.fetch(this.ecoeId)
+        .then((ecoe: ECOE) => this.ecoe = ecoe )
+        .catch((err) => reject(err));
+
+      if (params['roundId'] && params['stationId']) {
+        const roundPromise = Round.fetch(params['roundId'])
+          .then((round: Round) => this.selectedRound = round )
+          .catch((err) => reject(err));
+
+        const stationPromise = Station.fetch(params['stationId'])
+          .then((station: Station) => this.selectedStation = station )
+          .catch((err) => reject(err));
+
+        Promise.all([roundPromise, stationPromise, ecoePromise]).then(() => resolve());
+      } else {
+        Promise.all([ecoePromise]).then(() => resolve());
+      }
+    });
+  }
+
+  setupCurrentStep() {
+    this.currentStep = 0;
+    if (this.selectedEcoeDay) {
+      this.currentStep++;
+    }
+    if (this.selectedRound) {
+      this.currentStep++;
+    }
+    if (this.selectedStation) {
+      this.currentStep++;
     }
   }
 
@@ -73,11 +120,6 @@ export class EvaluationDetailsComponent implements OnInit {
         return x;
       }
     });
-    this.setSelectedShift(shiftDate);
-  }
-
-  onChangeRound(round: Round) {
-    this.setSelectedRound(round);
   }
 
   doSpinning(timeout: number) {
@@ -106,10 +148,6 @@ export class EvaluationDetailsComponent implements OnInit {
     }
   }
 
-  setSelectedShift(shift: string) {
-    this.evalService.setSelectedShift(shift, this.ecoeId);
-  }
-
   setSelectedRound(round: Round) {
     this.evalService.setSelectedRound(round.id, this.ecoeId);
     this.doSpinning(300);
@@ -136,11 +174,50 @@ export class EvaluationDetailsComponent implements OnInit {
     return Station.query({
       where: {ecoe: this.ecoeId},
       sort: {order: false}
-    }).then( (stations: Station[]) =>
-      this.stations = stations);
+    }).then( (stations: Station[]) => {
+      this.stations = stations;
+    });
   }
 
   onBack() {
     this.router.navigate(['/ecoe']);
+  }
+
+  finish() {
+    this.onChangeECOEDay(this.selectedEcoeDay);
+  }
+
+  onEcoeDateSelected(item) {
+    this.selectedEcoeDay = item;
+    this.setupCurrentStep();
+  }
+
+  onRoundSelected(item) {
+    this.selectedRound = item;
+    this.setupCurrentStep();
+  }
+
+  onStationSelected(item) {
+    this.selectedStation = item;
+    this.finish();
+    this.setupCurrentStep();
+  }
+
+  onClickDate() {
+    if (this.selectedEcoeDay) {
+      this.currentStep = 0;
+    }
+  }
+
+  onClickRound() {
+    if (this.selectedRound) {
+      this.currentStep = 1;
+    }
+  }
+
+  onClickStation() {
+    if (this.selectedStation) {
+      this.currentStep = 2;
+    }
   }
 }
