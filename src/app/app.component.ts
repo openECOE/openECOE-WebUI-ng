@@ -52,4 +52,8 @@ export class AppComponent implements OnInit {
     this.year = new Date().getFullYear().toString();
   }
 
+  toCollapse(event) {
+    this.isCollapsed = false;
+  }
+
 }

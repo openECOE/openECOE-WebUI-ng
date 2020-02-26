@@ -1,28 +1,38 @@
-@import "../../node_modules/ng-zorro-antd/ng-zorro-antd.less";
+// @import "../node_modules/ng-zorro-antd/ng-zorro-antd.less";
 
-@primary-color: @blue-6;
-
-:host ::ng-deep .long-div {
-  overflow-y: scroll;
-}
+// :host ::ng-deep .long-div {
+//   overflow-y: scroll;
+// }
 
 nz-header {
   text-align: center;
+  background-color: white;
+  box-shadow: 0 2px 8px #f0f1f2;
 }
 
 .logo {
-  margin-left: 7%;
   float: left;
   display: table-cell;
   vertical-align: middle;
 }
 
-
-nz-content {
+.inner-nz-content {
   margin: 0 7%;
+  min-height: calc(100% - 64px - 20px); // 100% - header - footer
+}
+
+nz-layout {
+  background-color: white!important;
 }
 
 nz-footer {
   margin: 0 7%;
   text-align: center;
+  background-color: white!important;
+}
+
+img {
+  height: 64px;
+  position: fixed;
+  top: 0px;
 }

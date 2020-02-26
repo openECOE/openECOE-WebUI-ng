@@ -1,6 +1,12 @@
-<div style="padding:31px;height:3.5em;">
-  <a [routerLink]="['/ecoe']"><i nz-icon nzType="home" nzTheme="twotone"></i> {{ "ECOES" | translate }}</a>
-</div>
-<div style="padding:31px;height:3.5em;">
-  <a [routerLink]="['/outside']"><i nz-icon nzType="right-square" nzTheme="twotone"></i> {{ "OUTSIDERS" | translate }}</a>
-</div>
+<nz-page-header nzTitle="{{ 'MENU' | translate }}"> </nz-page-header>
+<ul nz-menu nzMode="inline" (nzClick)="toclose()">
+  <li nz-menu-item [nzSelected]="location.path().indexOf('/ecoe') === 0 || location.path().indexOf('/login') === 0" [routerLink]="['/ecoe']" >
+    <i nz-icon nzType="home"></i>
+    <span>{{ "ECOES" | translate }}</span>
+  </li>
+
+  <li nz-menu-item [nzSelected]="location.path().indexOf('/outside') === 0" [routerLink]="['/outside']" >
+    <i nz-icon nzType="right-square"></i>
+    <span>{{ "OUTSIDERS" | translate }}</span>
+  </li>
+</ul>

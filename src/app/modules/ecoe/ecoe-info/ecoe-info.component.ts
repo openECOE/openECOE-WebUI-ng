@@ -152,6 +152,7 @@ export class EcoeInfoComponent implements OnInit {
    * @param show If true show drawer, if false hide drawer
    */
   showECOENameDrawer(show: Boolean) {
+    this.ecoe_name_form.get('ecoe_name_2edit').setValue(this.ecoe.name);
     this.show_ecoe_name_drawer = show;
   }
 

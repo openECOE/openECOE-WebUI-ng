@@ -1,4 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output } from '@angular/core';
+import { Location } from '@angular/common';
+import { EventEmitter } from '@angular/core';
+
 
 @Component({
   selector: 'app-menu',
@@ -7,9 +10,16 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class MenuComponent implements OnInit {
 
-  constructor() { }
+
+  @Output() menu_close_event = new EventEmitter<Boolean>();
+
+  constructor(public location: Location) { }
 
   ngOnInit() {
+  }
+
+  toclose(){
+    this.menu_close_event.emit(true);
   }
 
 }

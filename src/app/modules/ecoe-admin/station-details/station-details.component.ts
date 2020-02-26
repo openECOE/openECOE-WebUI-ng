@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {QBlock, Question, RowQuestion, Station} from '../../../models';
 import {Location} from '@angular/common';
 import {QuestionsService} from '../../../services/questions/questions.service';
 import {NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-station-details',
@@ -27,6 +28,8 @@ export class StationDetailsComponent implements OnInit {
   page: number = 1;
   loading: boolean;
   station: any;
+  ecoe_name: String;
+  ecoeId: number;
 
   private logPromisesERROR = [];
   private logPromisesOK = [];
@@ -35,21 +38,20 @@ export class StationDetailsComponent implements OnInit {
               private location: Location,
               private questionService: QuestionsService,
               private modalService: NzModalService,
-              private translate: TranslateService ) { }
+              private translate: TranslateService,
+              private router: Router ) { }
 
    ngOnInit() {
     this.route.params.subscribe(params => {
       this.id_station = +params.stationId;
-      Station.fetch(this.id_station).then(response => this.station = response);
+      Station.fetch(this.id_station).then(response => {
+        this.station = response;
+        this.ecoe_name = response.ecoe.name;
+        this.ecoeId = response.ecoe.id;
+      });
 
       this.getQblocks(this.id_station);
     });
-
-    /*const aux = new QuestionFormComponent();
-
-    aux.returnData.subscribe(res => {
-      console.log(res);
-    });*/
   }
 
   hola(questions: RowQuestion[]) {
@@ -77,7 +79,7 @@ export class StationDetailsComponent implements OnInit {
   }
 
   onBack() {
-    this.location.back();
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin/stations']).finally();
   }
 
    getQblocks(stationId: number) {
