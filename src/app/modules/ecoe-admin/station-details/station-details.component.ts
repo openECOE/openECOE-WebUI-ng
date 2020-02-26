@@ -29,6 +29,7 @@ export class StationDetailsComponent implements OnInit {
   loading: boolean;
   station: any;
   ecoe_name: String;
+  ecoeId: number;
 
   private logPromisesERROR = [];
   private logPromisesOK = [];
@@ -46,16 +47,11 @@ export class StationDetailsComponent implements OnInit {
       Station.fetch(this.id_station).then(response => {
         this.station = response;
         this.ecoe_name = response.ecoe.name;
+        this.ecoeId = response.ecoe.id;
       });
 
       this.getQblocks(this.id_station);
     });
-
-    /*const aux = new QuestionFormComponent();
-
-    aux.returnData.subscribe(res => {
-      console.log(res);
-    });*/
   }
 
   hola(questions: RowQuestion[]) {
@@ -83,7 +79,7 @@ export class StationDetailsComponent implements OnInit {
   }
 
   onBack() {
-    this.router.navigate(['../']).finally();
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin/stations']).finally();
   }
 
    getQblocks(stationId: number) {

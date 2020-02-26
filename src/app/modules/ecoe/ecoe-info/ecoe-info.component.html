@@ -81,9 +81,9 @@
     <ng-container>
       <nz-drawer
         [nzMaskClosable]="false"
-        [nzClosable]="false"
         [nzVisible]="show_ecoe_name_drawer"
-        [nzTitle]="'EDIT_ECOE' | translate">
+        [nzTitle]="'EDIT_ECOE' | translate"
+        (nzOnClose)="showECOENameDrawer(false)">
 
 
         <form nz-form [formGroup]="ecoe_name_form">
