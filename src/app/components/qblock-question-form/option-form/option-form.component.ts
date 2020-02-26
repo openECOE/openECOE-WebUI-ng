@@ -245,15 +245,15 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     return this.optionForm.valid;
   }
 
-  increaseRateCount(pos: number) {
-    if (this.nRateCount.current < this.nRateCount.max) {
-      this.nRateCount.current++;
+  increaseRateCount(pos: number, value: number) {
+    if (value < this.nRateCount.max) {
+      this.nRateCount.current = ++value;
       this.getFormControl('rateCount', pos).setValue(this.nRateCount.current);
     }
   }
-  decreaseRateCount(pos: number) {
-    if (this.nRateCount.current > this.nRateCount.min) {
-      this.nRateCount.current--;
+  decreaseRateCount(pos: number, value: number) {
+    if (value > this.nRateCount.min) {
+      this.nRateCount.current = --value;
       this.getFormControl('rateCount', pos).setValue(this.nRateCount.current);
     }
   }

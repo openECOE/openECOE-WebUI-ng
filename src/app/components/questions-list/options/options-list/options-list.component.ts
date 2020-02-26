@@ -46,7 +46,9 @@ export class OptionsListComponent implements OnInit, OnChanges {
 
     console.log('onInit', this.question.options);
     this.question.options.forEach((option) => {
-      if (this.preview) {option.id = option.order; }
+      if (this.preview && !option.id) {
+        option.id = option.order;
+      }
       this.editCacheOption[option.order] = {
         option: option,
         checked: !this.evaluate,
