@@ -107,7 +107,6 @@ export class EvaluateComponent implements OnInit {
       student.getAllAnswers({cache: false, skip: ['question']}, {cache: false, skip: ['question']})
         .then((response: Answer[]) => this.currentStudent.answers = [...response])
         .finally(() => this.isSpinning = false);
-
     } else {
       this.currentStudent.answers = [];
     }
@@ -238,10 +237,7 @@ export class EvaluateComponent implements OnInit {
   getParentStation() {
     if (this.station.parentStation !== null && !this.station.parentStation.name) {
       Station.fetch<Station>(getPotionID(this.station.parentStation['$uri'], '/stations'))
-        .then(parentStation => {
-          this.station.parentStation = parentStation;
-          console.log(parentStation);
-        });
+        .then(parentStation => this.station.parentStation = parentStation);
     }
   }
 

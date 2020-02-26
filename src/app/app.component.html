@@ -4,9 +4,9 @@
       <a (click)="isCollapsed = !isCollapsed" style="margin-right: 13px;font-size: 30px;">
         <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
       </a>
-      <img src="../assets/logo.png">
+      <img alt="logo" src="../assets/logo.png">
     </div>
-    
+
     <app-usermenu style="margin: auto;"></app-usermenu>
 
     <app-submenu [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>
@@ -16,19 +16,22 @@
   </nz-header>
 
   <nz-content>
-    <div class="inner-nz-content">
+    <div  class="long-div" [style.height.px]="clientHeight - 82 - 69" #divTarget>
       <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320" (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
         <app-menu (menu_close_event)="toCollapse($event)"></app-menu>
       </nz-drawer>
-  
-      <div class="long-div">
+
+      <div class="inner-nz-content">
         <router-outlet></router-outlet>
       </div>
     </div>
+  </nz-content>
+
+  <nz-back-top #backTop [nzTarget]="divTarget"></nz-back-top>
+
     <nz-footer>
       <label>openECOE {{year}} - Universitas Miguel Hernández</label>
     </nz-footer>
-  </nz-content>
 
 
 </nz-layout>
