@@ -25,7 +25,7 @@ import { ComponentsModule } from 'src/app/components/components.module';
     ReactiveFormsModule,
     ComponentsModule
   ],
-  exports: [ 
+  exports: [
     EcoeInfoComponent,
     HomeComponent
   ]

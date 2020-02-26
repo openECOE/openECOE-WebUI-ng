@@ -15,7 +15,6 @@ const routes: Routes = [
         path: '',
         children: [
           {path: 'ecoe/:id', loadChildren: './ecoe/ecoe.module#EcoeModule', data: {title: 'ECOE', roles: [Role.Admin]} },
-          {path: 'cpanel', loadChildren: './cpanel/cpanel.module#CpanelModule', data: {title: 'cpanel', roles: [Role.Admin]} },
           {path: '**', redirectTo: 'cpanel'}
         ]
       }
