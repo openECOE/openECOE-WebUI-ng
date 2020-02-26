@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {User, UserLogged} from '../../../../models';
-import {AuthenticationService} from '../../../../services/authentication/authentication.service';
+import {User, UserLogged} from '../../../models';
+import {AuthenticationService} from '../../../services/authentication/authentication.service';
 import {Item} from '@openecoe/potion-client';
-import {SharedService} from '../../../../services/shared/shared.service';
+import {SharedService} from '../../../services/shared/shared.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-users-admin',
@@ -16,6 +17,7 @@ export class UsersAdminComponent implements OnInit {
   userLogged: UserLogged;
   activeUser: User;
 
+  passwordVisible = false;
 
   users = [];
   usersPage: any;
@@ -32,7 +34,8 @@ export class UsersAdminComponent implements OnInit {
 
   constructor(private authService: AuthenticationService,
               private shared: SharedService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -124,12 +127,25 @@ export class UsersAdminComponent implements OnInit {
     this.editCache[idx].editItem = true;
   }
 
-  saveUser(idx: number) {
-    this.editCache[idx].data.save()
-      .then(userSaved => {
-        Object.assign(this.users[idx], Object.assign(this.editCache[idx].data, userSaved));
-        this.editCache[idx].editItem = false;
-      });
+  saveUser(item: any) {
+    var usercache = this.editCache.find(f => f.data.id == item.id);
+    if (!usercache.data.name || !usercache.data.surname || !usercache.data.email) {
+      return;
+    }
+
+    const body = {
+      email: usercache.data.email,
+      surname: usercache.data.surname,
+      name: usercache.data.name,
+    };
+
+    const request = item.update(body);
+
+    request.then(response => {
+      var idx = this.editCache.indexOf(usercache);
+      Object.assign(this.users[idx], Object.assign(usercache.data, response));
+      usercache.editItem = false;
+    });
   }
 
   delUser(idx: number) {
@@ -219,6 +235,10 @@ export class UsersAdminComponent implements OnInit {
         this.loadUsers();
         this.closeModal();
       });
+  }
+
+  onBack() {
+    this.router.navigate(['/control-panel']).finally();
   }
 
 }

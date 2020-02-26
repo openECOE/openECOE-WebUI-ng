@@ -1,3 +1,10 @@
+<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'USERS' | translate"> 
+  <nz-breadcrumb nz-page-header-breadcrumb>
+    <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/control-panel']">{{ 'CONTROL_PANEL' | translate }}</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"USERS" | translate}}</nz-tag></nz-breadcrumb-item>
+  </nz-breadcrumb>
+</nz-page-header>
+
 <nz-drawer
   [nzClosable]="true"
   [nzVisible]="importErrors.length > 0"
@@ -32,7 +39,7 @@
   <tr>
     <th [nzExpand]="true">
       <a (click)="loadUsers()">
-        <i nz-icon icon-25 type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+        <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
       </a>
     </th>
     <th>{{"EMAIL" | translate}}</th>
@@ -97,7 +104,7 @@
                             [showDeleteButton]="!(activeUser.id === item.id)"
                             (startEdit)="editUser(idx)"
                             (delete)="delUser(idx)"
-                            (save)="saveUser(idx)"
+                            (save)="saveUser(item)"
                             (cancelEdit)="cancelUser(idx)">
         </app-action-buttons>
       </td>
@@ -134,8 +141,8 @@
     </nz-form-item>
     <nz-form-item>
       <nz-form-control [nzSpan]="24" nzHasFeedback>
-        <nz-input-group [nzPrefixIcon]="'lock'">
-          <input type="text" nz-input
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input [type]="passwordVisible ? 'text' : 'password'" nz-input
                  formControlName="password"
                  [placeholder]="'PASSWORD' | translate">
         </nz-input-group>

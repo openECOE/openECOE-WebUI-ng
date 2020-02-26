@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: 'ecoe/:ecoeId/eval', loadChildren: './modules/evaluation/evaluation.module#EvaluationModule' },
   { path: 'ecoe/:ecoeId/chrono', loadChildren: './modules/chrono-admin/chrono-admin.module#ChronoAdminModule' },
   { path: 'outside', loadChildren: './modules/outside/outside.module#OutsideModule'},
+  { path: 'control-panel', loadChildren: './modules/control-panel/control-panel.module#ControlPanelModule'},
   { path: '**', redirectTo: 'ecoe'}
 ];
 
