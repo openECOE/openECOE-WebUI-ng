@@ -112,11 +112,10 @@ export class ChronoService {
    * @param id ECOE identifier
    */
   publishECOE(id: number) {
-    const COMMAND = '/ecoes/:id';
+    const COMMAND = '/ecoes/:id/publish';
     const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
-    const BODY = {'status': 'published'};
 
-    return this.http.patch(URL_V1, BODY);
+    return this.http.post(URL_V1, null);
   }
 
   /**
@@ -124,11 +123,10 @@ export class ChronoService {
    * @param id ECOE identifier
    */
   draftECOE(id: number) {
-    const COMMAND = '/ecoes/:id';
+    const COMMAND = '/ecoes/:id/draft';
     const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
-    const BODY = {'status': 'draft'};
 
-    return this.http.patch(URL_V1, BODY);
+    return this.http.post(URL_V1, null);
   }
 
   /**

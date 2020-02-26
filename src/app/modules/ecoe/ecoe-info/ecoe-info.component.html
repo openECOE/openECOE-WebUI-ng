@@ -2,6 +2,9 @@
   <nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoeName">
     <nz-page-header-extra>
 
+      <a nz-button (click)="publishECOE()">{{ 'PUBLISH_ECOE' | translate }}</a>
+      <a nz-button (click)="publishECOE()"></a>
+
       <a nz-button (click)="showECOENameDrawer(true)">
           <span>{{"EDIT_ECOE" | translate}}</span>
       </a>

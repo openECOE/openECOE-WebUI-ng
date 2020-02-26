@@ -34,7 +34,7 @@ export class SubmenuComponent implements OnInit {
           ECOE: [
             { title: 'CONFIGURATION', redirecTo: `/ecoe/${this.ecoeId}/admin`, active: activeLink === 'admin' },
             { title: 'EVALUATION', redirecTo: `/ecoe/${this.ecoeId}/eval`, active: activeLink === 'eval' },
-            { title: 'SCHEDULE', redirectTo: `/ecoe/${this.ecoeId}/chrono`, active: activeLink === 'chrono' }
+            { title: 'SCHEDULE', redirecTo: `/ecoe/${this.ecoeId}/chrono`, active: activeLink === 'chrono' }
           ]
         };
 

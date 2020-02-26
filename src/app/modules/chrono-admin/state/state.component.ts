@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {ECOE, Round} from '../../../../models';
+import {ECOE, Round} from '../../../models';
 import {ActivatedRoute, Router} from '@angular/router';
 import {error} from 'util';
 import {TranslateService} from '@ngx-translate/core';
-import {AuthenticationService} from '../../../../services/authentication/authentication.service';
-import {ChronoService} from '../../../../services/chrono/chrono.service';
+import {AuthenticationService} from '../../../services/authentication/authentication.service';
+import {ChronoService} from '../../../services/chrono/chrono.service';
 
 @Component({
   selector: 'app-state',
@@ -27,13 +27,11 @@ export class StateComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    if (this.authService.userLogged) {
-      this.ecoeId = this.route.snapshot.params.id;
+    this.route.params.subscribe(params => {
+      this.ecoeId = +params.ecoeId;
       this.getECOE();
       this.getRounds();
-    } else {
-      this.authService.logout();
-    }
+    });
   }
 
   getECOE() {
@@ -48,12 +46,6 @@ export class StateComponent implements OnInit {
 
   onBack() {
     this.router.navigate(['./home']).finally();
-  }
-
-  publishECOE(ecoeId: number) {
-    this.setSpin(true);
-    this.chronoService.publishECOE(ecoeId).toPromise()
-      .catch(err => console.warn(err));
   }
 
   draftECOE(ecoeId: number) {

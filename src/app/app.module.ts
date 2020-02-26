@@ -23,6 +23,8 @@ import {PipesModule} from './pipes/pipes.module';
 import {BarRatingModule} from 'ngx-bar-rating';
 import { CoreModule } from './core/core.module';
 import { EcoeModule } from './modules/ecoe/ecoe.module';
+import { StateComponent } from './modules/chrono-admin/state/state.component';
+import { ChronoAdminModule } from './modules/chrono-admin/chrono-admin.module';
 
 
 registerLocaleData(localeEs, 'es', localeEsExtra);
@@ -45,6 +47,7 @@ export function createTranslateLoader(http: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
     NgZorroAntdModule,
+    ChronoAdminModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

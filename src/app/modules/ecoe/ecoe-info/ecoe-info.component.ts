@@ -185,4 +185,9 @@ export class EcoeInfoComponent implements OnInit {
     this.router.navigate(['/ecoe']).finally();
   }
 
+  publishECOE() {
+    this.chronoService.publishECOE(this.ecoeId).toPromise()
+      .catch(err => console.warn(err));
+  }
+
 }
