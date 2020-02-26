@@ -54,23 +54,6 @@ export class StationDetailsComponent implements OnInit {
     });
   }
 
-  hola(questions: RowQuestion[]) {
-    questions.forEach((question) => {
-      if (question && question.id) {
-        this.questionService.updateQuestion(question)
-          .then(() => this.sendRefreshQuestions())
-          .catch(err => console.error('ERROR: ', err))
-          .finally(() => this.closeDrawer('question'));
-      } else {
-        console.log('onGetQuestion:addQuestions', questions);
-        this.questionService.addQuestions(questions, this.selectedQblock.id)
-          .then(() => this.sendRefreshQuestions())
-          .catch(err => console.error('ERROR: ', err))
-          .finally( () => this.closeDrawer('question'));
-      }
-    });
-  }
-
   importQblocksWithQuestions(items: any[], stationId: number) {
     this.questionService.importQblockWithQuestions(items, stationId)
       .then(() => this.getQblocks(stationId))

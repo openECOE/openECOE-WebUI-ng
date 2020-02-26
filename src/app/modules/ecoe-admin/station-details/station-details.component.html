@@ -90,6 +90,7 @@
           <app-questions-list
             [refreshQuestions]="refreshQuestions"
             [qblock]="item"
+            [preview]="true"
             (newQuestion)="onNewQuestion($event)"
             (editQuestion)="onEditQuestion($event)"
           ></app-questions-list>

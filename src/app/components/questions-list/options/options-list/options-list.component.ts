@@ -16,7 +16,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
   @Output() optionChanged: EventEmitter<any> = new EventEmitter<any>();
 
   editCacheOption: Array<any> = [];
-  filtredAnswers: Option[] = [];
+  filteredAnswers: Option[] = [];
 
 
   constructor() {}
@@ -30,9 +30,8 @@ export class OptionsListComponent implements OnInit, OnChanges {
       if (this.question.options.length > 0) {
         this.question.options = Object.create(this.parseOptions(this.question.options));
 
-        console.log('onChanges', this.question.options);
-        this.filtredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
-        this.setAnswers(this.filtredAnswers);
+        this.filteredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
+        this.setAnswers(this.filteredAnswers);
       }
     }
   }
@@ -44,9 +43,10 @@ export class OptionsListComponent implements OnInit, OnChanges {
   initOptions() {
     this.question.options = this.parseOptions(this.question.options);
 
-    console.log('onInit', this.question.options);
     this.question.options.forEach((option) => {
-      if (this.preview) {option.id = option.order; }
+      if (this.preview && !option.id) {
+        option.id = option.order;
+      }
       this.editCacheOption[option.order] = {
         option: option,
         checked: !this.evaluate,
@@ -59,7 +59,6 @@ export class OptionsListComponent implements OnInit, OnChanges {
     options.sort((a, b) => a.order - b.order);
 
     const options_idx_start_in = +options[0].order;
-    // console.log('parseOptions()::options_idx_start_in', options_idx_start_in );
     if (options_idx_start_in > 0) {
       options.map((option, i) => {options[i].order = option.order - options_idx_start_in; });
     }
