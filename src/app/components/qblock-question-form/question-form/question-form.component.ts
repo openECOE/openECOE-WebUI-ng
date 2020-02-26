@@ -4,6 +4,7 @@ import {Area, RowQuestion, Station} from '../../../models';
 import {Pagination} from '@openecoe/potion-client';
 
 import {OptionFormComponent} from '../option-form/option-form.component';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-question-form',
@@ -26,6 +27,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   private totalPoints: number = 0;
   private areas: Area[] = [];
   private pagAreas: Pagination<Area>;
+  private ecoeId: number;
 
   private questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -36,9 +38,11 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   private selectedQType: string = this.questionTypeOptions[0].type;
 
 
-  constructor(private fb?: FormBuilder) { }
+  constructor(private fb: FormBuilder,
+              private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.ecoeId = this.route.snapshot.parent.params.ecoeId;
     this.questionForm = this.fb.group({
       questionRow: this.fb.array([])
     });
@@ -170,7 +174,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   }
 
   async loadAreas() {
-    this.pagAreas = await Area.query<Area, Pagination<Area>>({sort: {code: false}}, {paginate: true});
+    this.pagAreas = await Area.query<Area, Pagination<Area>>({where: {ecoe: +this.ecoeId}, sort: {code: false}}, {paginate: true});
     this.areas = [...this.pagAreas['items']];
   }
 
