@@ -6,7 +6,7 @@
   </li>
 
   <li nz-menu-item [nzSelected]="location.path().indexOf('/outside') === 0" [routerLink]="['/outside']" >
-    <i nz-icon nzType="right-square"></i>
-    <span>{{ "OUTSIDERS" | translate }}</span>
+    <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
+    <span>{{ "SCHEDULE" | translate | uppercase }}</span>
   </li>
 </ul>
