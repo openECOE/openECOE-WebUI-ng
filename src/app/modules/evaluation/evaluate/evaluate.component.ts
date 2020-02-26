@@ -66,9 +66,9 @@ export class EvaluateComponent implements OnInit {
   }
 
   getData() {
-    Shift.fetch(this.shiftId).then( (shift: Shift) => this.shift = shift);
-    Round.fetch(this.roundId, {cache: false, skip: ['ecoe']}).then( (round: Round) => this.round = round);
-    Station.fetch(this.stationId).then((station: Station) => {
+    Shift.fetch(this.shiftId, {skip: ['ecoe']}).then( (shift: Shift) => this.shift = shift);
+    Round.fetch(this.roundId, {skip: ['ecoe']}).then( (round: Round) => this.round = round);
+    Station.fetch(this.stationId, {skip: ['ecoe']}).then((station: Station) => {
       this.station = station;
       this.getParentStation();
       this.getQuestions();
@@ -104,9 +104,10 @@ export class EvaluateComponent implements OnInit {
 
   getAnswers(student: Student) {
     if (student.id) {
-      student.getAllAnswers({cache: false})
+      student.getAllAnswers({cache: false, skip: ['question']}, {cache: false, skip: ['question']})
         .then((response: Answer[]) => this.currentStudent.answers = [...response])
         .finally(() => this.isSpinning = false);
+
     } else {
       this.currentStudent.answers = [];
     }
@@ -121,11 +122,7 @@ export class EvaluateComponent implements OnInit {
         }
       },
       (err) => console.warn(err),
-      () => {
-        console.log('completed');
-        this.getQuestionsCompleted = true;
-      }
-    );
+      () => this.getQuestionsCompleted = true);
   }
 
   onBack() {
@@ -241,7 +238,10 @@ export class EvaluateComponent implements OnInit {
   getParentStation() {
     if (this.station.parentStation !== null && !this.station.parentStation.name) {
       Station.fetch<Station>(getPotionID(this.station.parentStation['$uri'], '/stations'))
-        .then(parentStation => this.station.parentStation = parentStation);
+        .then(parentStation => {
+          this.station.parentStation = parentStation;
+          console.log(parentStation);
+        });
     }
   }
 
