@@ -29,7 +29,7 @@
         <nz-switch (ngModelChange)="onOptionChange($event, option)"
                    [ngModel]="editCacheOption[option.order]['checked']"
                    [nzCheckedChildren]="option.label"
-                   [nzUnCheckedChildren]="optionTable.data[1].label"
+                   [nzUnCheckedChildren]="optionTable.data[1]?.label || option.label "
                    [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
         </nz-switch>
       </ng-container>
