@@ -261,5 +261,6 @@
   "STATUS": "Estado",
   "PENDING_TO_START": "Pendiente de comenzar...",
 
-  "MENU": "Menú"
+  "MENU": "Menú",
+  "DOWNLOAD_TEMPLATE": "Descargar plantilla"
 }
