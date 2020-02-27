@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: 'ecoe', component: HomeComponent },
   { path: 'ecoe/:ecoeId/admin', loadChildren: './modules/ecoe-admin/ecoe-admin.module#EcoeAdminModule' },
   { path: 'ecoe/:ecoeId/eval', loadChildren: './modules/evaluation/evaluation.module#EvaluationModule' },
-  { path: 'ecoe/:ecoeId/chrono', component: StateComponent },
+  { path: 'ecoe/:ecoeId/chrono', loadChildren: './modules/chrono-admin/chrono-admin.module#ChronoAdminModule' },
   { path: 'outside', loadChildren: './modules/outside/outside.module#OutsideModule'},
   { path: '**', redirectTo: 'ecoe'}
 ];
