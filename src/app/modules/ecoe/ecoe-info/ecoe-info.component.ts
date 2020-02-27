@@ -4,8 +4,9 @@ import {Location} from '@angular/common';
 import { ECOE, Schedule } from 'src/app/models';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ChronoService } from 'src/app/services/chrono/chrono.service';
 
 @Component({
   selector: 'app-ecoe-info',
@@ -40,6 +41,10 @@ export class EcoeInfoComponent implements OnInit {
   ecoe_name_form: FormGroup;
   // --
 
+  // Manage ECOE states
+  changing_state: Boolean = false;
+  // --
+
 
   constructor(
     private location: Location,
@@ -47,7 +52,9 @@ export class EcoeInfoComponent implements OnInit {
     private translate: TranslateService,
     private message: NzMessageService,
     private route: ActivatedRoute,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private chronoService: ChronoService,
+    private modalSrv: NzModalService) { }
 
   ngOnInit() {
     this.ecoe_name_form = this.fb.group({
@@ -183,6 +190,44 @@ export class EcoeInfoComponent implements OnInit {
 
   onBack() {
     this.router.navigate(['/ecoe']).finally();
+  }
+
+  publishECOE() {
+    this.changing_state = true;
+    this.chronoService.publishECOE(this.ecoeId).toPromise()
+      .then(result => this.reloadECOE())
+      .catch(err => {
+        console.warn(err);
+        this.modalSrv.error({
+          nzMask: false,
+          nzTitle: this.translate.instant('ERROR_ACTION_STATE_PUBLISH')
+        });  
+      })
+      .finally(() => {
+        this.changing_state = false;
+      });
+  }
+
+  draftECOE() {
+    this.changing_state = true;
+    this.chronoService.draftECOE(this.ecoeId).toPromise()
+    .then(result => this.reloadECOE())
+    .catch(err => {
+      console.warn(err);
+      this.modalSrv.error({
+        nzMask: false,
+        nzTitle: this.translate.instant('ERROR_ACTION_STATE_DRAFT')
+      });  
+    })
+    .finally(()=>{
+      this.changing_state = false;
+    })
+  }
+
+  reloadECOE(){
+    ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
+      this.ecoe = value;
+    });
   }
 
 }

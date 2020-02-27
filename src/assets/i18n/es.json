@@ -188,6 +188,7 @@
   "ACTIONS": "Acciones",
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
   "ARCHIVE_CONFIRMATION": "¿Estás seguro de archivar este elemento?",
+  "STOP_CONFIRMATION": "Si se detiene la ECOE no se podrá recuperar el cronometraje, ¿desea continuar?",
   "CONFIRM_ALSO_DELETE_QUESTIONS": "Se eliminarán también las preguntas asociadas al bloque.",
   "ACTION": "Acción",
   "DELETE": "Eliminar",
@@ -263,5 +264,10 @@
 
   "MENU": "Menú",
   "SHOW": "Ver",
-  "DOWNLOAD_TEMPLATE": "Descargar plantilla"
+  "DOWNLOAD_TEMPLATE": "Descargar plantilla",
+  "ACTION_STATE_DRAFT": "Poner en borrador",
+  "ACTION_STATE_PUBLISH": "Publicar ECOE",
+  "ERROR_ACTION_STATE_DRAFT": "Error al poner la ECOE en estado 'Borrador'.",
+  "ERROR_ACTION_STATE_PUBLISH": "Error al publicar ECOE.",
+  "NO_ECOE_PUBLISHED": "La ECOE no ha sido publicada"
 }

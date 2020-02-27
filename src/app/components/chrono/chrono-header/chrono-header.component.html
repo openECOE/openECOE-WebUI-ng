@@ -1,7 +1,7 @@
 <div nz-row>
   <div nz-col nzSpan="11" nzXs="24" nzSm="11">
     <h2 *ngIf="!showDetails" uppercase>{{round.description}}</h2>
-    <nz-tag [nzColor]="'#2db7f5'" class="my-tag" >
+    <nz-tag class="my-tag " >
       {{(minutes | number:'2.') + ':' + (seconds | number:'2.')}}
       <ng-container *ngIf="stageName">{{stageName}}</ng-container>
     </nz-tag>

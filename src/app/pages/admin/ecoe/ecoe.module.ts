@@ -9,7 +9,6 @@ import { QuestionsComponent } from './questions/questions.component';
 import { ExamComponent } from './exam/exam.component';
 import {PipesModule} from '../../../pipes/pipes.module';
 import {ComponentsModule} from '../../../components/components.module';
-import { StateComponent } from './state/state.component';
 
 @NgModule({
   imports: [
@@ -25,8 +24,7 @@ import { StateComponent } from './state/state.component';
   declarations: [
     EcoeComponent,
     QuestionsComponent,
-    ExamComponent,
-    StateComponent
+    ExamComponent
   ]
 })
 export class EcoeModule { }
