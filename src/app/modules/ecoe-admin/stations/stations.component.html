@@ -40,7 +40,7 @@
                   (click)="showDrawer()">
             <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
-          <app-upload-and-parse (parserResult)="importStations($event)"></app-upload-and-parse>
+          <app-upload-and-parse [fileURL]="STATIONS_URL" (parserResult)="importStations($event)"></app-upload-and-parse>
         </nz-button-group>
       </th>
     </tr>

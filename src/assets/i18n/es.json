@@ -269,5 +269,8 @@
   "ACTION_STATE_PUBLISH": "Publicar ECOE",
   "ERROR_ACTION_STATE_DRAFT": "Error al poner la ECOE en estado 'Borrador'.",
   "ERROR_ACTION_STATE_PUBLISH": "Error al publicar ECOE.",
-  "NO_ECOE_PUBLISHED": "La ECOE no ha sido publicada"
+  "NO_ECOE_PUBLISHED": "La ECOE no ha sido publicada",
+  "CLICK_HERE_OR_DRAG_FILE": "Pinche aquí o arrastre un archivo",
+  "DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE": "No seleccione ni arrastre más de un archivo al mismo tiempo",
+  "DOWNLOAD_TEMPLATE_HERE": "Puede descargar una plantilla aquí"
 }

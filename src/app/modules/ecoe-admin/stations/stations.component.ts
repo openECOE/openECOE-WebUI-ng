@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {SharedService} from '../../../services/shared/shared.service';
+import {SharedService} from '@services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID} from '@openecoe/potion-client';
+import {STATIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
 
 /**
  * Component with stations and qblocks by station.
@@ -16,7 +17,7 @@ import {getPotionID} from '@openecoe/potion-client';
 })
 
 export class StationsComponent implements OnInit {
-
+  readonly STATIONS_URL = STATIONS_TEMPLATE_URL;
   stations: Station[] = [];
   page: number = 1;
   totalItems: number = 0;

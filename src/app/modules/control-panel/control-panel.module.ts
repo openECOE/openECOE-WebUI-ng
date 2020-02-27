@@ -7,7 +7,7 @@ import { UsersAdminComponent } from './users-admin/users-admin.component';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ComponentsModule } from 'src/app/components/components.module';
+import { ComponentsModule } from '@components/components.module';
 
 @NgModule({
   declarations: [DashboardComponent, UsersAdminComponent],

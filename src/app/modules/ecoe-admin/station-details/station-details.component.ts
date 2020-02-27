@@ -2,9 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {QBlock, Question, RowQuestion, Station} from '../../../models';
 import {Location} from '@angular/common';
-import {QuestionsService} from '../../../services/questions/questions.service';
+import {QuestionsService} from '@services/questions/questions.service';
 import {NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
+import {QUESTIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
 
 
 @Component({
@@ -13,6 +14,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./station-details.component.less']
 })
 export class StationDetailsComponent implements OnInit {
+  readonly QUESTIONS_URL = QUESTIONS_TEMPLATE_URL;
   private editCache: { edit: boolean, new_item: boolean, item: QBlock, expand?: boolean }[] = [];
   private refreshQuestions: boolean = false;
   private defaultExpand: boolean = false;

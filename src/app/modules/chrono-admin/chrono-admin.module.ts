@@ -6,8 +6,8 @@ import { StateComponent } from './state/state.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { TranslateModule } from '@ngx-translate/core';
-import { PipesModule } from 'src/app/pipes/pipes.module';
-import { ComponentsModule } from 'src/app/components/components.module';
+import { PipesModule } from '@pipes/pipes.module';
+import { ComponentsModule } from '@components/components.module';
 
 @NgModule({
   declarations: [StateComponent],

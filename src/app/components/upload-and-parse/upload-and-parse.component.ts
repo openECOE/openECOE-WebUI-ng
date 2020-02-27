@@ -11,7 +11,9 @@ import {Papa} from 'ngx-papaparse';
 })
 export class UploadAndParseComponent implements OnInit {
   @Output() parserResult = new EventEmitter();
+  @Input() fileURL: string;
 
+  isVisible: boolean;
   /**
    * Event handler on file upload.
    * Reads the file data and then calls [handleFile]{@link #handleFile} function.
@@ -23,6 +25,7 @@ export class UploadAndParseComponent implements OnInit {
       this.handleFile(fr.result.toString());
     };
     fr.readAsText(file.file);
+    this.handleCancel();
   }
 
   constructor(private papaParser: Papa) {
@@ -44,5 +47,13 @@ export class UploadAndParseComponent implements OnInit {
         this.parserResult.emit(results.data);
       }
     });
+  }
+
+  openDDModal() {
+    this.isVisible = true;
+  }
+
+  handleCancel() {
+    this.isVisible = false;
   }
 }

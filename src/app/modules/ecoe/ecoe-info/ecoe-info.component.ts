@@ -1,12 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Location} from '@angular/common';
-import { ECOE, Schedule } from 'src/app/models';
+import { ECOE, Schedule } from '@models/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ChronoService } from 'src/app/services/chrono/chrono.service';
+import { ChronoService } from '@services/chrono/chrono.service';
 
 @Component({
   selector: 'app-ecoe-info',
@@ -201,7 +201,7 @@ export class EcoeInfoComponent implements OnInit {
         this.modalSrv.error({
           nzMask: false,
           nzTitle: this.translate.instant('ERROR_ACTION_STATE_PUBLISH')
-        });  
+        });
       })
       .finally(() => {
         this.changing_state = false;
@@ -217,7 +217,7 @@ export class EcoeInfoComponent implements OnInit {
       this.modalSrv.error({
         nzMask: false,
         nzTitle: this.translate.instant('ERROR_ACTION_STATE_DRAFT')
-      });  
+      });
     })
     .finally(()=>{
       this.changing_state = false;

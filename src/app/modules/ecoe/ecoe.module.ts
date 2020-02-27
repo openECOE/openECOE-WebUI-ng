@@ -5,10 +5,10 @@ import { EcoeRoutingModule } from './ecoe-routing.module';
 import { EcoeInfoComponent } from './ecoe-info/ecoe-info.component';
 import { HomeComponent } from './home/home.component';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
-import { PipesModule } from 'src/app/pipes/pipes.module';
+import { PipesModule } from '@pipes/pipes.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ComponentsModule } from 'src/app/components/components.module';
+import { ComponentsModule } from '@components/components.module';
 
 @NgModule({
   declarations: [
