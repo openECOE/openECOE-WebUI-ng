@@ -1,6 +1,51 @@
-<nz-upload [nzMultiple]="false"
-           [nzCustomRequest]="handleUpload"
-           [nzShowUploadList]="false"
-           >
-  <button nz-button nzType="dashed"><i nz-icon type="upload"></i><span>{{'IMPORT_DATA' | translate}}</span></button>
-</nz-upload>
+<button nz-button
+        nzType="dashed"
+        (click)="openDDModal()">
+
+  <i nz-icon type="upload"></i>
+  <span>{{'IMPORT_DATA' | translate}}</span>
+</button>
+
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="('IMPORT_DATA' | translate)"
+  (nzOnCancel)="handleCancel()"
+  [nzFooter]="modalFooter"
+  [nzBodyStyle]="{height: '300px' }">
+
+  <div style="height: 85%">
+    <nz-upload [nzMultiple]="false"
+               [nzCustomRequest]="handleUpload"
+               [nzShowUploadList]="false"
+               nzSize="2"
+               nzType="drag">
+
+      <p class="ant-upload-drag-icon">
+        <i nz-icon nzType="inbox"></i>
+      </p>
+      <p class="ant-upload-text">{{'CLICK_HERE_OR_DRAG_FILE' | translate}}</p>
+      <p class="ant-upload-hint">
+        {{'DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE' | translate}}
+      </p>
+    </nz-upload>
+  </div>
+  <div style="height: 15%">
+    <nz-row nzType="flex" nzAlign="middle" nzJustify="center">
+      <nz-col nzSpan="24" text-center>
+        <span>{{'DOWNLOAD_TEMPLATE_HERE' | translate}}</span>
+      </nz-col>
+      <nz-col nzSpan="24" text-center>
+        <a nz-button nzSize="default" nzType="primary" [href]="fileURL">
+          <i nz-icon nzType="download"></i>
+          {{'DOWNLOAD_TEMPLATE' | translate}}
+        </a>
+      </nz-col>
+    </nz-row>
+  </div>
+
+  <ng-template #modalFooter>
+    <button (click)="handleCancel()" nz-button>{{'CLOSE' | translate}}</button>
+  </ng-template>
+
+</nz-modal>

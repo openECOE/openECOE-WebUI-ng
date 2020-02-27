@@ -263,5 +263,8 @@
 
   "MENU": "Menú",
   "SHOW": "Ver",
-  "DOWNLOAD_TEMPLATE": "Descargar plantilla"
+  "DOWNLOAD_TEMPLATE": "Descargar plantilla",
+  "CLICK_HERE_OR_DRAG_FILE": "Pinche aquí o arrastre un archivo",
+  "DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE": "No seleccione ni arrastre más de un archivo al mismo tiempo",
+  "DOWNLOAD_TEMPLATE_HERE": "Puede descargar una plantilla aquí"
 }
