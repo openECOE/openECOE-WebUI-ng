@@ -2,27 +2,26 @@
   <nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoeName">
     <nz-page-header-extra>
 
-      <a nz-button (click)="publishECOE()">{{ 'PUBLISH_ECOE' | translate }}</a>
-      <a nz-button (click)="publishECOE()"></a>
+      <a *ngIf="(ecoe?.status | uppercase)=='DRAFT'" nz-button class="success" (click)="publishECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_PUBLISH' | translate }}</a>
+      <a *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" nz-button class="warning" (click)="draftECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_DRAFT' | translate }}</a>
 
       <a nz-button (click)="showECOENameDrawer(true)">
           <span>{{"EDIT_ECOE" | translate}}</span>
       </a>
       <a
         nz-button
-        [nzType]="'danger'"
+        class="error"
         nz-popconfirm
         [nzTitle]="'ARCHIVE_CONFIRMATION' | translate"
         (nzOnConfirm)="deleteEcoe()"
         [nzPlacement]="'top'"
-        [nzType]="'danger'"
         [nzOkType]="'danger'"
         [nzOkText]="'ARCHIVE' | translate" [nzCancelText]="'CANCEL' | translate"
         [nzIcon]="iconDeleteTpl">
           <span>{{"DELETE_ECOE" | translate}}</span>
       </a>
       <ng-template #iconDeleteTpl>
-        <i nz-icon nzType="question-circle" style="color: red;" nzTheme="outline"></i>
+        <i nz-icon nzType="question-circle" class="error" nzTheme="outline"></i>
       </ng-template>
     </nz-page-header-extra>
   </nz-page-header>
