@@ -32,7 +32,6 @@ export class EvaluationDetailsComponent implements OnInit {
   selectedEcoeDay;
   selectedRound: Round;
   selectedStation: Station;
-  // showStepsForm: boolean = true;
 
   constructor(private route: ActivatedRoute,
               private location: Location,
