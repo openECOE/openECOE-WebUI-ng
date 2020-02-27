@@ -262,5 +262,6 @@
   "PENDING_TO_START": "Pendiente de comenzar...",
 
   "MENU": "Menú",
-  "SHOW": "Ver"
+  "SHOW": "Ver",
+  "DOWNLOAD_TEMPLATE": "Descargar plantilla"
 }

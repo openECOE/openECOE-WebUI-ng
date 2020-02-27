@@ -28,7 +28,7 @@
         <th nzWidth="20%">{{"REFERENCE" | translate}}</th>
         <th>{{"AREA" | translate}}</th>
         <th>{{"QUESTION_TYPE" | translate}}</th>
-        <th nzAlign="right"></th>
+        <th nzWidth="190px" nzAlign="right"></th>
       </tr>
     </thead>
 
@@ -45,15 +45,15 @@
 
           <td>{{getQuestionTypeLabel(item.questionType) | translate}}</td>
 
-          <td text-right>
+          <td text-right style="min-width: 180px">
             <nz-tag
               [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'"
               (click)="editCache[item.id].expand = !editCache[item.id].expand">
               <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
               {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
             </nz-tag>
-            <ng-container *ngIf="!preview">
-              <nz-divider [nzType]="'vertical'"></nz-divider>
+            <ng-container *ngIf="preview && item.uri">
+<!--              <nz-divider [nzType]="'vertical'"></nz-divider>-->
               <app-action-buttons
                 (startEdit)="onEditQuestion(item.id)"
                 (delete)="deleteQuestion(questionsList,item.id)">
