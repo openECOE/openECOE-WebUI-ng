@@ -9,7 +9,9 @@ import {ECOEConfig} from '../../models/chrono';
 /**
  * Service for manage the status of ECOE evaluation
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ChronoService {
 
   private socket: SocketIOClient.Socket;
