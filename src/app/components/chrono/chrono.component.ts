@@ -94,8 +94,17 @@ export class ChronoComponent implements OnChanges, OnDestroy {
   onGetEvent(event: {}) {
     // changed event
     if (!this.mute) {
-      this.playAudio(this.event['sound'])
-        .catch(err => console.log(err));
+      // let's check if sound should play in the station
+      const soundName = event['sound'];
+      const events: [] = event['stage']['events'];
+      const filteredEvent = events.filter(item => item['sound'] === soundName)[0];
+
+      const isFromStation = (filteredEvent['stations'] as any[]).includes(this.station ? this.station.id : 0);
+
+      if (isFromStation) {
+        this.playAudio(this.event['sound'])
+          .catch(err => console.log(err));
+      }
     }
     this.setEvents(event['stage']['events']);
   }
