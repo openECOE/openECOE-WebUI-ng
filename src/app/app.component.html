@@ -1,4 +1,4 @@
-<nz-layout class="layout" >
+<nz-layout class="layout">
   <nz-header>
     <div class="logo" style="vertical-align: middle;float: left;">
       <a (click)="isCollapsed = !isCollapsed" style="margin-right: 13px;font-size: 30px;">
@@ -12,26 +12,23 @@
     <app-submenu [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>
 
 
-
   </nz-header>
 
   <nz-content>
-    <div  class="long-div" [style.height.px]="clientHeight - 82 - 69" #divTarget>
-      <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320" (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
-        <app-menu (menu_close_event)="toCollapse($event)"></app-menu>
-      </nz-drawer>
-
-      <div class="inner-nz-content">
+    <div class="long-div" #TopDiv>
+      <div class="inner-nz-content long-div-inner">
+        <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320"
+                   (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
+          <app-menu (menu_close_event)="toCollapse($event)"></app-menu>
+        </nz-drawer>
         <router-outlet></router-outlet>
       </div>
+      <nz-footer>
+        <label>openECOE {{year}} - Universitas Miguel Hernández</label>
+      </nz-footer>
+      <nz-back-top [nzTarget]="TopDiv" #backTop></nz-back-top>
     </div>
   </nz-content>
-
-  <nz-back-top #backTop [nzTarget]="divTarget"></nz-back-top>
-
-    <nz-footer>
-      <label>openECOE {{year}} - Universitas Miguel Hernández</label>
-    </nz-footer>
 
 
 </nz-layout>
