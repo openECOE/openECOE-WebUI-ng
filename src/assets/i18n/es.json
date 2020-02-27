@@ -269,5 +269,6 @@
   "ACTION_STATE_PUBLISH": "Publicar ECOE",
   "ERROR_ACTION_STATE_DRAFT": "Error al poner la ECOE en estado 'Borrador'.",
   "ERROR_ACTION_STATE_PUBLISH": "Error al publicar ECOE.",
-  "NO_ECOE_PUBLISHED": "La ECOE no ha sido publicada"
+  "NO_ECOE_PUBLISHED": "La ECOE no ha sido publicada",
+  "ERROR_DUPLICATE_ECOE": "Ya existe una ECOE con este nombre."
 }
