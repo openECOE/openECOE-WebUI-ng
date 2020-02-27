@@ -29,7 +29,7 @@
 
   <nz-content>
 
-   <div nz-col [nzMd]="8">
+   <div nz-col [nzMd]="8" class="gutter-box">
      <nz-card nzTitle="{{ 'AREAS' | translate }}" [nzExtra]="linkAreas">
        <div nz-row>
         <nz-alert nzType="info" nzMessage="{{areas?areas.length:0}} {{ 'AREAS' | translate }}"></nz-alert>
@@ -40,7 +40,7 @@
       </ng-template>
     </div>
 
-   <div nz-col [nzMd]="8">
+   <div nz-col [nzMd]="8" class="gutter-box">
       <nz-card nzTitle="{{ 'STATIONS' | translate }}" [nzExtra]="linkEstaciones">
         <nz-alert *ngIf="!show_stations" nzType="error" nzMessage="{{ 'NO_EXIST_AREAS' | translate }}"></nz-alert>
         <nz-alert *ngIf="show_stations" nzType="info" nzMessage="{{stations?stations.length:0}} {{ 'STATIONS' | translate }}"></nz-alert>
@@ -50,7 +50,7 @@
       </ng-template>
     </div>
 
-    <div nz-col [nzMd]="8">
+    <div nz-col [nzMd]="8" class="gutter-box">
       <nz-card nzTitle="{{ 'SCHEDULE' | translate }}" [nzExtra]="linkCronometros">
         <nz-alert *ngIf="!show_schedules" nzType="error" nzMessage="{{ 'NO_EXIST_STATIONS' | translate }}"></nz-alert>
         <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{stages?stages.length:0}} {{ 'STAGES' | translate }}"></nz-alert>
@@ -60,7 +60,7 @@
        </ng-template>
      </div>
 
-   <div nz-col [nzMd]="8">
+   <div nz-col [nzMd]="8" class="gutter-box">
      <nz-card nzTitle="{{ 'STUDENTS' | translate}}" [nzExtra]="linkEstudiantes">
        <nz-alert *ngIf="!show_students" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate}}"></nz-alert>
        <nz-alert *ngIf="show_students" nzType="info" nzMessage="{{students?students.length:0}} {{ 'STUDENTS' | translate}}"></nz-alert>
@@ -70,7 +70,7 @@
       </ng-template>
     </div>
 
-   <div nz-col [nzMd]="8">
+   <div nz-col [nzMd]="8" class="gutter-box">
      <nz-card nzTitle="Planificador" [nzExtra]="linkPlanificador">
        <nz-alert *ngIf="!show_planner" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate }}"></nz-alert>
        <nz-alert *ngIf="show_planner" nzType="info" nzMessage="{{rounds?rounds.length:0}} {{ 'ROUNDS' | translate }}, {{shifts?shifts.length:0}} {{ 'SHIFTS' | translate }}"></nz-alert>
