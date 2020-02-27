@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Location} from '@angular/common';
-import { ECOE, Schedule } from 'src/app/models';
+import { ECOE, Schedule } from '@models/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';

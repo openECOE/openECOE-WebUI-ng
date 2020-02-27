@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
-import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { AuthenticationService } from '@services/authentication/authentication.service';
 import { NavigationEnd, Router } from '@angular/router';
 import {filter} from 'rxjs/operators';
 

@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../../services/api/api.service';
+import {ApiService} from '@services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {SharedService} from '../../../services/shared/shared.service';
-import {Student, ECOE} from 'src/app/models/ecoe';
+import {SharedService} from '@services/shared/shared.service';
+import {Student, ECOE} from 'app/models/ecoe';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from '../../../models';
+import {STUDENTS_TEMPLATE_URL} from '@constants/import-templates-routes';
 
 /**
  * Component with students.
@@ -17,7 +18,7 @@ import {Planner, Round, Shift} from '../../../models';
   styleUrls: ['./students.component.less']
 })
 export class StudentsComponent implements OnInit {
-
+  readonly STUDENTS_URL = STUDENTS_TEMPLATE_URL;
   students: any[] = [];
   ecoeId: number;
   ecoe: ECOE;
