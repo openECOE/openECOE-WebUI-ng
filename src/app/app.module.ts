@@ -47,7 +47,6 @@ export function createTranslateLoader(http: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
     NgZorroAntdModule,
-    ChronoAdminModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
