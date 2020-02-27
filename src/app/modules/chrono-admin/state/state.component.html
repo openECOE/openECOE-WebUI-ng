@@ -1,16 +1,27 @@
-<nz-page-header class="margin-top"  (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoe?.name"></nz-page-header>
+<nz-page-header class="margin-top"  (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoe?.name">
+  <nz-page-header-extra>
 
-<nz-content padding>
-  <div nz-row>
-    <div nz-col>
-      <button (click)="publishECOE(ecoeId)" [disabled]="disabledBtnStart"
-                nzSize="large" nz-button nzBlock nzType="primary">
-          <i *ngIf="!doSpin" nz-icon nzType="upload" nzTheme="outline"></i>
-        <i *ngIf="doSpin" nz-icon nzSpin="true" nzType="sync" nzTheme="outline"></i>
-          {{'PUBLISH_ECOE' | translate}}
-        </button>
-    </div>
-  </div>
+    <a *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" nz-button class="warning" (click)="draftECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_DRAFT' | translate }}</a>
+
+  </nz-page-header-extra>
+</nz-page-header>
+
+
+<nz-content padding *ngIf="(ecoe?.status | uppercase)=='DRAFT'">
+  <nz-empty
+    [nzNotFoundContent]="contentTpl"
+    [nzNotFoundFooter]="footerTpl">
+
+    <ng-template #contentTpl>
+      <span>{{ 'NO_ECOE_PUBLISHED' | translate }}</span>
+    </ng-template>
+    <ng-template #footerTpl>
+      <a nz-button class="success" (click)="publishECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_PUBLISH' | translate }}</a>
+    </ng-template>
+  </nz-empty>
+</nz-content>
+
+<nz-content padding *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" >
 
   <div nz-row nzJustify="space-between" nzGutter="8" nzAlign="top" class="border">
     <div nz-col margin-top nzSm="24" nzMd="14">

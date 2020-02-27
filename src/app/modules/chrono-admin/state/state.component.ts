@@ -5,6 +5,7 @@ import {error} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {AuthenticationService} from '../../../services/authentication/authentication.service';
 import {ChronoService} from '../../../services/chrono/chrono.service';
+import { NzModalService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-state',
@@ -19,12 +20,14 @@ export class StateComponent implements OnInit {
   disabledBtnStart: boolean;
   errorAlert: string;
   doSpin: boolean = false;
+  changing_state: Boolean = false;
 
   constructor(private route: ActivatedRoute,
               private translate: TranslateService,
               private authService: AuthenticationService,
               private chronoService: ChronoService,
-              private router: Router) { }
+              private router: Router,
+              private modalSrv: NzModalService) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -46,11 +49,6 @@ export class StateComponent implements OnInit {
 
   onBack() {
     this.router.navigate(['./home']).finally();
-  }
-
-  draftECOE(ecoeId: number) {
-    this.chronoService.draftECOE(ecoeId).toPromise()
-      .catch(err => console.warn(err));
   }
 
   startECOE() {
@@ -104,4 +102,45 @@ export class StateComponent implements OnInit {
 
     setTimeout(() => this.doSpin = false, 1000);
   }
+
+  publishECOE() {
+    this.changing_state = true;
+    this.chronoService.publishECOE(this.ecoeId).toPromise()
+      .then(result => this.reloadECOE())
+      .catch(err => {
+        console.warn(err);
+        this.modalSrv.error({
+          nzMask: false,
+          nzTitle: this.translate.instant('ERROR_ACTION_STATE_PUBLISH')
+        });  
+      })
+      .finally(() => {
+        this.changing_state = false;
+      });
+  }
+
+  draftECOE() {
+    this.changing_state = true;
+    this.chronoService.draftECOE(this.ecoeId).toPromise()
+    .then(result => this.reloadECOE())
+    .catch(err => {
+      console.warn(err);
+      this.modalSrv.error({
+        nzMask: false,
+        nzTitle: this.translate.instant('ERROR_ACTION_STATE_DRAFT')
+      });  
+    })
+    .finally(()=>{
+      this.changing_state = false;
+    })
+  }
+
+  reloadECOE(){
+    ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
+      this.ecoe = value;
+    });
+  }
+
+
+
 }
