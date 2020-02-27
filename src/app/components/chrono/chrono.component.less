@@ -1,8 +1,18 @@
+@import '../../../styles.less';
+
 .my-tag {
   font-size: 1.6em;
   padding: 0.17em;
   height: 1.2em;
   font-weight: bold;
+  color: @primary-color;
+  background-color: fade(@primary-color, 30%);
+}
+
+.my-tag.aborted {
+  color: @error-color;
+  background-color: fade(@error-color, 30%);
+  border-color: transparent;
 }
 
 .chrono-component {
@@ -15,5 +25,8 @@
   padding: 0.20em;
   height: 1.3em;
   font-weight: bold;
+  color: @secondary;
+  background-color: fade(@secondary, 30%);
+  border-color: transparent;
 }
 

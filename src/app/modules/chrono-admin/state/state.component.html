@@ -47,11 +47,20 @@
             </button>
           </div>
         </nz-button-group>
-        <button (click)="stopECOE(ecoeId)"
-                nzSize="small" nz-button nzBlock nzType="danger" nzGhost margin-top>
+        <a nzSize="small" nz-button nzBlock nzType="danger" margin-top
+                nz-popconfirm 
+                [nzTitle]="'STOP_CONFIRMATION' | translate"
+                (nzOnConfirm)="stopECOE(ecoeId)"
+                [nzPlacement]="'top'"
+                [nzOkType]="'danger'"
+                [nzOkText]="'STOP' | translate" [nzCancelText]="'CANCEL' | translate"
+                [nzIcon]="iconDeleteTpl">
           <i nz-icon nzType="stop"></i>
           {{'STOP' | translate}}
-        </button>
+      </a>
+        <ng-template #iconDeleteTpl>
+          <i nz-icon nzType="question-circle" class="error" nzTheme="outline"></i>
+        </ng-template>
       </div>
     </div>
 

@@ -19,7 +19,7 @@
     <ng-template #ECOEAborted>
       <h2 *ngIf="!showDetails && round" uppercase>{{round.description}}</h2>
       <h4 *ngIf="!showDetails && initStage">({{'RERUN'| translate}} {{rerunsDescription}})</h4>
-      <nz-tag nzColor="red" class="my-tag">
+      <nz-tag class="my-tag aborted">
         <ng-container *ngIf="stageName">
           {{stageName | translate}}
         </ng-container>
@@ -47,7 +47,7 @@
     <div nz-row>
       <div nz-col nzXs="0" nzSm="24">
         <nz-tag *ngIf="!station && showDetails && !aborted && stageName"
-                margin-top-18  class="footer-tag" nzColor="#108ee9">
+                margin-top-18  class="footer-tag">
           {{('ESTIMATED_TIME_TO_FINISH' | translate) + momentRef().add(remainingTime, "seconds").format("HH:mm")}}
         </nz-tag>
       </div>
