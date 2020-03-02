@@ -52,7 +52,7 @@
               <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
               {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
             </nz-tag>
-            <ng-container *ngIf="preview && item.uri">
+            <ng-container *ngIf="item.uri">
 <!--              <nz-divider [nzType]="'vertical'"></nz-divider>-->
               <app-action-buttons
                 (startEdit)="onEditQuestion(item.id)"
@@ -65,18 +65,17 @@
         <tr [nzExpand]="editCache[item.id]?.expand">
           <td></td>
           <td colspan="5">
-            <ng-container *ngIf="preview; else EvaluateTemplateRef" >
+<!--            <ng-container *ngIf="preview; else EvaluateTemplateRef" >-->
               <app-options-list
-                [question]="item"
-                [preview]="preview">
+                [question]="item">
               </app-options-list>
-            </ng-container>
+<!--            </ng-container>-->
 
-            <ng-template #EvaluateTemplateRef>
+            <!--<ng-template #EvaluateTemplateRef>
               <app-options-eval
                 [question]="item">
               </app-options-eval>
-            </ng-template>
+            </ng-template>-->
 
           </td>
         </tr>

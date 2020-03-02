@@ -85,12 +85,12 @@
           </app-action-buttons>
         </td>
       </tr>
-      <tr  *ngIf="item.clicked">
+      <tr [nzExpand]="item.clicked">
         <td colspan="10">
           <app-questions-list
             [refreshQuestions]="refreshQuestions"
             [qblock]="item"
-            [preview]="true"
+            [preview]="false"
             (newQuestion)="onNewQuestion($event)"
             (editQuestion)="onEditQuestion($event)"
           ></app-questions-list>

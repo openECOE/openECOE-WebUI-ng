@@ -9,7 +9,6 @@ import {Question, Option} from '../../../../models';
 export class OptionsListComponent implements OnInit, OnChanges {
 
   @Input() question: Question;
-  @Input() preview: boolean;
   @Input() evaluate: boolean;
   @Input() answers: Option[] = [];
 
@@ -44,7 +43,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
     this.question.options = this.parseOptions(this.question.options);
 
     this.question.options.forEach((option) => {
-      if (this.preview && !option.id) {
+      if (!option.id) {
         option.id = option.order;
       }
       this.editCacheOption[option.order] = {
