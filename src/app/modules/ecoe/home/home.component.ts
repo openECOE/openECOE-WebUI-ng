@@ -3,6 +3,8 @@ import {mergeMap} from 'rxjs/operators';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {AuthenticationService} from '../../../services/authentication/authentication.service';
 import {ApiService} from '../../../services/api/api.service';
+import { NzModalService } from 'ng-zorro-antd';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +21,9 @@ export class HomeComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private authService: AuthenticationService,
-              private apiService: ApiService) { }
+              private apiService: ApiService,
+              private modalSrv: NzModalService,
+              private translate: TranslateService) { }
 
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
@@ -67,6 +71,13 @@ export class HomeComponent implements OnInit {
           this.loadEcoes();
           this.closeDrawer();
         }
+      },
+      error => {
+        var msg = error.status == 409 ? this.translate.instant('ERROR_DUPLICATE_ECOE') : this.translate.instant('ERROR_REQUEST_CONTENT');
+        this.modalSrv.error({
+          nzMask: false,
+          nzTitle: msg
+        }); 
       });
   }
 }
