@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subscription, throwError} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
@@ -26,18 +26,18 @@ export class AuthenticationService {
 
     return this.http.post(environment.API_ROUTE + this.authUrl, userData).pipe(
       map((data: any) => {
+        localStorage.removeItem('userLogged');
+        
         if (data) {
           localStorage.setItem('userLogged', JSON.stringify(data));
           this.loadUserData();
+          return true;
+        } else {
+          return false;
         }
-
-        return data;
       }),
       catchError(err => {
-        if (err.status === 401) {
-          localStorage.removeItem('userLogged');
-        }
-
+        localStorage.removeItem('userLogged');
         return throwError(err);
       })
     );
@@ -58,21 +58,30 @@ export class AuthenticationService {
   }
 
   loadUserData() {
-    this.apiService.getResource('/api/user/me')
-      .subscribe(
+    return this.apiService.getResource('/api/v1/users/me')
+      .pipe( map(
         data => {
           const user = new UserLogged(data);
-          localStorage.setItem('userData', JSON.stringify(user));
+          return localStorage.setItem('userData', JSON.stringify(user));
         },
         err => {
           if (err.status === 401) {
             this.logout('/login');
           }
+          return throwError(err);
         }
-      );
+      ),
+      catchError(err => {
+        if (err.status === 401) {
+          localStorage.removeItem('userLogged');
+          this.logout('/login');
+        }
+
+        return throwError(err);
+      }));
   }
 
   getUserData() {
-    return this.apiService.getResource('/api/user/me');
+    return this.apiService.getResource('/api/v1/users/me');
   }
 }

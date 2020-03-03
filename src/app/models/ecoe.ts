@@ -1,5 +1,5 @@
 import {Item, Pagination, Route} from '@openecoe/potion-client';
-import {Planner, Round, Shift} from './planner';
+import {Planner} from './planner';
 import {Schedule} from './schedule';
 import {Organization} from './organization';
 
@@ -59,32 +59,44 @@ export interface RowStation {
 }
 
 export class QBlock extends Item {
+  getQuestions = Route.GET<Pagination<Question>>('/questions');
+
   id: number;
   name: string;
   order: number;
 
   station: Station;
-  questions: Question[];
-
-  getQuestions = Route.GET<Pagination<Question>>('/questions');
+  questions?: Question[];
 }
 
 export class Question extends Item {
   id: number;
   reference: string;
   description: string;
-  question_type: string;
   questionType: string;
   order: number;
 
-  addOption = Route.POST<Option>('/option');
+  addOption ? = Route.POST<Option>('/options');
 
   area: Area;
 
   options: Option[];
-  qblocks: QBlock[];
+  qblocks: QBlock[] | number[];
 
-  getPoints = Route.GET<number>('/points');
+  getPoints ? = Route.GET<number>('/points');
+}
+
+export interface RowQuestion {
+  order:  any[] | number;
+  description: any[] | string;
+  reference: any[] | string;
+  area: any[] | Area;
+  questionType: any[] | string;
+  optionsNumber?: number;
+  points?: any[];
+  options?: Option[];
+  qblocks?: number[];
+  id?: any[] | number;
 }
 
 export class Option extends Item {
@@ -93,6 +105,28 @@ export class Option extends Item {
   label: string;
   id_question: number;
   order: number;
+}
+export class Answer extends Item {
+  id: number;
+  label: string;
+  order: number;
+  points: number;
+  uri: string;
+  question?: Question;
+}
+
+export class RowOption {
+  order: any | number;
+  label: any[] | string;
+  points: any[] | number;
+  rateCount?: number;
+  id?: number;
+
+  constructor(order, label, points) {
+    this.order = order;
+    this.label = label;
+    this.points = points;
+  }
 }
 
 export class Student extends Item {
@@ -103,8 +137,17 @@ export class Student extends Item {
 
   ecoe: ECOE | number;
   planner: Planner | Item;
-  plannerOrder: number;
-  planner_order: number;
+  plannerOrder?: number;
+  planner_order?: number;
 
+  addAnswer ? = Route.POST('/answers');
 
+  getAnswers ? = Route.GET('/answers');
+  getAllAnswers ? = Route.GET('/answers/all');
+}
+
+export interface BlockType {
+  name: string;
+  order: number;
+  questions: Question[];
 }

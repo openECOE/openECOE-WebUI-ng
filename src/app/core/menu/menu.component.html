@@ -1,0 +1,12 @@
+<nz-page-header nzTitle="{{ 'MENU' | translate }}"> </nz-page-header>
+<ul nz-menu nzMode="inline" (nzClick)="toclose()">
+  <li nz-menu-item [nzSelected]="location.path().indexOf('/ecoe') === 0 || location.path().indexOf('/login') === 0" [routerLink]="['/ecoe']" >
+    <i nz-icon nzType="home"></i>
+    <span>{{ "ECOES" | translate }}</span>
+  </li>
+
+  <li nz-menu-item [nzSelected]="location.path().indexOf('/outside') === 0" [routerLink]="['/outside']" >
+    <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
+    <span>{{ "SCHEDULE" | translate | uppercase }}</span>
+  </li>
+</ul>

@@ -1,0 +1,135 @@
+<!-- #TODO Cambiar breadcrumb a dinamico -->
+<nz-content>
+  <nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="station?.name" nzSubtitle="{{ 'DETAILS' | translate }} {{ 'STATION' | translate }}">
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['../../']">{{ecoe_name}}</a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['../']">{{ 'STATIONS' | translate}}</a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><nz-tag class="secondary-tag">{{station?.name}}</nz-tag></nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </nz-page-header>
+
+    <button class="margin-bottom" nz-button nzType="dashed" nzBlock (click)="showDrawer()">
+      {{'ADD_QBLOCK' | translate}}
+      <i nz-icon nzType="file-add" nzTheme="outline"></i>
+    </button>
+
+  <nz-table #table
+            [nzData]="qblocks"
+            [(nzPageIndex)]="page"
+            [(nzPageSize)]="perPage"
+            (nzPageIndexChange)="pageChange($event)"
+            (nzPageSizeChange)="pageSizeChange($event)"
+            [nzLoading]="loading"
+            [nzFrontPagination]="false"
+            [nzTotal]="totalItems"
+            nzSize="small"
+            nzShowSizeChanger
+            nzShowPagination>
+    <thead>
+    <tr>
+      <th [nzExpand]="true">
+        <a (click)="getQblocks(id_station)">
+          <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+        </a>
+      </th>
+      <th nzWidth="5%">{{"ORDER" | translate}}</th>
+      <th nzWidth="77%">{{"NAME" | translate}}</th>
+      <th nzWidth="12%" style="min-width: 165px;">
+        <nz-button-group class="margin-left right">
+          <app-upload-and-parse [fileURL]="QUESTIONS_URL" (parserResult)="importQblocksWithQuestions($event, id_station)"></app-upload-and-parse>
+        </nz-button-group>
+      </th>
+      <th nzWidth="6%" style="min-width: 65px;"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-template ngFor let-item [ngForOf]="table.data" let-index="index">
+      <tr>
+        <td>
+          <i nz-icon nzType="file-text" nzTheme="outline"></i>
+        </td>
+
+        <td>
+          <ng-container *ngIf="!editCache[item.id].edit">
+            {{item.order || "-"}}
+          </ng-container>
+
+          <ng-container *ngIf="editCache[item.id].edit">
+            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
+          </ng-container>
+        </td>
+
+        <ng-container *ngIf="!editCache[item.id].edit" >
+          <td (click)="onItemClicked(item)">
+            <a>
+              {{item.name}}
+            </a>
+          </td>
+        </ng-container>
+
+        <ng-container *ngIf="editCache[item.id].edit">
+          <td>
+            <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.name">
+          </td>
+        </ng-container>
+
+        <td></td>
+
+        <td text-right>
+          <app-action-buttons [isEditing]="editCache[item.id]?.edit"
+                              [isNewItem]="editCache[item.id]?.new_item"
+                              (startEdit)="startEdit(item)"
+                              (delete)="deleteItem(item)"
+                              (save)="updateItem(editCache[item.id].item)"
+                              (cancelEdit)="cancelEdit(item)">
+          </app-action-buttons>
+        </td>
+      </tr>
+      <tr [nzExpand]="item.clicked">
+        <td colspan="10">
+          <app-questions-list
+            [refreshQuestions]="refreshQuestions"
+            [qblock]="item"
+            [preview]="false"
+            (newQuestion)="onNewQuestion($event)"
+            (editQuestion)="onEditQuestion($event)"
+          ></app-questions-list>
+        </td>
+      </tr>
+    </ng-template>
+    </tbody>
+  </nz-table>
+</nz-content>
+
+<nz-drawer
+  [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
+  [nzMaskClosable]="false"
+  [nzWidth]="'90%'"
+  [nzVisible]="isVisible"
+  [nzTitle]="'ADD_QBLOCK' | translate"
+  (nzOnClose)="closeDrawer()">
+
+  <app-qblock-question-form
+    [id_station]="id_station"
+    [n_qblocks]="totalItems"
+    (saved)="closeDrawer()">
+  </app-qblock-question-form>
+
+</nz-drawer>
+
+<nz-drawer
+  [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom': '53px' }"
+  [nzMaskClosable]="false"
+  [nzWidth]="'90%'"
+  [nzVisible]="drawerQUestionVisible"
+  [nzTitle]="((questionToEdit.length > 0) ? 'EDIT_QUESTION' : 'ADD_QUESTION') | translate"
+  (nzOnClose)="closeDrawer('question')">
+  <!--(returnData)="getQuestions($event)"-->
+  <app-question-form
+    [action]="((questionToEdit.length > 0) ? 'EDIT' : 'ADD')"
+    [questionsCache]="questionToEdit"
+    [formVisible]="drawerQUestionVisible"
+    [qblock]="selectedQblock"
+    (returnData)="getQuestions($event)"
+  ></app-question-form>
+</nz-drawer>

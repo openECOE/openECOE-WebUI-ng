@@ -1,4 +1,4 @@
-import {Item} from '@openecoe/potion-client';
+import {Item, Route} from '@openecoe/potion-client';
 import {Organization} from './organization';
 import {Role} from './role';
 
@@ -11,6 +11,8 @@ export class User extends Item {
   token_expiration: Date;
   organization: Organization;
   password: string;
+
+  me = Route.GET<User>('/me');
 }
 
 export class UserLogged {

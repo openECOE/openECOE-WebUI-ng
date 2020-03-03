@@ -1,0 +1,85 @@
+<nz-content margin-top>
+  <button *ngIf="!preview" nz-button nzType="dashed" nzBlock (click)="addQuestion()">
+    <i nz-icon [type]="'plus-circle'"></i>
+    {{'ADD_QUESTION' | translate}}
+  </button>
+  <ng-container *ngIf="qblock && preview">
+    <h4><b>{{qblock.name}}</b></h4>
+  </ng-container>
+  <nz-table #table
+            [nzData]="questionsList"
+            [(nzPageIndex)]="page"
+            [(nzPageSize)]="perPage"
+            (nzPageIndexChange)="pageChange($event)"
+            (nzPageSizeChange)="pageSizeChange($event)"
+            [nzLoading]="loading"
+            [nzTotal]="totalItems"
+            [nzFrontPagination]="false"
+            nzSize="small"
+            nzShowSizeChanger
+            [nzShowPagination]="!preview"
+            [nzShowQuickJumper]="false"
+
+            >
+    <thead>
+      <tr>
+        <th nzWidth="1%">{{"ORDER" | translate}}</th>
+        <th nzWidth="50%">{{"DESCRIPTION" | translate}}</th>
+        <th nzWidth="20%">{{"REFERENCE" | translate}}</th>
+        <th>{{"AREA" | translate}}</th>
+        <th>{{"QUESTION_TYPE" | translate}}</th>
+        <th nzWidth="190px" nzAlign="right"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <ng-template ngFor let-item let-index="index" [ngForOf]="table.data" >
+        <tr>
+          <td nzAlign="right">{{item.order || "-"}}</td>
+
+          <td>{{item.description}}</td>
+
+          <td>{{item.reference}}</td>
+
+          <td>{{item.area?.name}}</td>
+
+          <td>{{getQuestionTypeLabel(item.questionType) | translate}}</td>
+
+          <td text-right style="min-width: 180px">
+            <nz-tag
+              [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'"
+              (click)="editCache[item.id].expand = !editCache[item.id].expand">
+              <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
+              {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
+            </nz-tag>
+            <ng-container *ngIf="item.uri">
+<!--              <nz-divider [nzType]="'vertical'"></nz-divider>-->
+              <app-action-buttons
+                (startEdit)="onEditQuestion(item.id)"
+                (delete)="deleteQuestion(questionsList,item.id)">
+              </app-action-buttons>
+            </ng-container>
+          </td>
+        </tr>
+
+        <tr [nzExpand]="editCache[item.id]?.expand">
+          <td></td>
+          <td colspan="5">
+<!--            <ng-container *ngIf="preview; else EvaluateTemplateRef" >-->
+              <app-options-list
+                [question]="item">
+              </app-options-list>
+<!--            </ng-container>-->
+
+            <!--<ng-template #EvaluateTemplateRef>
+              <app-options-eval
+                [question]="item">
+              </app-options-eval>
+            </ng-template>-->
+
+          </td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </nz-table>
+</nz-content>

@@ -1,0 +1,107 @@
+<nz-page-header class="margin-top"  (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoe?.name">
+  <nz-page-header-extra>
+
+    <a *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" nz-button class="warning" (click)="draftECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_DRAFT' | translate }}</a>
+
+  </nz-page-header-extra>
+</nz-page-header>
+
+
+<nz-content padding *ngIf="(ecoe?.status | uppercase)=='DRAFT'">
+  <nz-empty
+    [nzNotFoundContent]="contentTpl"
+    [nzNotFoundFooter]="footerTpl">
+
+    <ng-template #contentTpl>
+      <span>{{ 'NO_ECOE_PUBLISHED' | translate }}</span>
+    </ng-template>
+    <ng-template #footerTpl>
+      <a nz-button class="success" (click)="publishECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_PUBLISH' | translate }}</a>
+    </ng-template>
+  </nz-empty>
+</nz-content>
+
+<nz-content padding *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" >
+
+  <div nz-row nzJustify="space-between" nzGutter="8" nzAlign="top" class="border">
+    <div nz-col margin-top nzSm="24" nzMd="14">
+      <div padding background-white>
+        <button (click)="startECOE()" [disabled]="disabledBtnStart"
+                nzSize="large" nz-button nzBlock margin-top nzType="primary">
+          <i nz-icon nzType="play-circle"></i>
+          {{'START' | translate}}
+        </button>
+        <nz-button-group nz-row margin-top>
+          <div nz-col nzXs="24" nzSm="12">
+            <button (click)="pauseECOE(ecoeId)"
+                    nzSize="small" nzBlock nz-button>
+              <i nz-icon nzType="pause" nzTheme="outline"></i>
+              {{'PAUSE_ALL' | translate}}
+            </button>
+          </div>
+          <div nz-col nzXs="24" nzSm="12">
+            <button (click)="playECOE(ecoeId)"
+                    nzSize="small" nzBlock nz-button>
+              <i nz-icon nzType="play-circle" nzTheme="outline"></i>
+              {{'CONTINUE_ALL' | translate}}
+            </button>
+          </div>
+        </nz-button-group>
+        <a nzSize="small" nz-button nzBlock nzType="danger" margin-top
+                nz-popconfirm 
+                [nzTitle]="'STOP_CONFIRMATION' | translate"
+                (nzOnConfirm)="stopECOE(ecoeId)"
+                [nzPlacement]="'top'"
+                [nzOkType]="'danger'"
+                [nzOkText]="'STOP' | translate" [nzCancelText]="'CANCEL' | translate"
+                [nzIcon]="iconDeleteTpl">
+          <i nz-icon nzType="stop"></i>
+          {{'STOP' | translate}}
+      </a>
+        <ng-template #iconDeleteTpl>
+          <i nz-icon nzType="question-circle" class="error" nzTheme="outline"></i>
+        </ng-template>
+      </div>
+    </div>
+
+    <div nz-col margin-top nzSm="24" nzMd="10">
+      <div class="outside-chrono" padding text-left >
+        <app-chrono *ngIf="ecoe"
+          [idEcoe]="ecoe.id"
+          [round]="rounds[0]"
+          [mute]="true">
+        </app-chrono>
+        <nz-alert *ngIf="errorAlert"
+                  nzType="warning"
+                  [nzMessage]="'WARNING' | translate"
+                  [nzDescription]="errorAlert"
+                  nzShowIcon
+                  nzCloseable
+                  margin-top
+                  (nzOnClose)="clearAlertError()">
+        </nz-alert>
+      </div>
+    </div>
+  </div>
+
+  <div nz-row nzType="flex" nzJustify="start" margin-top>
+    <ng-container *ngFor="let round of rounds">
+      <div nz-col nzXs="24" nzSm="12" nzMd="8" nzXl="6" padding class="c-card border">
+        <app-chrono
+          [round]="round"
+          [idEcoe]="ecoeId"
+          [showDetails]="false"
+          [mute]="true">
+          <nz-button-group nzSize="default">
+            <button (click)="pauseRound(round.id)" nz-button nzType="danger"><i nz-icon nzType="pause-circle" nzTheme="outline"></i>{{'PAUSE' | translate}}</button>
+            <button (click)="playRound(round.id)" nz-button nzType="primary"><i nz-icon nzType="play-circle" nzTheme="outline"></i>{{'CONTINUE' | translate}}</button>
+          </nz-button-group>
+        </app-chrono>
+      </div>
+    </ng-container>
+  </div>
+</nz-content>
+
+
+
+

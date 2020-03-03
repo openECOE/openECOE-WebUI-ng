@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ApiService} from '../../../../services/api/api.service';
-import {forkJoin, from, Observable} from 'rxjs';
-import {SharedService} from '../../../../services/shared/shared.service';
+import {forkJoin} from 'rxjs';
 import {Area, ECOE, QBlock, Question, Station, Option} from '../../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Pagination} from '@openecoe/potion-client';
@@ -12,8 +11,7 @@ import {Pagination} from '@openecoe/potion-client';
  */
 @Component({
   selector: 'app-questions',
-  templateUrl: './questions.component.html',
-  styleUrls: ['./questions.component.less']
+  templateUrl: './questions.component.html'
 })
 
 export class QuestionsComponent implements OnInit {

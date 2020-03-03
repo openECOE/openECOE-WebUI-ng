@@ -1,0 +1,65 @@
+.switch {
+  display: list-item;
+  margin-top: 5px;
+}
+
+
+/deep/ .ant-switch-checked::after,
+/deep/ .ant-switch::after {
+  height: 100%;
+  border-radius: 4px;
+  margin-top: -1px;
+  width: 13px;
+}
+
+/deep/ nz-switch > button {
+  height: auto !important;
+  border-radius: 5px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  width: 100% !important;
+  max-width: 150px !important;
+
+  .ng-star-inserted {
+    font-size: larger !important;
+    word-wrap: break-word;
+  }
+}
+
+.positive-points {
+  /deep/ .ant-switch-checked {
+    background-color: #5cb85c !important;
+  }
+}
+
+.negative-points {
+  /deep/ .ant-switch-checked {
+    background-color: #CF1322 !important;
+  }
+}
+
+
+/deep/ .br-horizontal .br-unit.br-selected {
+  background-color: #5cb85c !important;
+}
+
+/deep/ .br-unit.br-active {
+  background-color: #5cb85c !important;
+}
+
+/deep/ .br-unit {
+  background-color: #c0f8c7 !important;
+}
+
+/deep/ .br-text {
+  color: #5cb85c !important;
+}
+
+
+.rate-in {
+  background-color: #5cb85c;
+}
+
+.rate-out {
+  background-color: #fafafa;
+}

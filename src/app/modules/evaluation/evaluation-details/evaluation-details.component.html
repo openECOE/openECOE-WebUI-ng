@@ -1,0 +1,102 @@
+<nz-content padding>
+  <nz-page-header (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoe?.name" [nzSubtitle]="'ECOE' | translate"></nz-page-header>
+
+  <nz-page-header-content>
+    <nz-steps [nzCurrent]="currentStep">
+      <nz-step [nzTitle]="(selectedEcoeDay | textdate) || ('DATE' | translate)" nzIcon="calendar" (click)="onClickDate()"></nz-step>
+      <nz-step [nzTitle]="(selectedRound?.description) || ('ROUND' | translate)" nzIcon="interaction" (click)="onClickRound()"></nz-step>
+      <nz-step [nzTitle]="(selectedStation?.name) || ('STATION' | translate)" nzIcon="import" (click)="onClickStation()"></nz-step>
+      <nz-step [nzTitle]="'SHIFT' | translate" nzIcon="clock-circle" ></nz-step>
+    </nz-steps>
+
+    <div class="steps-action">
+      <nz-spin [nzSpinning]="isSpinning" nzSize="large" [nzDelay]="500">
+        <ng-container *ngIf="currentStep === 0">
+          <nz-list
+            [nzDataSource]="ecoeDays"
+            [nzRenderItem]="item"
+            [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
+
+            <ng-template #item let-item>
+              <nz-list-item [nzContent]="nzContent" (click)="onEcoeDateSelected(item)">
+                <ng-template #nzContent>
+                  <nz-card class="completed" success-color no-padding pointer nzHoverable>
+                    <h3 text-center class="color-white bold">
+                      {{item | textdate}}
+                    </h3>
+                  </nz-card>
+                </ng-template>
+              </nz-list-item>
+            </ng-template>
+          </nz-list>
+        </ng-container>
+        <ng-container *ngIf="currentStep === 1">
+          <nz-list
+            [nzDataSource]="rounds"
+            [nzRenderItem]="item"
+            [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
+
+            <ng-template #item let-item>
+              <nz-list-item [nzContent]="nzContent" (click)="onRoundSelected(item)">
+                <ng-template #nzContent>
+                  <nz-card class="completed" success-color no-padding pointer nzHoverable>
+                    <h3 text-center class="color-white bold">
+                      {{item.description}}
+                    </h3>
+                  </nz-card>
+                </ng-template>
+              </nz-list-item>
+            </ng-template>
+          </nz-list>
+        </ng-container>
+        <ng-container *ngIf="currentStep === 2">
+          <nz-list
+            [nzDataSource]="stations"
+            [nzRenderItem]="item"
+            [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 8, xl: 8 }">
+
+            <ng-template #item let-item>
+              <nz-list-item [nzContent]="nzContent" (click)="onStationSelected(item)">
+                <ng-template #nzContent>
+                  <nz-card class="completed" success-color no-padding pointer nzHoverable>
+                    <h3 text-center class="color-white bold">
+                      {{item.order + '.- ' + item.name}}
+                    </h3>
+                  </nz-card>
+                </ng-template>
+              </nz-list-item>
+            </ng-template>
+          </nz-list>
+        </ng-container>
+        <ng-container *ngIf="currentStep === 3">
+          <nz-list
+            [nzDataSource]="filteredShifts"
+            [nzRenderItem]="item"
+            [nzGrid]="{ gutter: 24, xs: 24, sm: 12, md: 12, lg: 6, xl: 4 }">
+
+            <ng-template #item let-item>
+              <nz-list-item [nzContent]="nzContent">
+                <ng-template #nzContent>
+                  <nz-card success-color no-padding pointer nzHoverable
+                           [ngClass]="(item['timeStart'] < momentRef()) ? 'completed' : 'not-completed'"
+
+                           [routerLink]="[ '/ecoe', ecoeId, 'eval', 'station', selectedStation.id, 'shift', item.id, 'round', this.selectedRound.id, 'date', this.selectedEcoeDay]">
+                    <h3 text-center class="color-white bold">
+                      {{item['shiftCode'] + ' - ' +  (item['timeStart'] | date:'H:mm')}}
+                    </h3>
+
+                    <h4 text-center class="color-white">
+                      {{momentRef(item['timeStart']).fromNow() | titlecase}}
+                    </h4>
+                  </nz-card>
+                </ng-template>
+              </nz-list-item>
+            </ng-template>
+          </nz-list>
+        </ng-container>
+      </nz-spin>
+    </div>
+
+  </nz-page-header-content>
+
+</nz-content>

@@ -6,5 +6,5 @@ export const environment = {
   TESTING: false,
   API_ROUTE: 'http://api.openecoe.umh.es',
   API_AUTH_TOKEN: 'http://api.openecoe.umh.es/auth/tokens',
-  CHRONO_ROUTE: 'http://chrono.openecoe.umh.es:6080'
+  CHRONO_ROUTE: 'http://chrono.openecoe.umh.es'
 };

@@ -16,11 +16,11 @@ export class AuthenticationGuard implements CanActivate {
     const userLogged = this.authService.userLogged;
     const userData = this.authService.userData;
 
-    if (userLogged) {
+    if (userLogged && userData) {
       // check if route is restricted by role
-      if (next.data.roles && next.data.roles.indexOf(userData.role) === -1) {
+      if (next.data && next.data.roles.indexOf(userData.role) === -1) {
         // role not authorised so redirect to home page
-        this.router.navigate(['/']);
+        this.router.navigate(['/']).finally();
         return false;
       }
 

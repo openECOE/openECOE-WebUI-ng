@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {FormGroup} from '@angular/forms';
+import {AbstractControl, FormGroup} from '@angular/forms';
 
 /**
  * Service with shared methods used around the app.
@@ -134,12 +134,40 @@ export class SharedService {
     }
   }
 
-  dirtForm(form: FormGroup): void {
-    form.reset();
-    for (const key of Object.keys(form.controls)) {
-      form.controls[key].markAsDirty();
-      form.controls[key].updateValueAndValidity();
+  /**
+   * Obtains de formControl instance of any element in our form.
+   * @param form the instance of the form
+   * @param row form row name
+   * @param name of the control field
+   * @param idx the index of the control field.
+   */
+  getFormControl(form: FormGroup, row: string, name: string, idx: number): AbstractControl {
+    return form.get(row)['controls'][idx].controls[name];
+  }
+
+  doFormDirty(form: FormGroup) {
+    const controlKeys = Object.keys(form.controls);
+    for (const rowName of controlKeys) {
+      for (const n in form.get(rowName)['controls']) {
+        if (form.get(rowName)['controls'].hasOwnProperty(n)) {
+          const rowKeys = Object.keys(form.get(rowName)['controls'][n].controls);
+            rowKeys.forEach( (key) => {
+              this.getFormControl(form, rowName, key, +n).markAsDirty();
+              this.getFormControl(form, rowName, key, +n).updateValueAndValidity();
+            });
+        }
+      }
     }
+  }
+
+  getUsersLocale(defaultValue: string): string {
+    if (typeof window === 'undefined' || typeof window.navigator === 'undefined') {
+      return defaultValue;
+    }
+    const wn = window.navigator as any;
+    let lang = wn.languages ? wn.languages[0] : defaultValue;
+    lang = lang || wn.language || wn.browserLanguage || wn.userLanguage;
+    return lang;
   }
 
 }

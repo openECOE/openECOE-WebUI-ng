@@ -1,0 +1,182 @@
+<nz-content>
+  <nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'PLANNER' | translate">
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ecoe_name}}</a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"PLANNER" | translate}}</nz-tag></nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </nz-page-header>
+
+  <nz-table #table
+            nzBordered
+            [nzData]="rounds"
+            [nzLoading]="loading"
+            [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
+    <thead>
+    <tr>
+      <th nzWidth="200px" nzLeft="0px"></th>
+      <th nzWidth="200px" nzLeft="200px" text-center *ngFor="let round of rounds">
+        <div nz-col nzSpan="6">
+          <h3>
+            <app-action-buttons class="action-buttons"
+                                [isEditing]="false"
+                                [isNewItem]="false"
+                                [showDeleteButton]="false"
+                                (startEdit)="addRound(round)">
+            </app-action-buttons>
+            {{round.roundCode}}
+          </h3>
+        </div>
+        <div nz-col nzSpan="18">
+          {{round.description}}
+        </div>
+      </th>
+      <th nzWidth="200px" nzLeft="200px">
+        <button nz-button
+                nzGhost
+                nzType="primary"
+                (click)="addRound()"
+                [nzBlock]="true">
+          <i nz-icon [type]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
+          {{"ADD_ROUND" | translate}}
+        </button>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let shift of shifts">
+      <td nzLeft="0px" text-center>
+        <div nz-col nzSpan="6">
+          <h3>
+            <app-action-buttons class="action-buttons"
+                                [isEditing]="false"
+                                [isNewItem]="false"
+                                [showDeleteButton]="false"
+                                (startEdit)="addShift(shift)">
+            </app-action-buttons>
+            {{shift.shiftCode}}
+          </h3>
+        </div>
+        <div nz-col nzSpan="18">
+          {{shift.timeStart | date: 'dd/MM/yyyy HH:mm'}}
+        </div>
+      </td>
+      <td nzLeft="200px" *ngFor="let round of rounds">
+        <app-planner-selector [ecoeId]="ecoeId"
+                              [(round)]="round"
+                              [(shift)]="shift"
+                              [stationsNum]="stationsTotal"
+        >
+        </app-planner-selector>
+      </td>
+      <td [nzDisabled]="true" nzLeft="200px"></td>
+    </tr>
+    <tr>
+      <td nzLeft="0px">
+        <button nz-button
+                nzGhost
+                nzType="primary"
+                (click)="addShift()"
+                [nzBlock]="true">
+          <i nz-icon [type]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
+          {{"ADD_SHIFT" | translate}}
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+
+  <button nz-button
+          nzType="default"
+          [nzBlock]="true"
+          (click)="autoCreatePlanners()"
+          [nzLoading]="loading">
+    <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
+    {{"AUTO_PLANNERS" | translate}}
+  </button>
+</nz-content>
+
+<nz-modal [(nzVisible)]="showAddShift"
+          [nzTitle]="'ADD_SHIFT' | translate"
+          (nzOnCancel)="closeModalShift()"
+          nzMaskClosable="false"
+          [nzFooter]="modalFooterShift">
+  <form nz-form [formGroup]="shiftForm">
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" [nzFor]="'shift_code'">{{"CODE" | translate}}</nz-form-label>
+      <nz-form-control>
+        <input nz-input id="shift_code" [formControlName]="'shift_code'"/>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true">{{"DATE" | translate}}</nz-form-label>
+      <nz-form-control>
+        <nz-input-group nzCompact>
+          <nz-date-picker [formControlName]="'datePicker'"
+                          nzFormat="dd-MM-yyyy"
+                          [nzPlaceHolder]="'SELECT_DATE' | translate">
+          </nz-date-picker>
+          <nz-time-picker formControlName="timePicker"
+                          [nzPlaceHolder]="'SELECT_HOUR' | translate"
+                          nzFormat="HH:mm">
+          </nz-time-picker>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <ng-template #modalFooterShift>
+      <button *ngIf="isEditing && isEditing.edit" nz-button [nzType]="'danger'"
+              nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+              (nzOnConfirm)="modalDeleteShift(isEditing.itemRef)"
+              style="float: left;">
+        <span>{{"DELETE" | translate}}</span>
+      </button>
+
+      <button nz-button (click)="closeModalShift()" class="margin-right">
+        <span>{{"CANCEL" | translate}}</span>
+      </button>
+      <button nz-button [nzType]="'primary'" [disabled]="!shiftForm.valid"
+              (click)="submitFormShift($event, shiftForm.value)">
+        <span>{{"ACCEPT" | translate}}</span>
+      </button>
+    </ng-template>
+  </form>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="showAddRound"
+          [nzTitle]="'ADD_ROUND' | translate"
+          (nzOnCancel)="closeModalRound()"
+          nzMaskClosable="false"
+          [nzFooter]="modalFooterRound">
+  <form nz-form [formGroup]="roundForm">
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" [nzFor]="'round_code'">{{"CODE" | translate}}</nz-form-label>
+      <nz-form-control>
+        <input nz-input id="round_code" [formControlName]="'round_code'"/>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" [nzFor]="'description'">{{"DESCRIPTION" | translate}}</nz-form-label>
+      <nz-form-control>
+        <input nz-input id="description" [formControlName]="'description'"/>
+      </nz-form-control>
+    </nz-form-item>
+
+    <ng-template #modalFooterRound>
+      <button *ngIf="isEditing?.edit" nz-button [nzType]="'danger'"
+              nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+              (nzOnConfirm)="modalDeleteRound(isEditing.itemRef)"
+              style="float: left;">
+        <span>{{"DELETE" | translate}}</span>
+      </button>
+
+      <button nz-button (click)="closeModalRound()" class="margin-right">
+        <span>{{"CANCEL" | translate}}</span>
+      </button>
+      <button nz-button [nzType]="'primary'" (click)="submitFormRound($event, roundForm.value)">
+        <span>{{"ACCEPT" | translate}}</span>
+      </button>
+    </ng-template>
+  </form>
+</nz-modal>

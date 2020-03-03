@@ -1,0 +1,52 @@
+// @import "../node_modules/ng-zorro-antd/ng-zorro-antd.less";
+
+ :host ::ng-deep .long-div {
+   height: 100%;
+   overflow-y: scroll;
+   .ant-back-top{
+     right: 30px;
+   }
+ }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.long-div::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE and Edge */
+.long-div {
+  -ms-overflow-style: none;
+}
+
+nz-header {
+  text-align: center;
+  background-color: white;
+  box-shadow: 0 2px 8px #f0f1f2;
+}
+
+.logo {
+  float: left;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.inner-nz-content {
+  margin: 0 7%;
+  min-height: calc(100% - 64px - 20px); // 100% - header - footer
+}
+
+nz-layout {
+  background-color: white!important;
+}
+
+nz-footer {
+  margin: 0 7%;
+  text-align: center;
+  background-color: white!important;
+}
+
+img {
+  height: 64px;
+  position: fixed;
+  top: 0;
+}

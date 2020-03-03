@@ -1,0 +1,115 @@
+ <form [formGroup]="questionForm" >
+      <ng-container formArrayName="questionRow" *ngFor=" let contrl of questionForm.get('questionRow')['controls']; let i = index">
+
+        <div nz-row class="no-borders" nzGutter="8" nzType="flex" nzJustify="start" [formGroupName]="i+''">  <!--style="border: 1px solid darkred"-->
+          <div nz-col nzSpan="2" style="border: 1px solid darkblue">
+            <!--Nº Q-->
+            <div nz-row nzJustify="center" nzType="flex">
+              <div nz-col>
+                  <nz-form-control>
+                    <h3><b [innerHTML]="+totalItems + ( i + 1 ) + '.'"></b></h3>
+                  </nz-form-control>
+              </div>
+            </div>
+            <!--POINTS-->
+            <div nz-row nzJustify="center" nzType="flex">
+              <div nz-col text-center>
+                  <nz-form-control>
+                    <nz-tag nzChecked="true"><h3 color-white bold>{{contrl.value.points}}<br/><span>{{'POINTS' | translate}}</span></h3></nz-tag>
+                  </nz-form-control>
+              </div>
+            </div>
+          </div>
+          <div nz-col nzSpan="6" style="border: 1px solid darkblue">
+            <div nz-row>
+              <div nz-col>
+                <!--REFERENCE.-->
+                <nz-form-control>
+                  <input nz-input autofocus [placeholder]="('REFERENCE_PLACEHOLDER' | translate)" formControlName="reference"/>
+                  <nz-form-explain
+                    *ngIf="getFormControl('reference',i)?.dirty && getFormControl('reference', i)?.hasError('required')">
+                    {{'REFERENCE_INPUT_REQUIRED' | translate}}
+                  </nz-form-explain>
+                </nz-form-control>
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                <!--AREA-->
+                  <nz-form-control>
+                    <nz-select
+                      [nzPlaceHolder]="'AREA' | translate"
+                      [nzShowSearch]="true"
+                      formControlName="area"
+                      (nzScrollToBottom)="loadMoreAreas().finally()">
+                      <nz-option *ngFor="let area of areas" [nzLabel]="area.name" [nzValue]="area">
+                      </nz-option>
+                    </nz-select>
+
+                    <nz-form-explain *ngIf="getFormControl('area', i)?.dirty && getFormControl('area', i)?.hasError('required')">
+                      {{'AREA_INPUT_REQUIRED' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                <!--QUESTION TYPE-->
+                  <nz-form-control>
+                    <nz-select (ngModelChange)="onQuestionTypeChange($event)"
+                               [nzShowSearch]="true"
+                               [nzPlaceHolder]="'QUESTION_TYPE' | translate"
+                               formControlName="questionType">
+                      <ng-container *ngFor="let option of questionTypeOptions; let i = index;">
+                        <option [ngValue]="null">{{'QUESTION_TYPE' | translate}}</option>
+                        <nz-option
+                          [nzLabel]="option.label | translate"
+                          [nzValue]="option.type">
+                        </nz-option>
+                      </ng-container>
+                    </nz-select>
+                  </nz-form-control>
+              </div>
+            </div>
+          </div>
+          <div nz-col nzSpan="13" style="border: 1px solid darkblue;">
+            <nz-form-control>
+              <textarea nz-input rows="3" style="margin-top: 4px;" [placeholder]="('DESCRIPTION_PLACEHOLDER' | translate)" formControlName="description"></textarea>
+              <nz-form-explain
+                *ngIf="getFormControl('description',i)?.dirty && getFormControl('description', i)?.hasError('required')">
+                {{'DESCRIPTION_INPUT_REQUIRED' | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </div>
+
+          <div nz-col nzSpan="2" *ngIf="i > 0">
+            <!--DELETE ICON-->
+            <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
+          </div>
+        </div>
+
+        <app-option-form #option
+          [questionOrder]="i"
+          [type]="control.value[i]['questionType']"
+          [optionsCache]="questionsCache[i]?.options"
+          (saveForm) = "submitForm()"
+          (returnData)="onGetOptions($event)"
+          (pointValues)="onReceivePointValues($event)">
+        </app-option-form>
+        <nz-divider></nz-divider>
+      </ng-container>
+ </form>
+
+<div nz-row nzType="flex" nzJustify="center">
+  <div nz-col nzSpan="12" text-center>
+    <nz-form-control>
+      <button *ngIf="action !== 'EDIT'" nz-button nzType="default" (click)="addQuestionRow()">
+        <i nz-icon type="plus"></i> {{'ADD_QUESTION' | translate}}
+      </button>
+      <button *ngIf="action !== 'ADD_WITH_QBLOCK'" nz-button nzType="primary" (click)="submitForm()">
+        <i nz-icon type="save"></i> {{'SAVE' | translate}}
+      </button>
+    </nz-form-control>
+  </div>
+
+</div>

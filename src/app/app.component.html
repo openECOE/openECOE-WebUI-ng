@@ -1,11 +1,34 @@
 <nz-layout class="layout">
-  <nz-header style="position:fixed; width:100%; z-index: 1000;">
-    <a *ngIf="authService.userData">{{authService.userData.user.email}}</a>
-    <a style="float: right;" (click)="authService.userData ? authService.logout() : router.navigate(['/login'])">
-      {{(authService.userData ? "LOG_OUT" : "LOG_IN") | translate}}
-    </a>
+  <nz-header>
+    <div class="logo" style="vertical-align: middle;float: left;">
+      <a (click)="isCollapsed = !isCollapsed" style="margin-right: 13px;font-size: 30px;">
+        <i nz-icon [nzType]="isCollapsed ? 'menu-fold' : 'menu-unfold'"></i>
+      </a>
+      <img alt="logo" src="../assets/logo.png">
+    </div>
+
+    <app-usermenu style="margin: auto;"></app-usermenu>
+
+    <app-submenu [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>
+
+
   </nz-header>
-  <nz-layout style="margin-top:64px;">
-    <router-outlet></router-outlet>
-  </nz-layout>
+
+  <nz-content>
+    <div class="long-div" #TopDiv>
+      <div class="inner-nz-content long-div-inner">
+        <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320"
+                   (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
+          <app-menu (menu_close_event)="toCollapse($event)"></app-menu>
+        </nz-drawer>
+        <router-outlet></router-outlet>
+      </div>
+      <nz-footer>
+        <label>openECOE {{year}} - Universitas Miguel Hernández</label>
+      </nz-footer>
+      <nz-back-top [nzTarget]="TopDiv" #backTop></nz-back-top>
+    </div>
+  </nz-content>
+
+
 </nz-layout>

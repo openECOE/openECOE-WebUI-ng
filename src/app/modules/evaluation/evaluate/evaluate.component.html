@@ -1,0 +1,106 @@
+<nz-content class="long-div">
+
+    <nz-card [nzLoading]="loading" [nzTitle]="HeaderRef">
+
+      <ng-container *ngIf="questionsByQblock && currentStudent.student.id else LoadingTemplateRef">
+        <ng-container *ngFor="let qblock of this.questionsByQblock; let i = index">
+          <nz-spin [nzSpinning]="isSpinning">
+            <nz-list
+              [nzDataSource]="qblock.questions"
+              nzBordered
+              nzSize="small"
+              [nzHeader]="QBlockHeaderRef"
+              [nzRenderItem]="QBlockBodyItemRef">
+              <ng-template #QBlockHeaderRef> <h3>{{qblock.name}}</h3> </ng-template>
+              <ng-template #QBlockBodyItemRef let-item let-index="index">
+                <nz-list-item [ngClass]="{'shadow': index % 2 === 0}">
+                  <div nz-row nzGutter="16" nzAlign="middle" style="width: 100%">
+                    <div nz-col nzXs="24" nzSm="1" [innerHTML]="item['order']"></div>
+                    <div nz-col nzXs="24" nzSm="14" [innerHTML]="item['description']"></div>
+                    <div nz-col nzXs="24" nzSm="5">
+                      <b>{{item['reference']}}</b>
+                    </div>
+                    <div nz-col nzXs="24" nzSm="4">
+                      <app-options-eval
+                      [answers]="getQuestionsCompleted ? currentStudent.answers : []"
+                      (optionChanged)="updateAnswer($event)"
+                      [question]="item"
+                      ></app-options-eval>
+                    </div>
+                  </div>
+                </nz-list-item>
+              </ng-template>
+            </nz-list>
+          </nz-spin>
+        </ng-container>
+
+      </ng-container>
+    </nz-card>
+
+  <ng-template #LoadingTemplateRef>
+    <nz-skeleton></nz-skeleton>
+  </ng-template>
+
+  <ng-template #HeaderRef>
+    <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32, xl: 32, xxl: 32 }">
+      <div nz-col nzSpan="12" nzXs="24" nzLg="12">
+        <h2>
+          <a (click)="onBack()" ><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
+          <a *ngIf="station"> {{station.name}} </a>
+        </h2>
+        <app-chrono [round]="round" [station]="station" [idEcoe]="ecoeId">
+        </app-chrono>
+      </div>
+      <div nz-col nzSpan="12" nzXs="24" nzLg="12">
+        <h2 uppercase text-right *ngIf="loading">{{(('LOADING' | translate ) + '...' )}}</h2>
+        <h2 uppercase text-right *ngIf="!loading && currentStudent.student.surnames">{{(currentStudent?.student.surnames + ', ' + currentStudent?.student.name)}}</h2>
+        <h2 uppercase text-right *ngIf="!loading && students.length === 0">{{('THERE_ARE_NOT_STUDENTS' | translate)}}</h2>
+        <ng-container *ngIf="!loading && students.length > 0 && !currentStudent?.student.surnames">
+          <nz-alert class="wrapword" nzType="info" text-center [nzMessage]="('STATION_DEPENDS_OF_STATION_DESCRIPTION' | translate)"></nz-alert>
+        </ng-container>
+
+        <div nz-row nzJustify="end">
+          <div nz-col nzSpan="6" text-center>{{'DAY-SHIFT' | translate}}</div>
+          <div nz-col nzSpan="6" text-center>{{'ROUND' | translate}}</div>
+          <div nz-col nzSpan="12" text-center *ngIf="students?.length > 0">{{'NUMB' | translate}}</div>
+        </div>
+        <nz-divider style="margin: 10px 0"></nz-divider>
+        <div nz-row nzJustify="end">
+          <div nz-col nzSpan="6" text-center uppercase><h3>{{shift?.shiftCode}}</h3></div>
+          <div nz-col nzSpan="6" text-center><h3>{{round?.roundCode}}</h3></div>
+          <div nz-col nzSpan="12">
+            <div nz-row *ngIf="students?.length > 0">
+              <div nz-col nzSpan="8">
+                <button nzType="danger" (click)="previousStudent()" nzBlock nzSize="large" text-center nz-button><i nz-icon nzType="left" nzTheme="outline"></i></button>
+              </div>
+              <div nz-col  nzSpan="8">
+                <h3 text-center>{{currentStudent?.student.plannerOrder}}</h3>
+              </div>
+              <div nz-col nzSpan="8">
+                <button nzType="primary" (click)="nextStudent()" nzBlock nzSize="large" text-center nz-button><i nz-icon nzType="right" nzTheme="outline"></i></button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+
+  <button
+    *ngIf="students.length > 0 && students.length !== (currentStudent.index + 1)"
+    (click)="nextStudent()"
+    nz-button nzType="primary" nzBlock>
+      {{'NEXT_STUDENT' | translate}}
+      <i nz-icon nzType="right" nzTheme="outline"></i>
+  </button>
+
+  <button
+    *ngIf="students.length > 0 && students.length === (currentStudent.index + 1)"
+    (click)="onBack()"
+    nz-button nzType="primary" nzBlock>
+    {{'ROUND_FINISHED' | translate}}
+    <i nz-icon nzType="right" nzTheme="outline"></i>
+  </button>
+</nz-content>

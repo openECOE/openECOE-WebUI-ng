@@ -13,15 +13,19 @@ import localeEsExtra from '@angular/common/locales/extra/es';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AuthInterceptor} from './interceptors/auth.interceptor';
-import {MessagesInterceptor} from './interceptors/messages.interceptor';
-import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import {environment} from '../environments/environment';
 
-import {POTION_PROVIDER_FACTORY, POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-client';
+import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-client';
 
 import {resources} from './app.resources';
 import {PipesModule} from './pipes/pipes.module';
+import {BarRatingModule} from 'ngx-bar-rating';
+import { CoreModule } from './core/core.module';
+import { EcoeModule } from './modules/ecoe/ecoe.module';
+import { StateComponent } from './modules/chrono-admin/state/state.component';
+import { ChronoAdminModule } from './modules/chrono-admin/chrono-admin.module';
+
 
 registerLocaleData(localeEs, 'es', localeEsExtra);
 
@@ -32,10 +36,10 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    LoginComponent,
+    LoginComponent
   ],
   imports: [
+    CoreModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -52,6 +56,8 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     PotionModule,
     PipesModule,
+    EcoeModule,
+    BarRatingModule
   ],
   providers: [
     {
@@ -69,16 +75,16 @@ export function createTranslateLoader(http: HttpClient) {
       useClass: AuthInterceptor,
       multi: true
     },
-    {
+    /*{
       provide: HTTP_INTERCEPTORS,
       useClass: MessagesInterceptor,
       multi: true
-    },
+    },*/
     {
       provide: POTION_CONFIG,
       useValue: {
         host: environment.API_ROUTE,
-        prefix: '/api'
+        prefix: '/api/v1'
       }
     },
     {

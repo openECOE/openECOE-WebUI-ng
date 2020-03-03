@@ -6,7 +6,10 @@
 
   "CREATE_ECOE": "Crear nueva ECOE",
   "ECOE_NAME": "Nombre de la ECOE",
-  "DELETE_ECOE": "Eliminar ECOE",
+  "DELETE_ECOE": "Archivar ECOE",
+  "ARCHIVE": "Archivar",
+  "START_STOP_ECOE": "Iniciar/Detener ECOE",
+  "EDIT_ECOE": "Editar ECOE",
 
   "ORGANIZATION": "Organización",
 
@@ -23,6 +26,7 @@
   "ALL_STATIONS": "Todas Estaciones",
 
   "INFORMATION": "Información",
+  "ANSWER": "Respuesta",
 
   "CONTROL_PANEL": "Panel de Control",
 
@@ -42,7 +46,7 @@
   "PASSWORD_NOT_VALID": "¡No es una contraseña válida!",
   "PASSWORD_REQUIRED": "Por favor indique una contraseña",
 
-  "ROUND": "Ronda",
+  "ROUND": "Rueda",
   "ROUNDS": "Rondas",
   "NO_ROUNDS": "No hay rondas",
   "ADD_ROUND": "Añadir ronda",
@@ -56,13 +60,13 @@
   "SELECT_HOUR": "Elegir hora...",
   "HOUR": "Hora",
 
-  "AREAS": "Areas",
-  "AREA": "Area",
-  "NO_AREAS": "No hay areas",
-  "ADD_AREA": "Añadir area",
-  "AREAS_NUMBER": "Número de areas",
-  "AREA_NAME": "Nombre del area",
-  "CHANGE_AREA": "Cambiar area",
+  "AREAS": "Áreas",
+  "AREA": "Área",
+  "NO_AREAS": "No hay áreas",
+  "ADD_AREA": "Añadir área",
+  "AREAS_NUMBER": "Número de áreas",
+  "AREA_NAME": "Nombre del área",
+  "CHANGE_AREA": "Cambiar área",
 
   "CODE": "Código",
   "CODE_PLACEHOLDER": "Introduzca el código...",
@@ -71,6 +75,7 @@
   "QUESTIONS": "Preguntas",
   "ADD_QUESTIONS": "Añadir preguntas",
   "ADD_QUESTION": "Añadir pregunta",
+  "EDIT_QUESTION": "Editar pregunta",
   "REFERENCE": "Referencia",
   "DESCRIPTION": "Descripción",
   "QUESTION_TYPE": "Tipo de pregunta",
@@ -83,12 +88,18 @@
   "PREVIEW": "Previsualización",
   "LABEL": "Texto",
   "POINTS": "Puntos",
+  "MAX_POINTS": "Puntación máxima",
   "POINT": "Punto",
   "ORDER": "Orden",
   "OPTIONAL": "opcional",
   "SELECT_VALUE": "Seleccionar un valor...",
 
+  "RERUN": "Vuelta",
+  "NUMB": "Num",
+  "DAY-SHIFT": "Dia - Turno",
+
   "QBLOCK_NAME": "Nombre del bloque",
+  "NEW_QBLOCK": "Bloque nuevo",
   "QBLOCKS": "Bloques",
   "ASSIGN_QBLOCKS": "Asignar bloque",
   "SELECT_QBLOCKS": "Selecciona los bloques:",
@@ -106,6 +117,7 @@
 
   "START": "Inicio",
   "END": "Fin",
+  "STOP": "Detener",
 
   "ADD_EVENT": "Añadir Evento",
   "TEXT": "Texto",
@@ -123,6 +135,7 @@
   "NO_STUDENTS": "No hay alumnos",
   "SELECT_STUDENTS": "Seleccionar estudiantes",
   "SURNAMES": "Apellidos",
+  "ID_CODE": "DNI",
 
   "PLANNER": "Planificador",
   "PLANNERS": "Planificadores",
@@ -131,8 +144,11 @@
 
   "GROUP": "Grupo",
   "GROUPS": "Grupos",
+  "LIST": "Lista",
+  "ECOE": "ECOE",
 
   "REPORTS_AND_STATISTICS": "Informes y estadísticas",
+  "THERE_ARE_NOT_STUDENTS": "No hay estudiantes",
 
   "TO_UPDATE": "actualizar",
   "UPDATED": "actualizado",
@@ -154,14 +170,26 @@
   "NAME_INPUT_REQUIRED": "El campo nombre es obligatorio.",
   "PARENT_PLACEHOLDER": "Seleccione el padre...",
 
+  "SURNAMES_PLACEHOLDER": "Introduzca los apellidos...",
+  "SURNAMES_INPUT_REQUIRED": "El campo apellidos es obligatorio.",
+
+  "ID_CODE_PLACEHOLDER": "Introduzca el DNI...",
+  "ID_CODE_REQUIRED": "El campo DNI es obligatorio.",
+
   "MOVE_UP": "Subir posición",
   "MOVE_DOWN": "Bajar posición",
 
   "PREVIEW_EXAM": "Previsualizar examen",
+  "SUMMARY": "Resumen",
+
+  "ABORTED": "Evaluación detenida",
 
   "LOADING": "Cargando",
   "ACTIONS": "Acciones",
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
+  "ARCHIVE_CONFIRMATION": "¿Estás seguro de archivar este elemento?",
+  "STOP_CONFIRMATION": "Si se detiene la ECOE no se podrá recuperar el cronometraje, ¿desea continuar?",
+  "CONFIRM_ALSO_DELETE_QUESTIONS": "Se eliminarán también las preguntas asociadas al bloque.",
   "ACTION": "Acción",
   "DELETE": "Eliminar",
   "ADD": "Añadir",
@@ -174,15 +202,76 @@
   "CLOSE": "Cerrar",
   "REFRESH": "Refrescar",
   "RESET": "Reiniciar",
+  "NEXT": "Siguiente",
   "BACK": "Volver",
   "CLOSE_EDITION": "Cerrar edición",
+  "CONTINUE": "Continuar",
+  "CONTINUE_ALL": "Continuar todo",
+  "PAUSE": "Pausar",
+  "PAUSE_ALL": "Pausar todo",
+  "NEXT_STUDENT": "Siguiente alumno",
+  "ROUND_FINISHED": "Ronda finalizada",
 
   "IMPORT_ERRORS": "Errores Importación",
+
+  "DESCRIPTION_PLACEHOLDER": "Descripción...",
+  "REFERENCE_PLACEHOLDER": "Referencia",
+  "POINTS_PLACEHOLDER": "Puntos",
+
+  "DESCRIPTION_INPUT_REQUIRED": "El campo descripción es obligatorio.",
+  "REFERENCE_INPUT_REQUIRED": "El campo referencia es obligatorio.",
+  "AREA_INPUT_REQUIRED": "El campo área es obligatorio.",
+  "QUESTION_TYPE_INPUT_REQUIRED": "El campo tipo de pregunta es obligatorio.",
+  "POINTS_INPUT_REQUIRED": "El campo puntos es obligatorio.",
 
   "SELECT": "Seleccionar...",
   "IMPORT_DATA": "Importar",
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",
   "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",
-  "LOG_IN_ERROR": "Error al iniciar sesión"
+  "LOG_IN_ERROR": "Error al iniciar sesión",
+
+  "STATION_DEPENDS_OF_STATION": "Esta estación depende de la estación: ",
+  "STATION_DEPENDS_OF_STATION_DESCRIPTION": "La primera vuelta no tiene asignado ningún alumno para su evaluación. El primer alumno se evalua en la última vuelta.",
+  "ESTIMATED_TIME_TO_FINISH": "Hora estimada de finalización: ",
+  "ECOE_ALREADY_RUNNING": "La ECOE ya está en marcha.",
+  "WARNING": "Atención",
+
+  "OK_REQUEST_CONTENT": "Petición procesada correctamente.",
+  "ERROR_REQUEST_CONTENT": "Error al procesar petición.",
+
+  "OUTSIDERS": "OUTSIDERS",
+  "ECOES": "ECOES",
+
+  "CONFIGURATION": "Configuración",
+  "SETUP": "Configurar",
+  "NO_EXIST_AREAS": "No existen Áreas",
+  "NO_EXIST_STATIONS": "No existen Estaciones",
+  "NO_EXIST_SCHEDULES": "No existen Cronómetros",
+  "DETAILS": "Detalles",
+  "STAGES": "Fases",
+
+  "TIME_TODAY": "Hoy",
+  "TIME_YESTERDAY": "Ayer",
+  "ANY_ECOE_CONFIGURED": "Actualmente no hay ninguna ECOE programada",
+  "PUBLISH_ECOE": "Publicar ECOE",
+  "UPDATE_PUBLISHED_ECOE": "Actualizar publicación",
+  "NOT_STARTED_YET": " todavia no ha comenzado",
+  "OUTSIDE_DESCRIPTION": "Si es usted el responsable o un evaluador de la ECOE, puede iniciar sesión",
+  "HERE": "Aquí",
+  "STATUS": "Estado",
+  "PENDING_TO_START": "Pendiente de comenzar...",
+
+  "MENU": "Menú",
+  "SHOW": "Ver",
+  "DOWNLOAD_TEMPLATE": "Descargar plantilla",
+  "ACTION_STATE_DRAFT": "Poner en borrador",
+  "ACTION_STATE_PUBLISH": "Publicar ECOE",
+  "ERROR_ACTION_STATE_DRAFT": "Error al poner la ECOE en estado 'Borrador'.",
+  "ERROR_ACTION_STATE_PUBLISH": "Error al publicar ECOE.",
+  "NO_ECOE_PUBLISHED": "La ECOE no ha sido publicada",
+  "CLICK_HERE_OR_DRAG_FILE": "Pinche aquí o arrastre un archivo",
+  "DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE": "No seleccione ni arrastre más de un archivo al mismo tiempo",
+  "DOWNLOAD_TEMPLATE_HERE": "Puede descargar una plantilla aquí",
+  "ERROR_DUPLICATE_ECOE": "Ya existe una ECOE con este nombre."
 }

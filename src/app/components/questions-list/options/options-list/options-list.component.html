@@ -1,0 +1,56 @@
+<nz-table #optionTable *ngIf="!evaluate"
+          [nzData]="question?.options"
+          nzSize="small"
+          [nzShowPagination]="false"
+          nzBordered="false">
+  <thead>
+  <tr>
+    <th nzWidth="40px">{{"ORDER" | translate}}</th>
+    <th nzWidth="250px" *ngIf="question.questionType !== 'RS'">{{"LABEL" | translate}}</th>
+    <th nzWidth="150px">{{"POINTS" | translate}}</th>
+    <th>{{"PREVIEW" | translate}}</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let option of optionTable.data; let indexOption = index">
+    <ng-container>
+      <td>{{option.order +1 }}</td>
+      <td *ngIf="question.questionType !== 'RS'">{{option.label}}</td>
+      <td>{{option.points | number: '.0-2'}}</td>
+    </ng-container>
+
+    <td *ngIf="(  (question.questionType == 'RS' && indexOption === getIndex())
+                || (question.questionType == 'CH')
+                || (question.questionType == 'RB' ))"
+        [attr.rowspan]="(question.questionType == 'RS') ? question.options.length : 1">
+
+      <nz-switch *ngIf="question.questionType == 'RB'"
+                 (ngModelChange)="onOptionChange($event, option, question.questionType)"
+                 [ngModel]="editCacheOption[option.order]['checked']"
+                 [nzCheckedChildren]="option.label"
+                 [nzUnCheckedChildren]="option.label"
+                 [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
+      </nz-switch>
+
+      <nz-switch *ngIf="question.questionType == 'CH'"
+                 (ngModelChange)="onOptionChange($event, option, question.questionType)"
+                 [ngModel]="editCacheOption[option.order]['checked']"
+                 [nzCheckedChildren]="option.label"
+                 [nzUnCheckedChildren]="option.label"
+                 [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
+      </nz-switch>
+
+      <ng-container *ngIf="question.questionType == 'RS'">
+        <bar-rating
+          [rate]="option.order"
+          [max]="optionTable.data.length"
+          showText="false"
+          theme="horizontal">
+        </bar-rating>
+      </ng-container>
+
+    </td>
+  </tr>
+  </tbody>
+</nz-table>

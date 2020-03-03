@@ -1,16 +1,21 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {HomeComponent} from './components/home/home.component';
+import {HomeComponent} from './modules/ecoe/home/home.component';
 import {LoginComponent} from './components/login/login.component';
+import { StateComponent } from './modules/chrono-admin/state/state.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full'},
-  { path: 'home', component: HomeComponent},
-  { path: 'login', component: LoginComponent },
-  { path: 'admin', loadChildren: './pages/admin/admin.module#AdminModule' },
-  { path: 'evaluation', loadChildren: './pages/evaluation/evaluation.module#EvaluationModule' },
-  { path: '**', redirectTo: 'home'},
+  { path: '', redirectTo: 'ecoe', pathMatch: 'full'},
+  { path: 'login', component: LoginComponent, data: {breadcrumb: 'Login'} },
+  { path: 'ecoe', component: HomeComponent },
+  { path: 'ecoe/:ecoeId/admin', loadChildren: './modules/ecoe-admin/ecoe-admin.module#EcoeAdminModule' },
+  { path: 'ecoe/:ecoeId/eval', loadChildren: './modules/evaluation/evaluation.module#EvaluationModule' },
+  { path: 'ecoe/:ecoeId/chrono', loadChildren: './modules/chrono-admin/chrono-admin.module#ChronoAdminModule' },
+  { path: 'outside', loadChildren: './modules/outside/outside.module#OutsideModule'},
+  { path: 'control-panel', loadChildren: './modules/control-panel/control-panel.module#ControlPanelModule'},
+  { path: '**', redirectTo: 'ecoe'}
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
