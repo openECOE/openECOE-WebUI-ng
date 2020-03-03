@@ -1,6 +1,6 @@
 import {AfterContentInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {RowOption} from '../../../models';
+import {RowOption} from '@app/models';
 @Component({
   selector: 'app-option-form',
   templateUrl: './option-form.component.html',
@@ -9,7 +9,6 @@ import {RowOption} from '../../../models';
 export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit {
 
   @Input() questionOrder: number;
-  @Input() numberOptions: number;
   @Input() type: 'RB' | 'CH'  | 'RS';
   @Input() optionsCache: RowOption[] = [];
 
@@ -28,7 +27,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
 
   current_number_options: number = 0;
   private arrPoints: Array<{ option: number, value: number }> = [];
-  private defaultTextValues: string[] = ['Sí', 'No'];
+  private defaultTextValues: string[] = ['Sí'];
   private questionTypeOptions: string[] = ['RB', 'CH', 'RS'];
 
   constructor(private fb: FormBuilder) { }
@@ -38,21 +37,13 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   }
 
   ngAfterContentInit() {
-     this.initOptionRow(this.numberOptions);
+     this.initOptionRow();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.numberOptions && !changes.numberOptions.firstChange) {
-      if (changes.numberOptions.currentValue > 0) {
-        if (this.type === this.questionTypeOptions[1]) {
-          this.addOptionRow(this.type);
-        } else {
-          this.initOptionRow(changes.numberOptions.currentValue);
-        }
-      }
-    } else if (changes.type && changes.type.currentValue && !changes.type.firstChange) {
+    if (changes.type && changes.type.currentValue && !changes.type.firstChange) {
       this.optionsCache = [];
-      this.initOptionRow(this.numberOptions, changes.type.previousValue);
+      this.initOptionRow(changes.type.previousValue);
     }
   }
 
@@ -203,11 +194,13 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   /**
    * Adds new row (name and order fields) station to the form
    */
-  initOptionRow(n_options?: number, previusValue?: string) {
+  initOptionRow(previusValue?: string) {
+    const DEFAULT_N_CH_ROWS = 2;
+
     if (this.type === this.questionTypeOptions[0]) {// RB
       this.initRBrow();
     } else if (this.type === this.questionTypeOptions[1]) {// CH
-      this.initCHrow(n_options, previusValue);
+      this.initCHrow(DEFAULT_N_CH_ROWS, previusValue);
     } else if (this.type === this.questionTypeOptions[2]) { // RS
       this.initRSrow();
     }

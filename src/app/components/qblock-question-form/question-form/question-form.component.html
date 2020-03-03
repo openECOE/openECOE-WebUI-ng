@@ -56,7 +56,7 @@
               <div nz-col>
                 <!--QUESTION TYPE-->
                   <nz-form-control>
-                    <nz-select (ngModelChange)="onQuestionTypeChange($event, i)"
+                    <nz-select (ngModelChange)="onQuestionTypeChange($event)"
                                [nzShowSearch]="true"
                                [nzPlaceHolder]="'QUESTION_TYPE' | translate"
                                formControlName="questionType">
@@ -90,23 +90,12 @@
 
         <app-option-form #option
           [questionOrder]="i"
-          [numberOptions]="control.value[i]['optionsNumber']"
           [type]="control.value[i]['questionType']"
           [optionsCache]="questionsCache[i]?.options"
           (saveForm) = "submitForm()"
           (returnData)="onGetOptions($event)"
           (pointValues)="onReceivePointValues($event)">
         </app-option-form>
-
-        <div *ngIf="control.value[i]['questionType'] === questionTypeOptions[1].type" nzGutter="8" nz-row nzType="flex" nzJustify="center">
-          <div nz-col>
-            <nz-form-control>
-              <button nz-button   nzType="dashed" (click)="addOptionRow(i)">
-                <i nz-icon type="plus"></i> {{'ADD_OPTION' | translate}}
-              </button>
-            </nz-form-control>
-          </div>
-        </div>
         <nz-divider></nz-divider>
       </ng-container>
  </form>

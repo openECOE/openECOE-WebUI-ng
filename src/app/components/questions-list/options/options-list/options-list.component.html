@@ -22,26 +22,33 @@
 
     <td *ngIf="(  (question.questionType == 'RS' && indexOption === getIndex())
                 || (question.questionType == 'CH')
-                || (question.questionType == 'RB' && indexOption == 0))"
+                || (question.questionType == 'RB' ))"
         [attr.rowspan]="(question.questionType == 'RS') ? question.options.length : 1">
 
-      <ng-container *ngIf="question.questionType == 'RB' || question.questionType == 'CH'; else QTypeRSRef">
-        <nz-switch (ngModelChange)="onOptionChange($event, option)"
-                   [ngModel]="editCacheOption[option.order]['checked']"
-                   [nzCheckedChildren]="option.label"
-                   [nzUnCheckedChildren]="optionTable.data[1]?.label || option.label "
-                   [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
-        </nz-switch>
-      </ng-container>
+      <nz-switch *ngIf="question.questionType == 'RB'"
+                 (ngModelChange)="onOptionChange($event, option, question.questionType)"
+                 [ngModel]="editCacheOption[option.order]['checked']"
+                 [nzCheckedChildren]="option.label"
+                 [nzUnCheckedChildren]="option.label"
+                 [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
+      </nz-switch>
 
-      <ng-template #QTypeRSRef>
+      <nz-switch *ngIf="question.questionType == 'CH'"
+                 (ngModelChange)="onOptionChange($event, option, question.questionType)"
+                 [ngModel]="editCacheOption[option.order]['checked']"
+                 [nzCheckedChildren]="option.label"
+                 [nzUnCheckedChildren]="option.label"
+                 [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
+      </nz-switch>
+
+      <ng-container *ngIf="question.questionType == 'RS'">
         <bar-rating
           [rate]="option.order"
           [max]="optionTable.data.length"
           showText="false"
           theme="horizontal">
         </bar-rating>
-      </ng-template>
+      </ng-container>
 
     </td>
   </tr>
