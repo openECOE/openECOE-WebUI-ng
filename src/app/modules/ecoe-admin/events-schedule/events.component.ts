@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Event, Schedule} from '../../../models/schedule';
-import {Station} from '../../../models/ecoe';
+import {Event, Schedule} from '@app/models/schedule';
+import {Station} from '@app/models';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {SharedService} from '../../../services/shared/shared.service';
+import {SharedService} from '@services/shared/shared.service';
 import {Item, Pagination} from '@openecoe/potion-client';
 
 @Component({
@@ -58,8 +58,8 @@ export class EventsComponent implements OnInit {
     this.validateFormEvent = this.fb.group({
       eventTimeMin: ['', [Validators.required]],
       eventTimeSec: ['', [Validators.required]],
-      eventCountdown: [false, [Validators.required]],
-      eventText: [null],
+      eventCountdown: [false],
+      eventText: [null, [Validators.required]],
       eventSound: [null],
       eventStation: [null]
     });
@@ -272,7 +272,7 @@ export class EventsComponent implements OnInit {
     cache.data.time = this.shared.toSeconds(cache.timeSplit.minutes, cache.timeSplit.seconds);
     Object.assign(event, cache.data);
     this.updateEvent(event)
-      .then(value => cache.edit = false);
+      .then(() => cache.edit = false);
   }
 
   updateEditCache(): void {
