@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges, ViewChildren} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Area, RowQuestion, Station} from '../../../models';
+import {Area, RowQuestion, Station} from '@app/models';
 import {Pagination} from '@openecoe/potion-client';
 
 import {OptionFormComponent} from '../option-form/option-form.component';
@@ -124,7 +124,6 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         (params['questionType'] ? params['questionType'] : null),
         Validators.required
       ],
-      optionsNumber: params['optionsNumber'] ? params['optionsNumber'] : 2, // BECAUSE RB QUESTION TYPE IS BY DEFAULT.
       points: [
         {value: 0, disabled: false},
         Validators.required
@@ -166,11 +165,6 @@ export class QuestionFormComponent implements OnInit, OnChanges {
     if (this.control) {
       this.control.push(this.fb.group(this.getRowQuestion(params)));
     }
-  }
-
-  addOptionRow(idx: number) {
-    const currentValue = this.getFormControl('optionsNumber', idx).value;
-    this.getFormControl('optionsNumber', idx).setValue(currentValue + 1);
   }
 
   async loadAreas() {
@@ -245,13 +239,9 @@ export class QuestionFormComponent implements OnInit, OnChanges {
     return this.questionForm.valid;
   }
 
-  onQuestionTypeChange(event: string, idx: number) {
+  onQuestionTypeChange(event: string) {
     if (event) {
       this.selectedQType = event;
-      const control = this.getFormControl('optionsNumber', idx);
-      if (control) {
-        control.setValue(2);
-      }
     }
   }
 

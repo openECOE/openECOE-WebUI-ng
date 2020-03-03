@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Question, Option} from '../../../../models';
+import {Component,  Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Question, Option} from '@app/models';
 
 @Component({
   selector: 'app-options-list',
@@ -9,15 +9,11 @@ import {Question, Option} from '../../../../models';
 export class OptionsListComponent implements OnInit, OnChanges {
 
   @Input() question: Question;
-  @Input() preview: boolean;
   @Input() evaluate: boolean;
   @Input() answers: Option[] = [];
 
-  @Output() optionChanged: EventEmitter<any> = new EventEmitter<any>();
-
   editCacheOption: Array<any> = [];
   filteredAnswers: Option[] = [];
-
 
   constructor() {}
 
@@ -44,12 +40,12 @@ export class OptionsListComponent implements OnInit, OnChanges {
     this.question.options = this.parseOptions(this.question.options);
 
     this.question.options.forEach((option) => {
-      if (this.preview && !option.id) {
+      if (!option.id) {
         option.id = option.order;
       }
       this.editCacheOption[option.order] = {
         option: option,
-        checked: !this.evaluate,
+        checked: false,
         valueRS: 0
       };
     });
@@ -70,18 +66,16 @@ export class OptionsListComponent implements OnInit, OnChanges {
     this.editCacheOption.forEach(cacheItem => cacheItem['checked'] = false);
   }
 
-  updateAnswer(params) {
-    this.optionChanged.emit(params);
-  }
-
   onOptionChange($event: any, option: Option, questionType?: string) {
-    if (questionType === 'RS') {
-      this.updateAnswer({
-        option: this.question.options[$event - 1],
-        checked: !!(option)
+    if (questionType === 'RB') {
+      this.editCacheOption.forEach((optionItem, idx) => {
+        if (idx === option.order) {
+          this.editCacheOption[idx]['checked'] = $event;
+        } else {
+          this.editCacheOption[idx]['checked'] = false;
+        }
       });
-    } else {
-      this.updateAnswer({option: option, checked: $event});
+    } else if (questionType === 'CH') {
       this.editCacheOption[option.order]['checked'] = $event;
     }
   }

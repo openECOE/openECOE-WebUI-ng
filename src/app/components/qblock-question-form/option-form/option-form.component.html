@@ -51,12 +51,21 @@
               </nz-form-control>
             </div>
 
-            <div nz-col nzSpan="1" style="bottom: 0" *ngIf="i > 0 && type !== 'RB'">
+            <div nz-col nzSpan="1" style="bottom: 0" *ngIf="i > 0">
               <button nzSize="small" nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
             </div>
           </div>
         </ng-container>
       </ng-container>
     </form>
+  </div>
+  <div *ngIf="type === questionTypeOptions[0] || type ===  questionTypeOptions[1]" nzGutter="8" nz-row nzType="flex" nzJustify="center">
+    <div nz-col>
+      <nz-form-control>
+        <button nz-button   nzType="dashed" (click)="addOptionRow(type)">
+          <i nz-icon type="plus"></i> {{'ADD_OPTION' | translate}}
+        </button>
+      </nz-form-control>
     </div>
+  </div>
 </div>

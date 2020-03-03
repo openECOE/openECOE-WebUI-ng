@@ -29,6 +29,9 @@ export class OptionsEvalComponent implements OnInit, OnChanges {
         this.filtredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
         this.setAnswers(this.filtredAnswers);
       }
+    } else {
+      this.filtredAnswers = [];
+      this.resetOptions();
     }
   }
 
@@ -66,7 +69,9 @@ export class OptionsEvalComponent implements OnInit, OnChanges {
   }
 
   resetOptions() {
-    this.options.forEach(item => item.checked = false);
+    if (this.options) {
+      this.options.forEach(item => item.checked = false);
+    }
   }
 
   updateAnswer(params) {
@@ -80,8 +85,19 @@ export class OptionsEvalComponent implements OnInit, OnChanges {
         checked: !!(option)
       });
     } else {
-      this.updateAnswer({option: option, checked: $event});
-      this.options[this.question.options.indexOf(option)].checked = $event;
+      if (questionType === 'RB') {
+        this.updateAnswer({option: option, checked: $event});
+        this.options.forEach((optionItem, idx) => {
+          if (idx === option.order) {
+            this.options[idx]['checked'] = $event;
+          } else {
+            this.options[idx]['checked'] = false;
+          }
+        });
+      } else if (questionType === 'CH') {
+        this.updateAnswer({option: option, checked: $event});
+        this.options[this.question.options.indexOf(option)]['checked'] = $event;
+      }
     }
   }
 

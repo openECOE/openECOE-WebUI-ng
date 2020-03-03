@@ -3,9 +3,9 @@ import {ECOE, Round, Shift, Station} from '../../../models';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import * as moment from 'moment';
-import {SharedService} from '../../../services/shared/shared.service';
-import {AuthenticationService} from '../../../services/authentication/authentication.service';
-import {EvaluationService} from '../../../services/evaluation/evaluation.service';
+import {SharedService} from '@services/shared/shared.service';
+import {AuthenticationService} from '@services/authentication/authentication.service';
+import {EvaluationService} from '@services/evaluation/evaluation.service';
 
 @Component({
   selector: 'app-evaluation-details',
@@ -14,6 +14,7 @@ import {EvaluationService} from '../../../services/evaluation/evaluation.service
 })
 export class EvaluationDetailsComponent implements OnInit {
   private rounds: Round[] = [];
+  // @ts-ignore
   private stations: Station[] = [];
 
   ecoeDays: any[] = [];
@@ -57,6 +58,16 @@ export class EvaluationDetailsComponent implements OnInit {
     } else {
       this.authService.logout();
     }
+  }
+
+  checkForNextStep(items: any[]) {
+    let selectedItem = null;
+    if (items && items.length === 1) {
+      selectedItem = items[0];
+      this.currentStep++;
+    }
+
+    return selectedItem;
   }
 
   getUrlParams() {
@@ -108,6 +119,8 @@ export class EvaluationDetailsComponent implements OnInit {
       }
     });
     this.ecoeDays = aux_arr;
+
+    if (!this.selectedEcoeDay) {this.selectedEcoeDay = this.checkForNextStep(this.ecoeDays); }
   }
 
   onChangeECOEDay(shiftDate: string) {
@@ -156,6 +169,7 @@ export class EvaluationDetailsComponent implements OnInit {
     const roundsPromise = ecoe.rounds()
       .then((rounds: Round[]) => {
         this.rounds = rounds;
+        if (!this.selectedRound) {this.selectedRound = this.checkForNextStep(rounds); }
       });
     const shiftsPromise = ecoe.shifts()
       .then((shifts: any[]) => {
@@ -175,6 +189,7 @@ export class EvaluationDetailsComponent implements OnInit {
       sort: {order: false}
     }).then( (stations: Station[]) => {
       this.stations = stations;
+      if (!this.selectedStation) {this.selectedStation = this.checkForNextStep(stations); }
     });
   }
 

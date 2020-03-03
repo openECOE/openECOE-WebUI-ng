@@ -4,7 +4,7 @@
         <div nz-row class="no-borders" nzGutter="8" nzType="flex" nzJustify="start" [formGroupName]="i+''">  <!--style="border: 1px solid darkred"-->
           <div nz-col nzSpan="2" style="border: 1px solid darkblue">
             <!--Nº Q-->
-            <div nz-row>
+            <div nz-row nzJustify="center" nzType="flex">
               <div nz-col>
                   <nz-form-control>
                     <h3><b [innerHTML]="+totalItems + ( i + 1 ) + '.'"></b></h3>
@@ -12,10 +12,10 @@
               </div>
             </div>
             <!--POINTS-->
-            <div nz-row>
-              <div nz-col>
+            <div nz-row nzJustify="center" nzType="flex">
+              <div nz-col text-center>
                   <nz-form-control>
-                    <nz-tag nzChecked="true"><h3>{{contrl.value.points}}<br/><span>{{'POINTS' | translate}}</span></h3></nz-tag>
+                    <nz-tag nzChecked="true"><h3 color-white bold>{{contrl.value.points}}<br/><span>{{'POINTS' | translate}}</span></h3></nz-tag>
                   </nz-form-control>
               </div>
             </div>
@@ -56,7 +56,7 @@
               <div nz-col>
                 <!--QUESTION TYPE-->
                   <nz-form-control>
-                    <nz-select (ngModelChange)="onQuestionTypeChange($event, i)"
+                    <nz-select (ngModelChange)="onQuestionTypeChange($event)"
                                [nzShowSearch]="true"
                                [nzPlaceHolder]="'QUESTION_TYPE' | translate"
                                formControlName="questionType">
@@ -90,23 +90,12 @@
 
         <app-option-form #option
           [questionOrder]="i"
-          [numberOptions]="control.value[i]['optionsNumber']"
           [type]="control.value[i]['questionType']"
           [optionsCache]="questionsCache[i]?.options"
           (saveForm) = "submitForm()"
           (returnData)="onGetOptions($event)"
           (pointValues)="onReceivePointValues($event)">
         </app-option-form>
-
-        <div *ngIf="control.value[i]['questionType'] === questionTypeOptions[1].type" nzGutter="8" nz-row nzType="flex" nzJustify="center">
-          <div nz-col>
-            <nz-form-control>
-              <button nz-button   nzType="dashed" (click)="addOptionRow(i)">
-                <i nz-icon type="plus"></i> {{'ADD_OPTION' | translate}}
-              </button>
-            </nz-form-control>
-          </div>
-        </div>
         <nz-divider></nz-divider>
       </ng-container>
  </form>

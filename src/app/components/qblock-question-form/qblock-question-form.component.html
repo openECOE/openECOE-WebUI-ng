@@ -9,7 +9,7 @@
   <ng-container *ngIf="current === 0">
     <div class="steps-content">
       <app-qblock-form #qblock [qblocks]="qblocksToAdd" (returnData)="onGetQblocks($event)">
-        <button nz-button nzType="default" (click)="validQblocks()">
+        <button nz-button nzType="primary" (click)="validQblocks()">
           <span>{{'NEXT' | translate}}</span>
         </button>
       </app-qblock-form>
@@ -27,14 +27,16 @@
       </app-question-form>
     </div>
 
-    <nz-button-group margin-top>
-      <button nz-button nzType="default" (click)="pre()">
-        <span>{{'BACK' | translate}}</span>
-      </button>
-      <button nz-button nzType="primary" (click)="preview()" *ngIf="current < 2">
-        <span>{{'CONTINUE' | translate}}</span>
-      </button>
-    </nz-button-group>
+    <nz-row text-center>
+      <nz-button-group margin-top>
+        <button nz-button nzType="default" (click)="pre()">
+          <span>{{'BACK' | translate}}</span>
+        </button>
+        <button nz-button nzType="primary" (click)="preview()" *ngIf="current < 2">
+          <span>{{'CONTINUE' | translate}}</span>
+        </button>
+      </nz-button-group>
+    </nz-row>
 
   </ng-container>
 
@@ -46,20 +48,22 @@
       [preview]="true">
     </app-questions-list>
 
-    <nz-button-group margin-top>
-      <button nz-button nzType="default" (click)="pre()">
-        <span>{{'BACK' | translate}}</span>
-      </button>
-      <button nz-button nzType="primary" (click)="save()" *ngIf="current === 2">
-        <span>{{'SAVE' | translate}}</span>
-      </button>
-    </nz-button-group>
+    <nz-row text-center>
+      <nz-button-group margin-top>
+        <button nz-button nzType="default" (click)="pre()">
+          <span>{{'BACK' | translate}}</span>
+        </button>
+        <button nz-button nzType="primary" (click)="save()" *ngIf="current === 2">
+          <span>{{'SAVE' | translate}}</span>
+        </button>
+      </nz-button-group>
+    </nz-row>
 
   </ng-container>
 </div>
 
 
-<div class="footer">
-  <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;">
+<div class="footer" text-center margin-top>
+  <button nz-button nzSize="small" nzType="danger" (click)="cancelForm()">
     <span>{{'CANCEL' | translate}}</span></button>
 </div>
