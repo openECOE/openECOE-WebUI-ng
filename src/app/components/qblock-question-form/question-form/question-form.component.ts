@@ -29,7 +29,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   private pagAreas: Pagination<Area>;
   private ecoeId: number;
 
-  private questionTypeOptions: Array<{ type: string, label: string }> = [
+  public questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
     {type: 'CH', label: 'MULTI_ANSWER'},
     {type: 'RS', label: 'VALUE_RANGE'}
