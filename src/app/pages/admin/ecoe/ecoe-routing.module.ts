@@ -4,7 +4,7 @@ import {EcoeComponent} from './ecoe.component';
 import {QuestionsComponent} from './questions/questions.component';
 import {ExamComponent} from './exam/exam.component';
 import {AuthenticationGuard} from '../../../guards/authentication/authentication.guard';
-import {Role} from '../../../models';
+import {Roles} from '../../../models';
 import {QuestionsListComponent} from '../../../components/questions-list/questions-list.component';
 
 const routes: Routes = [
@@ -16,9 +16,9 @@ const routes: Routes = [
       {
         path: '',
         children: [
-          {path: 'stations/:id/qblocks/:id', component: QuestionsListComponent, data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
-          {path: 'questions', component: QuestionsComponent,                    data: {title: 'QUESTIONS',  roles: [Role.Admin]}},
-          {path: 'exam', component: ExamComponent,                              data: {title: 'EXAM',       roles: [Role.Admin]}},
+          {path: 'stations/:id/qblocks/:id', component: QuestionsListComponent, data: {title: 'QUESTIONS',  roles: [Roles.Admin]}},
+          {path: 'questions', component: QuestionsComponent,                    data: {title: 'QUESTIONS',  roles: [Roles.Admin]}},
+          {path: 'exam', component: ExamComponent,                              data: {title: 'EXAM',       roles: [Roles.Admin]}},
           {path: '**', redirectTo: ''}
         ]
       }

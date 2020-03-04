@@ -30,6 +30,13 @@ export class ApiService {
     return this.http.delete(url, options);
   }
 
+  getRoles() {
+    const RolesPath = 'roles/types';
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${RolesPath}`;
+
+    return this.http.get(url);
+  }
+
   /**
    * Makes a HTTP GET request to the backend and gets a list of items.
    *

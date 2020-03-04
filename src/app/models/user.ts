@@ -1,6 +1,6 @@
 import {Item, Route} from '@openecoe/potion-client';
 import {Organization} from './organization';
-import {Role} from './role';
+import {Roles} from './roles';
 
 export class User extends Item {
   id: number;
@@ -21,6 +21,6 @@ export class UserLogged {
 
   constructor(user: User) {
     this.user = user;
-    this.role = user.is_superadmin ? Role.Admin : null;
+    this.role = user.is_superadmin ? Roles.Admin : null;
   }
 }

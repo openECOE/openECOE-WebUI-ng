@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {User, UserLogged} from '../../../models';
-import {AuthenticationService} from '../../../services/authentication/authentication.service';
+import {Role, User, UserLogged} from '@app/models';
+import {AuthenticationService} from '@services/authentication/authentication.service';
 import {Item} from '@openecoe/potion-client';
-import {SharedService} from '../../../services/shared/shared.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {SharedService} from '@services/shared/shared.service';
+import {Form, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
+import {ApiService} from '@services/api/api.service';
 
 @Component({
   selector: 'app-users-admin',
@@ -29,31 +30,59 @@ export class UsersAdminComponent implements OnInit {
   loading: boolean = false;
 
   validateForm: FormGroup;
+  formArrayRoles: FormArray;
   showAddUser: boolean = false;
   importErrors: { value: any, reason: any }[] = [];
 
+  roles: Role[] = [];
+
   constructor(private authService: AuthenticationService,
+              private apiService: ApiService,
               private shared: SharedService,
               private fb: FormBuilder,
               private router: Router) {
   }
 
   ngOnInit() {
-    this.validateForm = this.getUserForm();
+    this.getUserForm();
     this.userLogged = this.authService.userData;
     this.activeUser = this.userLogged.user;
     this.loadUsers();
   }
 
-  getUserForm(): FormGroup {
+  async getUserForm(): void  {
     // TODO: Validate if email exists
-    return this.fb.group({
+    this.validateForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       password: [null, [Validators.required]],
       userName: [null],
       userSurname: [null],
-      isSuperadmin: [false]
+      roles: new FormArray([])
     });
+
+    this.formArrayRoles = <FormArray>this.validateForm.controls.roles;
+
+    this.roles = await this.getRoles();
+
+    this.roles.forEach((rol, idx) => {
+      const control = new FormControl(idx === 0);
+      this.formArrayRoles.push(control);
+    });
+
+    console.log(this.validateForm);
+
+  }
+
+  async addCHRoles() {
+
+  }
+
+  async getRoles() {
+    const roles = [];
+    await this.apiService.getRoles().toPromise()
+      .then((result: Role[]) => roles.push(...result))
+      .catch(err => console.error(err));
+    return roles;
   }
 
   loadUsers() {
@@ -128,7 +157,7 @@ export class UsersAdminComponent implements OnInit {
   }
 
   saveUser(item: any) {
-    var usercache = this.editCache.find(f => f.data.id == item.id);
+    const usercache = this.editCache.find(f => f.data.id === item.id);
     if (!usercache.data.name || !usercache.data.surname || !usercache.data.email) {
       return;
     }
@@ -142,7 +171,7 @@ export class UsersAdminComponent implements OnInit {
     const request = item.update(body);
 
     request.then(response => {
-      var idx = this.editCache.indexOf(usercache);
+      const idx = this.editCache.indexOf(usercache);
       Object.assign(this.users[idx], Object.assign(usercache.data, response));
       usercache.editItem = false;
     });
@@ -222,7 +251,8 @@ export class UsersAdminComponent implements OnInit {
   }
 
   submitFormUser(value: any) {
-    this.addUser(
+    console.log(this.validateForm.controls.roles['controls']);
+    /*this.addUser(
       value.email,
       value.userName,
       value.userSurname,
@@ -234,13 +264,25 @@ export class UsersAdminComponent implements OnInit {
         this.shared.cleanForm(this.validateForm);
         this.loadUsers();
         this.closeModal();
-      });
+      });*/
   }
 
   onBack() {
     this.router.navigate(['/control-panel']).finally();
   }
 
+  updateSingleChecked() {
+
+  }
+
+  onCheckedChange(idx: number) {
+    console.log('onCheckedChange', idx);
+    if (this.roles[idx].name === 'superadmin') {
+      const formControl = this.shared.getFormControl(this.validateForm, 'roles', idx);
+      console.log(formControl);
+      // this.formArrayRoles.setValue([false]);
+    }
+  }
 }
 
 export class CacheItem {

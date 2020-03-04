@@ -141,8 +141,9 @@ export class SharedService {
    * @param name of the control field
    * @param idx the index of the control field.
    */
-  getFormControl(form: FormGroup, row: string, name: string, idx: number): AbstractControl {
-    return form.get(row)['controls'][idx].controls[name];
+  getFormControl(form: FormGroup, row: string, idx: number, name?: string): AbstractControl {
+    const control = form.get(row)['controls'][idx].controls;
+    return name ? control[name] : control;
   }
 
   doFormDirty(form: FormGroup) {
@@ -152,8 +153,8 @@ export class SharedService {
         if (form.get(rowName)['controls'].hasOwnProperty(n)) {
           const rowKeys = Object.keys(form.get(rowName)['controls'][n].controls);
             rowKeys.forEach( (key) => {
-              this.getFormControl(form, rowName, key, +n).markAsDirty();
-              this.getFormControl(form, rowName, key, +n).updateValueAndValidity();
+              this.getFormControl(form, rowName, +n, key).markAsDirty();
+              this.getFormControl(form, rowName, +n, key).updateValueAndValidity();
             });
         }
       }
