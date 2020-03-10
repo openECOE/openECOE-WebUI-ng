@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {User, UserLogged} from '../../../models';
-import {Item} from '@openecoe/potion-client';
-import {AuthenticationService} from '../../../services/authentication/authentication.service';
+import {User, UserLogged} from '@app/models';
+import {AuthenticationService} from '@services/authentication/authentication.service';
 
 @Component({
   selector: 'app-dashboard',

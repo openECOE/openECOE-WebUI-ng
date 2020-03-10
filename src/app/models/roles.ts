@@ -1,4 +1,4 @@
-import {Item, Route} from '@openecoe/potion-client';
+import {Item} from '@openecoe/potion-client';
 
 export enum Roles {
   User = 'User',
@@ -7,5 +7,13 @@ export enum Roles {
 
 export class Role {
   name: string;
-  order: number;
+  order?: number;
+  $uri?: string;
+  user?: Object;
+}
+
+export class RoleItem extends Item {
+  id: number;
+  user: number;
+  name: string;
 }

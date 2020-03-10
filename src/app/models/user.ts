@@ -1,16 +1,16 @@
 import {Item, Route} from '@openecoe/potion-client';
 import {Organization} from './organization';
-import {Roles} from './roles';
+import {Role, Roles} from './roles';
 
 export class User extends Item {
   id: number;
   email: string;
   name: string;
   surname: string;
-  isSuperadmin: boolean;
   token_expiration: Date;
   organization: Organization;
   password: string;
+  roles?: Role[];
 
   me = Route.GET<User>('/me');
 }

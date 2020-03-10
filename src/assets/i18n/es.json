@@ -45,6 +45,8 @@
   "PASSWORD": "Contraseña",
   "PASSWORD_NOT_VALID": "¡No es una contraseña válida!",
   "PASSWORD_REQUIRED": "Por favor indique una contraseña",
+  "NAME_REQUIRED": "Por favor indique el nombre",
+  "SURNAME_REQUIRED": "Por favor indique el/los apellido/s",
 
   "ROUND": "Rueda",
   "ROUNDS": "Rondas",
@@ -273,5 +275,13 @@
   "CLICK_HERE_OR_DRAG_FILE": "Pinche aquí o arrastre un archivo",
   "DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE": "No seleccione ni arrastre más de un archivo al mismo tiempo",
   "DOWNLOAD_TEMPLATE_HERE": "Puede descargar una plantilla aquí",
-  "ERROR_DUPLICATE_ECOE": "Ya existe una ECOE con este nombre."
+  "ERROR_DUPLICATE_ECOE": "Ya existe una ECOE con este nombre.",
+
+  "ROLES": "Roles",
+  "SUPERADMIN": "Administrador del sistema",
+  "ADMINISTRATOR": "Administrador",
+  "EVALUATOR": "Evaluador",
+  "STUDENT": "Estudiante",
+
+  "SELECT_ROLES": "Seleccione roles"
 }

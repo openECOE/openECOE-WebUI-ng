@@ -69,6 +69,10 @@ export class QBlock extends Item {
   questions?: Question[];
 }
 
+export interface RowQblock {
+  name: any[];
+}
+
 export class Question extends Item {
   id: number;
   reference: string;

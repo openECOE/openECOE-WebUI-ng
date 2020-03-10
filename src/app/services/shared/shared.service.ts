@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {AbstractControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup} from '@angular/forms';
 
 /**
  * Service with shared methods used around the app.
@@ -142,21 +142,32 @@ export class SharedService {
    * @param idx the index of the control field.
    */
   getFormControl(form: FormGroup, row: string, idx: number, name?: string): AbstractControl {
-    const control = form.get(row)['controls'][idx].controls;
-    return name ? control[name] : control;
+    const getRow = form.get(row);
+
+    if (getRow['controls']) {
+      const control = getRow['controls'][idx];
+      return name ? control.controls[name] : control;
+    } else {
+      return  getRow;
+    }
   }
 
   doFormDirty(form: FormGroup) {
     const controlKeys = Object.keys(form.controls);
     for (const rowName of controlKeys) {
-      for (const n in form.get(rowName)['controls']) {
-        if (form.get(rowName)['controls'].hasOwnProperty(n)) {
-          const rowKeys = Object.keys(form.get(rowName)['controls'][n].controls);
+      if (form.get(rowName)['controls']) {
+        for (const n in form.get(rowName)['controls']) {
+          if (form.get(rowName)['controls'].hasOwnProperty(n)) {
+            const rowKeys = Object.keys(form.get(rowName)['controls'][n].controls || {});
             rowKeys.forEach( (key) => {
               this.getFormControl(form, rowName, +n, key).markAsDirty();
               this.getFormControl(form, rowName, +n, key).updateValueAndValidity();
             });
+          }
         }
+      } else if (form.get(rowName) instanceof FormControl) {
+        this.getFormControl(form, rowName, 0).markAsDirty();
+        this.getFormControl(form, rowName, 0).updateValueAndValidity();
       }
     }
   }
