@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {RowQblock} from '../../../pages/admin/ecoe/questions/questions.component';
-import {QBlock} from '../../../models';
+import {QBlock, RowQblock} from '@app/models';
 
 @Component({
   selector: 'app-qblock-form',
