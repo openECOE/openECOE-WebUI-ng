@@ -2,11 +2,13 @@
   <nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoeName">
     <nz-page-header-extra>
 
-      <a *ngIf="(ecoe?.status | uppercase)=='DRAFT'" nz-button class="success" (click)="publishECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_PUBLISH' | translate }}</a>
-      <a *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" nz-button class="warning" (click)="draftECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_DRAFT' | translate }}</a>
+      <a *ngIf="(ecoe?.status | uppercase)=='DRAFT'" nz-button class="success" (click)="publishECOE()"
+         [nzLoading]="changing_state">{{ 'ACTION_STATE_PUBLISH' | translate }}</a>
+      <a *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" nz-button class="warning" (click)="draftECOE()"
+         [nzLoading]="changing_state">{{ 'ACTION_STATE_DRAFT' | translate }}</a>
 
       <a nz-button (click)="showECOENameDrawer(true)">
-          <span>{{"EDIT_ECOE" | translate}}</span>
+        <span>{{"EDIT_ECOE" | translate}}</span>
       </a>
       <a
         nz-button
@@ -18,7 +20,7 @@
         [nzOkType]="'danger'"
         [nzOkText]="'ARCHIVE' | translate" [nzCancelText]="'CANCEL' | translate"
         [nzIcon]="iconDeleteTpl">
-          <span>{{"DELETE_ECOE" | translate}}</span>
+        <span>{{"DELETE_ECOE" | translate}}</span>
       </a>
       <ng-template #iconDeleteTpl>
         <i nz-icon nzType="question-circle" class="error" nzTheme="outline"></i>
@@ -29,54 +31,81 @@
 
   <nz-content>
 
-   <div nz-col [nzMd]="8" class="gutter-box">
-     <nz-card nzTitle="{{ 'AREAS' | translate }}" [nzExtra]="linkAreas">
-       <div nz-row>
-        <nz-alert nzType="info" nzMessage="{{areas?areas.length:0}} {{ 'AREAS' | translate }}"></nz-alert>
-       </div>
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card nzTitle="{{ 'AREAS' | translate }}" [nzExtra]="linkAreas">
+        <div nz-row>
+          <nz-spin [nzSpinning]="areas.loading">
+            <nz-alert nzType="info" nzMessage="{{areas.total}} {{ 'AREAS' | translate }}"></nz-alert>
+          </nz-spin>
+        </div>
       </nz-card>
       <ng-template #linkAreas>
-        <a  nz-button [nzType]="primary" [routerLink]="['areas']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</a>
+        <a nz-button nzType="primary" [routerLink]="['areas']"><i nz-icon nzType="edit"
+                                                                    nzTheme="outline"></i> {{ 'SETUP' | translate}}</a>
       </ng-template>
     </div>
 
-   <div nz-col [nzMd]="8" class="gutter-box">
+    <div nz-col [nzMd]="8" class="gutter-box">
       <nz-card nzTitle="{{ 'STATIONS' | translate }}" [nzExtra]="linkEstaciones">
-        <nz-alert *ngIf="!show_stations" nzType="error" nzMessage="{{ 'NO_EXIST_AREAS' | translate }}"></nz-alert>
-        <nz-alert *ngIf="show_stations" nzType="info" nzMessage="{{stations?stations.length:0}} {{ 'STATIONS' | translate }}"></nz-alert>
+        <nz-spin [nzSpinning]="stations.loading">
+          <nz-alert *ngIf="!stations.show" nzType="error" nzMessage="{{ 'NO_EXIST_AREAS' | translate }}"></nz-alert>
+          <nz-alert *ngIf="stations.show" nzType="info"
+                    nzMessage="{{stations.total}} {{ 'STATIONS' | translate }}"></nz-alert>
+        </nz-spin>
       </nz-card>
       <ng-template #linkEstaciones>
-        <button [disabled]="!show_stations" nz-button [nzType]="primary" [routerLink]="['stations']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+        <button [disabled]="!stations.show" nz-button nzType="primary" [routerLink]="['stations']"><i nz-icon
+                                                                                                        nzType="edit"
+                                                                                                        nzTheme="outline"></i> {{ 'SETUP' | translate}}
+        </button>
       </ng-template>
     </div>
 
     <div nz-col [nzMd]="8" class="gutter-box">
       <nz-card nzTitle="{{ 'SCHEDULE' | translate }}" [nzExtra]="linkCronometros">
-        <nz-alert *ngIf="!show_schedules" nzType="error" nzMessage="{{ 'NO_EXIST_STATIONS' | translate }}"></nz-alert>
-        <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{stages?stages.length:0}} {{ 'STAGES' | translate }}"></nz-alert>
-       </nz-card>
-       <ng-template #linkCronometros>
-         <button [disabled]="!show_schedules" nz-button [nzType]="primary" [routerLink]="['schedule']" ><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
-       </ng-template>
-     </div>
-
-   <div nz-col [nzMd]="8" class="gutter-box">
-     <nz-card nzTitle="{{ 'STUDENTS' | translate}}" [nzExtra]="linkEstudiantes">
-       <nz-alert *ngIf="!show_students" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate}}"></nz-alert>
-       <nz-alert *ngIf="show_students" nzType="info" nzMessage="{{students?students.length:0}} {{ 'STUDENTS' | translate}}"></nz-alert>
+        <nz-spin [nzSpinning]="stages.loading">
+          <nz-alert *ngIf="!stages.show" nzType="error" nzMessage="{{ 'NO_EXIST_STATIONS' | translate }}"></nz-alert>
+          <nz-alert *ngIf="stages.show" nzType="info"
+                    nzMessage="{{stages.total}} {{ 'STAGES' | translate }}"></nz-alert>
+        </nz-spin>
       </nz-card>
-      <ng-template #linkEstudiantes>
-        <button [disabled]="!show_students" nz-button [nzType]="primary" [routerLink]="['students']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+      <ng-template #linkCronometros>
+        <button [disabled]="!stages.show" nz-button nzType="primary" [routerLink]="['schedule']">
+          <i nz-icon
+             nzType="edit"
+             nzTheme="outline"></i> {{ 'SETUP' | translate}}
+        </button>
       </ng-template>
     </div>
 
-   <div nz-col [nzMd]="8" class="gutter-box">
-     <nz-card nzTitle="Planificador" [nzExtra]="linkPlanificador">
-       <nz-alert *ngIf="!show_planner" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate }}"></nz-alert>
-       <nz-alert *ngIf="show_planner" nzType="info" nzMessage="{{rounds?rounds.length:0}} {{ 'ROUNDS' | translate }}, {{shifts?shifts.length:0}} {{ 'SHIFTS' | translate }}"></nz-alert>
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card nzTitle="{{ 'STUDENTS' | translate}}" [nzExtra]="linkEstudiantes">
+        <nz-spin [nzSpinning]="students.loading">
+          <nz-alert *ngIf="!students.show" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate}}"></nz-alert>
+          <nz-alert *ngIf="students.show" nzType="info"
+                    nzMessage="{{students.total}} {{ 'STUDENTS' | translate}}"></nz-alert>
+        </nz-spin>
+      </nz-card>
+      <ng-template #linkEstudiantes>
+        <button [disabled]="!students.show" nz-button nzType="primary" [routerLink]="['students']"><i nz-icon
+                                                                                                        nzType="edit"
+                                                                                                        nzTheme="outline"></i> {{ 'SETUP' | translate}}
+        </button>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card nzTitle="Planificador" [nzExtra]="linkPlanificador">
+        <nz-spin [nzSpinning]="rounds.loading || shifts.loading">
+          <nz-alert *ngIf="!(rounds.show || shifts.show)" nzType="error"
+                    nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate }}"></nz-alert>
+          <nz-alert *ngIf="(rounds.show || shifts.show)" nzType="info"
+                    nzMessage="{{rounds.total}} {{ 'ROUNDS' | translate }}, {{shifts.total}} {{ 'SHIFTS' | translate }}"></nz-alert>
+        </nz-spin>
       </nz-card>
       <ng-template #linkPlanificador>
-        <button [disabled]="!show_planner" nz-button [nzType]="primary" [routerLink]="['planner']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+        <button [disabled]="!(rounds.show || shifts.show)" nz-button nzType="primary" [routerLink]="['planner']"><i
+          nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
       </ng-template>
     </div>
 
@@ -90,16 +119,20 @@
 
         <form nz-form [formGroup]="ecoe_name_form">
           <nz-form-item>
-            <nz-form-label style="text-align: left;" [nzXs]="24" nzRequired nzFor="ecoe_name_2edit">{{ 'ECOE_NAME' | translate}}</nz-form-label>
+            <nz-form-label style="text-align: left;" [nzXs]="24" nzRequired
+                           nzFor="ecoe_name_2edit">{{ 'ECOE_NAME' | translate}}</nz-form-label>
             <nz-form-control [nzXs]="24">
-              <input nz-input formControlName="ecoe_name_2edit" id="ecoe_name_2edit" />
+              <input nz-input formControlName="ecoe_name_2edit" id="ecoe_name_2edit"/>
             </nz-form-control>
           </nz-form-item>
         </form>
 
         <div class="footer">
-          <button [disabled]="ecoe_name_form_loading" type="button" (click)="showECOENameDrawer(false)" class="ant-btn" style="margin-right: 8px;"><span>{{'CANCEL' | translate}}</span></button>
-          <button nz-button type="button" [disabled]="!ecoe_name_form || !ecoe_name_form.valid" [nzLoading]="ecoe_name_form_loading" (click)="submitECOENameForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span></button>
+          <button [disabled]="ecoe_name_form_loading" type="button" (click)="showECOENameDrawer(false)" class="ant-btn"
+                  style="margin-right: 8px;"><span>{{'CANCEL' | translate}}</span></button>
+          <button nz-button type="button" [disabled]="!ecoe_name_form || !ecoe_name_form.valid"
+                  [nzLoading]="ecoe_name_form_loading" (click)="submitECOENameForm()" class="ant-btn ant-btn-primary">
+            <span>{{'SAVE' | translate}}</span></button>
         </div>
       </nz-drawer>
     </ng-container>
