@@ -32,9 +32,9 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   defaultExpand: boolean = false;
 
   questionTypeOptions: Array<{ type: string, label: string }> = [
-    {type: 'RB', label: 'ONE_ANSWER'},
-    {type: 'CH', label: 'MULTI_ANSWER'},
-    {type: 'RS', label: 'VALUE_RANGE'}
+    {type: 'radio', label: 'ONE_ANSWER'},
+    {type: 'checkbox', label: 'MULTI_ANSWER'},
+    {type: 'range', label: 'VALUE_RANGE'}
   ];
 
   constructor(private route: ActivatedRoute,

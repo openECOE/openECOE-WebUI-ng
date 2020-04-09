@@ -1,15 +1,18 @@
 import {Item, Pagination, Route} from '@openecoe/potion-client';
-import {Planner} from './planner';
-import {Schedule} from './schedule';
+import {Planner, Round, Shift} from './planner';
+import {Schedule, Stage} from './schedule';
 import {Organization} from './organization';
+import {Question, QBlock} from '@models/question';
+import {User} from '@models/user';
 
 export class ECOE extends Item {
-  areas = Route.GET('/areas');
+  areas = Route.GET<Area | Pagination<Area>>('/areas');
   stations = Route.GET<Station | Pagination<Station>>('/stations');
-  schedules = Route.GET('/schedules');
-  students = Route.GET('/students');
-  rounds = Route.GET('/rounds');
-  shifts = Route.GET('/shifts');
+  schedules = Route.GET<Schedule | Pagination<Schedule>>('/schedules');
+  students = Route.GET<Student | Pagination<Student>>('/students');
+  rounds = Route.GET<Round | Round[] | Pagination<Round>>('/rounds');
+  shifts = Route.GET<Shift | Shift[] | Pagination<Shift>>('/shifts');
+  stages = Route.GET<Stage | Pagination<Stage>>('/stages');
 
   id: number;
   name: string;
@@ -42,14 +45,14 @@ export class Station extends Item {
   name: string;
   ecoe: ECOE;
   order: number;
-  parentStation?: {
-    id: number
-    name?: string,
-  };
-  id_parent_station: number;
+  parentStation?: Station;
+  user: User;
 
-  qblocks = Route.GET<Pagination<QBlock>>('/qblocks');
+  children_stations: Station[];
+
+  qblocks = Route.GET<Pagination<QBlock>>('/blocks');
   schedules = Route.GET<Pagination<Schedule>>('/schedules');
+  questions = Route.GET<Pagination<Question>>('/questions');
 }
 
 export interface RowStation {
@@ -58,58 +61,6 @@ export interface RowStation {
   parentStation?: any[];
 }
 
-export class QBlock extends Item {
-  getQuestions = Route.GET<Pagination<Question>>('/questions');
-
-  id: number;
-  name: string;
-  order: number;
-
-  station: Station;
-  questions?: Question[];
-}
-
-export interface RowQblock {
-  name: any[];
-}
-
-export class Question extends Item {
-  id: number;
-  reference: string;
-  description: string;
-  questionType: string;
-  order: number;
-
-  addOption ? = Route.POST<Option>('/options');
-
-  area: Area;
-
-  options: Option[];
-  qblocks: QBlock[] | number[];
-
-  getPoints ? = Route.GET<number>('/points');
-}
-
-export interface RowQuestion {
-  order:  any[] | number;
-  description: any[] | string;
-  reference: any[] | string;
-  area: any[] | Area;
-  questionType: any[] | string;
-  optionsNumber?: number;
-  points?: any[];
-  options?: Option[];
-  qblocks?: number[];
-  id?: any[] | number;
-}
-
-export class Option extends Item {
-  id: number;
-  points: number;
-  label: string;
-  id_question: number;
-  order: number;
-}
 export class Answer extends Item {
   id: number;
   label: string;
@@ -117,20 +68,6 @@ export class Answer extends Item {
   points: number;
   uri: string;
   question?: Question;
-}
-
-export class RowOption {
-  order: any | number;
-  label: any[] | string;
-  points: any[] | number;
-  rateCount?: number;
-  id?: number;
-
-  constructor(order, label, points) {
-    this.order = order;
-    this.label = label;
-    this.points = points;
-  }
 }
 
 export class Student extends Item {

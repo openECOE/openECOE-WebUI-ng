@@ -352,7 +352,7 @@ export class QuestionsService {
 
   loadQuestions(blockId: number, paginate: boolean, page: number = 1, perPage: number = 20) {
     return Question.query<Question, Pagination<Question>>({
-        where: {qblocks: {$contains: blockId}},
+        where: {block: blockId},
         sort: {order: false},
         page: page,
         perPage: perPage
@@ -378,7 +378,7 @@ export class QuestionsService {
       .then((qblocks: QBlock[]) => {
         for (const qblock of qblocks) {
           Question.query({
-            where: {qblocks: {$contains: qblock}},
+            where: {block: qblock},
             sort: {order: false},
         }, {paginate: false,
             cache: false,

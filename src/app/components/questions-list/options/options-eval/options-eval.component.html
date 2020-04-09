@@ -1,12 +1,12 @@
 <ng-container *ngIf="options">
   <ng-container *ngFor="let optionData of options; let indexOption = index">
 
-    <ng-container *ngIf="( (question.questionType == 'RS' && indexOption === getIndex())
-                || (question.questionType == 'CH')
-                || (question.questionType == 'RB'))">
+    <ng-container *ngIf="( (question.questionType == 'range' && indexOption === getIndex())
+                || (question.questionType == 'checkbox')
+                || (question.questionType == 'radio'))">
 
       <nz-switch nz-row
-                 *ngIf="question.questionType == 'RB'"
+                 *ngIf="question.questionType == 'radio'"
                  (ngModelChange)="onOptionChange($event, optionData.option, question.questionType)"
                  [ngModel]="optionData.checked"
                  [nzCheckedChildren]="OptionRef"
@@ -17,7 +17,7 @@
       </nz-switch>
 
       <nz-switch nz-row
-                 *ngIf="question.questionType == 'CH'"
+                 *ngIf="question.questionType == 'checkbox'"
                  [ngClass]="{'switch' : options.length > 1 && indexOption > 0,
                           'negative-points': optionData.option.points < 0,
                           'positive-points': optionData.option.points >= 0}"
@@ -27,7 +27,7 @@
                  [nzUnCheckedChildren]="OptionRef">
       </nz-switch>
 
-      <ng-container *ngIf="question.questionType === 'RS' && options.length > 0">
+      <ng-container *ngIf="question.questionType === 'range' && options.length > 0">
         <div nz-row class="left">
           <bar-rating
             (rateChange)="onOptionChange($event, optionData.option, question.questionType)"

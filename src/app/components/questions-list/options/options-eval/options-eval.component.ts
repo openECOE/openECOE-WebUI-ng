@@ -79,13 +79,13 @@ export class OptionsEvalComponent implements OnInit, OnChanges {
   }
 
   onOptionChange($event: any, option: Option, questionType?: string) {
-    if (questionType === 'RS') {
+    if (questionType === 'range') {
       this.updateAnswer({
         option: this.question.options[$event - 1],
         checked: !!(option)
       });
     } else {
-      if (questionType === 'RB') {
+      if (questionType === 'radio') {
         this.updateAnswer({option: option, checked: $event});
         this.options.forEach((optionItem, idx) => {
           if (idx === option.order) {
@@ -94,7 +94,7 @@ export class OptionsEvalComponent implements OnInit, OnChanges {
             this.options[idx]['checked'] = false;
           }
         });
-      } else if (questionType === 'CH') {
+      } else if (questionType === 'checkbox') {
         this.updateAnswer({option: option, checked: $event});
         this.options[this.question.options.indexOf(option)]['checked'] = $event;
       }

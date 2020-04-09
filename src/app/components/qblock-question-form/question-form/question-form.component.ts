@@ -30,9 +30,9 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   private ecoeId: number;
 
   public questionTypeOptions: Array<{ type: string, label: string }> = [
-    {type: 'RB', label: 'ONE_ANSWER'},
-    {type: 'CH', label: 'MULTI_ANSWER'},
-    {type: 'RS', label: 'VALUE_RANGE'}
+    {type: 'radio', label: 'ONE_ANSWER'},
+    {type: 'checkbox', label: 'MULTI_ANSWER'},
+    {type: 'range', label: 'VALUE_RANGE'}
   ];
 
   private selectedQType: string = this.questionTypeOptions[0].type;

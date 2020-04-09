@@ -40,9 +40,9 @@ export class OptionsListComponent implements OnInit, OnChanges {
     this.question.options = this.parseOptions(this.question.options);
 
     this.question.options.forEach((option) => {
-      if (!option.id) {
-        option.id = option.order;
-      }
+      // if (!option.id) {
+      //   option.id = option.order;
+      // }
       this.editCacheOption[option.order] = {
         option: option,
         checked: false,
@@ -67,7 +67,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
   }
 
   onOptionChange($event: any, option: Option, questionType?: string) {
-    if (questionType === 'RB') {
+    if (questionType === 'radio') {
       this.editCacheOption.forEach((optionItem, idx) => {
         if (idx === option.order) {
           this.editCacheOption[idx]['checked'] = $event;
@@ -75,7 +75,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
           this.editCacheOption[idx]['checked'] = false;
         }
       });
-    } else if (questionType === 'CH') {
+    } else if (questionType === 'checkbox') {
       this.editCacheOption[option.order]['checked'] = $event;
     }
   }

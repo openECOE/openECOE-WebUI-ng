@@ -9,7 +9,7 @@ import {RowOption} from '@app/models';
 export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit {
 
   @Input() questionOrder: number;
-  @Input() type: 'RB' | 'CH'  | 'RS';
+  @Input() type: 'radio' | 'checkbox'  | 'range';
   @Input() optionsCache: RowOption[] = [];
 
   @Output() returnData:   EventEmitter<any> = new EventEmitter();
@@ -28,7 +28,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   current_number_options: number = 0;
   private arrPoints: Array<{ option: number, value: number }> = [];
   private defaultTextValues: string[] = ['Sí'];
-  public questionTypeOptions: string[] = ['RB', 'CH', 'RS'];
+  public questionTypeOptions: string[] = ['radio', 'checkbox', 'range'];
 
   constructor(private fb: FormBuilder) { }
 
