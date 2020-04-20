@@ -91,7 +91,7 @@
         <app-option-form #option
           [questionOrder]="i"
           [type]="control.value[i]['questionType']"
-          [optionsCache]="questionsCache[i]?.options"
+          [optionsCache]="questionsCache[i]?.schema?.options"
           (saveForm) = "submitForm()"
           (returnData)="onGetOptions($event)"
           (pointValues)="onReceivePointValues($event)">

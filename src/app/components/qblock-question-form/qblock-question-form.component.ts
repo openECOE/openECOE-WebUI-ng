@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {QBlock, RowQblock} from '@app/models';
+import {Block, RowQblock} from '@app/models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {QuestionsService} from '@services/questions/questions.service';
 
@@ -20,7 +20,7 @@ export class QblockQuestionFormComponent implements OnInit {
 
   current = 0;
 
-  private qblocksToAdd: QBlock[] = [];
+  private qblocksToAdd: Block[] = [];
   private questionsToAdd: any[] = [];
 
   private qblockForm: FormGroup;
@@ -53,7 +53,7 @@ export class QblockQuestionFormComponent implements OnInit {
     }
     return this.questionService.saveArrayQblocks(this.qblocksToAdd, this.id_station, this.n_qblocks)
       .catch((err) => new Promise((resolve, reject) => reject(err)) )
-      .then(result => this.questionService.addQuestions(this.questionsToAdd, result[0].id) );
+      .then(blocks => this.questionService.addQuestions(this.questionsToAdd, blocks[0]) );
   }
 
   pre(): void {
@@ -110,7 +110,7 @@ export class QblockQuestionFormComponent implements OnInit {
     return valid;
   }
 
-  onGetQblocks(data: QBlock[]) {
+  onGetQblocks(data: Block[]) {
     this.qblocksToAdd = data;
   }
 

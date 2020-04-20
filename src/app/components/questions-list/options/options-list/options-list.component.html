@@ -1,12 +1,12 @@
 <nz-table #optionTable *ngIf="!evaluate"
-          [nzData]="question?.options"
+          [nzData]="_options"
           nzSize="small"
           [nzShowPagination]="false"
           nzBordered="false">
   <thead>
   <tr>
     <th nzWidth="40px">{{"ORDER" | translate}}</th>
-    <th nzWidth="250px" *ngIf="question.questionType !== 'range'">{{"LABEL" | translate}}</th>
+    <th nzWidth="250px" *ngIf="question.schema.type !== 'range'">{{"LABEL" | translate}}</th>
     <th nzWidth="150px">{{"POINTS" | translate}}</th>
     <th>{{"PREVIEW" | translate}}</th>
   </tr>
@@ -16,32 +16,32 @@
   <tr *ngFor="let option of optionTable.data; let indexOption = index">
     <ng-container>
       <td>{{option.order +1 }}</td>
-      <td *ngIf="question.questionType !== 'range'">{{option.label}}</td>
+      <td *ngIf="question.schema.type !== 'range'">{{option.label}}</td>
       <td>{{option.points | number: '.0-2'}}</td>
     </ng-container>
 
-    <td *ngIf="(  (question.questionType == 'range' && indexOption === getIndex())
-                || (question.questionType == 'checkbox')
-                || (question.questionType == 'radio' ))"
-        [attr.rowspan]="(question.questionType == 'range') ? question.options.length : 1">
+    <td *ngIf="(  (question.schema.type == 'range' && indexOption === getIndex())
+                || (question.schema.type == 'checkbox')
+                || (question.schema.type == 'radio' ))"
+        [attr.rowspan]="(question.schema.type == 'range') ? question.options.length : 1">
 
-      <nz-switch *ngIf="question.questionType == 'radio'"
-                 (ngModelChange)="onOptionChange($event, option, question.questionType)"
+      <nz-switch *ngIf="question.schema.type == 'radio'"
+                 (ngModelChange)="onOptionChange($event, option, question.schema.type)"
                  [ngModel]="editCacheOption[option.order]['checked']"
                  [nzCheckedChildren]="option.label"
                  [nzUnCheckedChildren]="option.label"
                  [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
       </nz-switch>
 
-      <nz-switch *ngIf="question.questionType == 'checkbox'"
-                 (ngModelChange)="onOptionChange($event, option, question.questionType)"
+      <nz-switch *ngIf="question.schema.type == 'checkbox'"
+                 (ngModelChange)="onOptionChange($event, option, question.schema.type)"
                  [ngModel]="editCacheOption[option.order]['checked']"
                  [nzCheckedChildren]="option.label"
                  [nzUnCheckedChildren]="option.label"
                  [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
       </nz-switch>
 
-      <ng-container *ngIf="question.questionType == 'range'">
+      <ng-container *ngIf="question.schema.type == 'range'">
         <bar-rating
           [rate]="option.order"
           [max]="optionTable.data.length"

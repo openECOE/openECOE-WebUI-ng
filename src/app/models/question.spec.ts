@@ -16,7 +16,7 @@
  *      along with openECOE-WebUI-ng.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {MaxPointsRangeError, Question, QuestionCheckBox, QuestionOption, QuestionRadio, QuestionRange} from '@models/question';
+import {MaxPointsRangeError, QuestionOld, QuestionCheckBox, QuestionOption, QuestionRadio, QuestionRange} from '@models/question';
 import {Item, ItemCache, POTION_CONFIG, POTION_RESOURCES, PotionBase, PotionModule} from '@openecoe/potion-client';
 import {TestBed} from '@angular/core/testing';
 import {environment} from '../../environments/environment';
@@ -50,28 +50,28 @@ describe('Test for QuestionSchema extended classes', () => {
       expect(questionRadio.type).toEqual('radio');
       expect(questionRadio.reference).toEqual('ref');
       expect(questionRadio.description).toEqual('desc');
-      expect(questionRadio.maxPoints).toEqual(0, 'should be 0');
+      expect(questionRadio.max_points).toEqual(0, 'should be 0');
     });
 
     it('can add options', () => {
       questionRadio.options.push(questionOption1, questionOption2);
       expect(questionRadio.options).toBeDefined();
       expect(questionRadio.options.length).toEqual(2);
-      expect(questionRadio.maxPoints).toEqual(5, 'max points should be 5');
+      expect(questionRadio.max_points).toEqual(5, 'max points should be 5');
     });
 
     it('can remove options', () => {
       questionRadio.options.push(questionOption1, questionOption2);
       questionRadio.options.splice(0, 1);
       expect(questionRadio.options.length).toEqual(1);
-      expect(questionRadio.maxPoints).toEqual(2, 'max points should be 2');
+      expect(questionRadio.max_points).toEqual(2, 'max points should be 2');
     });
 
     it('max points 0 when all points are negative', () => {
       questionOption1.points = -5;
       questionOption2.points = -2;
       questionRadio.options.push(questionOption1, questionOption2);
-      expect(questionRadio.maxPoints).toEqual(0, 'should be 0 because all points are negative');
+      expect(questionRadio.max_points).toEqual(0, 'should be 0 because all points are negative');
     });
   });
 
@@ -101,28 +101,28 @@ describe('Test for QuestionSchema extended classes', () => {
       expect(questionCheckBox.type).toEqual('checkbox');
       expect(questionCheckBox.reference).toEqual('ref');
       expect(questionCheckBox.description).toEqual('desc');
-      expect(questionCheckBox.maxPoints).toEqual(0, 'should be 0');
+      expect(questionCheckBox.max_points).toEqual(0, 'should be 0');
     });
 
     it('can add options', () => {
       questionCheckBox.options.push(questionOption1, questionOption2);
       expect(questionCheckBox.options).toBeDefined();
       expect(questionCheckBox.options.length).toEqual(2);
-      expect(questionCheckBox.maxPoints).toEqual(7, 'max points should be 7');
+      expect(questionCheckBox.max_points).toEqual(7, 'max points should be 7');
     });
 
     it('can remove options', () => {
       questionCheckBox.options.push(questionOption1, questionOption2);
       questionCheckBox.options.splice(0, 1);
       expect(questionCheckBox.options.length).toEqual(1);
-      expect(questionCheckBox.maxPoints).toEqual(2, 'max points should be 2');
+      expect(questionCheckBox.max_points).toEqual(2, 'max points should be 2');
     });
 
     it('max points 0 when all points are negative', () => {
       questionOption1.points = -5;
       questionOption2.points = -2;
       questionCheckBox.options.push(questionOption1, questionOption2);
-      expect(questionCheckBox.maxPoints).toEqual(0, 'should be 0 because all points are negative');
+      expect(questionCheckBox.max_points).toEqual(0, 'should be 0 because all points are negative');
     });
 
 
@@ -135,7 +135,7 @@ describe('Test for QuestionSchema extended classes', () => {
       questionRange.reference = 'ref';
       questionRange.description = 'desc';
       questionRange.range = 10;
-      questionRange.maxPoints = 7;
+      questionRange.max_points = 7;
     });
 
     it('should be defined', () => {
@@ -144,12 +144,12 @@ describe('Test for QuestionSchema extended classes', () => {
       expect(questionRange.reference).toEqual('ref');
       expect(questionRange.description).toEqual('desc');
       expect(questionRange.range).toEqual(10);
-      expect(questionRange.maxPoints).toEqual(7, 'should be 7');
+      expect(questionRange.max_points).toEqual(7, 'should be 7');
     });
 
     it('max points should be positive number', () => {
       expect(function () {
-        questionRange.maxPoints = -2;
+        questionRange.max_points = -2;
       }).toThrow(MaxPointsRangeError);
     });
 
@@ -189,9 +189,9 @@ describe('Test for Question', function () {
     // });
 
     it('question.query()', done => {
-      Question.query().then(question => {
+      QuestionOld.query().then(question => {
         const testQuestion = question;
-        expect(testQuestion instanceof (Question as any)).toBe(true);
+        expect(testQuestion instanceof (QuestionOld as any)).toBe(true);
         done();
       });
     });

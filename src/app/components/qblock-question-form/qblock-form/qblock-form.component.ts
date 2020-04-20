@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {QBlock, RowQblock} from '@app/models';
+import {Block, RowQblock} from '@app/models';
 
 @Component({
   selector: 'app-qblock-form',
@@ -10,7 +10,7 @@ import {QBlock, RowQblock} from '@app/models';
 export class QblockFormComponent implements OnInit {
 
   @Output() returnData = new EventEmitter();
-  @Input() qblocks?: QBlock[];
+  @Input() qblocks?: Block[];
 
   qblockForm: FormGroup;
   private control: FormArray;

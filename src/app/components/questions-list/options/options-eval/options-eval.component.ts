@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Option, Question} from '../../../../models';
+import {Option, QuestionOld} from '../../../../models';
 
 @Component({
   selector: 'app-options-eval',
@@ -8,7 +8,7 @@ import {Option, Question} from '../../../../models';
 })
 export class OptionsEvalComponent implements OnInit, OnChanges {
 
-  @Input() question: Question;
+  @Input() question: QuestionOld;
   @Input() preview: boolean;
   @Input() answers: Option[] = [];
   @Output() optionChanged: EventEmitter<any> = new EventEmitter<any>();

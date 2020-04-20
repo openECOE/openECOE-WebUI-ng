@@ -37,26 +37,26 @@
         <tr>
           <td nzAlign="right">{{item.order || "-"}}</td>
 
-          <td>{{item.description}}</td>
+          <td>{{item.schema.description}}</td>
 
-          <td>{{item.reference}}</td>
+          <td>{{item.schema.reference}}</td>
 
           <td>{{item.area?.name}}</td>
 
-          <td>{{getQuestionTypeLabel(item.questionType) | translate}}</td>
+          <td>{{getQuestionTypeLabel(item.schema.type) | translate}}</td>
 
           <td text-right style="min-width: 180px">
             <nz-tag
               [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'"
               (click)="editCache[item.id].expand = !editCache[item.id].expand">
               <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
-              {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
+              {{item.schema?.options?.length}} {{(item.schema?.options?.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
             </nz-tag>
             <ng-container *ngIf="item.uri">
 <!--              <nz-divider [nzType]="'vertical'"></nz-divider>-->
               <app-action-buttons
-                (startEdit)="onEditQuestion(item.id)"
-                (delete)="deleteQuestion(questionsList,item.id)">
+                (startEdit)="onEditQuestion(item)"
+                (delete)="deleteQuestion(item)">
               </app-action-buttons>
             </ng-container>
           </td>

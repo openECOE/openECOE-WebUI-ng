@@ -1,26 +1,27 @@
 import {Item, Pagination, Route} from '@openecoe/potion-client';
 import {Answer, Area, Station} from '@models/ecoe';
-import {ItemFetchOptions, ItemQueryOptions} from '@openecoe/potion-client/core/item';
-import {QueryParams} from '@openecoe/potion-client/core/potion';
+import {ItemUpdateOptions} from '@openecoe/potion-client/core/item';
 
 // Question types
 
 export class QuestionBase {
   constructor(type) {
     this.type = type;
+    this.reference = null;
+    this.description = null;
   }
 
   readonly type: string;
   reference: string;
   description: string;
-  protected _maxPoints: number;
+  protected _max_points: number;
 
   set max_points(value) {
-    this._maxPoints = value;
+    this._max_points = value;
   }
 
   get max_points() {
-    return this._maxPoints;
+    return this._max_points;
   }
 
 }
@@ -85,14 +86,14 @@ export class QuestionRange extends QuestionBase {
   // Points in range only could be positive
   set max_points(value: number) {
     if (value >= 0) {
-      this._maxPoints = value;
+      this._max_points = value;
     } else {
       throw MaxPointsRangeError;
     }
   }
 
   get max_points() {
-    return this._maxPoints;
+    return this._max_points;
   }
 }
 
@@ -103,6 +104,7 @@ export const QuestionType: any = {
 };
 
 export class QuestionSchema {
+  type: string;
   constructor(className: string, opts?: any) {
     if (QuestionType[className] === undefined || QuestionType[className] === null) {
       throw new Error(`Class type of \'${className}\' is not in the store`);
@@ -111,16 +113,15 @@ export class QuestionSchema {
   }
 }
 
-export class NewQuestion extends Item {
+export class Question extends Item {
   id: number;
   area: Area;
   station: Station;
   order: number;
-  block?: QBlock;
-  _questionSchema: string;
+  block?: Block;
+  question_schema: string;
   schema: QuestionSchema;
-  // question: QuestionRadio | QuestionCheckBox | QuestionRange;
-  maxPoints: number;
+  max_points: number;
 
   answers = Route.GET<Answer>('/answers');
 
@@ -137,14 +138,42 @@ export class NewQuestion extends Item {
   // }
 
   set questionSchema(schema: string) {
-    this._questionSchema = schema;
+    this.question_schema = schema;
     const _schema = JSON.parse(schema);
     this.schema = Object.assign(new QuestionSchema(_schema.type), _schema);
   }
 
   get questionSchema() {
-    this._questionSchema = JSON.stringify(this.schema);
-    return this._questionSchema;
+    this.question_schema = JSON.stringify(this.schema);
+    return this.question_schema;
+  }
+
+  set maxPoints(points: number) {
+    this.max_points = points;
+    if (this.schema instanceof QuestionBase) {
+      this.schema.max_points = points;
+    }
+  }
+
+  get maxPoints() {
+    if (this.schema instanceof QuestionBase) {
+      this.max_points = this.schema.max_points;
+    }
+    return this.max_points;
+  }
+
+  save(): Promise<this> {
+    this.question_schema = this.questionSchema;
+    this.max_points = this.maxPoints;
+    delete this.schema;
+    return super.save();
+  }
+
+  update(data?: any, options?: ItemUpdateOptions): Promise<this> {
+    data.question_schema = JSON.stringify(data.schema);
+    data.max_points = data.schema.max_points;
+    delete data.schema;
+    return super.update(data, options);
   }
 }
 
@@ -153,18 +182,18 @@ export interface IQuestion {
   area: any[] | Area;
   station: any[] | Station;
   order: any[] | number;
-  block?: any[] | QBlock;
-  schema: any[] | QuestionSchema;
-  maxPoints?: any[];
+  block?: any[] | Block;
+  schema: QuestionSchema;
+  max_points?: any[];
 }
 
-export class QBlock extends Item {
+export class Block extends Item {
   id: number;
   name: string;
   order: number;
 
   station: Station;
-  questions = Route.GET<Pagination<Question>>('/questions');
+  questions = Route.GET<Pagination<QuestionOld>>('/questions');
 }
 
 export interface RowQblock {
@@ -175,43 +204,40 @@ export interface RowQblock {
 // Old
 
 export class QBlockOld extends Item {
-  getQuestions = Route.GET<Pagination<Question>>('/questions');
+  getQuestions = Route.GET<Pagination<QuestionOld>>('/questions');
 
   id: number;
   name: string;
   order: number;
 
   station: Station;
-  questions?: Question[];
+  questions?: QuestionOld[];
 }
 
 export interface RowQblock {
   name: any[];
 }
 
-export class Question extends Item {
-  id: number;
+export class QuestionOld extends Question {
   reference: string;
   description: string;
   questionType: string;
   order: number;
 
-  addOption ? = Route.POST<Option>('/options');
-
   area: Area;
 
   options: Option[];
-  qblocks: QBlock[] | number[];
+  qblocks: Block[] | number[];
 
   get getPoints() {
-    return this.maxPoints;
+    return this.max_points;
   }
 
   // New API Question model
-  block: QBlock;
+  block: Block;
   _questionSchema: string;
   schema: QuestionSchema;
-  maxPoints: number;
+  max_points: number;
 
   answers = Route.GET<Answer>('/answers');
 
@@ -274,10 +300,11 @@ export class Question extends Item {
         _options.push(_option);
       });
       this.schema.options = _options;
-      this.maxPoints = this.schema.max_points;
+      this.max_points = this.schema.max_points;
     } else if (this.schema instanceof QuestionRange) {
       this.schema.range = this.options.length;
-      this.maxPoints = this.schema.max_points = Math.max(...this.options.filter(option => option.points > 0).map(option => option.points), 0);
+      // tslint:disable-next-line:max-line-length
+      this.max_points = this.schema.max_points = Math.max(...this.options.filter(option => option.points > 0).map(option => option.points), 0);
     }
 
     this._questionSchema = JSON.stringify(this.schema);
@@ -294,7 +321,7 @@ export interface RowQuestion {
   optionsNumber?: number;
   points?: any[];
   options?: Option[];
-  qblocks?: number[];
+  block?: any | Block;
   id?: any[] | number;
 }
 

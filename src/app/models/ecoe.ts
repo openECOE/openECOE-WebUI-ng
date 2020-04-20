@@ -2,7 +2,7 @@ import {Item, Pagination, Route} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule, Stage} from './schedule';
 import {Organization} from './organization';
-import {Question, QBlock} from '@models/question';
+import {QuestionOld, Block, Question} from '@models/question';
 import {User} from '@models/user';
 
 export class ECOE extends Item {
@@ -26,7 +26,7 @@ export class Area extends Item {
   name: string;
   ecoe: ECOE;
   code: string;
-  questions: Question[];
+  questions: QuestionOld[];
 }
 
 export class EditCache extends Area {
@@ -50,9 +50,9 @@ export class Station extends Item {
 
   children_stations: Station[];
 
-  qblocks = Route.GET<Pagination<QBlock>>('/blocks');
+  qblocks = Route.GET<Pagination<Block>>('/blocks');
   schedules = Route.GET<Pagination<Schedule>>('/schedules');
-  questions = Route.GET<Pagination<Question>>('/questions');
+  questions = Route.GET<Pagination<QuestionOld>>('/questions');
 }
 
 export interface RowStation {
@@ -67,7 +67,7 @@ export class Answer extends Item {
   order: number;
   points: number;
   uri: string;
-  question?: Question;
+  question?: QuestionOld;
 }
 
 export class Student extends Item {
