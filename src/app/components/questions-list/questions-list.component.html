@@ -47,9 +47,9 @@
 
           <td text-right style="min-width: 180px">
             <nz-tag
-              [nzColor]="item.options?.length === 0 ? 'red' : 'geekblue'"
-              (click)="editCache[item.id].expand = !editCache[item.id].expand">
-              <i nz-icon [type]="editCache[item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
+              [nzColor]="item.schena?.options?.length === 0 ? 'red' : 'geekblue'"
+              (click)="editCache[preview ? item.order : item.id].expand = !editCache[preview ? item.order : item.id].expand">
+              <i nz-icon [type]="editCache[preview ? item.order : item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
               {{item.schema?.options?.length}} {{(item.schema?.options?.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
             </nz-tag>
             <ng-container *ngIf="item.uri">
@@ -62,7 +62,7 @@
           </td>
         </tr>
 
-        <tr [nzExpand]="editCache[item.id]?.expand">
+        <tr [nzExpand]="editCache[preview ? item.order : item.id]?.expand">
           <td></td>
           <td colspan="5">
 <!--            <ng-container *ngIf="preview; else EvaluateTemplateRef" >-->

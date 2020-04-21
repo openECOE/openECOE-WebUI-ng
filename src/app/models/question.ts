@@ -115,10 +115,10 @@ export class QuestionSchema {
 
 export class Question extends Item {
   id: number;
-  area: Area;
-  station: Station;
+  area: Area | number;
+  station: Station | number;
   order: number;
-  block?: Block;
+  block?: Block | number;
   question_schema: string;
   schema: QuestionSchema;
   max_points: number;

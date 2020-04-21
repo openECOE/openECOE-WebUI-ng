@@ -1,6 +1,7 @@
 import {AfterContentInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {RowOption} from '@app/models';
+import {QuestionCheckBox, QuestionRadio, QuestionRange, QuestionSchema, RowOption} from '@app/models';
+import {stringify} from 'querystring';
 @Component({
   selector: 'app-option-form',
   templateUrl: './option-form.component.html',
@@ -10,7 +11,8 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
 
   @Input() questionOrder: number;
   @Input() type: 'radio' | 'checkbox'  | 'range';
-  @Input() optionsCache: RowOption[] = [];
+  // @Input() optionsCache: RowOption[] = [];
+  @Input() schema: QuestionSchema;
 
   @Output() returnData:   EventEmitter<any> = new EventEmitter();
   @Output() pointValues:  EventEmitter<any[]> = new EventEmitter();
@@ -18,6 +20,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
 
   private optionForm: FormGroup;
   private control: FormArray;
+  private optionsCache: RowOption[] = [];
 
   private nRateCount: {max: number, min: number, current: number} = {
     max: 10,
@@ -33,6 +36,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
+    this.initOptionsCache();
     this.initOptionForm();
   }
 
@@ -44,6 +48,18 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     if (changes.type && changes.type.currentValue && !changes.type.firstChange) {
       this.optionsCache = [];
       this.initOptionRow(changes.type.previousValue);
+    }
+  }
+
+  initOptionsCache() {
+    if ( this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox) {
+      this.optionsCache = this.schema.options;
+    } else if (this.schema instanceof QuestionRange) {
+      const _multiplier = this.schema.max_points / this.schema.range;
+      this.optionsCache = Array.from(Array<RowOption>(this.schema.range), (x, index) => {
+        const _order = index + 1;
+        return new RowOption(_order, _order.toString(), _order * _multiplier);
+      });
     }
   }
 

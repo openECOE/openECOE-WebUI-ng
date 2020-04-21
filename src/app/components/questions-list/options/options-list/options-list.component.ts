@@ -1,5 +1,5 @@
 import {Component,  Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {QuestionOld, Option, Question, QuestionRadio, QuestionCheckBox, QuestionOption} from '@app/models';
+import {QuestionOld, Option, Question, QuestionRadio, QuestionCheckBox, QuestionOption, QuestionRange} from '@app/models';
 
 @Component({
   selector: 'app-options-list',
@@ -15,7 +15,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
   editCacheOption: Array<any> = [];
   filteredAnswers: Option[] = [];
 
-  _options: QuestionOption[];
+  _options: Array<QuestionOption | QuestionRange>;
 
   constructor() {}
 
@@ -45,15 +45,15 @@ export class OptionsListComponent implements OnInit, OnChanges {
       this._options = this.parseOptions(this.question.schema.options);
 
       this._options.forEach((option) => {
-        // if (!option.id) {
-        //   option.id = option.order;
-        // }
+        // @ts-ignore
         this.editCacheOption[option.order] = {
           option: option,
           checked: false,
           valueRS: 0
         };
       });
+    } else if (this.question.schema instanceof QuestionRange) {
+      this._options = [this.question.schema];
     }
   }
 

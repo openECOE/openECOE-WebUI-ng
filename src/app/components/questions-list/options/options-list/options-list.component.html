@@ -5,7 +5,7 @@
           nzBordered="false">
   <thead>
   <tr>
-    <th nzWidth="40px">{{"ORDER" | translate}}</th>
+    <th nzWidth="40px" *ngIf="question.schema.type !== 'range'">{{"ORDER" | translate}}</th>
     <th nzWidth="250px" *ngIf="question.schema.type !== 'range'">{{"LABEL" | translate}}</th>
     <th nzWidth="150px">{{"POINTS" | translate}}</th>
     <th>{{"PREVIEW" | translate}}</th>
@@ -15,15 +15,15 @@
   <tbody>
   <tr *ngFor="let option of optionTable.data; let indexOption = index">
     <ng-container>
-      <td>{{option.order +1 }}</td>
+      <td *ngIf="question.schema.type !== 'range'">{{option.order +1 }}</td>
       <td *ngIf="question.schema.type !== 'range'">{{option.label}}</td>
-      <td>{{option.points | number: '.0-2'}}</td>
+      <td>{{(question.schema.type == 'range' ? option.max_points : option.points) | number: '.0-2'}}</td>
     </ng-container>
 
     <td *ngIf="(  (question.schema.type == 'range' && indexOption === getIndex())
                 || (question.schema.type == 'checkbox')
                 || (question.schema.type == 'radio' ))"
-        [attr.rowspan]="(question.schema.type == 'range') ? question.options.length : 1">
+        [attr.rowspan]="1">
 
       <nz-switch *ngIf="question.schema.type == 'radio'"
                  (ngModelChange)="onOptionChange($event, option, question.schema.type)"
@@ -43,8 +43,8 @@
 
       <ng-container *ngIf="question.schema.type == 'range'">
         <bar-rating
-          [rate]="option.order"
-          [max]="optionTable.data.length"
+          [rate]="option.range"
+          [max]="option.range"
           showText="false"
           theme="horizontal">
         </bar-rating>

@@ -16,10 +16,10 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   @ViewChildren(OptionFormComponent) optionsRef: QueryList<OptionFormComponent>;
 
   @Input()  questionsCache: Question[] = [];
-  @Input()  qblock: {block: Block, lastOrder: number};
+  @Input()  qblock: {block: Block, lastOrder: number} = {block: null, lastOrder: null};
   @Input()  formVisible: boolean = false;
   @Input()  action: 'ADD' | 'EDIT' | 'ADD_WITH_QBLOCK';
-  @Output() returnData: EventEmitter<any> = new EventEmitter();
+  @Output() returnData: EventEmitter<RowQuestion[]> = new EventEmitter();
 
   questionForm: FormGroup;
   private control: FormArray;
@@ -37,7 +37,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
 
   private selectedQType: string = this.questionTypeOptions[0].type;
 
-  private defaultQuestion: Question = new Question({schema: new QuestionSchema('radio')});
+  private defaultQuestion: Question = new Question({block: this.qblock.block , schema: new QuestionSchema('radio')});
 
 
   constructor(private fb: FormBuilder,
@@ -130,7 +130,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         {value: 0, disabled: false},
         Validators.required
       ],
-      block: [ (params['block'] ? params['block'] : null), ],
+      block: [ (params['block'] ? params['block'] : this.qblock.block), ],
       id: [ (params['id'] ? params['id'] : null)]
     });
   }

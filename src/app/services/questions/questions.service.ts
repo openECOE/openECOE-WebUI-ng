@@ -21,13 +21,15 @@ import {passBoolean} from 'protractor/built/util';
 })
 export class QuestionsService {
 
-  private readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
+  // tslint:disable-next-line:max-line-length
+  private readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string, block: string } = {
     order: 'order',
     description: 'description',
     reference: 'reference',
     points: 'points',
     ac: 'area',
-    type: 'questionType'
+    type: 'questionType',
+    block: 'block'
   };
 
   private readonly DEFAULT_LABEL = 'Sí';
@@ -276,7 +278,7 @@ export class QuestionsService {
    * Build schema from RowQuestion
    * @param item RowQuestion
    */
-  private buildSchema(item: RowQuestion): QuestionSchema {
+  buildSchema(item: RowQuestion): QuestionSchema {
     const _schema = new QuestionSchema(item.questionType as string);
     if (_schema instanceof QuestionBase) {
       _schema.reference = item[this.HEADER.reference];
@@ -304,41 +306,32 @@ export class QuestionsService {
   }
 
   /**
+   * Conversion of rowQuestion to new model Question.
+   * @param rowQuestion to convert
+   * @param station optional to allow pass station with qblock null
+   */
+  async rowQuestiontoQuestion(rowQuestion: RowQuestion, station: Station | number): Promise<Question> {
+    const _question = new Question();
+
+    _question.area = (await this.getArea(rowQuestion[this.HEADER.ac]));
+    _question.station = station;
+    _question.order = rowQuestion[this.HEADER.order];
+    _question.block = rowQuestion[this.HEADER.block];
+    _question.schema = this.buildSchema(rowQuestion);
+
+    return _question;
+
+  }
+
+  /**
    * Adds question by question with them options.
    * @param items array of questions
    * @param block which questions will be asociated
    */
-  async addQuestions(items: any[], block: Block) {
+  async addQuestions(items: Question[] | RowQuestion[], block: Block) {
     for (const item of items) {
-      const _question = new Question();
-      _question.area = (await this.getArea(item[this.HEADER.ac]));
-      _question.station = block.station;
-      _question.order = item[this.HEADER.order];
-      _question.block = block;
-      _question.schema = new QuestionSchema(item[this.HEADER.type]);
-      if (_question.schema instanceof QuestionBase) {
-        _question.schema.reference = item[this.HEADER.reference];
-        _question.schema.description = item[this.HEADER.reference];
-      }
-      if (_question.schema instanceof QuestionRange) {
-        _question.schema.range = item[this.OPTIONS].length;
-        _question.schema.max_points = item[this.HEADER.points];
-      } else if (_question.schema instanceof QuestionRadio || _question.schema instanceof QuestionCheckBox) {
-        // _question.schema.max_points = item[this.HEADER.points];
-        const _options = item[this.OPTIONS];
-
-        // tslint:disable-next-line:no-shadowed-variable
-        for (const { idx, opt } of _options.map((opt, idx) => ({ idx, opt }))) {
-          const _questionOption = new QuestionOption();
-
-          _questionOption.id_option = idx;
-          _questionOption.points = opt.points;
-          _questionOption.label = opt.label;
-          _questionOption.order = opt.order ? opt.order : idx;
-
-          _question.schema.options.push(_questionOption);
-        }
-      }
+      item[this.HEADER.block] = block;
+      const _question = item instanceof Question ? item : await this.rowQuestiontoQuestion(item, block.station);
 
       await _question.save()
         .then(async (question) => {

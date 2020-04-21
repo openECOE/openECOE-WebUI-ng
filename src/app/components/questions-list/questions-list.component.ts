@@ -87,11 +87,10 @@ export class QuestionsListComponent implements OnInit, OnChanges {
     this.editCache = [];
 
     this.questionsList.forEach(item => {
-      if (preview) {
-        item.id = item.order;
-      }
-      this.editCache[item.id] = {
-        edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
+      const cache_id = preview ? item.order : item.id;
+
+      this.editCache[cache_id] = {
+        edit: this.editCache[cache_id] ? this.editCache[cache_id].edit : false,
         new_item: false,
         item: Object.create(item),
         expand: this.defaultExpand

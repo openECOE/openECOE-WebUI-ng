@@ -1,8 +1,8 @@
-import { TextdatePipe } from './textdate.pipe';
-
-describe('TextdatePipe', () => {
-  it('create an instance', () => {
-    const pipe = new TextdatePipe();
-    expect(pipe).toBeTruthy();
-  });
-});
+// import { TextDatePipe } from './textdate.pipe';
+//
+// describe('TextdatePipe', () => {
+//   it('create an instance', () => {
+//     const pipe = new TextDatePipe();
+//     expect(pipe).toBeTruthy();
+//   });
+// });
