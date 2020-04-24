@@ -1,0 +1,11 @@
+<ng-container *ngFor="let cb of _checkBoxes; let indexOption = index">
+  <nz-switch nz-row
+             [ngClass]="{'switch' : question.options.length > 1 && indexOption > 0,
+                            'negative-points': cb.option.points < 0,
+                            'positive-points': cb.option.points >= 0}"
+             [nzCheckedChildren]="cb.option.label"
+             [nzUnCheckedChildren]="cb.option.label"
+             [ngModel]="cb.checked"
+             (ngModelChange)="changeAnswer(answer, cb, $event)">
+  </nz-switch>
+</ng-container>

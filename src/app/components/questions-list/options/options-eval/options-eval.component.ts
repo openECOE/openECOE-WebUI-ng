@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Option, QuestionOld} from '../../../../models';
+import {Option, Question, QuestionCheckBox, QuestionOld, QuestionRadio, QuestionRange, QuestionSchema} from '../../../../models';
 
 @Component({
   selector: 'app-options-eval',
@@ -8,29 +8,31 @@ import {Option, QuestionOld} from '../../../../models';
 })
 export class OptionsEvalComponent implements OnInit, OnChanges {
 
-  @Input() question: QuestionOld;
+  @Input() question: Question;
   @Input() preview: boolean;
   @Input() answers: Option[] = [];
   @Output() optionChanged: EventEmitter<any> = new EventEmitter<any>();
 
-  filtredAnswers: Option[] = [];
+  filteredAnswers: Option[] = [];
   options: OptionData[];
 
 
   constructor() {}
 
   ngOnInit() {
-    this.options = this.initOptions(this.question.options);
+    this.options = this.initOptions(this.question.schema);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.answers && (changes.answers.currentValue as Option[]).length > 0) {
-      if (this.question.options.length > 0) {
-        this.filtredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
-        this.setAnswers(this.filtredAnswers);
+      if (this.question.schema instanceof QuestionRadio || this.question.schema instanceof QuestionCheckBox) {
+        if (this.question.schema.options.length > 0) {
+          this.filteredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
+          this.setAnswers(this.filteredAnswers);
+        }
       }
     } else {
-      this.filtredAnswers = [];
+      this.filteredAnswers = [];
       this.resetOptions();
     }
   }
@@ -39,15 +41,22 @@ export class OptionsEvalComponent implements OnInit, OnChanges {
    * Adds to the resource passed its array of options as a new key object.
    * Then updates the options cache.
    */
-  initOptions(options: Option[]) {
+  initOptions(schema: QuestionSchema) {
     const optionsData: OptionData[] = [];
+    let _options = null;
 
-    if (!options || options.length < 1) { return optionsData; }
+    if (schema instanceof QuestionRadio || schema instanceof QuestionCheckBox) {
+      _options = schema.options;
+    } else if (this.question.schema instanceof QuestionRange) {
+      _options = [this.question.schema];
+    }
 
-    options = this.parseOptions(options);
+    if (!_options || _options.length < 1) { return optionsData; }
 
-    options.forEach((option, idx) => {
-      if (this.preview) {option.id = option.order; }
+    _options = this.parseOptions(_options);
+
+    _options.forEach((option, idx) => {
+      // if (this.preview) {option.id = option.order; }
       optionsData[idx] = {
         option: option,
         checked: false

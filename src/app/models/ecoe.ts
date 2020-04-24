@@ -1,4 +1,4 @@
-import {Item, Pagination, Route} from '@openecoe/potion-client';
+import {Item, Pagination, route, Route} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule, Stage} from './schedule';
 import {Organization} from './organization';
@@ -61,7 +61,7 @@ export interface RowStation {
   parentStation?: any[];
 }
 
-export class Answer extends Item {
+export class AnswerOld extends Item {
   id: number;
   label: string;
   order: number;
@@ -85,6 +85,9 @@ export class Student extends Item {
 
   getAnswers ? = Route.GET('/answers');
   getAllAnswers ? = Route.GET('/answers/all');
+  // getAnswersStation ? = Route.GET('/answers/station/');
+  getAnswersStation ? = (station: Number) => Route.GET('/answers/station/' + station.toString());
+
 }
 
 export interface BlockType {

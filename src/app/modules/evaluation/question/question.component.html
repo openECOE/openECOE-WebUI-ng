@@ -1,0 +1,31 @@
+<!--<nz-skeleton-->
+<!--  [nzLoading]="loading"-->
+<!--  [nzParagraph]="false"-->
+<!--  [nzActive]="true"-->
+<!--&gt;-->
+<div nz-row nzGutter="16" nzAlign="middle" style="width: 100%">
+  <div nz-col nzXs="24" nzSm="1" [innerHTML]="question['schema']['order']"></div>
+  <div nz-col nzXs="24" nzSm="14" [innerHTML]="question['schema']['description']"></div>
+  <div nz-col nzXs="24" nzSm="5">
+    <b>{{question['schema']['reference']}}</b>
+  </div>
+  <div nz-col nzXs="24" nzSm="4" [ngSwitch]="question.schema.type">
+    <nz-spin [nzSpinning]="loading" [nzDelay]="500">
+        <app-question-radio
+          *ngSwitchCase="'radio'"
+          [schemaRadio]="_questionSchema">
+        </app-question-radio>
+        <app-question-checkbox
+          *ngSwitchCase="'checkbox'"
+          [question]="_questionSchema"
+          [answer]="_questionAnswer">
+        </app-question-checkbox>
+        <app-question-range
+          *ngSwitchCase="'range'"
+          [schemaRange]="_questionSchema">
+        </app-question-range>
+    </nz-spin>
+  </div>
+
+</div>
+<!--</nz-skeleton>-->

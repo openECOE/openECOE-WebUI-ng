@@ -31,8 +31,8 @@
         <div nz-row class="left">
           <bar-rating
             (rateChange)="onOptionChange($event, optionData.option, question.questionType)"
-            [rate]="filtredAnswers.length > 0 ? optionData.option.order + 1 : 0"
-            [max]="question.options.length"
+            [rate]="filteredAnswers.length > 0 ? optionData.option.order + 1 : 0"
+            [max]="optionData.option.max_points"
             showText="true"
             theme="horizontal">
           </bar-rating>
