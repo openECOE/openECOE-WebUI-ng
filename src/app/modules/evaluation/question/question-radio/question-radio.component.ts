@@ -4,7 +4,7 @@ import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-b
 import {NzMessageService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 
-class CheckBoxOption {
+class RadioOption {
   constructor(option: QuestionOption, checked: boolean) {
     this.option = option;
     this.checked = checked;
@@ -23,7 +23,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
 
   @Input() question: QuestionRadio;
 
-  _checkBoxes: Array<CheckBoxOption> = [];
+  _RadioOptions: Array<RadioOption> = [];
 
   constructor(protected message: NzMessageService,
               protected translate: TranslateService) {
@@ -31,13 +31,13 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
   }
 
   ngOnInit() {
-    this._checkBoxes = this.loadQuestion(this.question);
+    this._RadioOptions = this.loadQuestion(this.question);
   }
 
-  loadQuestion(question: QuestionCheckBox): Array<CheckBoxOption> {
-    const _cbList: Array<CheckBoxOption> = [];
+  loadQuestion(question: QuestionRadio): Array<RadioOption> {
+    const _cbList: Array<RadioOption> = [];
     for (const opt of question.options) {
-      _cbList.push(new CheckBoxOption(opt, false));
+      _cbList.push(new RadioOption(opt, false));
     }
     return _cbList;
   }
@@ -45,28 +45,17 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
   loadSelected(answer: Answer) {
     if (answer) {
       const _selected = (answer.schema as AnswerRadio).selected;
-      for (const check of this._checkBoxes) {
+      for (const check of this._RadioOptions) {
         check.checked = _selected ? _selected.id_option === check.option.id_option : false;
       }
     }
   }
 
-  changeAnswer(answer: Answer, checkBoxOption: CheckBoxOption, checked: boolean) {
-    checkBoxOption.checked = checked;
-
-    this._checkBoxes = this._checkBoxes
-      .map(cbOption => {
-        const _option = Object.assign({}, cbOption);
-        _option.checked = cbOption.option.id_option === checkBoxOption.option.id_option ? checked : false;
-        return _option;
-      });
-
+  changeRadioAnswer(answer: Answer, id_option: number, checked: boolean = true) {
     if (answer) {
-      (answer.schema as AnswerCheckBox).selected = this._checkBoxes
-        .filter((cbOption) => cbOption.checked)
-        .map(optionChecked => ({id_option: optionChecked.option.id_option}));
-
-      this.saveAnswer(answer).finally();
+      (answer.schema as AnswerRadio).selected = checked ? (id_option != null ? {id_option: id_option} : null) : null;
+      this.saveAnswer(answer)
+        .catch(reason => console.error(reason));
     }
   }
 

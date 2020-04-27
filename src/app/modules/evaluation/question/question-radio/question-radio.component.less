@@ -26,18 +26,6 @@
   }
 }
 
-.positive-points {
-  /deep/ .ant-switch-checked {
-    background-color: #5cb85c !important;
-  }
-}
-
-.negative-points {
-  /deep/ .ant-switch-checked {
-    background-color: #CF1322 !important;
-  }
-}
-
 
 /deep/ .br-horizontal .br-unit.br-selected {
   background-color: #5cb85c !important;
@@ -61,4 +49,50 @@
 
 .rate-out {
   background-color: #fafafa;
+}
+
+.positive-points {
+  /deep/ .ant-switch-checked {
+    background-color: #5cb85c !important;
+  }
+}
+
+.negative-points {
+  /deep/ .ant-switch-checked {
+    background-color: #CF1322 !important;
+  }
+}
+
+.positive-points.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #fff;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
+  box-shadow: -1px 0 0 0 #60b760
+}
+
+.negative-points.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #fff;
+  background: #CF1322 !important;
+  border-color: #CF1322 !important;
+  box-shadow: -1px 0 0 0 #d01827
+}
+
+nz-radio-group {
+  display: block;
+  label {
+    display: block;
+    border: 1px solid #d9d9d9;
+  }
+
+  label:first-child {
+    border-radius: 4px 4px 0 0;
+  }
+
+  label:last-child {
+    border-radius: 0 0 4px 4px;
+  }
+
+  label:not(:last-child) {
+    border-bottom: 0;
+  }
 }

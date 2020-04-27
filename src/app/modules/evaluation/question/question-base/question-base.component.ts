@@ -4,7 +4,7 @@ import {NzMessageService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 
 export class QuestionBaseComponent implements OnInit {
-  private _answer: Answer = null;
+  protected _answer: Answer = null;
 
   @Input() question: QuestionBase;
 
