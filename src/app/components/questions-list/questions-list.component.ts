@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Option, Block, QuestionOld, Question, RowQuestion} from '../../models';
+import {Option, Block, Question} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {ActivatedRoute} from '@angular/router';
-import {QuestionsService} from '../../services/questions/questions.service';
+import {QuestionsService} from '@services/questions/questions.service';
 
 @Component({
   selector: 'app-questions-list',

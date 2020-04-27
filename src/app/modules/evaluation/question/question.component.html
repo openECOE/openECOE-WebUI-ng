@@ -13,7 +13,8 @@
     <nz-spin [nzSpinning]="loading" [nzDelay]="500">
         <app-question-radio
           *ngSwitchCase="'radio'"
-          [schemaRadio]="_questionSchema">
+          [question]="_questionSchema"
+          [answer]="_questionAnswer">
         </app-question-radio>
         <app-question-checkbox
           *ngSwitchCase="'checkbox'"
@@ -22,7 +23,8 @@
         </app-question-checkbox>
         <app-question-range
           *ngSwitchCase="'range'"
-          [schemaRange]="_questionSchema">
+          [question]="_questionSchema"
+          [answer]="_questionAnswer">
         </app-question-range>
     </nz-spin>
   </div>

@@ -65,18 +65,9 @@
         <tr [nzExpand]="editCache[preview ? item.order : item.id]?.expand">
           <td></td>
           <td colspan="5">
-<!--            <ng-container *ngIf="preview; else EvaluateTemplateRef" >-->
               <app-options-list
                 [question]="item">
               </app-options-list>
-<!--            </ng-container>-->
-
-            <!--<ng-template #EvaluateTemplateRef>
-              <app-options-eval
-                [question]="item">
-              </app-options-eval>
-            </ng-template>-->
-
           </td>
         </tr>
       </ng-template>

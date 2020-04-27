@@ -1,17 +1,22 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Answer, AnswerCheckBox, QuestionBase, QuestionCheckBox} from '@app/models';
+import {Input, OnInit} from '@angular/core';
+import {Answer, QuestionBase} from '@app/models';
 import {NzMessageService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 
-@Component({
-  selector: 'app-question-base',
-  templateUrl: './question-base.component.html',
-  styleUrls: ['./question-base.component.less']
-})
-export class QuestionBaseComponent implements OnInit, OnChanges {
+export class QuestionBaseComponent implements OnInit {
+  private _answer: Answer = null;
 
   @Input() question: QuestionBase;
-  @Input() answer?: Answer;
+
+  @Input()
+  set answer(answer: Answer) {
+    this._answer = answer;
+    this.loadSelected(answer);
+  }
+
+  get answer(): Answer {
+    return this._answer;
+  }
 
   constructor(protected message: NzMessageService,
               protected translate: TranslateService) {
@@ -20,15 +25,6 @@ export class QuestionBaseComponent implements OnInit, OnChanges {
   ngOnInit() {
     // Load question init values
     this.loadQuestion(this.question);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // this.loadSelected(changes.answer.currentValue, this._checkBoxes).then(cbArray => this._checkBoxes = [...cbArray]);
-    if (changes.answer) {
-      // Reload selected values
-      this.loadSelected(this.answer);
-    }
-
   }
 
   loadQuestion(question: QuestionBase) {
@@ -41,15 +37,18 @@ export class QuestionBaseComponent implements OnInit, OnChanges {
     }
   }
 
-  saveAnswer(answer: Answer) {
-    answer.save()
-      .then(value => this.answer = value)
-      .catch(reason => {
-        this.message.error(
-          this.translate.instant('ANSWER_SAVING_ERROR', {questionName: this.question.description}),
-          {nzDuration: 0});
-        console.error(reason);
-      });
+  saveAnswer(answer: Answer): Promise<Answer> {
+    return new Promise<Answer>((resolve, reject) => {
+      answer.save()
+        .then(value => {this.answer = value; resolve(value); })
+        .catch(reason => {
+          this.message.error(
+            this.translate.instant('ANSWER_SAVING_ERROR', {questionName: this.question.description}),
+            {nzDuration: 0});
+          console.error(reason);
+          reject(reason);
+        });
+    });
   }
 
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Answer, AnswerCheckBox, QuestionCheckBox, QuestionOption} from '@app/models';
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import {NzMessageService} from 'ng-zorro-antd';
@@ -19,7 +19,7 @@ class CheckBoxOption {
   templateUrl: './question-checkbox.component.html',
   styleUrls: ['./question-checkbox.component.less']
 })
-export class QuestionCheckboxComponent extends QuestionBaseComponent implements OnInit, OnChanges {
+export class QuestionCheckboxComponent extends QuestionBaseComponent implements OnInit {
 
   @Input() question: QuestionCheckBox;
 
@@ -32,14 +32,6 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
 
   ngOnInit() {
     this._checkBoxes = this.loadQuestion(this.question);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // this.loadSelected(changes.answer.currentValue, this._checkBoxes).then(cbArray => this._checkBoxes = [...cbArray]);
-    if (changes.answer) {
-      this.loadSelected(this.answer);
-    }
-
   }
 
   loadQuestion(question: QuestionCheckBox): Array<CheckBoxOption> {
@@ -61,11 +53,14 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
 
   changeAnswer(answer: Answer, checkBoxOption: CheckBoxOption, checked: boolean) {
     checkBoxOption.checked = checked;
-    (answer.schema as AnswerCheckBox).selected = this._checkBoxes
-      .filter((cbOption) => cbOption.checked)
-      .map(optionChecked => ({id_option: optionChecked.option.id_option}));
 
-    this.saveAnswer(answer);
+    if (answer) {
+      (answer.schema as AnswerCheckBox).selected = this._checkBoxes
+        .filter((cbOption) => cbOption.checked)
+        .map(optionChecked => ({id_option: optionChecked.option.id_option}));
+
+      this.saveAnswer(answer).finally();
+    }
   }
 
 }

@@ -1,13 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-import {Answer, BlockType, Option, Planner, Round, Shift, Station, Student} from '../../../models';
+import {Answer, BlockType, Planner, Round, Shift, Station, Student} from '../../../models';
 import {QuestionsService} from '@services/questions/questions.service';
 import {ApiService} from '@services/api/api.service';
-import {getPotionID, Pagination} from '@openecoe/potion-client';
+import {getPotionID} from '@openecoe/potion-client';
 import {AppComponent} from '@app/app.component';
 import {AuthenticationService} from '@services/authentication/authentication.service';
-import {debug} from 'util';
 
 @Component({
   selector: 'app-evaluate',
@@ -107,12 +106,12 @@ export class EvaluateComponent implements OnInit {
 
   getAnswers(student: Student, station: Station): Promise<Array<Answer>> {
     return new Promise<Array<Answer>>(resolve => {
-        if (student && station) {
+        if (student.id && station.id) {
           // student.getAllAnswers({cache: false, skip: ['question']}, {cache: false, skip: ['question']})
           this.queryAnswers(student, station)
             .then(answersList => resolve(answersList));
         } else {
-          resolve([]);
+          resolve(null);
         }
       }
     );
@@ -161,14 +160,12 @@ export class EvaluateComponent implements OnInit {
       this.isSpinning = true;
       this.currentStudent.student = Object.create(currentStudent);
       this.currentStudent.index = (this.students.indexOf(currentStudent) >= 0 ? this.students.indexOf(currentStudent) : 0);
-      const t0 = performance.now();
       this.getAnswers(this.currentStudent.student, this.station)
         .then(answersList => {
           this.currentStudent.answers = answersList;
-          const t1 = performance.now();
-          console.log(answersList, 'took', t1 - t0, 'milliseconds to load');
           this.isSpinning = false;
         });
+
     }
   }
 
@@ -266,5 +263,5 @@ export class EvaluateComponent implements OnInit {
 interface CurrentStudent {
   index: number;
   student: Student;
-  answers: any[];
+  answers: Array<Answer>;
 }

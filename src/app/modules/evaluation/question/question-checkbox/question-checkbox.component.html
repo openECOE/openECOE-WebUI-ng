@@ -3,9 +3,13 @@
              [ngClass]="{'switch' : question.options.length > 1 && indexOption > 0,
                             'negative-points': cb.option.points < 0,
                             'positive-points': cb.option.points >= 0}"
-             [nzCheckedChildren]="cb.option.label"
-             [nzUnCheckedChildren]="cb.option.label"
+             [nzCheckedChildren]="label"
+             [nzUnCheckedChildren]="label"
              [ngModel]="cb.checked"
              (ngModelChange)="changeAnswer(answer, cb, $event)">
   </nz-switch>
+
+  <ng-template #label>
+    <div [innerHTML]="cb.option.label"></div>
+  </ng-template>
 </ng-container>

@@ -135,6 +135,7 @@
   "ADD_STUDENT": "Añadir estudiante",
   "STUDENTS": "Alumnos",
   "NO_STUDENTS": "No hay alumnos",
+  "NO_STUDENT": "No hay alumno asignado a esta vuelta",
   "SELECT_STUDENTS": "Seleccionar estudiantes",
   "SURNAMES": "Apellidos",
   "ID_CODE": "DNI",
@@ -234,7 +235,7 @@
   "LOG_IN_ERROR": "Error al iniciar sesión",
 
   "STATION_DEPENDS_OF_STATION": "Esta estación depende de la estación: ",
-  "STATION_DEPENDS_OF_STATION_DESCRIPTION": "La primera vuelta no tiene asignado ningún alumno para su evaluación. El primer alumno se evalua en la última vuelta.",
+  "STATION_DEPENDS_OF_STATION_DESCRIPTION": "La primera vuelta no tiene asignado ningún alumno para su evaluación.<br>El primer alumno se evalua en la última vuelta.",
   "ESTIMATED_TIME_TO_FINISH": "Hora estimada de finalización: ",
   "ECOE_ALREADY_RUNNING": "La ECOE ya está en marcha.",
   "WARNING": "Atención",

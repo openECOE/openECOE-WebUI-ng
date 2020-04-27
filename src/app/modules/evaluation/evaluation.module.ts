@@ -6,14 +6,14 @@ import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import {EvaluationDetailsComponent} from './evaluation-details/evaluation-details.component';
 import {FormsModule} from '@angular/forms';
-import {PipesModule} from '../../pipes/pipes.module';
+import {PipesModule} from '@pipes/pipes.module';
 import {EvaluateComponent} from './evaluate/evaluate.component';
-import {ComponentsModule} from '../../components/components.module';
+import {ComponentsModule} from '@components/components.module';
 import {QuestionComponent} from './question/question.component';
 import {QuestionRadioComponent} from './question/question-radio/question-radio.component';
 import {QuestionCheckboxComponent} from './question/question-checkbox/question-checkbox.component';
 import {QuestionRangeComponent} from './question/question-range/question-range.component';
-import {QuestionBaseComponent} from './question/question-base/question-base.component';
+import {BarRatingModule} from 'ngx-bar-rating';
 
 @NgModule({
   imports: [
@@ -24,6 +24,10 @@ import {QuestionBaseComponent} from './question/question-base/question-base.comp
     FormsModule,
     PipesModule,
     ComponentsModule,
+    BarRatingModule,
+  ],
+  exports: [
+    QuestionComponent
   ],
   declarations: [
     EvaluationDetailsComponent,
@@ -31,8 +35,7 @@ import {QuestionBaseComponent} from './question/question-base/question-base.comp
     QuestionComponent,
     QuestionRadioComponent,
     QuestionCheckboxComponent,
-    QuestionRangeComponent,
-    QuestionBaseComponent]
+    QuestionRangeComponent]
 })
 export class EvaluationModule {
 }

@@ -1,3 +1,7 @@
-<p>
-  question-range works!
-</p>
+<bar-rating nz-row class="right"
+            (rateChange)="changeAnswer(answer, $event)"
+            [rate]="answer ? answer.schema.selected : 0"
+            [max]="question.range"
+            showText="true"
+            theme="horizontal">
+</bar-rating>
