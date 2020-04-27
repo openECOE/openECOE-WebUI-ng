@@ -35,8 +35,8 @@
           <a><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
           <a *ngIf="station"> {{station.name}} </a>
         </h2>
-        <!--        <app-chrono [round]="round" [station]="station" [idEcoe]="ecoeId">-->
-        <!--        </app-chrono>-->
+        <app-chrono [round]="round" [station]="station" [idEcoe]="ecoeId">
+        </app-chrono>
       </div>
       <div nz-col nzSpan="12" nzXs="24" nzLg="12">
         <nz-skeleton [nzLoading]="loading"
