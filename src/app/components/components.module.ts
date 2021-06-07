@@ -6,6 +6,8 @@ import {PapaParseModule} from 'ngx-papaparse';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import { MenuComponent } from './menu/menu.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import {RouterModule} from '@angular/router';
 import { QblockFormComponent } from './qblock-question-form/qblock-form/qblock-form.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -47,7 +49,9 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     ReactiveFormsModule,
     FormsModule,
     PipesModule,
-    BarRatingModule
+    BarRatingModule,
+    DragDropModule,
+    ScrollingModule
   ],
   exports: [
     UploadAndParseComponent,

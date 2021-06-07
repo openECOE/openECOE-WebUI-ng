@@ -19,7 +19,6 @@
             nzShowSizeChanger
             [nzShowPagination]="!preview"
             [nzShowQuickJumper]="false"
-
             >
     <thead>
       <tr>
@@ -32,9 +31,9 @@
       </tr>
     </thead>
 
-    <tbody>
-      <ng-template ngFor let-item let-index="index" [ngForOf]="table.data" >
-        <tr>
+    <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+      <ng-template ngFor let-item [ngForOf]="questionsList">
+        <tr cdkDrag>
           <td nzAlign="right">{{item.order || "-"}}</td>
 
           <td>{{item.description}}</td>
@@ -53,7 +52,6 @@
               {{item.options.length}} {{(item.options.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
             </nz-tag>
             <ng-container *ngIf="item.uri">
-<!--              <nz-divider [nzType]="'vertical'"></nz-divider>-->
               <app-action-buttons
                 (startEdit)="onEditQuestion(item.id)"
                 (delete)="deleteQuestion(questionsList,item.id)">
@@ -65,18 +63,9 @@
         <tr [nzExpand]="editCache[item.id]?.expand">
           <td></td>
           <td colspan="5">
-<!--            <ng-container *ngIf="preview; else EvaluateTemplateRef" >-->
               <app-options-list
                 [question]="item">
               </app-options-list>
-<!--            </ng-container>-->
-
-            <!--<ng-template #EvaluateTemplateRef>
-              <app-options-eval
-                [question]="item">
-              </app-options-eval>
-            </ng-template>-->
-
           </td>
         </tr>
       </ng-template>
