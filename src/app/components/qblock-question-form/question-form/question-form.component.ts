@@ -22,12 +22,12 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   @Output() returnData: EventEmitter<any> = new EventEmitter();
 
   questionForm: FormGroup;
-  private control: FormArray;
-  private totalItems: number = 0;
-  private totalPoints: number = 0;
-  private areas: Area[] = [];
-  private pagAreas: Pagination<Area>;
-  private ecoeId: number;
+  control: FormArray;
+  totalItems: number = 0;
+  totalPoints: number = 0;
+  areas: Area[] = [];
+  pagAreas: Pagination<Area>;
+  ecoeId: number;
 
   public questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'RB', label: 'ONE_ANSWER'},
@@ -227,7 +227,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         if (!item.order || item.order < 1) {
           item.order = this.qblock.lastOrder + (idx + 1);
         }
-      } else {
+      } else if (!item.order) {
         item.order = (idx + 1);
       }
         return item;
