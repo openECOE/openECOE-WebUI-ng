@@ -151,7 +151,7 @@
               <nz-form-control>
                 <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
                 <nz-form-explain
-                  *ngIf="getFormControl('name',i)?.dirty && getFormControl('name', i)?.hasError('required')">
+                *ngIf="getFormControl('name',i)?.dirty && getFormControl('name', i)?.hasError('required')">
                   {{'NAME_INPUT_REQUIRED' | translate}}
                 </nz-form-explain>
               </nz-form-control>

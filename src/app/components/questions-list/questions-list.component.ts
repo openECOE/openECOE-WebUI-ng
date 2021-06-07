@@ -1,3 +1,4 @@
+import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Option, QBlock, Question} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
@@ -21,8 +22,8 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   @Output() editQuestion: EventEmitter<any> = new EventEmitter<any>();
   @Output() answerQuestion: EventEmitter<any> = new EventEmitter<any>();
 
-  private questionsPage: Pagination<Question>;
-  private editCache: Array<any> = [];
+  questionsPage: Pagination<Question>;
+  editCache: Array<any> = [];
 
   page: number = 1;
   perPage: number = 10;
@@ -153,4 +154,26 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   onOptionChanged($event: any) {
     this.answerQuestion.emit($event);
   }
+
+  drop(event: CdkDragDrop<string[]>): void {
+    // this.reOrder(event.previousIndex, event.currentIndex);
+    moveItemInArray(this.questionsList, event.previousIndex, event.currentIndex);
+    this.questionsList.forEach((item, index) => {
+      const _newOrder = index + 1 + ((this.page - 1) * this.perPage);
+      const _oldOrder = item.order;
+      if (_newOrder !== _oldOrder ) {
+        item.order = _newOrder;
+        item.save();
+      }
+    });
+  }
+
+  reOrder(prevIdx: number, currIdx: number) {
+    this.questionsList.forEach((item, index) => {
+      this.questionsList[index].order = index > currIdx ? item.order + 1 : item.order - 1;
+    });
+    this.questionsList[prevIdx].order = currIdx + 1;
+    this.questionsList.sort((a, b) => a.order > b.order ? 1 : -1);
+  }
+
 }

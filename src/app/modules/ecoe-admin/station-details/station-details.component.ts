@@ -15,10 +15,10 @@ import {QUESTIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
 })
 export class StationDetailsComponent implements OnInit {
   readonly QUESTIONS_URL = QUESTIONS_TEMPLATE_URL;
-  private editCache: { edit: boolean, new_item: boolean, item: QBlock, expand?: boolean }[] = [];
-  private refreshQuestions: boolean = false;
-  private defaultExpand: boolean = false;
-  private pagQblocks: any;
+  public editCache: { edit: boolean, new_item: boolean, item: QBlock, expand?: boolean }[] = [];
+  public refreshQuestions: boolean = false;
+  public defaultExpand: boolean = false;
+  public pagQblocks: any;
   selectedQblock: {id: number, lastOrder: number} = {id: null, lastOrder: null};
   drawerQUestionVisible: boolean = false;
   questionToEdit: RowQuestion[] = [];
