@@ -21,13 +21,13 @@ export class QblockQuestionFormComponent implements OnInit {
 
   current = 0;
 
-  private qblocksToAdd: QBlock[] = [];
-  private questionsToAdd: any[] = [];
+  qblocksToAdd: QBlock[] = [];
+  questionsToAdd: any[] = [];
 
-  private qblockForm: FormGroup;
-  private control: FormArray;
+  qblockForm: FormGroup;
+  control: FormArray;
 
-  private rowQblock: RowQblock = {
+  rowQblock: RowQblock = {
     name: ['', Validators.required]
   };
 

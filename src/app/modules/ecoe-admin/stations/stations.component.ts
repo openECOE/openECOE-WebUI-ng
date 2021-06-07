@@ -26,14 +26,14 @@ export class StationsComponent implements OnInit {
   isVisible: boolean;
   stationForm: FormGroup;
   ecoeId: number;
-  private ecoe: ECOE;
+  ecoe: ECOE;
   ecoe_name: String;
-  private editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
-  public  index: number = 1;
-  private pagStations: any;
-  private control: FormArray;
-  private selectOptions: any [] = [];
-  private rowStation: RowStation = {
+  editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
+  index: number = 1;
+  pagStations: any;
+  control: FormArray;
+  selectOptions: any [] = [];
+  rowStation: RowStation = {
     order: [''],
     name: ['', Validators.required],
     parentStation: ['']

@@ -25,5 +25,9 @@
       "@components/*": ["app/components/*"],
       "@models/*": ["app/models/*"]
     }
-  }
+    },
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }
