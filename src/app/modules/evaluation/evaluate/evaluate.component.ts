@@ -222,15 +222,13 @@ export class EvaluateComponent implements OnInit {
     }
   }
 
-  removeAnswer(studentId: number, option: Object) {
+  removeAnswer(studentId: number, option: Option) {
     if (!studentId || studentId < 0) { return; }
     let count = 0;
     this.apiService.removeAnswer(studentId, option)
       .toPromise()
       .catch( err => {
         console.error(err);
-        count++;
-        if (count <= 2) {this.removeAnswer(studentId, option); }
       });
   }
 
