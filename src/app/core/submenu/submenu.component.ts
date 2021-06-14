@@ -30,15 +30,40 @@ export class SubmenuComponent implements OnInit {
         this.ecoeId = +val.urlAfterRedirects.split('/')[2];
         const activeLink = val.urlAfterRedirects.split('/')[3];
 
-        const submenus = {
-          ECOE: [
-            { title: 'CONFIGURATION', redirecTo: `/ecoe/${this.ecoeId}/admin`, active: activeLink === 'admin' },
-            { title: 'EVALUATION', redirecTo: `/ecoe/${this.ecoeId}/eval`, active: activeLink === 'eval' },
-            { title: 'SCHEDULE', redirecTo: `/ecoe/${this.ecoeId}/chrono`, active: activeLink === 'chrono' }
-          ]
-        };
+        const _userData = this.authService.userData;
 
-        this.submenu2build = submenus[this.submenuSelected];
+        if (_userData) {
+          const isEval = _userData.roles.includes('evaluator');
+          const isAdmin = _userData.roles.includes('administrator');
+
+          const submenus = {
+            ECOE: [
+              {
+                title: 'CONFIGURATION',
+                redirecTo: `/ecoe/${this.ecoeId}/admin`,
+                active: activeLink === 'admin',
+                show: isAdmin,
+              },
+              {
+                title: 'EVALUATION',
+                redirecTo: `/ecoe/${this.ecoeId}/eval`,
+                active: activeLink === 'eval',
+                show: isEval || isAdmin,
+              },
+              {
+                title: 'SCHEDULE',
+                redirecTo: `/ecoe/${this.ecoeId}/chrono`,
+                active: activeLink === 'chrono',
+                show: isAdmin,
+              },
+            ],
+          };
+
+          submenus.ECOE = submenus.ECOE.filter(s => s.show);
+
+          this.submenu2build = submenus[this.submenuSelected];
+          // this.submenu2build = submenus[this.submenuSelected];
+        }
       });
   }
 

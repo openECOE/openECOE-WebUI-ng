@@ -1,6 +1,6 @@
 import {Item, Route} from '@openecoe/potion-client';
 import {Organization} from './organization';
-import {Role} from './role';
+import {enumRole, Role} from './role';
 
 export class User extends Item {
   id: number;
@@ -12,15 +12,17 @@ export class User extends Item {
   organization: Organization;
   password: string;
 
-  me = Route.GET<User>('/me');
+  roles = Route.GET<Array<Role>>('/roles');
 }
 
 export class UserLogged {
   user: User;
   role: string;
+  roles: Array<String>;
 
   constructor(user: User) {
     this.user = user;
-    this.role = user.is_superadmin ? Role.Admin : null;
+    this.role = user.is_superadmin ? enumRole.Admin : null;
+    this.roles = [];
   }
 }

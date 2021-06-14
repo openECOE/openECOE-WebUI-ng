@@ -5,7 +5,7 @@ import {HttpClient} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
 import {ApiService} from '../api/api.service';
 import {Router} from '@angular/router';
-import {UserLogged} from '../../models';
+import {UserLogged, User, Role} from '../../models';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class AuthenticationService {
     return this.http.post(environment.API_ROUTE + this.authUrl, userData).pipe(
       map((data: any) => {
         localStorage.removeItem('userLogged');
-        
+
         if (data) {
           localStorage.setItem('userLogged', JSON.stringify(data));
           this.loadUserData();
@@ -60,9 +60,15 @@ export class AuthenticationService {
   loadUserData() {
     return this.apiService.getResource('/api/v1/users/me')
       .pipe( map(
-        data => {
+        async data => {
           const user = new UserLogged(data);
-          return localStorage.setItem('userData', JSON.stringify(user));
+          const _roles: Array<Role> = await (await User.fetch<User>(data.id)).roles();
+
+          for (const _role of _roles) {
+            user.roles.push(_role.name);
+          }
+          localStorage.setItem('userData', JSON.stringify(user));
+          return user;
         },
         err => {
           if (err.status === 401) {
