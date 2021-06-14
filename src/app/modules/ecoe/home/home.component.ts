@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit {
   isAdmin: boolean;
 
   constructor(private formBuilder: FormBuilder,
-              private authService: AuthenticationService,
+              public authService: AuthenticationService,
               private apiService: ApiService,
               private modalSrv: NzModalService,
               private translate: TranslateService) { }
@@ -55,7 +55,9 @@ export class HomeComponent implements OnInit {
       })
     ).subscribe(ecoes => {
       this.ecoes = ecoes;
-      this.ecoes.unshift([undefined]);
+      if (this.isAdmin) {
+        this.ecoes.unshift([undefined]);
+      }
     });
   }
 
@@ -77,7 +79,7 @@ export class HomeComponent implements OnInit {
         this.modalSrv.error({
           nzMask: false,
           nzTitle: msg
-        }); 
+        });
       });
   }
 }
