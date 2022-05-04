@@ -28,7 +28,7 @@
     <thead>
     <tr>
       <th [nzExpand]="true">
-        <a (click)="getQblocks(id_station)">
+        <a (click)="getQblocks(station)">
           <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
@@ -36,7 +36,7 @@
       <th nzWidth="77%">{{"NAME" | translate}}</th>
       <th nzWidth="12%" style="min-width: 165px;">
         <nz-button-group class="margin-left right">
-          <app-upload-and-parse [fileURL]="QUESTIONS_URL" (parserResult)="importQblocksWithQuestions($event, id_station)"></app-upload-and-parse>
+          <app-upload-and-parse [fileURL]="QUESTIONS_URL" (parserResult)="importQblocksWithQuestions($event, station)"></app-upload-and-parse>
         </nz-button-group>
       </th>
       <th nzWidth="6%" style="min-width: 65px;"></th>
