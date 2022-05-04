@@ -32,11 +32,11 @@ export class QuestionsService {
    * Simple method that calls #mapFile for map initial array to specific structure
    * and later calls #saveArrayQuestions.
    * @param items array of object to parse
-   * @param stationId id of the station
+   * @param station station object
    */
-  importQblockWithQuestions(items: any[], stationId: number) {
+  importQblockWithQuestions(items: any[], station: Station) {
     const blocksWithQuestions = this.mapFile(items);
-    return this.saveImportedItems(blocksWithQuestions, stationId);
+    return this.saveImportedItems(blocksWithQuestions, station);
   }
 
   /**
@@ -81,7 +81,7 @@ export class QuestionsService {
    * @param file obtained from form array or array form.
    * @param stationId id of the station.
    */
-  private saveImportedItems(file: BlockType[], stationId: number) {
+  private saveImportedItems(file: BlockType[], station: Station) {
     let currentBlockId: number;
 
     if (!file) {
@@ -89,16 +89,16 @@ export class QuestionsService {
     }
 
     return Promise.all(file.map(async (block, idx) => {
-        await this.hasQblock(block.name, stationId)
+        await this.hasQblock(block.name, station)
           .then(async (result) => {
             if (result && (<Array<any>>result).length === 1) {
               currentBlockId = result[0]['id'];
-              return await this.addQuestions(block.questions, currentBlockId);
+              return await this.addQuestions(block.questions, currentBlockId, station);
             } else if (!result) {
-              return await this.addQblock(block.name, (idx + 1), stationId)
+              return await this.addQblock(block.name, (idx + 1), station)
                 .then(async res => {
                   currentBlockId = res['id'];
-                  return await this.addQuestions(block.questions, currentBlockId);
+                  return await this.addQuestions(block.questions, currentBlockId, station);
                 })
                 .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
             }
@@ -141,7 +141,7 @@ export class QuestionsService {
    * @param name of the block to verify if exists
    * @param station whose block name to search
    */
-  private hasQblock(name: string, station: number) {
+  private hasQblock(name: string, station: Station) {
     return new Promise((resolve, reject) => {
       QBlock.query({
         where: {name: name, station: station}
@@ -163,10 +163,10 @@ export class QuestionsService {
    * Method to add a new block
    * @param name the name of the block
    * @param order his order position
-   * @param stationId id of the station
+   * @param station station
    */
-  addQblock(name: string, order: number, stationId: number) {
-    const qblock = new QBlock({name: name, station: stationId, order: order});
+  addQblock(name: string, order: number, station: Station) {
+    const qblock = new QBlock({name: name, station: station, order: order});
     return qblock.save()
       .catch(reason => {
         this.logPromisesERROR.push({value: qblock, reason: reason});
@@ -174,8 +174,8 @@ export class QuestionsService {
       });
   }
 
-  private async getArea(area: any) {
-    return (area instanceof Area) ? area : (await Area.first({where: {code: (area + '')}}));
+  private async getArea(area: Area | string, ecoe: number) {
+    return (area instanceof Area) ? area : (await Area.first({where: {code: (area + ''), ecoe: ecoe}}));
   }
 
   private async addOptions(questionItem: RowQuestion, idQuestion: number) {
@@ -228,10 +228,10 @@ export class QuestionsService {
    * @param items array of questions
    * @param idBlock which questions will be asociated
    */
-  async addQuestions(items: any[], idBlock: number) {
+  async addQuestions(items: any[], idBlock: number, station: Station) {
     for (const item of items) {
       const body = {
-        area: (await this.getArea(item[this.HEADER.ac])),
+        area: (await this.getArea(item[this.HEADER.ac], station.ecoe.id)),
         description: item[this.HEADER.description],
         options: [],
         order: item[this.HEADER.order],

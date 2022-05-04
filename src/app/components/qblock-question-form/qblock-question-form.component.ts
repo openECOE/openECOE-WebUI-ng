@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {QBlock} from '../../models';
+import {QBlock, Station} from '../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {RowQblock} from '../../pages/admin/ecoe/questions/questions.component';
 import {QuestionsService} from '../../services/questions/questions.service';
@@ -11,7 +11,7 @@ import {QuestionsService} from '../../services/questions/questions.service';
 })
 export class QblockQuestionFormComponent implements OnInit {
 
-  @Input() id_station: number;
+  @Input() station: Station;
   @Input() n_qblocks: number;
 
   @Output() saved: EventEmitter<boolean> = new EventEmitter();
@@ -52,9 +52,9 @@ export class QblockQuestionFormComponent implements OnInit {
     if (this.getCurrent() !== 2) {
       if (!this.validQuestions()) { return new Promise((resolve, reject) => reject(false)); }
     }
-    return this.questionService.saveArrayQblocks(this.qblocksToAdd, this.id_station, this.n_qblocks)
+    return this.questionService.saveArrayQblocks(this.qblocksToAdd, this.station.id, this.n_qblocks)
       .catch((err) => new Promise((resolve, reject) => reject(err)) )
-      .then(result => this.questionService.addQuestions(this.questionsToAdd, result[0].id) );
+      .then(result => this.questionService.addQuestions(this.questionsToAdd, result[0].id, this.station) );
   }
 
   pre(): void {
