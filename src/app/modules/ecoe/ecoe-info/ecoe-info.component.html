@@ -32,7 +32,7 @@
    <div nz-col [nzMd]="8" class="gutter-box">
      <nz-card nzTitle="{{ 'AREAS' | translate }}" [nzExtra]="linkAreas">
        <div nz-row>
-        <nz-alert nzType="info" nzMessage="{{areas?areas.length:0}} {{ 'AREAS' | translate }}"></nz-alert>
+        <nz-alert nzType="info" nzMessage="{{areasTotal}} {{ 'AREAS' | translate }}"></nz-alert>
        </div>
       </nz-card>
       <ng-template #linkAreas>
@@ -43,7 +43,7 @@
    <div nz-col [nzMd]="8" class="gutter-box">
       <nz-card nzTitle="{{ 'STATIONS' | translate }}" [nzExtra]="linkEstaciones">
         <nz-alert *ngIf="!show_stations" nzType="error" nzMessage="{{ 'NO_EXIST_AREAS' | translate }}"></nz-alert>
-        <nz-alert *ngIf="show_stations" nzType="info" nzMessage="{{stations?stations.length:0}} {{ 'STATIONS' | translate }}"></nz-alert>
+        <nz-alert *ngIf="show_stations" nzType="info" nzMessage="{{stationsTotal}} {{ 'STATIONS' | translate }}"></nz-alert>
       </nz-card>
       <ng-template #linkEstaciones>
         <button [disabled]="!show_stations" nz-button [nzType]="primary" [routerLink]="['stations']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
@@ -53,7 +53,7 @@
     <div nz-col [nzMd]="8" class="gutter-box">
       <nz-card nzTitle="{{ 'SCHEDULE' | translate }}" [nzExtra]="linkCronometros">
         <nz-alert *ngIf="!show_schedules" nzType="error" nzMessage="{{ 'NO_EXIST_STATIONS' | translate }}"></nz-alert>
-        <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{stages?stages.length:0}} {{ 'STAGES' | translate }}"></nz-alert>
+        <nz-alert *ngIf="show_schedules" nzType="info" nzMessage="{{stagesTotal}} {{ 'STAGES' | translate }}"></nz-alert>
        </nz-card>
        <ng-template #linkCronometros>
          <button [disabled]="!show_schedules" nz-button [nzType]="primary" [routerLink]="['schedule']" ><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
@@ -63,7 +63,7 @@
    <div nz-col [nzMd]="8" class="gutter-box">
      <nz-card nzTitle="{{ 'STUDENTS' | translate}}" [nzExtra]="linkEstudiantes">
        <nz-alert *ngIf="!show_students" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate}}"></nz-alert>
-       <nz-alert *ngIf="show_students" nzType="info" nzMessage="{{students?students.length:0}} {{ 'STUDENTS' | translate}}"></nz-alert>
+       <nz-alert *ngIf="show_students" nzType="info" nzMessage="{{studentsTotal}} {{ 'STUDENTS' | translate}}"></nz-alert>
       </nz-card>
       <ng-template #linkEstudiantes>
         <button [disabled]="!show_students" nz-button [nzType]="primary" [routerLink]="['students']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
@@ -73,7 +73,7 @@
    <div nz-col [nzMd]="8" class="gutter-box">
      <nz-card nzTitle="Planificador" [nzExtra]="linkPlanificador">
        <nz-alert *ngIf="!show_planner" nzType="error" nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate }}"></nz-alert>
-       <nz-alert *ngIf="show_planner" nzType="info" nzMessage="{{rounds?rounds.length:0}} {{ 'ROUNDS' | translate }}, {{shifts?shifts.length:0}} {{ 'SHIFTS' | translate }}"></nz-alert>
+       <nz-alert *ngIf="show_planner" nzType="info" nzMessage="{{roundsTotal}} {{ 'ROUNDS' | translate }}, {{shiftsTotal}} {{ 'SHIFTS' | translate }}"></nz-alert>
       </nz-card>
       <ng-template #linkPlanificador>
         <button [disabled]="!show_planner" nz-button [nzType]="primary" [routerLink]="['planner']"><i nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>

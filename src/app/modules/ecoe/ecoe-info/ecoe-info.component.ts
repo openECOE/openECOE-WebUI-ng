@@ -1,12 +1,18 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Location} from '@angular/common';
-import { ECOE, Schedule } from '@models/index';
+import { Area, ECOE, Round, Schedule, Shift, Stage, Station, Student } from '@models/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ChronoService } from '@services/chrono/chrono.service';
+import { Item, Pagination } from '@openecoe/potion-client';
+
+
+interface Class<T> {
+  new(...args: any[]): T;
+}
 
 @Component({
   selector: 'app-ecoe-info',
@@ -19,17 +25,13 @@ export class EcoeInfoComponent implements OnInit {
   ecoeName: String ;
   ecoe: ECOE;
 
-  areas: any;
-  stations: any;
-  students: any;
-  rounds: any;
-  shifts: any;
-  stages: any;
+  areasTotal: number;
+  stationsTotal: number;
+  studentsTotal: number;
+  roundsTotal: number;
+  shiftsTotal: number;
+  stagesTotal: number;
   show_areas: Boolean = true;
-  show_stations: Boolean;
-  show_schedules: Boolean;
-  show_students: Boolean;
-  show_planner: Boolean;
 
   // Eliminar ECOE
   eliminando: Boolean = false;
@@ -76,56 +78,29 @@ export class EcoeInfoComponent implements OnInit {
 
       this.ecoe_name_form.get('ecoe_name_2edit').setValue(this.ecoe.name);
 
-      this.ecoe.areas().then(response => {
-          this.areas = response;
-          if (this.stations) {
-            this.show_stations = (this.areas && this.areas.length > 0) || (this.stations && this.stations.length > 0);
-          }
+      this.getTotalItems(Area).then(cont => {
+        this.areasTotal = cont;
       });
 
-      this.ecoe.stations().then(response => {
-        this.stations = response;
-        if (this.areas) {
-          this.show_stations = (this.areas && this.areas.length > 0) || (this.stations && this.stations.length > 0);
-        }
-        if (this.stages) {
-          this.show_schedules = (this.stations && this.stations.length > 0) || (this.stages && this.stages.length > 0);
-        }
+      this.getTotalItems(Station).then(cont => {
+        this.stationsTotal = cont;
       });
 
-      this.ecoe.rounds().then(response => {
-        this.rounds = response;
-        if (this.shifts && this.stages){
-          this.show_planner = (this.stages && this.stages.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
-        }
-      });
-
-      this.ecoe.shifts().then(response => {
-        this.shifts = response;
-        if (this.rounds && this.stages){
-          this.show_planner = (this.stages && this.stages.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
-        }
-      });
-
-      this.ecoe.students()
-        .then(response => {
-          this.students = response;
-          if (this.stages){
-            this.show_students = (this.stages && this.stages.length > 0) || (this.students && this.students.length > 0);
-          }
+      this.getTotalItems(Student)
+        .then(cont => {
+          this.studentsTotal = cont;
         });
 
-      this.ecoe.schedules().then((response:Schedule[]) => {
-        this.stages = Array.from(new Set(response.map(m => m.stage)));
-        if (this.students){
-          this.show_students = (this.stages && this.stages.length > 0) || (this.students && this.students.length > 0);
-        }
-        if (this.rounds && this.shifts) {
-          this.show_planner = (this.stages && this.stages.length > 0) || (this.rounds && this.rounds.length > 0) || (this.shifts && this.shifts.length > 0);
-        }
-        if (this.stations) {
-          this.show_schedules = (this.stations && this.stations.length > 0) || (this.stages && this.stages.length > 0);
-        }
+      this.getTotalItems(Round).then(cont => {
+        this.roundsTotal = cont;
+      });
+
+      this.getTotalItems(Shift).then(cont => {
+        this.shiftsTotal = cont;
+      });
+
+      this.getTotalItems(Schedule).then(cont => {
+        this.stagesTotal = cont;
       });
 
     });
@@ -228,6 +203,32 @@ export class EcoeInfoComponent implements OnInit {
     ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
       this.ecoe = value;
     });
+  }
+
+  get show_students(): boolean {
+    return this.stagesTotal > 0 || this.studentsTotal > 0;
+  }
+
+  get show_stations(): boolean {
+    return this.areasTotal > 0 || this.stationsTotal > 0;
+  }
+
+  get show_schedules(): boolean {
+    return this.stationsTotal > 0 || this.stagesTotal > 0;
+  }
+
+  get show_planner(): boolean {
+    return this.stagesTotal > 0 || this.roundsTotal > 0 || this.shiftsTotal > 0;
+  };
+  
+  async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
+    const _pag: Pagination<Item> = await (itemClass as unknown as Item).query({
+      where: {ecoe: this.ecoe},
+      page: 1,
+      perPage: 1
+    }, {paginate: true});
+
+    return _pag.total;
   }
 
 }
