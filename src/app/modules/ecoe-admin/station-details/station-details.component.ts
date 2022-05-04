@@ -50,15 +50,15 @@ export class StationDetailsComponent implements OnInit {
         this.station = response;
         this.ecoe_name = response.ecoe.name;
         this.ecoeId = response.ecoe.id;
-      });
 
-      this.getQblocks(this.id_station);
+        this.getQblocks(this.station);
+      });
     });
   }
 
-  importQblocksWithQuestions(items: any[], stationId: number) {
-    this.questionService.importQblockWithQuestions(items, stationId)
-      .then(() => this.getQblocks(stationId))
+  importQblocksWithQuestions(items: any[], station: Station) {
+    this.questionService.importQblockWithQuestions(items, station)
+      .then(() => this.getQblocks(station))
       .catch( err => console.log(err))
       .finally(() => this.loading = false);
   }
@@ -67,11 +67,11 @@ export class StationDetailsComponent implements OnInit {
     this.router.navigate(['/ecoe/' + this.ecoeId + '/admin/stations']).finally();
   }
 
-   getQblocks(stationId: number) {
+   getQblocks(station: Station) {
      this.loading = true;
 
       QBlock.query({
-        where: {station: stationId},
+        where: {station: station},
         sort: {order: false},
         page: this.page,
         perPage: this.perPage
@@ -126,7 +126,7 @@ export class StationDetailsComponent implements OnInit {
    */
   pageSizeChange(pageSize: number) {
     this.perPage = pageSize;
-    this.getQblocks(this.id_station);
+    this.getQblocks(this.station);
   }
 
   /**
@@ -151,7 +151,7 @@ export class StationDetailsComponent implements OnInit {
       nzOnOk: () => {
         this.deleteQuestionsByQblock(qblock.id)
           .then(() => qblock.destroy()
-              .then(() => this.getQblocks(this.id_station))
+              .then(() => this.getQblocks(this.station))
           );
       }},
       'confirm');
@@ -240,7 +240,7 @@ export class StationDetailsComponent implements OnInit {
     }
     this.isVisible = false;
     this.questionToEdit = [];
-    this.getQblocks(this.id_station);
+    this.getQblocks(this.station);
   }
 
   onItemClicked(item: any) {
@@ -272,7 +272,7 @@ export class StationDetailsComponent implements OnInit {
         .catch(err => console.error('ERROR: ', err))
         .finally(() => this.closeDrawer('question'));
     } else {
-      this.questionService.addQuestions(questions, this.selectedQblock.id)
+      this.questionService.addQuestions(questions, this.selectedQblock.id, this.station)
         .then(() => this.sendRefreshQuestions())
         .catch(err => console.error('ERROR: ', err))
         .finally(() => this.closeDrawer('question'));

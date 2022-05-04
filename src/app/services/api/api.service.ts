@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {map} from 'rxjs/operators';
+import { Option } from '@app/models';
 
 /**
  * Service with the HTTP requests to the backend.
@@ -19,13 +20,10 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  removeAnswer(studentId: number, option: Object) {
-    const url = `${environment.API_ROUTE}/${this.apiUrl}/students/${studentId}/answers`;
+  removeAnswer(studentId: number, option: Option) {
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/students/${studentId}/answers/${option.id}`;
     const options = {
-      headers: new HttpHeaders(),
-      body: {
-        '$ref': '/api/v1' + option['uri']
-      }
+      headers: new HttpHeaders()
     };
     return this.http.delete(url, options);
   }

@@ -1,6 +1,7 @@
 import {AfterContentInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {RowOption} from '@app/models';
+
 @Component({
   selector: 'app-option-form',
   templateUrl: './option-form.component.html',
@@ -9,7 +10,7 @@ import {RowOption} from '@app/models';
 export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit {
 
   @Input() questionOrder: number;
-  @Input() type: 'RB' | 'CH'  | 'RS';
+  @Input() type: 'RB' | 'CH'  | 'RS' | string;
   @Input() optionsCache: RowOption[] = [];
 
   @Output() returnData:   EventEmitter<any> = new EventEmitter();
@@ -30,20 +31,26 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   private defaultTextValues: string[] = ['Sí'];
   public questionTypeOptions: string[] = ['RB', 'CH', 'RS'];
 
-  constructor(private fb: FormBuilder) { }
+  constructor(
+    private fb: FormBuilder) { }
 
   ngOnInit() {
     this.initOptionForm();
   }
 
   ngAfterContentInit() {
-     this.initOptionRow();
+    this.initOptionRow();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.type && changes.type.currentValue && !changes.type.firstChange) {
-      this.optionsCache = [];
-      this.initOptionRow(changes.type.previousValue);
+      if (changes.type.currentValue === 'RS') {
+        this.optionsCache = [];
+        this.initOptionRow(changes.type.previousValue);
+      } else if (changes.type.previousValue === 'RS') {
+        this.initOptionRow(changes.type.previousValue);
+      }
+      this.getTotalPoints();
     }
   }
 
@@ -194,13 +201,13 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   /**
    * Adds new row (name and order fields) station to the form
    */
-  initOptionRow(previusValue?: string) {
+  initOptionRow(prevValue?: string) {
     const DEFAULT_N_CH_ROWS = 2;
 
     if (this.type === this.questionTypeOptions[0]) {// RB
       this.initRBrow();
     } else if (this.type === this.questionTypeOptions[1]) {// CH
-      this.initCHrow(DEFAULT_N_CH_ROWS, previusValue);
+      this.initCHrow(DEFAULT_N_CH_ROWS, prevValue);
     } else if (this.type === this.questionTypeOptions[2]) { // RS
       this.initRSrow();
     }
