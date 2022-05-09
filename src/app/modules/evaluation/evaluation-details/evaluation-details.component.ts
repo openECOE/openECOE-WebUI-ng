@@ -48,7 +48,7 @@ export class EvaluationDetailsComponent implements OnInit {
       this.momentRef.locale(this.shared.getUsersLocale('en-US'));
       await this.getUrlParams();
       this.setupCurrentStep();
-      this.getData(this.ecoe).then(() => {
+      this.getData(this.ecoeId).then(() => {
           this.getShiftDays(this.shifts);
           this.getSelectedShift();
           this.onChangeECOEDay(this.ecoeDays[this.selectedIndexShift]);
@@ -64,50 +64,41 @@ export class EvaluationDetailsComponent implements OnInit {
     let selectedItem = null;
     if (items && items.length === 1) {
       selectedItem = items[0];
-      this.currentStep++;
     }
 
     return selectedItem;
   }
 
-  getUrlParams() {
-    const params = this.route.snapshot.params;
+  async getUrlParams() {
+    try {
+      const params = this.route.snapshot.params;
 
-    this.ecoeId = +params['ecoeId'];
-    this.selectedEcoeDay = params['date'];
-
-    return  new Promise((resolve, reject) => {
-      const ecoePromise = ECOE.fetch(this.ecoeId)
-        .then((ecoe: ECOE) => this.ecoe = ecoe )
-        .catch((err) => reject(err));
+      this.ecoeId = +params['ecoeId'];
+      this.selectedEcoeDay = params['date'];
 
       if (params['roundId'] && params['stationId']) {
-        const roundPromise = Round.fetch(params['roundId'])
-          .then((round: Round) => this.selectedRound = round )
-          .catch((err) => reject(err));
+        this.selectedRound = await Round.fetch(params['roundId'])
 
-        const stationPromise = Station.fetch(params['stationId'])
-          .then((station: Station) => this.selectedStation = station )
-          .catch((err) => reject(err));
-
-        Promise.all([roundPromise, stationPromise, ecoePromise]).then(() => resolve());
-      } else {
-        Promise.all([ecoePromise]).then(() => resolve());
+        this.selectedStation = await Station.fetch(params['stationId'])
       }
-    });
+    } catch (error) {
+      console.error(error);
+    }
+
   }
 
   setupCurrentStep() {
     this.currentStep = 0;
     if (this.selectedEcoeDay) {
       this.currentStep++;
+      if (this.selectedRound) {
+        this.currentStep++;
+        if (this.selectedStation) {
+          this.currentStep++;
+        }
+      }
     }
-    if (this.selectedRound) {
-      this.currentStep++;
-    }
-    if (this.selectedStation) {
-      this.currentStep++;
-    }
+    
   }
 
   getShiftDays(shifts: Shift[]) {
@@ -120,7 +111,9 @@ export class EvaluationDetailsComponent implements OnInit {
     });
     this.ecoeDays = aux_arr;
 
-    if (!this.selectedEcoeDay) {this.selectedEcoeDay = this.checkForNextStep(this.ecoeDays); }
+    if (!this.selectedEcoeDay) {
+      this.selectedEcoeDay = this.checkForNextStep(this.ecoeDays); 
+    }
   }
 
   onChangeECOEDay(shiftDate: string) {
@@ -165,15 +158,23 @@ export class EvaluationDetailsComponent implements OnInit {
     this.doSpinning(300);
   }
 
-  getData(ecoe: ECOE) {
-    const roundsPromise = ecoe.rounds()
-      .then((rounds: Round[]) => {
+  getData(ecoe: number) {
+    const roundsPromise = Round.query({
+      where: {'ecoe': ecoe}
+    }).then((rounds: Round[]) => {
         this.rounds = rounds;
         if (!this.selectedRound) {this.selectedRound = this.checkForNextStep(rounds); }
+      }).catch(err => {
+        console.error('[EvaluationDetailsComponent]','getData()','Round.query',err);
+        return err;
       });
-    const shiftsPromise = ecoe.shifts()
-      .then((shifts: any[]) => {
+    const shiftsPromise = Shift.query({
+      where: {'ecoe': ecoe}
+    }).then((shifts: any[]) => {
         this.shifts = shifts;
+      }).catch(err => {
+        console.error('[EvaluationDetailsComponent]','getData()','Shift.query',err);
+        return err;
       });
     const stationsPromise = this.getStations();
 
@@ -190,6 +191,9 @@ export class EvaluationDetailsComponent implements OnInit {
     }).then( (stations: Station[]) => {
       this.stations = stations;
       if (!this.selectedStation) {this.selectedStation = this.checkForNextStep(stations); }
+    }).catch(err => {
+      console.error('[EvaluationDetailsComponent]','getStations()',err);
+      return err;
     });
   }
 
