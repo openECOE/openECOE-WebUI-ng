@@ -3,16 +3,13 @@
   "ADMIN": "Administración",
   "HOME": "Inicio",
   "LOGIN": "Inicio de sesión",
-
   "CREATE_ECOE": "Crear nueva ECOE",
   "ECOE_NAME": "Nombre de la ECOE",
   "DELETE_ECOE": "Archivar ECOE",
   "ARCHIVE": "Archivar",
   "START_STOP_ECOE": "Iniciar/Detener ECOE",
   "EDIT_ECOE": "Editar ECOE",
-
   "ORGANIZATION": "Organización",
-
   "STATIONS": "Estaciones",
   "NO_STATIONS": "No hay estaciones",
   "STATION_NOT_FOUND": "Estación no encontrada",
@@ -24,12 +21,9 @@
   "CHILD_STATIONS": "Subestaciones",
   "STATION_SELECT": "Seleccione estación",
   "ALL_STATIONS": "Todas Estaciones",
-
   "INFORMATION": "Información",
   "ANSWER": "Respuesta",
-
   "CONTROL_PANEL": "Panel de Control",
-
   "USER": "Usuario",
   "USERS": "Usuarios",
   "USER_ADMIN": "Administrador",
@@ -37,20 +31,16 @@
   "USER_EVAL": "Evaluador",
   "USERS_EVAL": "Evaluadores",
   "ADD_USER": "Añadir usuario",
-
   "EMAIL": "Correo electrónico",
   "EMAIL_NOT_VALID": "¡No es un correo electrónico válido!",
   "EMAIL_REQUIRED": "Por favor indique el correo electrónico",
-
   "PASSWORD": "Contraseña",
   "PASSWORD_NOT_VALID": "¡No es una contraseña válida!",
   "PASSWORD_REQUIRED": "Por favor indique una contraseña",
-
   "ROUND": "Rueda",
   "ROUNDS": "Rondas",
   "NO_ROUNDS": "No hay rondas",
   "ADD_ROUND": "Añadir ronda",
-
   "SHIFT": "Turno",
   "SHIFTS": "Turnos",
   "NO_SHIFTS": "No hay turnos",
@@ -59,7 +49,6 @@
   "DATE": "Fecha",
   "SELECT_HOUR": "Elegir hora...",
   "HOUR": "Hora",
-
   "AREAS": "Áreas",
   "AREA": "Área",
   "NO_AREAS": "No hay áreas",
@@ -67,11 +56,9 @@
   "AREAS_NUMBER": "Número de áreas",
   "AREA_NAME": "Nombre del área",
   "CHANGE_AREA": "Cambiar área",
-
   "CODE": "Código",
   "CODE_PLACEHOLDER": "Introduzca el código...",
   "CODE_INPUT_REQUIRED": "El campo código es obligatorio.",
-
   "QUESTIONS": "Preguntas",
   "ADD_QUESTIONS": "Añadir preguntas",
   "ADD_QUESTION": "Añadir pregunta",
@@ -80,7 +67,6 @@
   "DESCRIPTION": "Descripción",
   "QUESTION_TYPE": "Tipo de pregunta",
   "GO_TO_QUESTIONS": "Ir a preguntas",
-
   "OPTION": "Opción",
   "OPTIONS": "Opciones",
   "OPTIONS_NUMBER": "Número de opciones",
@@ -93,11 +79,9 @@
   "ORDER": "Orden",
   "OPTIONAL": "opcional",
   "SELECT_VALUE": "Seleccionar un valor...",
-
   "RERUN": "Vuelta",
   "NUMB": "Num",
   "DAY-SHIFT": "Dia - Turno",
-
   "QBLOCK_NAME": "Nombre del bloque",
   "NEW_QBLOCK": "Bloque nuevo",
   "QBLOCKS": "Bloques",
@@ -105,20 +89,17 @@
   "SELECT_QBLOCKS": "Selecciona los bloques:",
   "ADD_QBLOCK": "Añadir bloque",
   "QBLOCK": "Bloque",
-
-  "SCHEDULE":  "Cronómetros",
+  "SCHEDULE": "Cronómetros",
   "ADD_STAGE": "Añadir Fase",
   "STAGE_INFO": "Información de la Fase",
-  "NO_SCHEDULE":  "No hay Cronómetros",
+  "NO_SCHEDULE": "No hay Cronómetros",
   "DURATION": "Duración",
   "DURATION_PLACEHOLDER": "Introduzca la duración de la Fase",
   "MINUTES": "minutos",
   "SECONDS": "segundos",
-
   "START": "Inicio",
   "END": "Fin",
   "STOP": "Detener",
-
   "ADD_EVENT": "Añadir Evento",
   "TEXT": "Texto",
   "TEXT_PLACEHOLDER": "Introduzca el texto...",
@@ -129,27 +110,22 @@
   "NO_SOUND": "Sin sonido",
   "IS_COUNTDOWN": "Cuenta atrás",
   "IS_COUNTDOWN_INFO": "¿Desea que el cronómetro sea de cuenta atrás?",
-
   "ADD_STUDENT": "Añadir estudiante",
   "STUDENTS": "Alumnos",
   "NO_STUDENTS": "No hay alumnos",
   "SELECT_STUDENTS": "Seleccionar estudiantes",
   "SURNAMES": "Apellidos",
   "ID_CODE": "DNI",
-
   "PLANNER": "Planificador",
   "PLANNERS": "Planificadores",
   "DELETE_PLANNER": "Eliminar Grupo",
   "AUTO_PLANNERS": "Autosignación de Alumnos",
-
   "GROUP": "Grupo",
   "GROUPS": "Grupos",
   "LIST": "Lista",
   "ECOE": "ECOE",
-
   "REPORTS_AND_STATISTICS": "Informes y estadísticas",
   "THERE_ARE_NOT_STUDENTS": "No hay estudiantes",
-
   "TO_UPDATE": "actualizar",
   "UPDATED": "actualizado",
   "TO_CREATE": "crear",
@@ -157,33 +133,24 @@
   "TO_DELETE": "eliminar",
   "DELETED": "eliminado",
   "VALIDATING": "Validando...",
-
   "MULTI_ANSWER": "Respuesta múltiple",
   "ONE_ANSWER": "Respuesta única",
   "VALUE_RANGE": "Rango de valores",
-
   "ITEM_ACTION_SUCCESSFUL": "Elemento {{action}} con éxito",
   "ITEM_ACTION_ERROR": "Error al {{action}} el elemento",
-
   "NAME": "Nombre",
   "NAME_PLACEHOLDER": "Introduzca el nombre...",
   "NAME_INPUT_REQUIRED": "El campo nombre es obligatorio.",
   "PARENT_PLACEHOLDER": "Seleccione el padre...",
-
   "SURNAMES_PLACEHOLDER": "Introduzca los apellidos...",
   "SURNAMES_INPUT_REQUIRED": "El campo apellidos es obligatorio.",
-
   "ID_CODE_PLACEHOLDER": "Introduzca el DNI...",
   "ID_CODE_REQUIRED": "El campo DNI es obligatorio.",
-
   "MOVE_UP": "Subir posición",
   "MOVE_DOWN": "Bajar posición",
-
   "PREVIEW_EXAM": "Previsualizar examen",
   "SUMMARY": "Resumen",
-
   "ABORTED": "Evaluación detenida",
-
   "LOADING": "Cargando",
   "ACTIONS": "Acciones",
   "DELETE_CONFIRMATION": "¿Estás seguro de eliminar este elemento?",
@@ -211,38 +178,30 @@
   "PAUSE_ALL": "Pausar todo",
   "NEXT_STUDENT": "Siguiente alumno",
   "ROUND_FINISHED": "Ronda finalizada",
-
   "IMPORT_ERRORS": "Errores Importación",
-
   "DESCRIPTION_PLACEHOLDER": "Descripción...",
   "REFERENCE_PLACEHOLDER": "Referencia",
   "POINTS_PLACEHOLDER": "Puntos",
-
   "DESCRIPTION_INPUT_REQUIRED": "El campo descripción es obligatorio.",
   "REFERENCE_INPUT_REQUIRED": "El campo referencia es obligatorio.",
   "AREA_INPUT_REQUIRED": "El campo área es obligatorio.",
   "QUESTION_TYPE_INPUT_REQUIRED": "El campo tipo de pregunta es obligatorio.",
   "POINTS_INPUT_REQUIRED": "El campo puntos es obligatorio.",
-
   "SELECT": "Seleccionar...",
   "IMPORT_DATA": "Importar",
   "LOG_IN": "Iniciar sesión",
   "LOG_OUT": "Cerrar sesión",
   "LOG_IN_SUCCESS": "Has iniciado sesión correctamente",
   "LOG_IN_ERROR": "Error al iniciar sesión",
-
   "STATION_DEPENDS_OF_STATION": "Esta estación depende de la estación: ",
   "STATION_DEPENDS_OF_STATION_DESCRIPTION": "La primera vuelta no tiene asignado ningún alumno para su evaluación. El primer alumno se evalua en la última vuelta.",
   "ESTIMATED_TIME_TO_FINISH": "Hora estimada de finalización: ",
   "ECOE_ALREADY_RUNNING": "La ECOE ya está en marcha.",
   "WARNING": "Atención",
-
   "OK_REQUEST_CONTENT": "Petición procesada correctamente.",
   "ERROR_REQUEST_CONTENT": "Error al procesar petición.",
-
   "OUTSIDERS": "OUTSIDERS",
   "ECOES": "ECOES",
-
   "CONFIGURATION": "Configuración",
   "SETUP": "Configurar",
   "NO_EXIST_AREAS": "No existen Áreas",
@@ -250,7 +209,6 @@
   "NO_EXIST_SCHEDULES": "No existen Cronómetros",
   "DETAILS": "Detalles",
   "STAGES": "Fases",
-
   "TIME_TODAY": "Hoy",
   "TIME_YESTERDAY": "Ayer",
   "ANY_ECOE_CONFIGURED": "Actualmente no hay ninguna ECOE programada",
@@ -261,7 +219,6 @@
   "HERE": "Aquí",
   "STATUS": "Estado",
   "PENDING_TO_START": "Pendiente de comenzar...",
-
   "MENU": "Menú",
   "SHOW": "Ver",
   "DOWNLOAD_TEMPLATE": "Descargar plantilla",
@@ -273,5 +230,9 @@
   "CLICK_HERE_OR_DRAG_FILE": "Pinche aquí o arrastre un archivo",
   "DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE": "No seleccione ni arrastre más de un archivo al mismo tiempo",
   "DOWNLOAD_TEMPLATE_HERE": "Puede descargar una plantilla aquí",
-  "ERROR_DUPLICATE_ECOE": "Ya existe una ECOE con este nombre."
+  "ERROR_DUPLICATE_ECOE": "Ya existe una ECOE con este nombre.",
+  "ACTIVATE_SOUND": "Pulsa aquí para Activar Sonido",
+  "SOUND_MUTED": "Sonido Desactivado",
+  "SOUND_MUTED_INFO": "Debe permitir que se active el sonido en el navegador para recibir correctamente las notificaciones del cronómetro",
+  "SOUND_ACTIVATED": "Sonido activado"
 }

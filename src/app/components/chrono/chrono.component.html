@@ -1,5 +1,4 @@
 <div class="chrono-component">
-
   <ng-container *ngIf="(tictacFlag && connectedFlag || !withPreview) else BeforeStart">
 
     <ng-container *ngIf="!aborted else ECOEAborted">
@@ -15,7 +14,6 @@
       >
       </app-chrono-header>
     </ng-container>
-
     <ng-template #ECOEAborted>
       <h2 *ngIf="!showDetails && round" uppercase>{{round.description}}</h2>
       <h4 *ngIf="!showDetails && initStage">({{'RERUN'| translate}} {{rerunsDescription}})</h4>
@@ -59,3 +57,22 @@
     <ng-container *ngIf="templateBeforeStart" [ngTemplateOutlet]="templateBeforeStart"></ng-container>
   </ng-template>
 </div>
+
+<ng-template #soundAlert>
+  <div class="ant-notification-notice-content">
+    <div class="ant-notification-notice-with-icon">
+      <span class="ant-notification-notice-icon">
+        <i nz-icon nzType="sound" [nzTheme]="'twotone'" [nzTwotoneColor]="'red'"></i>
+      </span>
+      <div class="ant-notification-notice-message">{{'SOUND_MUTED' | translate}}</div>
+      <div class="ant-notification-notice-description">
+        {{'SOUND_MUTED_INFO' | translate }}
+      </div>
+      <span class="ant-notification-notice-btn">
+        <button (click)="closeNotifSoundError()" nz-button nzDanger nzType="small">
+          <i nz-icon type="sound"></i><span>{{'ACTIVATE_SOUND'| translate}}</span>
+        </button>
+      </span>
+    </div>
+  </div>
+</ng-template>

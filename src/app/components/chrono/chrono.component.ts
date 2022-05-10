@@ -1,7 +1,9 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, TemplateRef} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, TemplateRef, ViewChild} from '@angular/core';
 import {ChronoService} from '../../services/chrono/chrono.service';
 import {Round, Station} from '../../models';
 import * as moment from 'moment';
+import { NzMessageService, NzNotificationDataOptions, NzNotificationService } from 'ng-zorro-antd';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-chrono',
@@ -9,7 +11,7 @@ import * as moment from 'moment';
   styleUrls: ['./chrono.component.less'],
   providers: [ChronoService]
 })
-export class ChronoComponent implements OnChanges, OnDestroy {
+export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
 
   @Input() private round: Round;
   @Input() private roundId: number;
@@ -45,7 +47,20 @@ export class ChronoComponent implements OnChanges, OnDestroy {
   momentRef = moment;
   private configurationECOE: Object;
 
-  constructor(private chronoService: ChronoService) { }
+  private notifKey = 'soundAlert'
+  
+  @ViewChild('soundAlert', { read: TemplateRef }) soundAlertTemplate:TemplateRef<any>;
+
+  constructor(
+    private chronoService: ChronoService,
+    private notification: NzNotificationService,
+    private message: NzMessageService,
+    private translate: TranslateService
+    ) { }
+
+  ngOnInit() {
+    this.testSound();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes.round && changes.round.currentValue) ||
@@ -103,7 +118,7 @@ export class ChronoComponent implements OnChanges, OnDestroy {
 
       if (isFromStation) {
         this.playAudio(this.event['sound'])
-          .catch(err => console.log(err));
+          .catch(() => this.testSound());
       }
     }
     this.setEvents(event['stage']['events']);
@@ -128,14 +143,17 @@ export class ChronoComponent implements OnChanges, OnDestroy {
     this.setCurrentCountdownTimer();
   }
 
-  playAudio(src: string) {
+  async playAudio(src: string, test: boolean = false) {
     if (src) {
       const audio = new Audio();
+      audio.autoplay = true;
+      audio.muted = test?true:false;
       audio.src = '../../../assets/sounds/' + src;
+      audio.preload = 'auto';
       audio.load();
-      return audio.play();
+      return audio.play()
     } else {
-      return new Promise(resolve => resolve('No audio'));
+      return 'No audio';
     }
   }
 
@@ -187,9 +205,40 @@ export class ChronoComponent implements OnChanges, OnDestroy {
     this.rerunsDescription = data['num_rerun'] + '/' + data['total_reruns'];
   }
 
-  ngOnDestroy() {
+  ngOnDestroy() { 
     if (this.chronoService) {
       this.chronoService.disconnect();
     }
+  }
+
+  notifSoundError(): void {
+
+    const options: NzNotificationDataOptions = {
+      nzDuration:0,
+      nzKey: this.notifKey
+    }
+    const notif = this.notification.template(this.soundAlertTemplate, options)
+
+    notif.onClose.subscribe(() => {
+      this.testSound()
+    })
+  }
+
+  closeNotifSoundError() {
+    this.notification.remove();
+    this.testSound();
+  }
+
+  async testSound() {
+    return this.playAudio('beep_alarm.mp3', true)
+    .then((v) => {
+      this.message.success(this.translate.instant('SOUND_ACTIVATED'))
+      return v;
+    })
+    .catch(error => {
+      console.error(error);
+      this.notifSoundError();
+      return error;
+    });
   }
 }
