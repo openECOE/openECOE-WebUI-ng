@@ -4,6 +4,7 @@ import {BehaviorSubject} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {AuthenticationService} from '../authentication/authentication.service';
 import {ApiService} from '../api/api.service';
+import { ECOE } from '@app/models';
 
 @Injectable({
   providedIn: 'root'
@@ -67,7 +68,7 @@ export class MenuService {
     return new Promise(async (resolve) => {
       switch (page) {
         case 'AdminComponent':
-          resolve(await this.loadEcoes().toPromise());
+          resolve(await this.loadEcoes());
           break;
         case 'EcoeComponent':
           resolve(this.ECOE);
@@ -76,14 +77,8 @@ export class MenuService {
     });
   }
 
-  private loadEcoes() {
-    return this.authService.getUserData().pipe(
-      mergeMap(userData => {
-        return this.apiService.getResources('ecoe', {
-          where: `{"organization":{"$eq":${JSON.stringify(userData.organization)}}}`
-        });
-      })
-    );
+  private async loadEcoes() {
+    return ECOE.query<ECOE>()
   }
 }
 

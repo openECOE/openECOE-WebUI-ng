@@ -8,17 +8,25 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthenticationService) {
   }
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const currentUser = this.authService.userLogged;
-    const authHeader = currentUser && currentUser.token ? `Bearer ${currentUser.token}` :
-      currentUser && currentUser.authData ? `Basic ${currentUser.authData}` : '';
+  private token;
+  private authData;
 
-    request = request.clone({
-      setHeaders: {
-        'Content-Type': 'application/json',
-        'Authorization': authHeader
-      }
-    });
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const _userLogged = localStorage.getItem('userLogged');
+
+    if (_userLogged) {
+      const currentUser = JSON.parse(_userLogged);
+      const authHeader = currentUser && currentUser.token ? `Bearer ${currentUser.token}` :
+        currentUser && currentUser.authData ? `Basic ${currentUser.authData}` : '';
+
+      request = request.clone({
+        setHeaders: {
+          'Content-Type': 'application/json',
+          'Authorization': authHeader
+        }
+      });
+    }
+    
 
     return next.handle(request);
   }

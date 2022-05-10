@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserLogged } from '@app/models';
 import {AuthenticationService} from '@services/authentication/authentication.service';
 
 @Component({
@@ -8,14 +9,18 @@ import {AuthenticationService} from '@services/authentication/authentication.ser
 })
 export class UsermenuComponent implements OnInit {
 
-  constructor(public authService: AuthenticationService) { }
+  userData: UserLogged;
+
+  constructor(public authService: AuthenticationService) {
+    this.userData = this.authService.userData
+   }
 
   ngOnInit() {
+    
   }
 
   logout(){
     this.authService.logout();
-    window.location.reload();
   }
 
 }

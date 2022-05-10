@@ -33,8 +33,8 @@ export class SubmenuComponent implements OnInit {
         const _userData = this.authService.userData;
 
         if (_userData) {
-          const isEval = _userData.roles.includes('evaluator');
-          const isAdmin = _userData.roles.includes('administrator');
+          const isEval = _userData.isEval;
+          const isAdmin = _userData.isAdmin;
 
           const submenus = {
             ECOE: [

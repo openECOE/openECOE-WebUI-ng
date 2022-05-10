@@ -3,7 +3,7 @@ import {User} from './user';
 
 export enum enumRole {
   User = 'User',
-  Admin = 'Admin',
+  Admin = 'administrator',
   Eval = 'evaluator'
 }
 
