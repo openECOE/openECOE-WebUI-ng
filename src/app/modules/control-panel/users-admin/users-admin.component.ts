@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 
 export class UsersAdminComponent implements OnInit {
 
-  userLogged: UserLogged;
+  user: UserLogged;
   activeUser: User;
 
   passwordVisible = false;
@@ -40,8 +40,8 @@ export class UsersAdminComponent implements OnInit {
 
   ngOnInit() {
     this.validateForm = this.getUserForm();
-    this.userLogged = this.authService.userData;
-    this.activeUser = this.userLogged.user;
+    this.user = this.authService.userData;
+    this.activeUser = this.user.user;
     this.loadUsers();
   }
 

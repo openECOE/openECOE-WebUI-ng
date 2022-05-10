@@ -5,6 +5,7 @@ import {AuthenticationService} from '../../../services/authentication/authentica
 import {ApiService} from '../../../services/api/api.service';
 import { NzModalService } from 'ng-zorro-antd';
 import { TranslateService } from '@ngx-translate/core';
+import { ECOE, UserLogged } from '@app/models';
 
 @Component({
   selector: 'app-home',
@@ -17,23 +18,20 @@ export class HomeComponent implements OnInit {
   ecoes: any[];
   ecoeForm: FormControl;
   organization: any;
-  isAdmin: boolean;
 
-  constructor(private formBuilder: FormBuilder,
-              public authService: AuthenticationService,
-              private apiService: ApiService,
-              private modalSrv: NzModalService,
-              private translate: TranslateService) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    public authService: AuthenticationService,
+    private apiService: ApiService,
+    private modalSrv: NzModalService,
+    private translate: TranslateService) {
+               }
 
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
 
     if (this.authService.userLogged) {
-      this.authService.loadUserData()
-      .subscribe(() => {
-        this.loadEcoes();
-        this.isAdmin = (this.authService.userData['role'] === 'Admin');
-      });
+      this.loadEcoes()
     } else {
       this.authService.logout('/login');
     }
@@ -45,20 +43,8 @@ export class HomeComponent implements OnInit {
     this.ecoeForm.reset();
   }
 
-  loadEcoes() {
-    this.authService.getUserData().pipe(
-      mergeMap(userData => {
-        this.organization = userData.organization;
-        return this.apiService.getResources('ecoes', {
-          where: `{"organization":{"$eq":${JSON.stringify(this.organization)}}}`
-        });
-      })
-    ).subscribe(ecoes => {
-      this.ecoes = ecoes;
-      if (this.isAdmin) {
-        this.ecoes.unshift([undefined]);
-      }
-    });
+  async loadEcoes() {
+    this.ecoes = await ECOE.query()
   }
 
   submitForm() {

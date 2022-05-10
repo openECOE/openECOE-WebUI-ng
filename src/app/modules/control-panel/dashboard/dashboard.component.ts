@@ -10,7 +10,7 @@ import {AuthenticationService} from '../../../services/authentication/authentica
 })
 export class DashboardComponent implements OnInit {
 
-  userLogged: UserLogged;
+  userData: UserLogged;
 
   usersPage: any[] = [];
 
@@ -20,14 +20,14 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userLogged = this.authService.userData;
+    this.userData = this.authService.userData;
     this.loadUsers();
   }
 
   loadUsers() {
     this.loading = true;
     User.query({
-      where: {organization: this.userLogged.user.organization}
+      where: {organization: this.userData.user.organization}
     }, {paginate: true})
       .then((page) => this.usersPage = page)
       .finally(() => this.loading = false);

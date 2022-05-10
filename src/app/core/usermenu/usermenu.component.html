@@ -1,6 +1,6 @@
 <nz-dropdown class="user" *ngIf="authService.userData">
   <a nz-dropdown>
-    <i nz-icon nzType="user" nzTheme="outline"></i> {{authService.userData['user'] && authService.userData['user']['name'] ? authService.userData['user']['name'] : 'Usuario (sin nombre)'}}
+    <i nz-icon nzType="user" nzTheme="outline"></i> {{authService.userData?.user && authService.userData?.user?.name ? authService.userData?.user.name : 'Usuario (sin nombre)'}}
     <i nz-icon type="caret-down"></i>
   </a>
     <ul nz-menu nzSelectable>

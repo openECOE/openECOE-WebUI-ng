@@ -13,16 +13,24 @@ export class User extends Item {
   password: string;
 
   roles = Route.GET<Array<Role>>('/roles');
+  static me = Route.GET<User>('/me');
 }
 
 export class UserLogged {
   user: User;
-  role: string;
   roles: Array<String>;
 
-  constructor(user: User) {
-    this.user = user;
-    this.role = user.is_superadmin ? enumRole.Admin : null;
-    this.roles = [];
+  constructor(user: UserLogged = null) {
+    if (user) {      
+      this.user = new User(user.user);
+      this.roles = user.roles;
+    } else {
+      this.roles = [];
+    }
+    
   }
+
+  get role() {return this.user.is_superadmin ? "administrator" : null}
+  get isEval() {return this.roles.includes("evaluator")} 
+  get isAdmin() {return this.roles.includes("administrator")}
 }
