@@ -15,6 +15,8 @@ export class Stage extends Item {
   duration: number;
   order: number;
   name: string;
+
+  ecoe: ECOE;
 }
 
 export class Event extends Item {

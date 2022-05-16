@@ -1,8 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {QBlock, Station} from '../../models';
+import {QBlock, Station, RowQblock} from '@app/models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {RowQblock} from '../../pages/admin/ecoe/questions/questions.component';
-import {QuestionsService} from '../../services/questions/questions.service';
+import {QuestionsService} from '@services/questions/questions.service';
 
 @Component({
   selector: 'app-qblock-question-form',

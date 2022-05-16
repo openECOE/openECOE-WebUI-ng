@@ -1,15 +1,17 @@
 import {Item, Pagination, Route} from '@openecoe/potion-client';
-import {Planner} from './planner';
-import {Schedule} from './schedule';
+import {Planner, Round, Shift} from './planner';
+import {Schedule, Stage} from './schedule';
 import {Organization} from './organization';
+import {Question} from '@models/question';
 
 export class ECOE extends Item {
-  areas = Route.GET('/areas');
+  areas = Route.GET<Area | Pagination<Area>>('/areas');
   stations = Route.GET<Station | Pagination<Station>>('/stations');
-  schedules = Route.GET('/schedules');
-  students = Route.GET('/students');
-  rounds = Route.GET('/rounds');
-  shifts = Route.GET('/shifts');
+  schedules = Route.GET<Schedule | Pagination<Schedule>>('/schedules');
+  students = Route.GET<Student | Pagination<Student>>('/students');
+  rounds = Route.GET<Round | Round[] | Pagination<Round>>('/rounds');
+  shifts = Route.GET<Shift | Shift[] | Pagination<Shift>>('/shifts');
+  stages = Route.GET<Stage | Pagination<Stage>>('/stages');
 
   id: number;
   name: string;
@@ -69,35 +71,11 @@ export class QBlock extends Item {
   questions?: Question[];
 }
 
-export class Question extends Item {
-  id: number;
-  reference: string;
-  description: string;
-  questionType: string;
-  order: number;
-
-  addOption ? = Route.POST<Option>('/options');
-
-  area: Area;
-
-  options: Option[];
-  qblocks: QBlock[] | number[];
-
-  getPoints ? = Route.GET<number>('/points');
+export interface RowQblock {
+  name: any[];
 }
 
-export interface RowQuestion {
-  order:  any[] | number;
-  description: any[] | string;
-  reference: any[] | string;
-  area: any[] | Area;
-  questionType: any[] | string;
-  optionsNumber?: number;
-  points?: any[];
-  options?: Option[];
-  qblocks?: number[];
-  id?: any[] | number;
-}
+
 
 export class Option extends Item {
   id: number;

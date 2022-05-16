@@ -3,7 +3,7 @@ import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {map} from 'rxjs/operators';
-import { Option } from '@app/models';
+import {Role, User, Option} from '@app/models';
 
 /**
  * Service with the HTTP requests to the backend.
@@ -26,6 +26,76 @@ export class ApiService {
       headers: new HttpHeaders()
     };
     return this.http.delete(url, options);
+  }
+
+  getRolesTypes() {
+    const RolesPath = 'roles/types';
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${RolesPath}`;
+
+    return this.http.get(url)
+      .pipe(
+        map((roles: Role[]) => {
+          roles.forEach(role => {
+            role.name = role.name.toUpperCase();
+          });
+
+          return roles;
+        })
+      );
+  }
+
+  getUsersWithRoles(queryParams) {
+    return User.query(queryParams, {paginate: true})
+      .then((page: any) => {
+        page.items.forEach(async (item: User) => {
+          const auxRoles = Array.from(await item.roles());
+          item.roleNames = [...auxRoles.map(role => role['name'])];
+        });
+        return page;
+      })
+      .catch(err => err);
+  }
+
+  private getRolesByUser(userRef: string) {
+    const resource = 'roles';
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}`;
+
+    const params = new HttpParams().set('where', `{"user":{"$ref":"/${userRef}"}}`);
+
+    return this.http.get<any[]>(url, {params: params})
+      .pipe(
+        map((roles: Role[]) => {
+          roles.forEach(role => {
+            role.name = role.name.toUpperCase();
+          });
+          return roles;
+        })
+      )
+      .toPromise();
+  }
+
+  addUserRole(role: Role, userUri: string) {
+    const resource = 'roles';
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}`;
+
+    const userRef = '/' + this.apiUrl + userUri;
+
+    const body = {
+      name: role.name.toLowerCase(),
+      user: {$ref: userRef}
+    };
+
+    return this.http.post(url, body).toPromise();
+  }
+
+
+  deleteUserRole(roleUri: string) {
+    const tokenizer = roleUri.split('/');
+
+    const resource = 'roles';
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}/${tokenizer[tokenizer.length - 1]}`;
+
+    return this.http.delete(url).toPromise();
   }
 
   /**
@@ -76,37 +146,6 @@ export class ApiService {
       .pipe(map(response => {
         const reference = response['$uri'] || response['$ref'];
         const itemId = this.getIdFromRef(reference);
-        return {id: itemId, ...response};
-      }));
-  }
-
-  /**
-   * Makes a HTTP DELETE request to the backend.
-   * To remove relations of tables a body must be passed with the id of the resource.
-   *
-   * @param ref Reference path of the resource
-   * @param body? Id of the resource
-   * @returns Observable<any> An empty response
-   */
-  deleteResource(ref: string, body?: any): Observable<any> {
-    if (body) {
-      return this.http.request('delete', environment.API_ROUTE + ref, {body: body});
-    }
-
-    return this.http.delete(environment.API_ROUTE + ref);
-  }
-
-  /**
-   * Makes a HTTP PATCH request to the backend.
-   *
-   * @param ref Reference path of the resource
-   * @param body Object with the elements of the resource
-   * @returns Observable<any> The object of the item updated
-   */
-  updateResource(ref: string, body: any): Observable<any> {
-    return this.http.patch(environment.API_ROUTE + ref, body)
-      .pipe(map(response => {
-        const itemId = this.getIdFromRef(response['$uri']);
         return {id: itemId, ...response};
       }));
   }

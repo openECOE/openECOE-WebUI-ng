@@ -138,6 +138,7 @@ export class ScheduleComponent implements OnInit {
     const stage = new Stage();
     stage.duration = duration;
     stage.name = name;
+    stage.ecoe = this.ecoe;
     this.schedules.length === 0 ? stage.order = 0 : stage.order = (this.schedules[this.schedules.length - 1].stage.order) + 1;
     stage.save()
       .then(new_stage => {

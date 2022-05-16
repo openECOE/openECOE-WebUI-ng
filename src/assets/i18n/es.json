@@ -37,6 +37,8 @@
   "PASSWORD": "Contraseña",
   "PASSWORD_NOT_VALID": "¡No es una contraseña válida!",
   "PASSWORD_REQUIRED": "Por favor indique una contraseña",
+  "NAME_REQUIRED": "Por favor indique el nombre",
+  "SURNAME_REQUIRED": "Por favor indique el/los apellido/s",
   "ROUND": "Rueda",
   "ROUNDS": "Rondas",
   "NO_ROUNDS": "No hay rondas",
@@ -234,5 +236,13 @@
   "ACTIVATE_SOUND": "Pulsa aquí para Activar Sonido",
   "SOUND_MUTED": "Sonido Desactivado",
   "SOUND_MUTED_INFO": "Debe permitir que se active el sonido en el navegador para recibir correctamente las notificaciones del cronómetro",
-  "SOUND_ACTIVATED": "Sonido activado"
+  "SOUND_ACTIVATED": "Sonido activado",
+
+  "ROLES": "Roles",
+  "SUPERADMIN": "Administrador del sistema",
+  "ADMINISTRATOR": "Administrador",
+  "EVALUATOR": "Evaluador",
+  "STUDENT": "Estudiante",
+
+  "SELECT_ROLES": "Seleccione roles"
 }

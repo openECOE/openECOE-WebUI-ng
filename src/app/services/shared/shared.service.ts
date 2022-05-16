@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {AbstractControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup} from '@angular/forms';
 
 /**
  * Service with shared methods used around the app.
@@ -141,21 +141,33 @@ export class SharedService {
    * @param name of the control field
    * @param idx the index of the control field.
    */
-  getFormControl(form: FormGroup, row: string, name: string, idx: number): AbstractControl {
-    return form.get(row)['controls'][idx].controls[name];
+  getFormControl(form: FormGroup, row: string, idx: number, name?: string): AbstractControl {
+    const getRow = form.get(row);
+
+    if (getRow['controls']) {
+      const control = getRow['controls'][idx];
+      return name ? control.controls[name] : control;
+    } else {
+      return  getRow;
+    }
   }
 
   doFormDirty(form: FormGroup) {
     const controlKeys = Object.keys(form.controls);
     for (const rowName of controlKeys) {
-      for (const n in form.get(rowName)['controls']) {
-        if (form.get(rowName)['controls'].hasOwnProperty(n)) {
-          const rowKeys = Object.keys(form.get(rowName)['controls'][n].controls);
+      if (form.get(rowName)['controls']) {
+        for (const n in form.get(rowName)['controls']) {
+          if (form.get(rowName)['controls'].hasOwnProperty(n)) {
+            const rowKeys = Object.keys(form.get(rowName)['controls'][n].controls || {});
             rowKeys.forEach( (key) => {
-              this.getFormControl(form, rowName, key, +n).markAsDirty();
-              this.getFormControl(form, rowName, key, +n).updateValueAndValidity();
+              this.getFormControl(form, rowName, +n, key).markAsDirty();
+              this.getFormControl(form, rowName, +n, key).updateValueAndValidity();
             });
+          }
         }
+      } else if (form.get(rowName) instanceof FormControl) {
+        this.getFormControl(form, rowName, 0).markAsDirty();
+        this.getFormControl(form, rowName, 0).updateValueAndValidity();
       }
     }
   }
