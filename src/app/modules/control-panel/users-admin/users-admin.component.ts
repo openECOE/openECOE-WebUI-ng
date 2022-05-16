@@ -1,10 +1,15 @@
 import {Component, NgZone, OnInit} from '@angular/core';
-import {Role, User, UserLogged} from '@app/models';
+import {Role, RoleType, User, UserLogged} from '@app/models';
 import {AuthenticationService} from '@services/authentication/authentication.service';
 import {SharedService} from '@services/shared/shared.service';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import {ApiService} from '@services/api/api.service';
+
+
+interface UserItem extends User {
+  rolesList: Array<Role>;
+}
 
 @Component({
   selector: 'app-users-admin',
@@ -19,7 +24,7 @@ export class UsersAdminComponent implements OnInit {
 
   passwordVisible = false;
 
-  users: User[] = [];
+  users: Array<UserItem> = [];
   usersPage: any;
   editCache: CacheItem[] = [];
 
@@ -33,9 +38,9 @@ export class UsersAdminComponent implements OnInit {
   showAddUser: boolean = false;
   importErrors: { value: any, reason: any }[] = [];
 
-  listRoles: Role[] = [];
+  listRoles: RoleType[] = [];
 
-  readonly SUPER_ADMIN = 'SUPERADMIN';
+  readonly SUPER_ADMIN = 'superadmin';
 
   constructor(private authService: AuthenticationService,
               private apiService: ApiService,
@@ -68,17 +73,14 @@ export class UsersAdminComponent implements OnInit {
     this.formArrayRoles = <FormArray>this.validateForm.controls.roles;
 
     this.listRoles.forEach((role) => {
-      const control = new FormControl(role.name === 'USER');
+      const control = new FormControl(role.name === 'user');
       this.formArrayRoles.push(control);
     });
   }
 
   async getRoles() {
-    const roles = [];
-    await this.apiService.getRolesTypes().toPromise()
-      .then((result: Role[]) => roles.push(...result))
-      .catch(err => console.error(err));
-    return roles;
+
+    return Role.types();
   }
 
   loadUsers() {
@@ -110,6 +112,7 @@ export class UsersAdminComponent implements OnInit {
     this.usersPage = page;
     this.totalItems = this.usersPage.total;
     this.users = [...this.usersPage.items];
+    this.users.forEach(async _user => {_user.rolesList = await _user.roles() })
     // console.log('Object.create(page.items)', page.items);
     this.updateEditCache(page.items, this.editCache);
   }
@@ -153,53 +156,24 @@ export class UsersAdminComponent implements OnInit {
     this.editCache[idx].editItem = true;
   }
 
-  checkForRolesChanged(item: CacheItem) {
-    let changedFlag = false;
+  async updateUserRoles(userItem: CacheItem) {
+    const _rolesNames = userItem.data.roleNames;
+    const _roles: Array<Role> = await userItem.data.roles();
+      
+    const _delList = _roles.filter(_role => {
+      return !_rolesNames.includes(_role.name)
+    })
 
-    if (item.data.roleNames.length !== item.data.roles.length) {
-      return true;
-    }
+    const _addList = _rolesNames.filter(_roleName => {
+      const _rolesNameList = _roles.map(r => r.name);
+      return !_rolesNameList.includes(_roleName)
+    })
 
-    item.data.roleNames.forEach(roleName => {
-      const result = !!item.data.roles.find(role => role.name === roleName);
-      if (!result) {
-        changedFlag = !result;
-        return changedFlag;
-      }
-    });
-
-    return changedFlag;
+    _addList.forEach( _roleName => this.apiService.addUserRole(_roleName, userItem.data.id))
+    _delList.forEach( _role => this.apiService.deleteUserRole(_role))
   }
 
-  updateUserRoles(item: CacheItem) {
-    let promises = [];
-    return new Promise<void>((resolve, reject) => {
-      for (const role of item.data.roleNames) {
-        if (!item.data.roles.find(roleData => roleData.name === role)) {
-          const auxRole = { name: role };
-          const addRolePromise = this.apiService.addUserRole(auxRole, item.data.uri);
-          promises.push(addRolePromise);
-        }
-      }
-
-      Promise.all(promises)
-        .then(() => {
-          promises = [];
-          for (const role of item.data.roles) {
-            if (!item.data.roleNames.find(name => name === role.name)) {
-              const deleteRolePromise = this.apiService.deleteUserRole(role.$uri);
-              promises.push(deleteRolePromise);
-            }
-          }
-          Promise.all(promises)
-            .then(() => resolve())
-            .catch(err => reject(err));
-        })
-        .catch((err) => reject(err));
-    });
-  }
-
-  saveUser(item: any) {
+  async saveUser(item: any) {
     this.loading = true;
     const usercache = this.editCache.find(f => f.data.id === item.id);
     if (!usercache.data.email) {
@@ -208,9 +182,7 @@ export class UsersAdminComponent implements OnInit {
       return;
     }
 
-    if ( this.checkForRolesChanged(usercache) ) {
-      this.updateUserRoles(usercache).finally();
-    }
+    this.updateUserRoles(usercache).finally();
 
     const body = {
       email: usercache.data.email,
@@ -309,7 +281,7 @@ export class UsersAdminComponent implements OnInit {
         value.password)
         .then(user => {
           value.roles.forEach((rol, idx) => {
-            if (rol) { this.apiService.addUserRole(this.listRoles[idx], user.$uri).finally(); }
+            if (rol) { this.apiService.addUserRole(this.listRoles[idx].name, user.id).finally(); }
           });
           this.loadUsers();
           this.closeModal();
@@ -359,9 +331,8 @@ export class UsersAdminComponent implements OnInit {
   }
 }
 
-export class CacheItem {
+export interface CacheItem extends UserItem {
   data: any;
   editItem: boolean;
   newItem: boolean;
-  roles: any[];
 }

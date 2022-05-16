@@ -96,7 +96,7 @@
 
       <td>
         <ng-container *ngIf="!editCache[idx]?.editItem; else editRoles">
-          <ng-container *ngFor="let rol of item.roles">
+          <ng-container *ngFor="let rol of item.rolesList">
             <nz-tag [nzColor]="shared.stringToColour(rol.name)">
               {{rol.name | translate}}
             </nz-tag>
@@ -216,15 +216,11 @@
         <div formArrayName="roles">
 
           <ng-container *ngFor="let rol of validateForm.controls.roles['controls']; let i = index">
-            <nz-row *ngIf="listRoles[i].name === SUPER_ADMIN">
+            <nz-row>
               <label nz-checkbox [formControlName]="i+''" (nzCheckedChange)="onCheckedChange(i)">
                 {{(listRoles[i].name | translate)}}
               </label>
-              <nz-divider no-margin no-padding></nz-divider>
             </nz-row>
-            <label *ngIf="i > 0;" nz-checkbox [formControlName]="i+''" (nzCheckedChange)="onCheckedChange(i)">
-              {{listRoles[i].name | translate}}
-            </label>
           </ng-container>
 
         </div>

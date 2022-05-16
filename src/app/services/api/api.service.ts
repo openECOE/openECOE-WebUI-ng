@@ -74,28 +74,19 @@ export class ApiService {
       .toPromise();
   }
 
-  addUserRole(role: Role, userUri: string) {
-    const resource = 'roles';
-    const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}`;
+  addUserRole(role: string, userID: number) {
 
-    const userRef = '/' + this.apiUrl + userUri;
+    const _role = new Role({
+      name: role,
+      user: userID
+    });
 
-    const body = {
-      name: role.name.toLowerCase(),
-      user: {$ref: userRef}
-    };
-
-    return this.http.post(url, body).toPromise();
+    return _role.save();
   }
 
 
-  deleteUserRole(roleUri: string) {
-    const tokenizer = roleUri.split('/');
-
-    const resource = 'roles';
-    const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}/${tokenizer[tokenizer.length - 1]}`;
-
-    return this.http.delete(url).toPromise();
+  deleteUserRole(role: Role) {
+    return role.destroy();
   }
 
   /**
