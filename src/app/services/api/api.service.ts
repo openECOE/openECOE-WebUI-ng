@@ -56,24 +56,6 @@ export class ApiService {
       .catch(err => err);
   }
 
-  private getRolesByUser(userRef: string) {
-    const resource = 'roles';
-    const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}`;
-
-    const params = new HttpParams().set('where', `{"user":{"$ref":"/${userRef}"}}`);
-
-    return this.http.get<any[]>(url, {params: params})
-      .pipe(
-        map((roles: Role[]) => {
-          roles.forEach(role => {
-            role.name = role.name.toUpperCase();
-          });
-          return roles;
-        })
-      )
-      .toPromise();
-  }
-
   addUserRole(role: string, userID: number) {
 
     const _role = new Role({
