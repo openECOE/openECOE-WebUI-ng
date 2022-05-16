@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {QBlock, Station, RowQblock} from '@app/models';
+import {Block, Question, RowQblock, RowQuestion, Station} from '@app/models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {QuestionsService} from '@services/questions/questions.service';
 
@@ -20,8 +20,8 @@ export class QblockQuestionFormComponent implements OnInit {
 
   current = 0;
 
-  qblocksToAdd: QBlock[] = [];
-  questionsToAdd: any[] = [];
+  private qblocksToAdd: Block[] = [];
+  private questionsToAdd: Question[] = [];
 
   qblockForm: FormGroup;
   control: FormArray;
@@ -53,7 +53,7 @@ export class QblockQuestionFormComponent implements OnInit {
     }
     return this.questionService.saveArrayQblocks(this.qblocksToAdd, this.station.id, this.n_qblocks)
       .catch((err) => new Promise((resolve, reject) => reject(err)) )
-      .then(result => this.questionService.addQuestions(this.questionsToAdd, result[0].id, this.station) );
+      .then(blocks => this.questionService.addQuestions(this.questionsToAdd, blocks[0]) );
   }
 
   pre(): void {
@@ -110,12 +110,15 @@ export class QblockQuestionFormComponent implements OnInit {
     return valid;
   }
 
-  onGetQblocks(data: QBlock[]) {
+  onGetQblocks(data: Block[]) {
     this.qblocksToAdd = data;
   }
 
-  onGetQuestions(data: any[]) {
-    this.questionsToAdd = data;
+  async onGetQuestions(data: RowQuestion[]) {
+     this.questionsToAdd = [];
+     for (const item of data) {
+       this.questionsToAdd.push(await this.questionService.rowQuestiontoQuestion(item, this.station));
+     }
   }
 
   /**

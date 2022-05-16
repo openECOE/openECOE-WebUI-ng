@@ -1,0 +1,98 @@
+.switch {
+  display: list-item;
+  margin-top: 5px;
+}
+
+
+/deep/ .ant-switch-checked::after,
+/deep/ .ant-switch::after {
+  height: 100%;
+  border-radius: 4px;
+  margin-top: -1px;
+  width: 13px;
+}
+
+/deep/ nz-switch > button {
+  height: auto !important;
+  border-radius: 5px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  width: 100% !important;
+  max-width: 150px !important;
+
+  .ng-star-inserted {
+    font-size: larger !important;
+    word-wrap: break-word;
+  }
+}
+
+
+/deep/ .br-horizontal .br-unit.br-selected {
+  background-color: #5cb85c !important;
+}
+
+/deep/ .br-unit.br-active {
+  background-color: #5cb85c !important;
+}
+
+/deep/ .br-unit {
+  background-color: #c0f8c7 !important;
+}
+
+/deep/ .br-text {
+  color: #5cb85c !important;
+}
+
+.rate-in {
+  background-color: #5cb85c;
+}
+
+.rate-out {
+  background-color: #fafafa;
+}
+
+.positive-points {
+  /deep/ .ant-switch-checked {
+    background-color: #5cb85c !important;
+  }
+}
+
+.negative-points {
+  /deep/ .ant-switch-checked {
+    background-color: #CF1322 !important;
+  }
+}
+
+.positive-points.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #fff;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
+  box-shadow: -1px 0 0 0 #60b760
+}
+
+.negative-points.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #fff;
+  background: #CF1322 !important;
+  border-color: #CF1322 !important;
+  box-shadow: -1px 0 0 0 #d01827
+}
+
+nz-radio-group {
+  display: block;
+  label {
+    display: block;
+    border: 1px solid #d9d9d9;
+  }
+
+  label:first-child {
+    border-radius: 4px 4px 0 0;
+  }
+
+  label:last-child {
+    border-radius: 0 0 4px 4px;
+  }
+
+  label:not(:last-child) {
+    border-bottom: 0;
+  }
+}

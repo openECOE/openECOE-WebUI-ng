@@ -1,13 +1,13 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Location} from '@angular/common';
-import { Area, ECOE, Round, Schedule, Shift, Stage, Station, Student } from '@models/index';
-import { Router, ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService, NzModalService } from 'ng-zorro-antd';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ChronoService } from '@services/chrono/chrono.service';
-import { Item, Pagination } from '@openecoe/potion-client';
+import {Area, ECOE, Round, Schedule, Shift, Stage, Station, Student} from '@models/index';
+import {Router, ActivatedRoute} from '@angular/router';
+import {TranslateService} from '@ngx-translate/core';
+import {NzMessageService, NzModalService} from 'ng-zorro-antd';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {ChronoService} from '@services/chrono/chrono.service';
+import {Item, Pagination} from '@openecoe/potion-client';
 
 interface ISummaryItems {
   total: number;

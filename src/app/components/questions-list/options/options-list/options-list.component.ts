@@ -1,5 +1,5 @@
 import {Component,  Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Question, Option} from '@app/models';
+import {QuestionOld, Option, Question, QuestionRadio, QuestionCheckBox, QuestionOption, QuestionRange} from '@app/models';
 
 @Component({
   selector: 'app-options-list',
@@ -15,6 +15,8 @@ export class OptionsListComponent implements OnInit, OnChanges {
   editCacheOption: Array<any> = [];
   filteredAnswers: Option[] = [];
 
+  _options: Array<QuestionOption | QuestionRange>;
+
   constructor() {}
 
   ngOnInit() {
@@ -24,7 +26,9 @@ export class OptionsListComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.answers && (changes.answers.currentValue as Option[]).length > 0) {
       if (this.question.options.length > 0) {
-        this.question.options = Object.create(this.parseOptions(this.question.options));
+        if (this.question.schema instanceof QuestionRadio || this.question.schema instanceof QuestionCheckBox) {
+          this.question.options = Object.create(this.parseOptions(this.question.schema.options));
+        }
 
         this.filteredAnswers = this.question.options.filter(f => (changes.answers.currentValue as Option[]).includes(f));
         this.setAnswers(this.filteredAnswers);
@@ -37,21 +41,23 @@ export class OptionsListComponent implements OnInit, OnChanges {
    * Then updates the options cache.
    */
   initOptions() {
-    this.question.options = this.parseOptions(this.question.options);
+    if (this.question.schema instanceof QuestionRadio || this.question.schema instanceof QuestionCheckBox) {
+      this._options = this.parseOptions(this.question.schema.options);
 
-    this.question.options.forEach((option) => {
-      if (!option.id) {
-        option.id = option.order;
-      }
-      this.editCacheOption[option.order] = {
-        option: option,
-        checked: false,
-        valueRS: 0
-      };
-    });
+      this._options.forEach((option) => {
+        // @ts-ignore
+        this.editCacheOption[option.order] = {
+          option: option,
+          checked: false,
+          valueRS: 0
+        };
+      });
+    } else if (this.question.schema instanceof QuestionRange) {
+      this._options = [this.question.schema];
+    }
   }
 
-  parseOptions(options: Option[]) {
+  parseOptions(options: QuestionOption[]) {
     options.sort((a, b) => a.order - b.order);
 
     const options_idx_start_in = +options[0].order;
@@ -67,7 +73,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
   }
 
   onOptionChange($event: any, option: Option, questionType?: string) {
-    if (questionType === 'RB') {
+    if (questionType === 'radio') {
       this.editCacheOption.forEach((optionItem, idx) => {
         if (idx === option.order) {
           this.editCacheOption[idx]['checked'] = $event;
@@ -75,7 +81,7 @@ export class OptionsListComponent implements OnInit, OnChanges {
           this.editCacheOption[idx]['checked'] = false;
         }
       });
-    } else if (questionType === 'CH') {
+    } else if (questionType === 'checkbox') {
       this.editCacheOption[option.order]['checked'] = $event;
     }
   }

@@ -91,7 +91,7 @@
         <app-option-form #option
           [questionOrder]="i"
           [type]="control.value[i]['questionType']"
-          [optionsCache]="questionsCache[i]?.options"
+          [schema]="questionsCache[i]?.schema"
           (saveForm) = "submitForm()"
           (returnData)="onGetOptions($event)"
           (pointValues)="onReceivePointValues($event)">
@@ -103,7 +103,7 @@
 <div nz-row nzType="flex" nzJustify="center">
   <div nz-col nzSpan="12" text-center>
     <nz-form-control>
-      <button *ngIf="action !== 'EDIT'" nz-button nzType="default" (click)="addQuestionRow()">
+      <button *ngIf="action !== 'EDIT'" nz-button nzType="default" (click)="addQuestionRow(defaultQuestion)">
         <i nz-icon type="plus"></i> {{'ADD_QUESTION' | translate}}
       </button>
       <button *ngIf="action !== 'ADD_WITH_QBLOCK'" nz-button nzType="primary" (click)="submitForm()">

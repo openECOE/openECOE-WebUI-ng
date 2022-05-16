@@ -3,7 +3,7 @@
     <form [formGroup]="optionForm" *ngIf="current_number_options > 0" >
 
       <ng-container [formArrayName]="'optionRow'" *ngFor=" let control of optionForm.get('optionRow')['controls']; let i = index">
-        <ng-container *ngIf=" type === 'RB' || type === 'CH' || (type === 'RS' && (i + 1) == optionForm.get('optionRow')['controls'].length)">
+        <ng-container *ngIf=" type === 'radio' || type === 'checkbox' || (type === 'range' && (i + 1) == optionForm.get('optionRow')['controls'].length)">
           <div nz-row nzGutter="8" nzType="flex" nzAlign="top" nzJustify="start">
             <div nz-col nzSpan="3">
               <h3 text-left *ngIf="+i === 0"><b>{{'OPTIONS' | translate}}</b></h3>

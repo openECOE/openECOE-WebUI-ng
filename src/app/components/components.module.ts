@@ -17,8 +17,7 @@ import { QblockQuestionFormComponent } from './qblock-question-form/qblock-quest
 import {QuestionsListComponent} from './questions-list/questions-list.component';
 import {OptionsListComponent} from './questions-list/options/options-list/options-list.component';
 import { ChronoComponent } from './chrono/chrono.component';
-import {PipesModule} from '../pipes/pipes.module';
-import { OptionsEvalComponent } from './questions-list/options/options-eval/options-eval.component';
+import {PipesModule} from '@pipes/pipes.module';
 import {BarRatingModule} from 'ngx-bar-rating';
 import { ProgressBarComponent } from './chrono/progress-bar/progress-bar.component';
 import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.component';
@@ -35,7 +34,6 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     QblockQuestionFormComponent,
     QuestionsListComponent,
     OptionsListComponent,
-    OptionsEvalComponent,
     ChronoComponent,
     ProgressBarComponent,
     ChronoHeaderComponent
@@ -60,9 +58,7 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     QblockQuestionFormComponent,
     QuestionsListComponent,
     QuestionFormComponent,
-    ChronoComponent,
-    OptionsListComponent,
-    OptionsEvalComponent
+    ChronoComponent
   ]
 })
 export class ComponentsModule {}

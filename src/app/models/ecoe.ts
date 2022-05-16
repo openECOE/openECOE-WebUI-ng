@@ -1,8 +1,9 @@
-import {Item, Pagination, Route} from '@openecoe/potion-client';
+import {Item, Pagination, route, Route} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule, Stage} from './schedule';
 import {Organization} from './organization';
-import {Question} from '@models/question';
+import {QuestionOld, Block, Question} from '@models/question';
+import {User} from '@models/user';
 
 export class ECOE extends Item {
   areas = Route.GET<Area | Pagination<Area>>('/areas');
@@ -25,7 +26,7 @@ export class Area extends Item {
   name: string;
   ecoe: ECOE;
   code: string;
-  questions: Question[];
+  questions: QuestionOld[];
 }
 
 export class EditCache extends Area {
@@ -44,14 +45,14 @@ export class Station extends Item {
   name: string;
   ecoe: ECOE;
   order: number;
-  parentStation?: {
-    id: number
-    name?: string,
-  };
-  id_parent_station: number;
+  parentStation?: Station;
+  user: User;
 
-  qblocks = Route.GET<Pagination<QBlock>>('/qblocks');
+  children_stations: Station[];
+
+  qblocks = Route.GET<Pagination<Block>>('/blocks');
   schedules = Route.GET<Pagination<Schedule>>('/schedules');
+  questions = Route.GET<Pagination<QuestionOld>>('/questions');
 }
 
 export interface RowStation {
@@ -60,51 +61,13 @@ export interface RowStation {
   parentStation?: any[];
 }
 
-export class QBlock extends Item {
-  getQuestions = Route.GET<Pagination<Question>>('/questions');
-
-  id: number;
-  name: string;
-  order: number;
-
-  station: Station;
-  questions?: Question[];
-}
-
-export interface RowQblock {
-  name: any[];
-}
-
-
-
-export class Option extends Item {
-  id: number;
-  points: number;
-  label: string;
-  id_question: number;
-  order: number;
-}
-export class Answer extends Item {
+export class AnswerOld extends Item {
   id: number;
   label: string;
   order: number;
   points: number;
   uri: string;
-  question?: Question;
-}
-
-export class RowOption {
-  order: any | number;
-  label: any[] | string;
-  points: any[] | number;
-  rateCount?: number;
-  id?: number;
-
-  constructor(order, label, points) {
-    this.order = order;
-    this.label = label;
-    this.points = points;
-  }
+  question?: QuestionOld;
 }
 
 export class Student extends Item {
@@ -122,6 +85,9 @@ export class Student extends Item {
 
   getAnswers ? = Route.GET('/answers');
   getAllAnswers ? = Route.GET('/answers/all');
+  // getAnswersStation ? = Route.GET('/answers/station/');
+  getAnswersStation ? = (station: Number) => Route.GET('/answers/station/' + station.toString());
+
 }
 
 export interface BlockType {
