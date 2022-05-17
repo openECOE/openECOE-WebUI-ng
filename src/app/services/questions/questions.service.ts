@@ -10,11 +10,10 @@ import {
   Question,
   QuestionSchema,
   QuestionBase,
-  QuestionRange, QuestionCheckBox, QuestionRadio, QuestionOption
+  QuestionRange, QuestionCheckBox, QuestionRadio, QuestionOption, ECOE
 } from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {passBoolean} from 'protractor/built/util';
 
 @Injectable({
   providedIn: 'root'
@@ -114,7 +113,7 @@ export class QuestionsService {
               return await this.addQblock(block.name, (idx + 1), station)
                 .then(async newBlock => {
                   currentBlock = newBlock;
-                  return await this.addQuestions(newBlock.questions, currentBlock);
+                  return await this.addQuestions(block.questions, currentBlock);
                 })
                 .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
             }
@@ -190,10 +189,8 @@ export class QuestionsService {
       });
   }
 
-  private async getArea(area: Area | String): Promise<Area> {
-    const _area = area instanceof Area ? area : (await Area.first<Area>({where: {code: area}}));
-    return _area;
-    // return (area instanceof Area) ? area : (await Area.first<Area>({where: {code: (area + '')}}));
+  private async getArea(area: Area | String, ecoe: ECOE | number): Promise<Area> {
+    return (area instanceof Area) ? area : (await Area.first({where: {code: (area + ''), ecoe: ecoe}}));
   }
 
   private async addOptions(questionItem: RowQuestion, idQuestion: number) {
@@ -282,21 +279,30 @@ export class QuestionsService {
     const _schema = new QuestionSchema(item.questionType as string);
     if (_schema instanceof QuestionBase) {
       _schema.reference = item[this.HEADER.reference];
-      _schema.description = item[this.HEADER.reference];
+      _schema.description = item[this.HEADER.description];
     }
     if (_schema instanceof QuestionRange) {
       _schema.range = item[this.OPTIONS].length;
       _schema.max_points = item[this.HEADER.points];
     } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
-      // _question.schema.max_points = item[this.HEADER.points];
       const _options = item[this.OPTIONS];
+
+      if (_options.length === 0) {
+        _options.push(
+          new Option({
+            points: item[this.HEADER.points],
+            label: this.DEFAULT_LABEL,
+          })
+        );
+      }
+
       // tslint:disable-next-line:no-shadowed-variable
-      for (const { idx, opt } of _options.map((opt, idx) => ({ idx, opt }))) {
+      for (const { idx, opt } of _options.map((opt, idx) => ({ idx: idx + 1, opt }))) {
         const _questionOption = new QuestionOption();
 
         _questionOption.id_option = idx;
-        _questionOption.points = opt.points;
-        _questionOption.label = opt.label;
+        _questionOption.points = opt.points || opt[`points${idx}`];
+        _questionOption.label = opt.label || opt[`option${idx}`];
         _questionOption.order = opt.order ? opt.order : idx;
 
         _schema.options.push(_questionOption);
@@ -310,10 +316,10 @@ export class QuestionsService {
    * @param rowQuestion to convert
    * @param station optional to allow pass station with qblock null
    */
-  async rowQuestiontoQuestion(rowQuestion: RowQuestion, station: Station | number): Promise<Question> {
+  async rowQuestiontoQuestion(rowQuestion: RowQuestion, station: Station): Promise<Question> {
     const _question = new Question();
 
-    _question.area = (await this.getArea(rowQuestion[this.HEADER.ac]));
+    _question.area = (await this.getArea(rowQuestion[this.HEADER.ac], station.ecoe));
     _question.station = station;
     _question.order = rowQuestion[this.HEADER.order];
     _question.block = rowQuestion[this.HEADER.block];
