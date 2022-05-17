@@ -104,18 +104,13 @@ export class EvaluateComponent implements OnInit {
     });
   }
 
-  getAnswers(student: Student, station: Station): Promise<Array<Answer>> {
-    return new Promise<Array<Answer>>(resolve => {
-        if (student.id && station.id) {
-          // student.getAllAnswers({cache: false, skip: ['question']}, {cache: false, skip: ['question']})
-          this.queryAnswers(student, station)
-            .then(answersList => resolve(answersList));
-        } else {
-          resolve(null);
-        }
+  async getAnswers(student: Student, station: Station): Promise<Array<Answer>> {
+      if (student.id && station.id) {
+        // student.getAllAnswers({cache: false, skip: ['question']}, {cache: false, skip: ['question']})
+        return this.queryAnswers(student, station)
+      } else {
+        return null;
       }
-    );
-
   }
 
   queryAnswers(student: Student, station: Station, page: number = 1): Promise<Answer[]> {
