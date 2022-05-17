@@ -44,17 +44,19 @@ export class QuestionComponent implements OnInit {
     if (answersList) {
       // console.log(question.id, 'findAnswer for Question:', question, 'in', answersList);
       _answer = answersList.find(answer => answer.question.equals(this.question));
-      _answer = _answer ? _answer :
-        await new Answer({
-          station: this.station,
-          student: this.student,
-          question: this.question,
-          schema: new AnswerSchema(question.schema.type)
-        }).save()
-          .catch(reason => console.error(reason));
+      _answer = _answer || await this.createAnswer(question)
     }
     this.loading = false;
     return _answer;
+  }
+
+  async createAnswer(question: Question) {
+    return new Answer({
+      station: this.station,
+      student: this.student,
+      question: this.question,
+      schema: new AnswerSchema(question.schema.type)
+    })
   }
 
 }

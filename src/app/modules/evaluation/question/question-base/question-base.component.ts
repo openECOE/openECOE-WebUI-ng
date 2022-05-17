@@ -44,7 +44,7 @@ export class QuestionBaseComponent implements OnInit {
         .catch(reason => {
           this.message.error(
             this.translate.instant('ANSWER_SAVING_ERROR', {questionName: this.question.description}),
-            {nzDuration: 0});
+            {nzDuration: 30});
           console.error(reason);
           reject(reason);
         });
