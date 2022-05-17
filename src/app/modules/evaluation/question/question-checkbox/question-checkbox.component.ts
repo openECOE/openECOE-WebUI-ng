@@ -55,9 +55,14 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
     checkBoxOption.checked = checked;
 
     if (answer) {
-      (answer.schema as AnswerCheckBox).selected = this._checkBoxes
-        .filter((cbOption) => cbOption.checked)
-        .map(optionChecked => ({id_option: optionChecked.option.id_option}));
+      const _cbFiltered = this._checkBoxes.filter(cbOption => cbOption.checked);
+
+      const _sumPoints = _cbFiltered.reduce<number>((points, opt2) => {
+        return points + opt2.option.points
+      }, 0);
+
+      answer.points = _sumPoints;
+      (answer.schema as AnswerCheckBox).selected = _cbFiltered.map(optionChecked => ({id_option: optionChecked.option.id_option}));     
 
       this.saveAnswer(answer).finally();
     }

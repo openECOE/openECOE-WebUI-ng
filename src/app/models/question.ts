@@ -17,7 +17,7 @@ export class QuestionBase {
   protected _max_points: number;
 
   set max_points(value) {
-    this._max_points = value;
+    this._max_points = Number(value);
   }
 
   get max_points() {
@@ -27,9 +27,17 @@ export class QuestionBase {
 
 export class QuestionOption {
   id_option: number;
-  points: number;
+  private _points: number;
   label: string;
   order: number;
+
+  get points() {
+    return this._points
+  }
+
+  set points(v) {
+    this._points = Number(v)
+  }
 }
 
 export class QuestionRadio extends QuestionBase {
@@ -69,7 +77,26 @@ export class QuestionCheckBox extends QuestionBase {
     }
   }
 
-  options: QuestionOption[];
+  private _options: QuestionOption[];
+
+  get options() {
+    return this._options;
+  }
+
+  set options(_options) {
+    const _questionOptions: Array<QuestionOption> = []
+    for (const _option of _options) {
+      const _qopt = new QuestionOption();
+      for (const key of ['id_option', 'label', 'order', 'points']) {
+        if (Object.prototype.hasOwnProperty.call(_option, key)) {
+          _qopt[key] = _option[key];
+        }
+      }
+      _questionOptions.push(_qopt);
+    }
+
+    this._options = _questionOptions;
+  }
 
   get max_points() {
     // Calculate max points with the high value
@@ -94,7 +121,7 @@ export class QuestionRange extends QuestionBase {
   // Points in range only could be positive
   set max_points(value: number) {
     if (value >= 0) {
-      this._max_points = value;
+      this._max_points = Number(value);
     } else {
       throw MaxPointsRangeError;
     }
@@ -189,7 +216,6 @@ export class Answer extends Item {
   station: Station;
   student: Student;
   question: Question;
-  // _answer_schema: string;
   points: number;
 
   private _answer_schema: AnswerSchema;
@@ -355,7 +381,7 @@ export class QuestionOld extends Question {
         const _option = new Option();
 
         // _option.id = option.id_option;
-        _option.points = option.points;
+        _option.points = Number(option.points);
         _option.label = option.label;
         _option.id_question = this.id;
         _option.order = option.order;
@@ -392,7 +418,7 @@ export class QuestionOld extends Question {
         const _option = new QuestionOption();
 
         _option.id_option = index;
-        _option.points = option.points;
+        _option.points = Number(option.points);
         _option.label = option.label;
         _option.order = option.order;
 

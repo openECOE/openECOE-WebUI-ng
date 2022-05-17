@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Answer, AnswerCheckBox, AnswerRadio, QuestionCheckBox, QuestionOption, QuestionRadio} from '@app/models';
+import {Answer, AnswerCheckBox, AnswerRadio, QuestionCheckBox, QuestionOption, QuestionRadio, Option} from '@app/models';
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import {NzMessageService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
@@ -51,9 +51,16 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
     }
   }
 
-  changeRadioAnswer(answer: Answer, id_option: number, checked: boolean = true) {
+  changeRadioAnswer(answer: Answer, option: Option, checked: boolean) {
     if (answer) {
-      (answer.schema as AnswerRadio).selected = checked ? (id_option != null ? {id_option: id_option} : null) : null;
+      if (checked && option) {
+        (answer.schema as AnswerRadio).selected = {id_option: option.id};
+        answer.points = option.points;
+      } else {
+        (answer.schema as AnswerRadio).selected = null;
+        answer.points = 0
+      }
+      
       this.saveAnswer(answer)
         .catch(reason => console.error(reason));
     }
