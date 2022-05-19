@@ -82,7 +82,6 @@
   "OPTIONAL": "opcional",
   "SELECT_VALUE": "Seleccionar un valor...",
   "NONE_OPTION": "Ninguna opción",
-
   "RERUN": "Vuelta",
   "NUMB": "Num",
   "DAY-SHIFT": "Dia - Turno",
@@ -240,15 +239,12 @@
   "SOUND_MUTED": "Sonido Desactivado",
   "SOUND_MUTED_INFO": "Debe permitir que se active el sonido en el navegador para recibir correctamente las notificaciones del cronómetro",
   "SOUND_ACTIVATED": "Sonido activado",
-
   "ROLES": "Roles",
   "SUPERADMIN": "Administrador del sistema",
   "ADMINISTRATOR": "Administrador",
   "EVALUATOR": "Evaluador",
   "STUDENT": "Estudiante",
-
   "SELECT_ROLES": "Seleccione roles",
-
-  "ANSWER_SAVING_ERROR": "Ha ocurrido un error guardando la respuesta de la pregunta '{{questionName}}'.<br>Pruebe a recargar la pantalla, y si el problema persiste pongase en contacto con el administrador del sistema."
-
+  "ANSWER_SAVING_ERROR": "Ha ocurrido un error guardando la respuesta de la pregunta '{{questionName}}'.<br>Pruebe a recargar la pantalla, y si el problema persiste pongase en contacto con el administrador del sistema.",
+  "ERROR_SAVE_ANSWER": "Error almacenando la respuesta"
 }

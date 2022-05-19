@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Answer, AnswerSchema, Question, QuestionBase, Station, Student} from '@app/models';
+import { TranslateService } from '@ngx-translate/core';
+import { NzMessageService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-question',
@@ -31,7 +33,10 @@ export class QuestionComponent implements OnInit {
   _questionAnswer: Answer = null;
   loading: boolean = true;
 
-  constructor() {
+  constructor(
+    private message: NzMessageService,
+    private translate: TranslateService
+  ) {
   }
 
   ngOnInit() {
@@ -51,12 +56,15 @@ export class QuestionComponent implements OnInit {
   }
 
   async createAnswer(question: Question) {
-    return new Answer({
+    const _answer = new Answer({
       station: this.station,
       student: this.student,
       question: this.question,
       schema: new AnswerSchema(question.schema.type)
     })
+
+    _answer.save().catch(err => this.message.error(this.translate.instant('ERROR_SAVE_ANSWER', err)))
+    return _answer
   }
 
 }
