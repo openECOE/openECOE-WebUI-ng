@@ -1,7 +1,14 @@
-<bar-rating nz-row class="right"
+<!-- <bar-rating nz-row class="right"
             (rateChange)="changeAnswer(answer, $event)"
             [rate]="answer ? answer.schema.selected : 0"
             [max]="question.range"
             showText="true"
             theme="horizontal">
-</bar-rating>
+</bar-rating> -->
+<nz-rate nzAllowHalf
+  [nzAllowClear] = false
+  [nzCount]="question.range/2" 
+  [ngModel]="answer.schema.selected"
+  (ngModelChange)="changeAnswer(answer, $event)">
+</nz-rate>
+<button nz-button nzType="danger" nzSize="small" nzShape="circle" (click)="changeAnswer(answer, 0)"><i nz-icon type="close"></i></button>

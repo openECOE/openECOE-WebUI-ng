@@ -24,8 +24,8 @@ export class QuestionRangeComponent extends QuestionBaseComponent implements OnI
   changeAnswer(answer: Answer, value: number) {
     if (answer) {
       (answer.schema as AnswerRange).selected = value;
-      answer.points = (this.question.max_points / this.question.range) * value;
-      this.saveAnswer(answer).finally();
+      answer.points = (this.question.max_points / (this.question.range/2)) * value;
+      this.saveAnswer(answer);
     }
   }
 
