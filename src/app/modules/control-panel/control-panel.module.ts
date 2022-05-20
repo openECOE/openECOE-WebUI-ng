@@ -8,9 +8,10 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComponentsModule } from '@components/components.module';
+import { PermissionsListComponent } from './users-admin/components/permissions-list/permissions-list.component';
 
 @NgModule({
-  declarations: [DashboardComponent, UsersAdminComponent],
+  declarations: [DashboardComponent, UsersAdminComponent, PermissionsListComponent],
   imports: [
     CommonModule,
     ControlPanelRoutingModule,

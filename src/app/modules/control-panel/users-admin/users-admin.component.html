@@ -45,6 +45,7 @@
     <th>{{"NAME" | translate}}</th>
     <th>{{"SURNAMES" | translate}}</th>
     <th nzWidth="450px">{{"ROLES" | translate}}</th>
+    <th>{{"PERMISSIONS" | translate}}</th>
     <th nzWidth="200px">
       <nz-button-group>
         <button nz-button [nzType]="'primary'" class="margin-left"
@@ -125,7 +126,9 @@
           <ng-template #tagPlaceHolder let-selectedList> and {{ selectedList.length }} more selected </ng-template>
         </ng-template>
       </td>
-
+      <td>
+        <app-permissions-list></app-permissions-list>
+      </td>
       <td text-right>
         <app-action-buttons [isEditing]="editCache[idx]?.editItem"
                             [isNewItem]="editCache[idx]?.newItem"
