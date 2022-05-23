@@ -30,7 +30,7 @@
     "autolinker": "^1.8.3",
     "core-js": "^2.6.5",
     "moment": "^2.24.0",
-    "ng-zorro-antd": "^7.5.1",
+    "ng-zorro-antd": "^8.5.2",
     "ngx-bar-rating": "^1.1.0",
     "ngx-papaparse": "^3.0.2",
     "reflect-metadata": "^0.1.13",
