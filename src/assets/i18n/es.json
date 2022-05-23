@@ -249,5 +249,6 @@
   "ERROR_SAVE_ANSWER": "Error almacenando la respuesta",
   "SETTINGS": "Ajustes",
   "INPUT_EMAIL": "Por favor, introduzca su usuario",
-  "INPUT_PASSWORD": "Por favor, introduzca su contraseña"
+  "INPUT_PASSWORD": "Por favor, introduzca su contraseña",
+  "DNI": "DNI"
 }
