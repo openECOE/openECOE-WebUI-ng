@@ -241,7 +241,7 @@ export class Answer extends Item {
   }
 
   save(): Promise<this> {
-    this.answer_schema = this.answerSchema;
+    this._answer_schema = this.answerSchema;
     return super.save();
   }
 

@@ -49,7 +49,7 @@ export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
 
   private notifKey = 'soundAlert'
   
-  @ViewChild('soundAlert', { read: TemplateRef }) soundAlertTemplate:TemplateRef<any>;
+  @ViewChild('soundAlert', { read: TemplateRef, static: true }) soundAlertTemplate:TemplateRef<any>;
 
   constructor(
     private chronoService: ChronoService,

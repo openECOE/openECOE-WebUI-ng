@@ -15,8 +15,8 @@ export class QblockQuestionFormComponent implements OnInit {
 
   @Output() saved: EventEmitter<boolean> = new EventEmitter();
 
-  @ViewChild('question') questionRef;
-  @ViewChild('qblock') qblockRef;
+  @ViewChild('question', { static: false }) questionRef;
+  @ViewChild('qblock', { static: false }) qblockRef;
 
   current = 0;
 
