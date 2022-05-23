@@ -130,19 +130,10 @@
   "resolved" "https://registry.npmjs.org/@angular/animations/-/animations-9.1.13.tgz"
   "version" "9.1.13"
 
-"@angular/cdk@^8.0.0":
+"@angular/cdk@^8.0.0", "@angular/cdk@8.2.3":
   "integrity" "sha512-ZwO5Sn720RA2YvBqud0JAHkZXjmjxM0yNzCO8RVtRE9i8Gl26Wk0j0nQeJkVm4zwv2QO8MwbKUKGTMt8evsokA=="
   "resolved" "https://registry.npmjs.org/@angular/cdk/-/cdk-8.2.3.tgz"
   "version" "8.2.3"
-  dependencies:
-    "tslib" "^1.7.1"
-  optionalDependencies:
-    "parse5" "^5.0.0"
-
-"@angular/cdk@7.3.7":
-  "integrity" "sha512-xbXxhHHKGkVuW6K7pzPmvpJXIwpl0ykBnvA2g+/7Sgy5Pd35wCC+UtHD9RYczDM/mkygNxMQtagyCErwFnDtQA=="
-  "resolved" "https://registry.npmjs.org/@angular/cdk/-/cdk-7.3.7.tgz"
-  "version" "7.3.7"
   dependencies:
     "tslib" "^1.7.1"
   optionalDependencies:
