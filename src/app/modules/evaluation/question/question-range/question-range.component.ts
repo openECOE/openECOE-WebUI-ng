@@ -13,16 +13,21 @@ export class QuestionRangeComponent extends QuestionBaseComponent implements OnI
 
   @Input() question: QuestionRange;
 
+  selected: number;
+
   constructor(protected message: NzMessageService,
               protected translate: TranslateService) {
     super(message, translate);
   }
 
   ngOnInit() {
+    const _schema = this.answer.schema as AnswerRange
+    this.selected = _schema.selected;
   }
 
   changeAnswer(answer: Answer, value: number) {
     if (answer) {
+      this.selected = value;
       (answer.schema as AnswerRange).selected = value;
       answer.points = (this.question.max_points / (this.question.range/2)) * value;
       this.saveAnswer(answer);

@@ -18,19 +18,19 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   @Output() pointValues:  EventEmitter<any[]> = new EventEmitter();
   @Output() saveForm:     EventEmitter<Function> = new EventEmitter();
 
-  private optionForm: FormGroup;
-  private control: FormArray;
-  private optionsCache: RowOption[] = [];
+  optionForm: FormGroup;
+  control: FormArray;
+  optionsCache: RowOption[] = [];
 
-  private nRateCount: {max: number, min: number, current: number} = {
+  nRateCount: {max: number, min: number, current: number} = {
     max: 10,
     min: 1,
     current: 10
   };
 
   current_number_options: number = 0;
-  private arrPoints: Array<{ option: number, value: number }> = [];
-  private defaultTextValues: string[] = ['Sí'];
+  arrPoints: Array<{ option: number, value: number }> = [];
+  defaultTextValues: string[] = ['Sí'];
   public questionTypeOptions: string[] = ['radio', 'checkbox', 'range'];
 
   constructor(

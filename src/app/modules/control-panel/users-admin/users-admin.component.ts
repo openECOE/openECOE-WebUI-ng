@@ -44,7 +44,7 @@ export class UsersAdminComponent implements OnInit {
 
   constructor(private authService: AuthenticationService,
               private apiService: ApiService,
-              private shared: SharedService,
+              public shared: SharedService,
               private fb: FormBuilder,
               private zone: NgZone,
               private router: Router) {

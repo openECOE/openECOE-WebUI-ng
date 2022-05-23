@@ -15,13 +15,13 @@ export class QblockQuestionFormComponent implements OnInit {
 
   @Output() saved: EventEmitter<boolean> = new EventEmitter();
 
-  @ViewChild('question', { static: false }) questionRef;
-  @ViewChild('qblock', { static: false }) qblockRef;
+  @ViewChild('question') questionRef;
+  @ViewChild('qblock') qblockRef;
 
   current = 0;
 
-  private qblocksToAdd: Block[] = [];
-  private questionsToAdd: Question[] = [];
+  qblocksToAdd: Block[] = [];
+  questionsToAdd: Question[] = [];
 
   qblockForm: FormGroup;
   control: FormArray;

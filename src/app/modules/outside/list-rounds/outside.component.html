@@ -15,7 +15,7 @@
             </h2>
           </nz-col>
           <ng-container *ngFor="let round of ecoeConfig.rounds">
-            <nz-col [nzMd]="ecoeConfig.rounds.length > 2 ? +(18 / ecoeConfig.rounds.length).toString().substring(0,1) : 6">
+            <nz-col [nzMd]="ecoeConfig.rounds.length > 2 ? (18 / ecoeConfig.rounds.length) : 6">
 
               <nz-card success-color no-padding pointer nzHoverable margin-left
                        class="not-completed"

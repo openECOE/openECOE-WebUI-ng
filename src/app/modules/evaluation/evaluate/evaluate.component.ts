@@ -15,14 +15,14 @@ import {AuthenticationService} from '@services/authentication/authentication.ser
 })
 export class EvaluateComponent implements OnInit {
 
-  private ecoeId: number;
-  private stationId: number;
-  private shiftId: number;
-  private roundId: number;
+  ecoeId: number;
+  stationId: number;
+  shiftId: number;
+  roundId: number;
 
-  private station: Station;
-  private shift: Shift;
-  private round: Round;
+  station: Station;
+  shift: Shift;
+  round: Round;
   students: Student[] = [];
   questionsByQblock: BlockType[] = [];
 
@@ -40,9 +40,9 @@ export class EvaluateComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private router: Router,
-              private location: Location,
+              public location: Location,
               private questionService: QuestionsService,
-              private apiService: ApiService,
+              public apiService: ApiService,
               private authService: AuthenticationService,
               @Inject(AppComponent) private parent: AppComponent) {
   }

@@ -12,12 +12,12 @@ import {AuthenticationService} from '../../../services/authentication/authentica
   providers: [ChronoService]
 })
 export class OutsideComponent implements OnInit, OnDestroy {
-  private ecoesConfig: ECOEConfig[] = [];
+  ecoesConfig: ECOEConfig[] = [];
   selectedRound: InfoData;
   selectedConfig: ECOEConfig;
 
-  private chronoSubs: Subscription;
-  private authenticated: boolean;
+  chronoSubs: Subscription;
+  authenticated: boolean;
 
   constructor(private chronoService: ChronoService,
               private authenticationService: AuthenticationService) {}

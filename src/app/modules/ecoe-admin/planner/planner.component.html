@@ -14,20 +14,20 @@
     <thead>
     <tr>
       <th nzWidth="200px" nzLeft="0px"></th>
-      <th nzWidth="200px" nzLeft="200px" text-center *ngFor="let round of rounds">
+      <th nzWidth="200px" nzLeft="200px" text-center *ngFor="let _round of rounds">
         <div nz-col nzSpan="6">
           <h3>
             <app-action-buttons class="action-buttons"
                                 [isEditing]="false"
                                 [isNewItem]="false"
                                 [showDeleteButton]="false"
-                                (startEdit)="addRound(round)">
+                                (startEdit)="addRound(_round)">
             </app-action-buttons>
-            {{round.roundCode}}
+            {{_round.roundCode}}
           </h3>
         </div>
         <div nz-col nzSpan="18">
-          {{round.description}}
+          {{_round.description}}
         </div>
       </th>
       <th nzWidth="200px" nzLeft="200px">
@@ -43,7 +43,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let shift of shifts">
+    <tr *ngFor="let _shift of shifts">
       <td nzLeft="0px" text-center>
         <div nz-col nzSpan="6">
           <h3>
@@ -51,19 +51,19 @@
                                 [isEditing]="false"
                                 [isNewItem]="false"
                                 [showDeleteButton]="false"
-                                (startEdit)="addShift(shift)">
+                                (startEdit)="addShift(_shift)">
             </app-action-buttons>
-            {{shift.shiftCode}}
+            {{_shift.shiftCode}}
           </h3>
         </div>
         <div nz-col nzSpan="18">
-          {{shift.timeStart | date: 'dd/MM/yyyy HH:mm'}}
+          {{_shift.timeStart | date: 'dd/MM/yyyy HH:mm'}}
         </div>
       </td>
-      <td nzLeft="200px" *ngFor="let round of rounds">
+      <td nzLeft="200px" *ngFor="let _round of rounds">
         <app-planner-selector [ecoeId]="ecoeId"
-                              [(round)]="round"
-                              [(shift)]="shift"
+                              [round]="_round"
+                              [shift]="_shift"
                               [stationsNum]="stationsTotal"
         >
         </app-planner-selector>

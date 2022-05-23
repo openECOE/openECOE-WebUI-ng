@@ -13,17 +13,16 @@ import {EvaluationService} from '@services/evaluation/evaluation.service';
   styleUrls: ['./evaluation-details.component.less']
 })
 export class EvaluationDetailsComponent implements OnInit {
-  private rounds: Round[] = [];
-  // @ts-ignore
-  private stations: Station[] = [];
+  rounds: Round[] = [];
+  stations: Station[] = [];
 
   ecoeDays: any[] = [];
 
   selectedIndexRound = 0;
   selectedIndexShift = 0;
   shifts: Shift[];
-  private filteredShifts: Shift[] = [];
-  private ecoeId: number;
+  filteredShifts: Shift[] = [];
+  ecoeId: number;
   ecoe: ECOE;
 
   momentRef = moment;
@@ -35,7 +34,7 @@ export class EvaluationDetailsComponent implements OnInit {
   selectedStation: Station;
 
   constructor(private route: ActivatedRoute,
-              private location: Location,
+              public location: Location,
               private router: Router,
               private shared: SharedService,
               private cdRef: ChangeDetectorRef,

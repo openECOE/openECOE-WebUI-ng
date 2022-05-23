@@ -1,8 +1,9 @@
-import {Input, OnInit} from '@angular/core';
+import { Input, OnInit, Directive } from '@angular/core';
 import {Answer, QuestionBase} from '@app/models';
 import {NzMessageService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 
+@Directive()
 export class QuestionBaseComponent implements OnInit {
   protected _answer: Answer = null;
 

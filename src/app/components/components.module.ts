@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
 import { ActionButtonsComponent } from './action-buttons/action-buttons.component';
-import {PapaParseModule} from 'ngx-papaparse';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import { MenuComponent } from './menu/menu.component';
@@ -40,7 +39,6 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
   ],
   imports: [
     CommonModule,
-    PapaParseModule,
     NgZorroAntdModule,
     TranslateModule,
     RouterModule,

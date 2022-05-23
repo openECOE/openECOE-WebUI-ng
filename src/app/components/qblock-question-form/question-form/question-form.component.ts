@@ -35,9 +35,9 @@ export class QuestionFormComponent implements OnInit, OnChanges {
     {type: 'range', label: 'VALUE_RANGE'}
   ];
 
-  private selectedQType: string = this.questionTypeOptions[0].type;
+  selectedQType: string = this.questionTypeOptions[0].type;
 
-  private defaultQuestion: Question = new Question({block: this.qblock.block , schema: new QuestionSchema('radio')});
+  defaultQuestion: Question = new Question({block: this.qblock.block , schema: new QuestionSchema('radio')});
 
 
   constructor(private fb: FormBuilder,

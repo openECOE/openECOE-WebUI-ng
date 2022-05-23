@@ -55,7 +55,7 @@ export class StudentsComponent implements OnInit {
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
-              private shared: SharedService,
+              public shared: SharedService,
               private fb: FormBuilder,
               private router: Router,
               private translate: TranslateService) {

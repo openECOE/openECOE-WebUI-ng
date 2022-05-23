@@ -13,41 +13,41 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
 
-  @Input() private round: Round;
-  @Input() private roundId: number;
-  @Input() private station: Station;
-  @Input() private showDetails: boolean = true;
-  @Input() private mute: boolean = false;
-  @Input() private idEcoe: number;
+  @Input() round: Round;
+  @Input() roundId: number;
+  @Input() station: Station;
+  @Input() showDetails: boolean = true;
+  @Input() mute: boolean = false;
+  @Input() idEcoe: number;
   @Input() withPreview: boolean = false;
-  @Input() private templateBeforeStart: TemplateRef<void>;
-  @Output() private started: EventEmitter<number> = new EventEmitter<number>();
+  @Input() templateBeforeStart: TemplateRef<void>;
+  @Output() started: EventEmitter<number> = new EventEmitter<number>();
 
-  private aborted: boolean;
-  private stageName: string;
-  private currentSeconds: number;
-  private totalDuration: number;
-  private event: {};
-  private initStage: any[];
+  aborted: boolean;
+  stageName: string;
+  currentSeconds: number;
+  totalDuration: number;
+  event: {};
+  initStage: any[];
 
-  private eventsToPlay: any[];
-  private countDownEvents: {}[] = [];
-  private currentCountDownEvent: {event: {}, minutes: number, seconds: number} = { event: null, minutes: 0, seconds: 0};
-  private totalPercent: number;
-  private minutes: number = 0;
-  private seconds: number = 0;
-  private rerunsDescription: string;
-  private roundDurationSeconds: number;
-  private remainingTime: number;
+  eventsToPlay: any[];
+  countDownEvents: {}[] = [];
+  currentCountDownEvent: {event: {}, minutes: number, seconds: number} = { event: null, minutes: 0, seconds: 0};
+  totalPercent: number;
+  minutes: number = 0;
+  seconds: number = 0;
+  rerunsDescription: string;
+  roundDurationSeconds: number;
+  remainingTime: number;
 
   connectedFlag: boolean;
   tictacFlag: boolean;
 
 
   momentRef = moment;
-  private configurationECOE: Object;
+  configurationECOE: Object;
 
-  private notifKey = 'soundAlert'
+  notifKey = 'soundAlert'
   
   @ViewChild('soundAlert', { read: TemplateRef, static: true }) soundAlertTemplate:TemplateRef<any>;
 

@@ -8,7 +8,7 @@
 <nz-rate nzAllowHalf
   [nzAllowClear] = false
   [nzCount]="question.range/2" 
-  [ngModel]="answer.schema.selected"
+  [ngModel]="selected"
   (ngModelChange)="changeAnswer(answer, $event)">
 </nz-rate>
 <button nz-button nzType="danger" nzSize="small" nzShape="circle" (click)="changeAnswer(answer, 0)"><i nz-icon type="close"></i></button>

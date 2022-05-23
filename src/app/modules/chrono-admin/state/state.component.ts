@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ECOE, Round} from '../../../models';
 import {ActivatedRoute, Router} from '@angular/router';
-import {error} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {AuthenticationService} from '../../../services/authentication/authentication.service';
 import {ChronoService} from '../../../services/chrono/chrono.service';
@@ -63,17 +62,17 @@ export class StateComponent implements OnInit {
 
   pauseECOE(id: number) {
     this.chronoService.pauseECOE(id)
-      .subscribe(null, err => error(err));
+      .subscribe(null, err => console.error(err));
   }
 
   playECOE(id: number) {
     this.chronoService.playECOE(id)
-      .subscribe(null, err => error(err));
+      .subscribe(null, err => console.error(err));
   }
 
   stopECOE(id: number) {
     this.chronoService.abortECOE(id)
-      .subscribe(null, err => error(err));
+      .subscribe(null, err => console.error(err));
 
     this.disabledBtnStart = true;
 
@@ -85,19 +84,19 @@ export class StateComponent implements OnInit {
 
   playRound(round: number) {
     this.chronoService.playRound(round)
-      .subscribe(null, err => error(err));
+      .subscribe(null, err => console.error(err));
   }
 
   pauseRound(roundId: number) {
     this.chronoService.pauseRound(roundId)
-      .subscribe(null, err => error(err));
+      .subscribe(null, err => console.error(err));
   }
 
-  private clearAlertError() {
+  clearAlertError() {
     this.errorAlert = null;
   }
 
-  private setSpin(value: boolean) {
+  setSpin(value: boolean) {
     this.doSpin =  value;
 
     setTimeout(() => this.doSpin = false, 1000);

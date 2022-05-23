@@ -51,10 +51,10 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
     }
   }
 
-  changeRadioAnswer(answer: Answer, option: Option, checked: boolean) {
+  changeRadioAnswer(answer: Answer, option: QuestionOption, checked: boolean) {
     if (answer) {
       if (checked && option) {
-        (answer.schema as AnswerRadio).selected = {id_option: option.id};
+        (answer.schema as AnswerRadio).selected = {id_option: option.id_option};
         answer.points = option.points;
       } else {
         (answer.schema as AnswerRadio).selected = null;
