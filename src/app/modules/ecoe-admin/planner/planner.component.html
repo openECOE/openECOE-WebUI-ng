@@ -36,7 +36,7 @@
                 nzType="primary"
                 (click)="addRound()"
                 [nzBlock]="true">
-          <i nz-icon [type]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
+          <i nz-icon [nzType]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
           {{"ADD_ROUND" | translate}}
         </button>
       </th>
@@ -77,7 +77,7 @@
                 nzType="primary"
                 (click)="addShift()"
                 [nzBlock]="true">
-          <i nz-icon [type]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
+          <i nz-icon [nzType]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
           {{"ADD_SHIFT" | translate}}
         </button>
       </td>
@@ -126,7 +126,7 @@
 
     <ng-template #modalFooterShift>
       <button *ngIf="isEditing && isEditing.edit" nz-button [nzType]="'danger'"
-              nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+              nz-popconfirm [nzPopconfirmTitle]="'DELETE_CONFIRMATION' | translate"
               (nzOnConfirm)="modalDeleteShift(isEditing.itemRef)"
               style="float: left;">
         <span>{{"DELETE" | translate}}</span>
@@ -165,7 +165,7 @@
 
     <ng-template #modalFooterRound>
       <button *ngIf="isEditing?.edit" nz-button [nzType]="'danger'"
-              nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+              nz-popconfirm [nzPopconfirmTitle]="'DELETE_CONFIRMATION' | translate"
               (nzOnConfirm)="modalDeleteRound(isEditing.itemRef)"
               style="float: left;">
         <span>{{"DELETE" | translate}}</span>

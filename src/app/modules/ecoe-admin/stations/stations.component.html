@@ -24,9 +24,9 @@
             nzShowPagination>
     <thead>
     <tr>
-      <th [nzExpand]="true">
+      <th>
         <a (click)="loadStations().finally()">
-          <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+          <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="85px">{{"ORDER" | translate}}</th>
@@ -38,7 +38,7 @@
           <button nz-button [nzType]="'primary'"
                   [nz-tooltip] [nzTitle]="'ADD_STATION' | translate"
                   (click)="showDrawer()">
-            <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
+            <i nz-icon [nzType]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
           <app-upload-and-parse [fileURL]="STATIONS_URL" (parserResult)="importStations($event)"></app-upload-and-parse>
         </nz-button-group>
@@ -47,7 +47,7 @@
     </thead>
     <tbody>
     <ng-template ngFor let-item [ngForOf]="table.data">
-      <tr>
+      <tr [nzExpand]="true">
         <td>
 
         </td>
@@ -148,17 +148,13 @@
               </nz-form-item>
             </div>
             <div nz-col nzSpan="9">
-              <nz-form-control>
+              <nz-form-control [nzErrorTip]="'NAME_INPUT_REQUIRED' | translate">
                 <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
-                <nz-form-explain
-                *ngIf="getFormControl('name',i)?.dirty && getFormControl('name', i)?.hasError('required')">
-                  {{'NAME_INPUT_REQUIRED' | translate}}
-                </nz-form-explain>
               </nz-form-control>
             </div>
             <div nz-col nzSpan="9">
               <nz-form-item>
-                <nz-form-control>
+                <nz-form-control [nzErrorTip]="'PARENT_INPUT_REQUIRED' | translate">
                   <nz-select
                     nzShowSearch
                     nzServerSearch
@@ -174,11 +170,6 @@
                   >
                     <nz-option *ngFor="let option of selectOptions['items']" [nzLabel]="option.name" [nzValue]="option.name"> </nz-option>
                   </nz-select>
-
-                  <nz-form-explain *ngIf="getFormControl('parentStation', i)?.dirty && getFormControl('parentStation', i)?.hasError('required')">
-                    {{'PARENT_INPUT_REQUIRED' | translate}}
-                  </nz-form-explain>
-
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -191,7 +182,7 @@
         <nz-form-item>
           <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
             <button nz-button   nzType="dashed" style="width:60%" (click)="addStationRow()">
-              <i nz-icon type="plus"></i> {{'ADD_STATION' | translate}}
+              <i nz-icon nzType="plus"></i> {{'ADD_STATION' | translate}}
             </button>
           </nz-form-control>
         </nz-form-item>

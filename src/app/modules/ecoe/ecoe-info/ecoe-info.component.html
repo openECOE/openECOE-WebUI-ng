@@ -14,9 +14,9 @@
         nz-button
         class="error"
         nz-popconfirm
-        [nzTitle]="'ARCHIVE_CONFIRMATION' | translate"
+        [nzPopconfirmTitle]="'ARCHIVE_CONFIRMATION' | translate"
         (nzOnConfirm)="deleteEcoe()"
-        [nzPlacement]="'top'"
+        [nzPopconfirmPlacement]="'top'"
         [nzOkType]="'danger'"
         [nzOkText]="'ARCHIVE' | translate" [nzCancelText]="'CANCEL' | translate"
         [nzIcon]="iconDeleteTpl">

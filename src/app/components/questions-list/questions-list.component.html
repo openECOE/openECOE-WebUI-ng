@@ -1,6 +1,6 @@
 <nz-content margin-top>
   <button *ngIf="!preview" nz-button nzType="dashed" nzBlock (click)="addQuestion()">
-    <i nz-icon [type]="'plus-circle'"></i>
+    <i nz-icon [nzType]="'plus-circle'"></i>
     {{'ADD_QUESTION' | translate}}
   </button>
   <ng-container *ngIf="qblock && preview">
@@ -48,7 +48,7 @@
             <nz-tag
               [nzColor]="item.schena?.options?.length === 0 ? 'red' : 'geekblue'"
               (click)="editCache[preview ? item.order : item.id].expand = !editCache[preview ? item.order : item.id].expand">
-              <i nz-icon [type]="editCache[preview ? item.order : item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
+              <i nz-icon [nzType]="editCache[preview ? item.order : item.id]?.expand ? 'caret-down' : 'caret-right'"></i>
               {{item.schema?.options?.length}} {{(item.schema?.options?.length === 1 ? 'OPTION' : 'OPTIONS') | translate}}
             </nz-tag>
             <ng-container *ngIf="item.uri">

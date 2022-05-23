@@ -28,9 +28,9 @@
 
     <thead>
     <tr>
-      <th [nzExpand]="true">
+      <th>
         <a (click)="loadStudents()">
-          <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+          <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="150px"
@@ -58,7 +58,7 @@
           <button nz-button [nzType]="'primary'" class="margin-left"
                   [nz-tooltip] [nzTitle]="'ADD_STUDENT' | translate"
                   (click)="showDrawer()">
-            <i nz-icon [type]="'plus-circle'" nzTheme="twotone" icon-16></i>
+            <i nz-icon [nzType]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
           <app-upload-and-parse [fileURL]="STUDENTS_URL" (parserResult)="importStudents($event)"></app-upload-and-parse>
         </nz-button-group>
@@ -67,7 +67,7 @@
     </thead>
     <tbody>
     <ng-template ngFor let-item [ngForOf]="table.data">
-      <tr>
+      <tr [nzExpand]="true">
         <td [nzShowExpand]="false"></td>
 
         <td>
@@ -151,31 +151,19 @@
           <div nz-row nzGutter="8" [formGroupName]="+i">
             <div nz-col nzSpan="7">
               <nz-form-item>
-                <nz-form-control>
+                <nz-form-control [nzErrorTip]="'NAME_INPUT_REQUIRED' | translate">
                   <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
-                  <nz-form-explain
-                    *ngIf="getFormControl('name', i)?.dirty && getFormControl('name', i)?.hasError('required')">
-                    {{'NAME_INPUT_REQUIRED' | translate}}
-                  </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="9">
-              <nz-form-control>
+              <nz-form-control [nzErrorTip]="'SURNAME_REQUIRED' | translate">
                 <input nz-input [placeholder]="('SURNAMES_PLACEHOLDER' | translate)" formControlName="surnames"/>
-                <nz-form-explain
-                  *ngIf="getFormControl('surnames',i)?.dirty && getFormControl('surnames', i)?.hasError('required')">
-                  {{'SURNAMES_INPUT_REQUIRED' | translate}}
-                </nz-form-explain>
               </nz-form-control>
             </div>
             <div nz-col nzSpan="5">
-              <nz-form-control>
+              <nz-form-control [nzErrorTip]="'CODE_INPUT_REQUIRED' | translate">
                 <input nz-input [placeholder]="('ID_CODE_PLACEHOLDER' | translate)" formControlName="dni"/>
-                <nz-form-explain
-                  *ngIf="getFormControl('dni',i)?.dirty && getFormControl('dni', i)?.hasError('required')">
-                  {{'CODE_INPUT_REQUIRED' | translate}}
-                </nz-form-explain>
               </nz-form-control>
             </div>
             <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
@@ -189,7 +177,7 @@
         <nz-form-item>
           <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
             <button nz-button nzType="dashed" style="width:60%" (click)="addStudentRow()">
-              <i nz-icon type="plus"></i> {{'ADD_STUDENT' | translate}}
+              <i nz-icon nzType="plus"></i> {{'ADD_STUDENT' | translate}}
             </button>
           </nz-form-control>
         </nz-form-item>

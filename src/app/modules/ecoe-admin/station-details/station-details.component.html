@@ -27,9 +27,9 @@
             nzShowPagination>
     <thead>
     <tr>
-      <th [nzExpand]="true">
+      <th>
         <a (click)="getQblocks(station)">
-          <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+          <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="5%">{{"ORDER" | translate}}</th>
@@ -44,7 +44,7 @@
     </thead>
     <tbody>
     <ng-template ngFor let-item [ngForOf]="table.data" let-index="index">
-      <tr>
+      <tr [nzExpand]="true">
         <td>
           <i nz-icon nzType="file-text" nzTheme="outline"></i>
         </td>

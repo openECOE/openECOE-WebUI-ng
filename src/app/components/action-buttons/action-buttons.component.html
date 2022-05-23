@@ -2,7 +2,7 @@
   <i *ngIf="showNavigateQuestions"
      (click)="navigateQuestions.emit()"
      nz-icon
-     type="select"
+     nzType="select"
      [nz-tooltip]
      [nzPlacement]="'top'"
      [nzTitle]="'GO_TO_QUESTIONS' | translate"
@@ -12,7 +12,7 @@
   <nz-divider *ngIf="showNavigateQuestions" [nzType]="'vertical'"></nz-divider>
 
   <i *ngIf="showOrderButtons && index != 0"
-     nz-icon type="up-circle" [theme]="'twotone'"
+     nz-icon nzType="up-circle" [nzTheme]="'twotone'"
      [nz-tooltip] [nzTitle]="'MOVE_UP' | translate"
      (click)="changeOrder.emit('up')"
      tappable>
@@ -21,7 +21,7 @@
   <nz-divider *ngIf="showOrderButtons && index != 0" [nzType]="'vertical'"></nz-divider>
 
   <i *ngIf="showOrderButtons && index != (itemsLength - 1)"
-     nz-icon type="down-circle" [theme]="'twotone'"
+     nz-icon nzType="down-circle" [nzTheme]="'twotone'"
      [nz-tooltip] [nzTitle]="'MOVE_DOWN' | translate"
      (click)="changeOrder.emit('down')"
      tappable>
@@ -31,7 +31,7 @@
               [nzType]="'vertical'">
   </nz-divider>
 
-  <i nz-icon type="edit" [theme]="'outline'"
+  <i nz-icon nzType="edit" [nzTheme]="'outline'"
      [nz-tooltip] [nzTitle]="'EDIT' | translate"
      (click)="startEdit.emit()" tappable success-color>
   </i>
@@ -39,14 +39,14 @@
   <nz-divider [nzType]="'vertical'" *ngIf="showDeleteButton"></nz-divider>
 
   <a *ngIf="showDeleteButton"
-     nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+     nz-popconfirm [nzPopconfirmTitle]="'DELETE_CONFIRMATION' | translate"
      (nzOnConfirm)="delete.emit()">
-    <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
+    <i nz-icon nzType="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
   </a>
 </ng-container>
 
 <ng-container *ngIf="isEditing">
-  <i nz-icon type="save"
+  <i nz-icon nzType="save"
      [nz-tooltip] [nzTitle]="(isNewItem ? 'SAVE' : 'UPDATE') | translate"
      (click)="save.emit()"
      success-color tappable>
@@ -54,7 +54,7 @@
 
   <nz-divider [nzType]="'vertical'"></nz-divider>
 
-  <i nz-icon type="close-circle"
+  <i nz-icon nzType="close-circle"
      [nz-tooltip] [nzTitle]="'CANCEL' | translate"
      (click)="cancelEdit.emit()"
      danger-color tappable>

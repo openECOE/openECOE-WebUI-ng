@@ -36,9 +36,9 @@
           nzShowPagination>
   <thead>
   <tr>
-    <th [nzExpand]="true">
+    <th>
       <a (click)="loadUsers()">
-        <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+        <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
       </a>
     </th>
     <th>{{"EMAIL" | translate}}</th>
@@ -60,7 +60,7 @@
   <tbody>
 
   <ng-template ngFor let-item let-idx="index" [ngForOf]="table.data">
-    <tr>
+    <tr [nzExpand]="true">
       <td>
         <ng-container>
           {{item.id}}
@@ -151,62 +151,39 @@
 
   <form nz-form [formGroup]="validateForm">
     <nz-form-item>
-      <nz-form-control [nzSpan]="24" nzHasFeedback>
+      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'EMAIL_NOT_VALID' | translate">
         <nz-input-group [nzPrefixIcon]="'mail'">
           <input type="email" nz-input
                  formControlName="email"
                  [placeholder]="'EMAIL' | translate">
         </nz-input-group>
-        <nz-form-explain *ngIf="validateForm.get('email')?.dirty && validateForm.get('email')?.errors">
-          <ng-container *ngIf="validateForm.get('email')?.hasError('email')">
-            {{'EMAIL_NOT_VALID' | translate}}
-          </ng-container>
-          <ng-container *ngIf="validateForm.get('email')?.hasError('required')">
-            {{'EMAIL_REQUIRED' | translate}}
-          </ng-container>
-        </nz-form-explain>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-control [nzSpan]="24" nzHasFeedback>
+      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'PASSWORD_REQUIRED' | translate">
         <nz-input-group [nzPrefixIcon]="'lock'" >
           <input [type]="passwordVisible ? 'text' : 'password'" nz-input
                  formControlName="password"
                  [placeholder]="'PASSWORD' | translate">
         </nz-input-group>
-        <nz-form-explain *ngIf="validateForm.get('password')?.dirty && validateForm.get('password')?.errors">
-          <ng-container *ngIf="validateForm.get('password')?.hasError('required')">
-            {{'PASSWORD_REQUIRED' | translate}}
-          </ng-container>
-        </nz-form-explain>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-control [nzSpan]="24">
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
         <nz-input-group nzCompact>
           <input type="text" nz-input
                  formControlName="userName"
                  placeholder="{{'NAME' | translate}}">
         </nz-input-group>
-        <nz-form-explain *ngIf="validateForm.get('userName')?.dirty && validateForm.get('userName')?.errors">
-          <ng-container *ngIf="validateForm.get('userName')?.hasError('required')">
-            {{'NAME_REQUIRED' | translate}}
-          </ng-container>
-        </nz-form-explain>
       </nz-form-control>
-      <nz-form-control [nzSpan]="24">
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="'SURNAME_REQUIRED' | translate">
         <nz-input-group nzCompact>
           <input type="text" nz-input
                  formControlName="userSurname"
                  placeholder="{{'SURNAMES' | translate}}">
         </nz-input-group>
-        <nz-form-explain *ngIf="validateForm.get('userSurname')?.dirty && validateForm.get('userSurname')?.errors">
-          <ng-container *ngIf="validateForm.get('userSurname')?.hasError('required')">
-            {{'SURNAME_REQUIRED' | translate}}
-          </ng-container>
-        </nz-form-explain>
       </nz-form-control>
     </nz-form-item>
 

@@ -1,14 +1,14 @@
-<nz-dropdown class="user" *ngIf="authService.userData">
-  <a nz-dropdown>
-    <i nz-icon nzType="user" nzTheme="outline"></i> {{authService.userData?.user && authService.userData?.user?.name ? authService.userData?.user.name : 'Usuario (sin nombre)'}}
-    <i nz-icon type="caret-down"></i>
-  </a>
-    <ul nz-menu nzSelectable>
-      <li nz-menu-item>
-        <a [routerLink]="'/control-panel'" >{{"Ajustes" | translate}}</a>
-      </li>
-      <li nz-menu-item>
-        <a (click)="logout()" >{{"LOG_OUT" | translate}}</a>
-      </li>
-    </ul>
-</nz-dropdown>
+<a class="user" *ngIf="authService.userData" nz-dropdown [nzDropdownMenu]="menu">
+  <i nz-icon nzType="user" nzTheme="outline"></i> {{authService.userData?.user && authService.userData?.user?.name ? authService.userData?.user.name : 'Usuario (sin nombre)'}}
+  <i nz-icon nzType="caret-down"></i>
+</a>
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ul nz-menu nzSelectable>
+    <li nz-menu-item>
+      <a [routerLink]="'/control-panel'" >{{"SETTINGS" | translate}}</a>
+    </li>
+    <li nz-menu-item>
+      <a (click)="logout()" >{{"LOG_OUT" | translate}}</a>
+    </li>
+  </ul>
+</nz-dropdown-menu>

@@ -49,9 +49,9 @@
         </nz-button-group>
         <a nzSize="small" nz-button nzBlock nzType="danger" margin-top
                 nz-popconfirm 
-                [nzTitle]="'STOP_CONFIRMATION' | translate"
+                [nzPopconfirmTitle]="'STOP_CONFIRMATION' | translate"
                 (nzOnConfirm)="stopECOE(ecoeId)"
-                [nzPlacement]="'top'"
+                [nzPopconfirmPlacement]="'top'"
                 [nzOkType]="'danger'"
                 [nzOkText]="'STOP' | translate" [nzCancelText]="'CANCEL' | translate"
                 [nzIcon]="iconDeleteTpl">
