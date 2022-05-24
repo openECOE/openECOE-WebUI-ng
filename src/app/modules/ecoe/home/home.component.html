@@ -2,9 +2,9 @@
   <nz-page-header class="margin-top margin-bottom" [nzTitle]="'ECOES' | translate" [nzSubtitle]="'LIST' | translate"> </nz-page-header>
   <div nz-row padding>
     <div nz-col>
-      <nz-list *ngIf="authService?.userData" [nzDataSource]="ecoes" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 10, lg: 8, xl: 6 }">
+      <nz-list *ngIf="userService?.userData" [nzDataSource]="ecoes" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 10, lg: 8, xl: 6 }">
         <ng-template #item let-item let-index="index">
-          <nz-list-item [nzContent]="index === 0 && authService.userData.isAdmin? first : nzContent">
+          <nz-list-item [nzContent]="index === 0 && userService.userData.isAdmin? first : nzContent">
             <ng-template #first>
               <nz-card [nzTitle]="'CREATE_ECOE' | translate">
                 <ng-container *ngTemplateOutlet="addECOE"></ng-container>
@@ -26,7 +26,7 @@
               </nz-card>
             </ng-template>
             <ng-template #delItem>
-              <a nz-button [routerLink]="['/ecoe/' + item['id'] + (authService.userData.isEval ? '/eval' : '/admin')]"
+              <a nz-button [routerLink]="['/ecoe/' + item['id'] + (userService.userData.isEval ? '/eval' : '/admin')]"
                       nzSize="large" nzBlock
                       preserveFragment="false"
                       nz-button nzType="primary">

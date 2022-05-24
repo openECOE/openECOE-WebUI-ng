@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { UserLogged } from '@app/models';
-import {AuthenticationService} from '@services/authentication/authentication.service';
+import { UserService } from '@app/services/user/user.service';
 
 @Component({
   selector: 'app-usermenu',
@@ -11,16 +11,18 @@ export class UsermenuComponent implements OnInit {
 
   userData: UserLogged;
 
-  constructor(public authService: AuthenticationService) {
-    this.userData = this.authService.userData
-   }
+  constructor(private userService: UserService) {
+    this.userService.userDataChange.subscribe(user => {
+      this.userData = user;
+    })  
+  }
 
   ngOnInit() {
-    
   }
 
   logout(){
-    this.authService.logout();
+    
+    // this.authService.logout();
   }
 
 }
