@@ -30,7 +30,7 @@
         <th nzWidth="190px" nzAlign="right"></th>
       </tr>
     </thead>
-
+<!-- TODO: Incluir simbolo + para desplegar -->
     <tbody cdkDropList (cdkDropListDropped)="drop($event)">
       <ng-template ngFor let-item [ngForOf]="questionsList">
         <tr cdkDrag>
@@ -61,12 +61,9 @@
         </tr>
 
         <tr [nzExpand]="editCache[preview ? item.order : item.id]?.expand">
-          <td></td>
-          <td colspan="5">
-              <app-options-list
-                [question]="item">
-              </app-options-list>
-          </td>
+          <app-options-list
+            [question]="item">
+          </app-options-list>
         </tr>
       </ng-template>
     </tbody>

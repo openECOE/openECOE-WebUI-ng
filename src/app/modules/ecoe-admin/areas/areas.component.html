@@ -50,7 +50,7 @@
     </thead>
     <tbody>
       <ng-template ngFor let-item [ngForOf]="table.data">
-        <tr [nzExpand]="true">
+        <tr>
           <td></td>
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">

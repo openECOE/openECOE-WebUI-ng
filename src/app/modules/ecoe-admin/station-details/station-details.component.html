@@ -44,7 +44,7 @@
     </thead>
     <tbody>
     <ng-template ngFor let-item [ngForOf]="table.data" let-index="index">
-      <tr [nzExpand]="true">
+      <tr>
         <td>
           <i nz-icon nzType="file-text" nzTheme="outline"></i>
         </td>
@@ -86,7 +86,6 @@
         </td>
       </tr>
       <tr [nzExpand]="item.clicked">
-        <td colspan="10">
           <app-questions-list
             [refreshQuestions]="refreshQuestions"
             [qblock]="item"
@@ -94,7 +93,6 @@
             (newQuestion)="onNewQuestion($event)"
             (editQuestion)="onEditQuestion($event)"
           ></app-questions-list>
-        </td>
       </tr>
     </ng-template>
     </tbody>

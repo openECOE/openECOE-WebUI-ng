@@ -24,7 +24,7 @@
             nzShowPagination>
     <thead>
     <tr>
-      <th>
+      <th nzWidth="5px">
         <a (click)="loadStations().finally()">
           <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
         </a>
@@ -47,7 +47,7 @@
     </thead>
     <tbody>
     <ng-template ngFor let-item [ngForOf]="table.data">
-      <tr [nzExpand]="true">
+      <tr>
         <td>
 
         </td>
