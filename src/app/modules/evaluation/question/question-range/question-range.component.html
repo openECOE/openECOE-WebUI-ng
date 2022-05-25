@@ -5,10 +5,13 @@
             showText="true"
             theme="horizontal">
 </bar-rating> -->
-<nz-rate nzAllowHalf
+<!-- <nz-rate nzAllowHalf
   [nzAllowClear] = false
   [nzCount]="question.range/2" 
   [ngModel]="answer.schema.selected"
   (ngModelChange)="changeAnswer(answer, $event)">
-</nz-rate>
-<button nz-button nzType="danger" nzSize="small" nzShape="circle" (click)="changeAnswer(answer, 0)"><i nz-icon type="close"></i></button>
+</nz-rate> -->
+<!-- <button nz-button nzType="danger" nzSize="small" nzShape="circle" (click)="changeAnswer(answer, 0)"><i nz-icon type="close"></i></button> -->
+<nz-radio-group [ngModel]="answer.schema.selected" (ngModelChange)="changeAnswer(answer, $event)" nzButtonStyle="solid">
+  <label *ngFor="let number of [].constructor(this.question.range + 1); let i = index" nz-radio-button [nzValue]="i">{{i}}</label>
+</nz-radio-group>
