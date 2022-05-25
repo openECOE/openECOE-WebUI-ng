@@ -21,8 +21,13 @@ export class QuestionRangeComponent extends QuestionBaseComponent implements OnI
   }
 
   ngOnInit() {
-    const _schema = this.answer.schema as AnswerRange
-    this.selected = _schema.selected;
+
+  }
+
+  loadSelected(answer: Answer) {
+    if (answer) {
+      this.selected = (answer.schema as AnswerRange).selected;
+    }
   }
 
   changeAnswer(answer: Answer, value: number) {
