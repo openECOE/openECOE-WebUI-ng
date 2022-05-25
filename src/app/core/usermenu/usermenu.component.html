@@ -1,5 +1,6 @@
 <a class="user" *ngIf="userData" nz-dropdown [nzDropdownMenu]="menu">
-  <i nz-icon nzType="user" nzTheme="outline"></i> {{userData?.user && userData?.user?.name ? userData?.user.name : 'Usuario (sin nombre)'}}
+  <i nz-icon nzType="user" nzTheme="outline"></i> 
+  {{userData?.user && userData?.user?.name ? userData?.user.name : 'Usuario (sin nombre)'}}
   <i nz-icon nzType="caret-down"></i>
 </a>
 <nz-dropdown-menu #menu="nzDropdownMenu">

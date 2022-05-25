@@ -38,7 +38,7 @@
   <tr>
     <th>
       <a (click)="loadUsers()">
-        <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+        <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
       </a>
     </th>
     <th>{{"EMAIL" | translate}}</th>
@@ -48,7 +48,7 @@
     <th nzWidth="200px">
       <nz-button-group>
         <button nz-button [nzType]="'primary'" class="margin-left"
-                [nz-tooltip] [nzTitle]="'ADD_USER' | translate"
+                [nz-tooltip] [nzTooltipTitle]="'ADD_USER' | translate"
                 (click)="showModal()">
           <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
         </button>

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
 import { ActionButtonsComponent } from './action-buttons/action-buttons.component';
-import {NgZorroAntdModule} from 'ng-zorro-antd';
+import {NzAlertModule, NzBreadCrumbModule, NzButtonModule, NzCardModule, NzDividerModule, NzDrawerModule, NzEmptyModule, NzFormModule, NzGridModule, NzIconModule, NzInputModule, NzLayoutModule, NzListModule, NzMenuModule, NzModalModule, NzPageHeaderModule, NzPopconfirmModule, NzProgressModule, NzRateModule, NzSelectModule, NzSkeletonModule, NzStatisticModule, NzStepsModule, NzSwitchModule, NzTableModule, NzTagModule, NzToolTipModule, NzUploadModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import { MenuComponent } from './menu/menu.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -39,7 +39,6 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
   ],
   imports: [
     CommonModule,
-    NgZorroAntdModule,
     TranslateModule,
     RouterModule,
     ReactiveFormsModule,
@@ -47,7 +46,35 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     PipesModule,
     BarRatingModule,
     DragDropModule,
-    ScrollingModule
+    ScrollingModule,
+    NzBreadCrumbModule,
+    NzGridModule,
+    NzInputModule,
+    NzFormModule,
+    NzModalModule,
+    NzSelectModule,
+    NzTagModule,
+    NzButtonModule,
+    NzIconModule,
+    NzTableModule,
+    NzAlertModule,
+    NzDrawerModule,
+    NzStatisticModule,
+    NzCardModule,
+    NzSkeletonModule,
+    NzToolTipModule,
+    NzPageHeaderModule,
+    NzLayoutModule,
+    NzEmptyModule,
+    NzListModule,
+    NzRateModule,
+    NzSwitchModule,
+    NzProgressModule,
+    NzStepsModule,
+    NzDividerModule,
+    NzPopconfirmModule,
+    NzUploadModule,
+    NzMenuModule
   ],
   exports: [
     UploadAndParseComponent,

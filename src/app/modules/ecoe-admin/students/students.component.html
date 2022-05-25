@@ -30,33 +30,33 @@
     <tr>
       <th nzWidth="5px">
         <a (click)="loadStudents()">
-          <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+          <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="150px"
           nzShowSort
-          [(nzSort)]="mapOfSort.planner"
-          (nzSortChange)="sort('planner', $event)">
+          [(nzSortOrder)]="mapOfSort.planner"
+          (nzSortOrderChange)="sort('planner', $event)">
         {{"PLANNER" | translate}}</th>
       <th nzWidth="150px"
           nzShowSort
-          [(nzSort)]="mapOfSort.dni"
-          (nzSortChange)="sort('dni', $event)">
+          [(nzSortOrder)]="mapOfSort.dni"
+          (nzSortOrderChange)="sort('dni', $event)">
         {{"DNI" | translate}}</th>
       <th nzWidth="400px"
           nzShowSort
-          [(nzSort)]="mapOfSort.surnames"
-          (nzSortChange)="sort('surnames', $event)">
+          [(nzSortOrder)]="mapOfSort.surnames"
+          (nzSortOrderChange)="sort('surnames', $event)">
         {{"SURNAMES" | translate}}</th>
       <th nzWidth="200px"
           nzShowSort
-          [(nzSort)]="mapOfSort.name"
-          (nzSortChange)="sort('name', $event)">
+          [(nzSortOrder)]="mapOfSort.name"
+          (nzSortOrderChange)="sort('name', $event)">
         {{"NAME" | translate}}</th>
       <th nzWidth="200px" text-right>
         <nz-button-group>
           <button nz-button [nzType]="'primary'" class="margin-left"
-                  [nz-tooltip] [nzTitle]="'ADD_STUDENT' | translate"
+                  [nz-tooltip] [nzTooltipTitle]="'ADD_STUDENT' | translate"
                   (click)="showDrawer()">
             <i nz-icon [nzType]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>

@@ -68,22 +68,21 @@
           <div nz-col nzSpan="12" text-center *ngIf="students?.length > 0">{{'NUMB' | translate}}</div>
         </div>
         <nz-divider style="margin: 10px 0"></nz-divider>
-        <div nz-row nzJustify="end">
+        <div nz-row>
           <div nz-col nzSpan="6" text-center uppercase><h3>{{shift?.shiftCode}}</h3></div>
           <div nz-col nzSpan="6" text-center><h3>{{round?.roundCode}}</h3></div>
           <div nz-col nzSpan="12">
             <div nz-row *ngIf="students?.length > 0">
               <div nz-col nzSpan="8">
-                <button nzType="danger" (click)="previousStudent()" nzBlock nzSize="large" text-center nz-button><i
+                <button nzDanger (click)="previousStudent()" width-100 nzBlock nzSize="large" nz-button><i
                   nz-icon nzType="left" nzTheme="outline"></i></button>
               </div>
               <div nz-col nzSpan="8">
                 <h3 text-center>{{currentStudent?.student.plannerOrder}}</h3>
               </div>
               <div nz-col nzSpan="8">
-                <button nzType="primary" (click)="nextStudent()" nzBlock nzSize="large" text-center nz-button><i nz-icon
-                                                                                                                 nzType="right"
-                                                                                                                 nzTheme="outline"></i>
+                <button nzType="primary" (click)="nextStudent()" width-100 nzBlock nzSize="large" nz-button>
+                  <i nz-icon nzType="right" nzTheme="outline"></i>
                 </button>
               </div>
             </div>

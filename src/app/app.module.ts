@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {NgZorroAntdModule, NZ_I18N, es_ES} from 'ng-zorro-antd';
+import {NzButtonModule, NZ_I18N, es_ES, NzAlertModule, NzBreadCrumbModule, NzCardModule, NzDrawerModule, NzEmptyModule, NzFormModule, NzGridModule, NzIconModule, NzInputModule, NzLayoutModule, NzListModule, NzModalModule, NzPageHeaderModule, NzRateModule, NzSelectModule, NzSkeletonModule, NzStatisticModule, NzTableModule, NzTagModule, NzToolTipModule, NzBackTopModule, NzNotificationModule} from 'ng-zorro-antd';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeEsExtra from '@angular/common/locales/extra/es';
@@ -44,7 +44,7 @@ export function createTranslateLoader(http: HttpClient) {
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgZorroAntdModule,
+    NzButtonModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -55,7 +55,30 @@ export function createTranslateLoader(http: HttpClient) {
     PotionModule,
     PipesModule,
     EcoeModule,
-    BarRatingModule
+    BarRatingModule,
+    NzBreadCrumbModule,
+    NzGridModule,
+    NzInputModule,
+    NzFormModule,
+    NzModalModule,
+    NzSelectModule,
+    NzTagModule,
+    NzButtonModule,
+    NzIconModule,
+    NzTableModule,
+    NzAlertModule,
+    NzDrawerModule,
+    NzStatisticModule,
+    NzCardModule,
+    NzSkeletonModule,
+    NzToolTipModule,
+    NzPageHeaderModule,
+    NzLayoutModule,
+    NzEmptyModule,
+    NzListModule,
+    NzRateModule,
+    NzBackTopModule,
+    NzNotificationModule
   ],
   providers: [
     {

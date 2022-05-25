@@ -26,7 +26,7 @@
     <tr>
       <th nzWidth="5px">
         <a (click)="loadStations().finally()">
-          <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+          <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
       <th nzWidth="85px">{{"ORDER" | translate}}</th>
@@ -36,7 +36,7 @@
       <th nzWidth="240px">
         <nz-button-group class="margin-left">
           <button nz-button [nzType]="'primary'"
-                  [nz-tooltip] [nzTitle]="'ADD_STATION' | translate"
+                  [nz-tooltip] [nzTooltipTitle]="'ADD_STATION' | translate"
                   (click)="showDrawer()">
             <i nz-icon [nzType]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>

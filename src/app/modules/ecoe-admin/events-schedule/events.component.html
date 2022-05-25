@@ -13,12 +13,12 @@
             [nzPageSize]="20"
             [nzLoading]="loading"
             #tableOrdered>
-    <thead (nzSortChange)="sort($event)" nzSingleSort>
+    <thead (nzSortOrderChange)="sort($event)" nzSortPriority>
     <tr>
       <th nzWidth="75px">{{"IS_COUNTDOWN" | translate}}</th>
-      <th nzWidth="160px" [(nzSort)]="mapOfSort.time" nzShowSort nzSortKey="time">{{"TIME" | translate}}</th>
+      <th nzWidth="160px" [(nzSortOrder)]="mapOfSort.time" nzShowSort nzColumnKey="time">{{"TIME" | translate}}</th>
       <th nzWidth="210px">{{"SOUND" | translate}}</th>
-      <th [(nzSort)]="mapOfSort.text" nzShowSort nzSortKey="text">{{"TEXT" | translate}}</th>
+      <th [(nzSortOrder)]="mapOfSort.text" nzShowSort nzColumnKey="text">{{"TEXT" | translate}}</th>
       <th nzWidth="10%">{{'STATION' | translate}}</th>
       <th nzWidth="10%" nzAlign="center">{{"ACTIONS" | translate }}</th>
     </tr>
@@ -27,10 +27,8 @@
     <ng-template ngFor let-data [ngForOf]="tableOrdered.data">
       <tr>
         <td nzAlign="center">
-          <ng-container>
-            <nz-switch [(ngModel)]="editCache[data.id].data.isCountdown"
-                       (ngModelChange)="saveEdit(data.id)"></nz-switch>
-          </ng-container>
+          <nz-switch [(ngModel)]="editCache[data.id].data.isCountdown"
+                      (ngModelChange)="saveEdit(data.id)"></nz-switch>
         </td>
         <td nzAlign="center">
           <ng-container *ngIf="!editCache[data.id].edit; else timeInputTpl">
@@ -53,7 +51,7 @@
                 nz-input
                 placeholder=":"
                 text-center
-                style="width: 10px; padding: 0px; border-left: 0px; pointer-events: none; background-color: #fff;kground-color: rgb(255, 255, 255);"
+                style="width: 10px; padding: 0px; border-left: 0px; pointer-events: none; background-color: #fff;background-color: rgb(255, 255, 255);"
               />
               <nz-input-number #timeInputSec
                                text-center

@@ -30,7 +30,7 @@
       <tr>
         <th>
           <a (click)="loadAreas()">
-            <i nz-icon nzType="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+            <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
           </a>
         </th>
         <th>{{"NAME" | translate}}</th>
@@ -39,7 +39,7 @@
         <th nzWidth="240px">
           <nz-button-group>
             <button nz-button [nzType]="'primary'" class="margin-left"
-                    [nz-tooltip] [nzTitle]="'ADD_AREA' | translate"
+                    [nz-tooltip] [nzTooltipTitle]="'ADD_AREA' | translate"
                     (click)="showDrawer()">
               <i nz-icon [nzType]="'plus-circle'" icon-16></i>
             </button>

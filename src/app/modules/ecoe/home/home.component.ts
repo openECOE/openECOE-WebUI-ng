@@ -39,6 +39,10 @@ export class HomeComponent implements OnInit {
         this.auth.logout('/login');
       }
     })
+
+    if (this.userService.userData) {
+      this.loadEcoes()
+    }
   }
 
 
