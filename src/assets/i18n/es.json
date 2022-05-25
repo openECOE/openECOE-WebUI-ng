@@ -2,7 +2,7 @@
   "EVALUATION": "Evaluación",
   "ADMIN": "Administración",
   "HOME": "Inicio",
-  "LOGIN": "Inicio de sesión",
+  "LOGIN": "Iniciar sesión",
   "CREATE_ECOE": "Crear nueva ECOE",
   "ECOE_NAME": "Nombre de la ECOE",
   "DELETE_ECOE": "Archivar ECOE",
@@ -246,5 +246,9 @@
   "STUDENT": "Estudiante",
   "SELECT_ROLES": "Seleccione roles",
   "ANSWER_SAVING_ERROR": "Ha ocurrido un error guardando la respuesta de la pregunta '{{questionName}}'.<br>Pruebe a recargar la pantalla, y si el problema persiste pongase en contacto con el administrador del sistema.",
-  "ERROR_SAVE_ANSWER": "Error almacenando la respuesta"
+  "ERROR_SAVE_ANSWER": "Error almacenando la respuesta",
+  "SETTINGS": "Ajustes",
+  "INPUT_EMAIL": "Por favor, introduzca su usuario",
+  "INPUT_PASSWORD": "Por favor, introduzca su contraseña",
+  "DNI": "DNI"
 }

@@ -20,8 +20,8 @@ export class QblockQuestionFormComponent implements OnInit {
 
   current = 0;
 
-  private qblocksToAdd: Block[] = [];
-  private questionsToAdd: Question[] = [];
+  qblocksToAdd: Block[] = [];
+  questionsToAdd: Question[] = [];
 
   qblockForm: FormGroup;
   control: FormArray;

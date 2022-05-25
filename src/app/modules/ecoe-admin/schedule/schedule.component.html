@@ -17,7 +17,7 @@
           [nzBlock]="true"
           [nzSize]="'large'"
           [nzLoading]="loading">
-    <i nz-icon [type]="'plus-circle'" [theme]="'twotone'" icon-16></i>
+    <i nz-icon [nzType]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
     {{(loading ? 'LOADING' : 'ADD_STAGE') | translate}}
   </button>
   <nz-tabset
@@ -34,13 +34,13 @@
           <nz-col [nzSpan]="2">
             <nz-row>
               <nz-col>
-                <button nz-button nzType="default" nzSize="small" style="width: 40px" [disabled]="isFirst" (click)="interchangeOrder(schedule, schedules[i-1])"><i nz-icon type="caret-up"></i>
+                <button nz-button nzType="default" nzSize="small" style="width: 40px" [disabled]="isFirst" (click)="interchangeOrder(schedule, schedules[i-1])"><i nz-icon nzType="caret-up"></i>
                 </button>
               </nz-col>
             </nz-row>
             <nz-row>
               <nz-col>
-                <button nz-button nzType="default" nzSize="small" style="width: 40px" [disabled]="isLast" (click)="interchangeOrder(schedule, schedules[i+1])"><i nz-icon type="caret-down"></i>
+                <button nz-button nzType="default" nzSize="small" style="width: 40px" [disabled]="isLast" (click)="interchangeOrder(schedule, schedules[i+1])"><i nz-icon nzType="caret-down"></i>
                 </button>
               </nz-col>
             </nz-row>
@@ -108,23 +108,23 @@
                       [nzType]="'primary'"
                       (click)="cancelEditStage(schedule)"
                       *ngIf="editStage">
-                <span><i nz-icon type="save"></i> {{"SAVE" | translate}}</span>
+                <span><i nz-icon nzType="save"></i> {{"SAVE" | translate}}</span>
               </button>
               <button nz-button
                       [nzType]="'default'"
                       (click)="startEditStage(schedule)"
                       *ngIf="!editStage"
               >
-                <span><i nz-icon type="edit"></i> {{"EDIT" | translate}}</span>
+                <span><i nz-icon nzType="edit"></i> {{"EDIT" | translate}}</span>
               </button>
               <button nz-popconfirm
-                      [nzTitle]="'DELETE_CONFIRMATION' | translate"
+                      [nzPopconfirmTitle]="'DELETE_CONFIRMATION' | translate"
                       (nzOnConfirm)="deleteStage(schedule)"
-                      [nzPlacement]="'top'"
+                      [nzPopconfirmPlacement]="'top'"
                       [nzOkText]="'DELETE' | translate" [nzCancelText]="'CANCEL' | translate"
                       nz-button
                       [nzType]="'danger'">
-                <span><i nz-icon type="delete"></i> {{"DELETE" | translate}}</span>
+                <span><i nz-icon nzType="delete"></i> {{"DELETE" | translate}}</span>
               </button>
             </nz-button-group>
           </nz-col>
@@ -145,40 +145,18 @@
   <form nz-form [formGroup]="validateFormStage" (ngSubmit)="submitFormStage($event, validateFormStage.value)">
     <nz-form-item>
       <nz-form-label [nzSpan]="7" nzRequired>{{"NAME" | translate}}</nz-form-label>
-      <nz-form-control [nzSpan]="12" nzHasFeedback>
+      <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="'NAME_INPUT_REQUIRED' | translate">
         <input nz-input formControlName="stageName" [placeholder]="'NAME_PLACEHOLDER' | translate"/>
-        <nz-form-explain
-          *ngIf="
-              (validateFormStage.get('stageName')?.dirty && validateFormStage.get('stageName')?.errors) ||
-              validateFormStage.get('stageName')?.pending
-          "
-        >
-          <ng-container *ngIf="validateFormStage.get('stageName')?.hasError('required')">
-            {{"NAME_PLACEHOLDER" | translate}}
-          </ng-container>
-          <ng-container *ngIf="validateFormStage.get('stageName')?.pending">
-            {{"VALIDATING" | translate}}
-          </ng-container>
-        </nz-form-explain>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
       <nz-form-label [nzSpan]="7" nzRequired>{{'DURATION' | translate}}</nz-form-label>
-      <nz-form-control [nzSpan]="12" nzHasFeedback>
+      <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="'DURATION_PLACEHOLDER' | translate">
         <nz-input-number formControlName="stageDurationMin" [nzMin]="0"
                          [nzPlaceHolder]="'MINUTES' | translate"></nz-input-number>
         :
         <nz-input-number formControlName="stageDurationSec" [nzMin]="0" [nzMax]="59"
                          [nzPlaceHolder]="'SECONDS' | translate"></nz-input-number>
-        <nz-form-explain *ngIf="(validateFormStage.get('stageDurationMin')?.dirty
-                            && validateFormStage.get('stageDurationMin')?.errors
-                            && validateFormStage.get('stageDurationSec')?.dirty
-                            && validateFormStage.get('stageDurationSec')?.errors)">
-          <ng-container
-            *ngIf="validateFormStage.get('stageDurationMin')?.hasError('required') && validateFormStage.get('stageDurationSec')?.hasError('required')">
-            {{'DURATION_PLACEHOLDER' | translate}}
-          </ng-container>
-        </nz-form-explain>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>

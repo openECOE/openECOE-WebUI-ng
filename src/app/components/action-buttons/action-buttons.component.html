@@ -2,18 +2,18 @@
   <i *ngIf="showNavigateQuestions"
      (click)="navigateQuestions.emit()"
      nz-icon
-     type="select"
+     nzType="select"
      [nz-tooltip]
-     [nzPlacement]="'top'"
-     [nzTitle]="'GO_TO_QUESTIONS' | translate"
+     [nzTooltipPlacement]="'top'"
+     [nzTooltipTitle]="'GO_TO_QUESTIONS' | translate"
      tappable>
   </i>
 
   <nz-divider *ngIf="showNavigateQuestions" [nzType]="'vertical'"></nz-divider>
 
   <i *ngIf="showOrderButtons && index != 0"
-     nz-icon type="up-circle" [theme]="'twotone'"
-     [nz-tooltip] [nzTitle]="'MOVE_UP' | translate"
+     nz-icon nzType="up-circle" [nzTheme]="'twotone'"
+     [nz-tooltip] [nzTooltipTitle]="'MOVE_UP' | translate"
      (click)="changeOrder.emit('up')"
      tappable>
   </i>
@@ -21,8 +21,8 @@
   <nz-divider *ngIf="showOrderButtons && index != 0" [nzType]="'vertical'"></nz-divider>
 
   <i *ngIf="showOrderButtons && index != (itemsLength - 1)"
-     nz-icon type="down-circle" [theme]="'twotone'"
-     [nz-tooltip] [nzTitle]="'MOVE_DOWN' | translate"
+     nz-icon nzType="down-circle" [nzTheme]="'twotone'"
+     [nz-tooltip] [nzTooltipTitle]="'MOVE_DOWN' | translate"
      (click)="changeOrder.emit('down')"
      tappable>
   </i>
@@ -31,31 +31,31 @@
               [nzType]="'vertical'">
   </nz-divider>
 
-  <i nz-icon type="edit" [theme]="'outline'"
-     [nz-tooltip] [nzTitle]="'EDIT' | translate"
+  <i nz-icon nzType="edit" [nzTheme]="'outline'"
+     [nz-tooltip] [nzTooltipTitle]="'EDIT' | translate"
      (click)="startEdit.emit()" tappable success-color>
   </i>
 
   <nz-divider [nzType]="'vertical'" *ngIf="showDeleteButton"></nz-divider>
 
   <a *ngIf="showDeleteButton"
-     nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate"
+     nz-popconfirm [nzPopconfirmTitle]="'DELETE_CONFIRMATION' | translate"
      (nzOnConfirm)="delete.emit()">
-    <i nz-icon type="delete" [nz-tooltip] [nzTitle]="'DELETE' | translate" danger-color></i>
+    <i nz-icon nzType="delete" [nz-tooltip] [nzTooltipTitle]="'DELETE' | translate" danger-color></i>
   </a>
 </ng-container>
 
 <ng-container *ngIf="isEditing">
-  <i nz-icon type="save"
-     [nz-tooltip] [nzTitle]="(isNewItem ? 'SAVE' : 'UPDATE') | translate"
+  <i nz-icon nzType="save"
+     [nz-tooltip] [nzTooltipTitle]="(isNewItem ? 'SAVE' : 'UPDATE') | translate"
      (click)="save.emit()"
      success-color tappable>
   </i>
 
   <nz-divider [nzType]="'vertical'"></nz-divider>
 
-  <i nz-icon type="close-circle"
-     [nz-tooltip] [nzTitle]="'CANCEL' | translate"
+  <i nz-icon nzType="close-circle"
+     [nz-tooltip] [nzTooltipTitle]="'CANCEL' | translate"
      (click)="cancelEdit.emit()"
      danger-color tappable>
   </i>

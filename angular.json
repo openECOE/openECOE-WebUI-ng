@@ -10,13 +10,14 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "less"
+          "style": "less"
         }
       },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/openECOE-WebUI-ng",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -42,7 +43,7 @@
               "node_modules/ngx-bar-rating/themes/br-movie-theme.css",
               "node_modules/ngx-bar-rating/themes/br-square-theme.css",
               "node_modules/ngx-bar-rating/themes/br-stars-theme.css",
-              "node_modules/ngx-bar-rating/themes/br-vertical-theme.css",
+              "node_modules/ngx-bar-rating/themes/br-vertical-theme.css"
             ],
             "scripts": []
           },
@@ -68,10 +69,20 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
             },
             "test": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -80,6 +91,12 @@
               ]
             },
             "prodDebug": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -179,5 +196,8 @@
       }
     }
   },
-  "defaultProject": "openECOE-WebUI-ng"
+  "defaultProject": "openECOE-WebUI-ng",
+  "cli": {
+    "analytics": "5281f085-c7b1-4c6a-8196-fc74e165960e"
+  }
 }

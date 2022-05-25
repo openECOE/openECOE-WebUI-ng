@@ -1,10 +1,11 @@
+<!-- TODO: Review SingleRadio button code -->
 <nz-radio-group *ngIf="_RadioOptions.length > 1 else singleRadio"
-                [ngModel]="answer?.schema?.selected ? answer.schema.selected.id_option : null"
+                [ngModel]="answer?.schema?.selected ? answer?.schema?.selected?.id_option : null"
                 [nzButtonStyle]="'solid'"
-                (ngModelChange)="changeRadioAnswer(answer, $event)">
+                (ngModelChange)="changeRadioAnswer(answer, $event, $event)">
   <label nz-radio-button
          *ngFor="let cb of _RadioOptions; let indexOption = index"
-         [nzValue]="cb.option.id_option"
+         [nzValue]="cb.option"
          [ngClass]="{'negative-points': cb.option.points < 0,
                      'positive-points': cb.option.points >= 0}"
          [innerHTML]="cb.option.label"></label>
@@ -20,7 +21,7 @@
              [nzCheckedChildren]="label"
              [nzUnCheckedChildren]="label"
              [ngModel]="_RadioOptions[0].checked"
-             (ngModelChange)="changeRadioAnswer(answer, _RadioOptions[0].option.id_option, $event)">
+             (ngModelChange)="changeRadioAnswer(answer, _RadioOptions[0].option, $event)">
   </nz-switch>
   <ng-template #label>
     <div [innerHTML]="_RadioOptions[0].option.label"></div>

@@ -24,19 +24,15 @@
             <div nz-row>
               <div nz-col>
                 <!--REFERENCE.-->
-                <nz-form-control>
+                <nz-form-control [nzErrorTip]="'REFERENCE_INPUT_REQUIRED' | translate">
                   <input nz-input autofocus [placeholder]="('REFERENCE_PLACEHOLDER' | translate)" formControlName="reference"/>
-                  <nz-form-explain
-                    *ngIf="getFormControl('reference',i)?.dirty && getFormControl('reference', i)?.hasError('required')">
-                    {{'REFERENCE_INPUT_REQUIRED' | translate}}
-                  </nz-form-explain>
                 </nz-form-control>
               </div>
             </div>
             <div nz-row>
               <div nz-col>
                 <!--AREA-->
-                  <nz-form-control>
+                  <nz-form-control [nzErrorTip]="'AREA_INPUT_REQUIRED' | translate">
                     <nz-select
                       [nzPlaceHolder]="'AREA' | translate"
                       [nzShowSearch]="true"
@@ -45,10 +41,6 @@
                       <nz-option *ngFor="let area of areas" [nzLabel]="area.name" [nzValue]="area">
                       </nz-option>
                     </nz-select>
-
-                    <nz-form-explain *ngIf="getFormControl('area', i)?.dirty && getFormControl('area', i)?.hasError('required')">
-                      {{'AREA_INPUT_REQUIRED' | translate}}
-                    </nz-form-explain>
                   </nz-form-control>
               </div>
             </div>
@@ -73,12 +65,8 @@
             </div>
           </div>
           <div nz-col nzSpan="13" style="border: 1px solid darkblue;">
-            <nz-form-control>
+            <nz-form-control [nzErrorTip]="'DESCRIPTION_INPUT_REQUIRED' | translate">
               <textarea nz-input rows="3" style="margin-top: 4px;" [placeholder]="('DESCRIPTION_PLACEHOLDER' | translate)" formControlName="description"></textarea>
-              <nz-form-explain
-                *ngIf="getFormControl('description',i)?.dirty && getFormControl('description', i)?.hasError('required')">
-                {{'DESCRIPTION_INPUT_REQUIRED' | translate}}
-              </nz-form-explain>
             </nz-form-control>
           </div>
 
@@ -104,10 +92,10 @@
   <div nz-col nzSpan="12" text-center>
     <nz-form-control>
       <button *ngIf="action !== 'EDIT'" nz-button nzType="default" (click)="addQuestionRow(defaultQuestion)">
-        <i nz-icon type="plus"></i> {{'ADD_QUESTION' | translate}}
+        <i nz-icon nzType="plus"></i> {{'ADD_QUESTION' | translate}}
       </button>
       <button *ngIf="action !== 'ADD_WITH_QBLOCK'" nz-button nzType="primary" (click)="submitForm()">
-        <i nz-icon type="save"></i> {{'SAVE' | translate}}
+        <i nz-icon nzType="save"></i> {{'SAVE' | translate}}
       </button>
     </nz-form-control>
   </div>

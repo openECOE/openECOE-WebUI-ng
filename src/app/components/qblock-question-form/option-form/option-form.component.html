@@ -11,13 +11,9 @@
           </div>
           <div nz-row nzGutter="8" nzType="flex" nzAlign="top" nzJustify="start" [formGroupName]="i+''">
             <div nz-col nzOffset="1" [nzSpan]="type !== this.questionTypeOptions[2] ? 10 : 6">
-              <nz-form-control>
+              <nz-form-control [nzErrorTip]="'DESCRIPTION_INPUT_REQUIRED' | translate">
                 <ng-container *ngIf="type !== this.questionTypeOptions[2]">
                   <input nz-input [placeholder]="('DESCRIPTION_PLACEHOLDER' | translate)" formControlName="label"/>
-                  <nz-form-explain
-                    *ngIf="getFormControl('label',i)?.dirty && getFormControl('label', i)?.hasError('required')">
-                    {{'DESCRIPTION_INPUT_REQUIRED' | translate}}
-                  </nz-form-explain>
                 </ng-container>
 
                 <ng-container *ngIf="type === this.questionTypeOptions[2]">
@@ -42,12 +38,8 @@
               </nz-form-control>
             </div>
             <div nz-col  nzSpan="3">
-              <nz-form-control>
+              <nz-form-control [nzErrorTip]="'POINTS_INPUT_REQUIRED' | translate">
                 <input type="number" nz-input [placeholder]="('POINTS_PLACEHOLDER' | translate)" (ngModelChange)="getTotalPoints()" formControlName="points"/>
-                <nz-form-explain
-                  *ngIf="getFormControl('points',i)?.dirty && getFormControl('points', i)?.hasError('required')">
-                  {{'POINTS_INPUT_REQUIRED' | translate}}
-                </nz-form-explain>
               </nz-form-control>
             </div>
 
@@ -63,7 +55,7 @@
     <div nz-col>
       <nz-form-control>
         <button nz-button   nzType="dashed" (click)="addOptionRow(type)">
-          <i nz-icon type="plus"></i> {{'ADD_OPTION' | translate}}
+          <i nz-icon nzType="plus"></i> {{'ADD_OPTION' | translate}}
         </button>
       </nz-form-control>
     </div>

@@ -17,10 +17,6 @@
   <nz-content>
     <div class="long-div" #TopDiv>
       <div class="inner-nz-content long-div-inner">
-        <nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320"
-                   (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
-          <app-menu (menu_close_event)="toCollapse($event)"></app-menu>
-        </nz-drawer>
         <router-outlet></router-outlet>
       </div>
       <nz-footer>
@@ -32,3 +28,7 @@
 
 
 </nz-layout>
+<nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320"
+            (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
+  <app-menu (menu_close_event)="toCollapse($event)"></app-menu>
+</nz-drawer>

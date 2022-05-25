@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
 
   clientHeight: number;
 
-  @ViewChild('backTop') backTop: ElementRef;
+  @ViewChild('backTop', { static: true }) backTop: ElementRef;
 
   constructor(private translate: TranslateService,
               public router: Router,

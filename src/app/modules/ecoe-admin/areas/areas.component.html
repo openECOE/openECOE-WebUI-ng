@@ -28,9 +28,9 @@
             (nzPageSizeChange)="pageSizeChange($event)">
     <thead>
       <tr>
-        <th [nzExpand]="true">
+        <th>
           <a (click)="loadAreas()">
-            <i nz-icon type="reload" [nz-tooltip] [nzPlacement]="'bottom'" [nzTitle]="'REFRESH' | translate"></i>
+            <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
           </a>
         </th>
         <th>{{"NAME" | translate}}</th>
@@ -39,9 +39,9 @@
         <th nzWidth="240px">
           <nz-button-group>
             <button nz-button [nzType]="'primary'" class="margin-left"
-                    [nz-tooltip] [nzTitle]="'ADD_AREA' | translate"
+                    [nz-tooltip] [nzTooltipTitle]="'ADD_AREA' | translate"
                     (click)="showDrawer()">
-              <i nz-icon [type]="'plus-circle'" icon-16></i>
+              <i nz-icon [nzType]="'plus-circle'" icon-16></i>
             </button>
             <app-upload-and-parse [fileURL]="AREAS_URL" (parserResult)="importAreas($event)"></app-upload-and-parse>
           </nz-button-group>
@@ -111,21 +111,14 @@
           <div nz-row nzGutter="8" [formGroupName]="+i">
             <div nz-col nzSpan="12">
               <nz-form-item>
-                <nz-form-control>
+                <nz-form-control [nzErrorTip]="'NAME_INPUT_REQUIRED' | translate">
                   <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
-                  <nz-form-explain *ngIf="getFormControl('name', i)?.dirty && getFormControl('name', i)?.hasError('required')">
-                    {{'NAME_INPUT_REQUIRED' | translate}}
-                  </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="9">
-              <nz-form-control>
+              <nz-form-control [nzErrorTip]="'CODE_INPUT_REQUIRED' | translate">
                 <input nz-input [placeholder]="('CODE_PLACEHOLDER' | translate)" formControlName="code"/>
-               <nz-form-explain
-                  *ngIf="getFormControl('code',i)?.dirty && getFormControl('code', i)?.hasError('required')">
-                 {{'CODE_INPUT_REQUIRED' | translate}}
-                </nz-form-explain>
               </nz-form-control>
             </div>
             <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
@@ -137,7 +130,7 @@
         <nz-form-item>
           <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
             <button nz-button   nzType="dashed" style="width:60%" (click)="addAreaRow()">
-              <i nz-icon type="plus"></i> {{'ADD_AREA' | translate}}
+              <i nz-icon nzType="plus"></i> {{'ADD_AREA' | translate}}
             </button>
           </nz-form-control>
         </nz-form-item>

@@ -220,12 +220,12 @@ export class PlannerComponent implements OnInit {
       const excludeItems = [];
 
       forkJoin(
-        from(Round.query({
+        from(Round.query<Round>({
             where: {'ecoe': this.ecoeId},
             sort: {'round_code': false}
           }, {cache: false, skip: excludeItems})
         ),
-        from(Shift.query({
+        from(Shift.query<Shift>({
             where: {'ecoe': this.ecoeId},
             sort: {'time_start': false}
           }, {cache: false, skip: excludeItems})

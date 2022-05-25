@@ -1,10 +1,10 @@
 import {Component, NgZone, OnInit} from '@angular/core';
 import {Role, RoleType, User, UserLogged} from '@app/models';
-import {AuthenticationService} from '@services/authentication/authentication.service';
 import {SharedService} from '@services/shared/shared.service';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import {ApiService} from '@services/api/api.service';
+import { UserService } from '@app/services/user/user.service';
 
 
 interface UserItem extends User {
@@ -42,9 +42,9 @@ export class UsersAdminComponent implements OnInit {
 
   readonly SUPER_ADMIN = 'superadmin';
 
-  constructor(private authService: AuthenticationService,
+  constructor(private userService: UserService,
               private apiService: ApiService,
-              private shared: SharedService,
+              public shared: SharedService,
               private fb: FormBuilder,
               private zone: NgZone,
               private router: Router) {
@@ -55,7 +55,7 @@ export class UsersAdminComponent implements OnInit {
       this.listRoles = roles;
       this.getUserForm();
     });
-    this.user = this.authService.userData;
+    this.user = this.userService.userData;
     this.activeUser = this.user.user;
     this.loadUsers();
   }

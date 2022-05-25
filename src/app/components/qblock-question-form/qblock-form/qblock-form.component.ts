@@ -46,14 +46,14 @@ export class QblockFormComponent implements OnInit {
    * @param name of the field, in our case can be 'name' or 'code'
    * @param idx the index of the field.
    */
-  private getFormControl(name: string, idx: number): AbstractControl {
+  getFormControl(name: string, idx: number): AbstractControl {
     return this.qblockForm.get('qblockRow')['controls'][idx].controls[name];
   }
 
   /**
    * Adds new row (name field) qblock to the form
    */
-  private addQblockRow() {
+  addQblockRow() {
      this.control.push(this.fb.group(this.rowQblock));
   }
 
@@ -62,7 +62,7 @@ export class QblockFormComponent implements OnInit {
    * in other cases resets the number of rows to 1 when the
    * form window was closed.
    */
-  private InitQblockRow() {
+  InitQblockRow() {
     if (this.control.length === 0) {
       this.addQblockRow();
     } else {

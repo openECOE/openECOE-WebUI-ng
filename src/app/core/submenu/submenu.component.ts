@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
-import { AuthenticationService } from '@services/authentication/authentication.service';
 import { NavigationEnd, Router } from '@angular/router';
 import {filter} from 'rxjs/operators';
+import { UserService } from '@app/services/user/user.service';
 
 @Component({
   selector: 'app-submenu',
@@ -21,7 +21,7 @@ export class SubmenuComponent implements OnInit {
     private translate: TranslateService,
     private router: Router,
     public location: Location,
-    public authService: AuthenticationService) { }
+    public userService: UserService) { }
 
   ngOnInit() {
     this.router.events
@@ -30,7 +30,7 @@ export class SubmenuComponent implements OnInit {
         this.ecoeId = +val.urlAfterRedirects.split('/')[2];
         const activeLink = val.urlAfterRedirects.split('/')[3];
 
-        const _userData = this.authService.userData;
+        const _userData = this.userService.userData;
 
         if (_userData) {
           const isEval = _userData.isEval;

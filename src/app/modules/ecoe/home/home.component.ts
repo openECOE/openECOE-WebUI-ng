@@ -5,7 +5,8 @@ import {AuthenticationService} from '../../../services/authentication/authentica
 import {ApiService} from '../../../services/api/api.service';
 import { NzModalService } from 'ng-zorro-antd';
 import { TranslateService } from '@ngx-translate/core';
-import { ECOE, UserLogged } from '@app/models';
+import { ECOE} from '@app/models';
+import { UserService } from '@app/services/user/user.service';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,8 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    public authService: AuthenticationService,
+    public userService: UserService,
+    private auth: AuthenticationService,
     private apiService: ApiService,
     private modalSrv: NzModalService,
     private translate: TranslateService) {
@@ -30,10 +32,16 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
 
-    if (this.authService.userLogged) {
+    this.userService.userDataChange.subscribe(user => {
+      if (user) {
+        this.loadEcoes()
+      } else {
+        this.auth.logout('/login');
+      }
+    })
+
+    if (this.userService.userData) {
       this.loadEcoes()
-    } else {
-      this.authService.logout('/login');
     }
   }
 
