@@ -12,6 +12,9 @@ class RadioOption {
 
   option: QuestionOption;
   checked: boolean;
+  get class(): string {
+    return this.option.points >= 0?'positive-points':'negative-points'
+  }
 }
 
 @Component({
@@ -44,18 +47,21 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
 
   loadSelected(answer: Answer) {
     if (answer) {
-      const _selected = (answer.schema as AnswerRadio).selected;
-      for (const check of this._RadioOptions) {
-        check.checked = _selected ? _selected.id_option === check.option.id_option : false;
-      }
+      const _schema = (answer.schema as AnswerRadio);
+      const _selected = _schema.selected;
+      if (this._RadioOptions.length === 1) {
+        const _radio = this._RadioOptions[0]
+        _radio.checked = _selected ? _selected.id_option === _radio.option.id_option : false;
+      } 
     }
   }
 
-  changeRadioAnswer(answer: Answer, option: QuestionOption, checked: boolean) {
+  changeRadioAnswer(answer: Answer, option: number, checked: boolean) {
     if (answer) {
       if (checked && option) {
-        (answer.schema as AnswerRadio).selected = {id_option: option.id_option};
-        answer.points = option.points;
+        const _radioOption = this._RadioOptions.find(_radio => _radio.option.id_option === option);
+        (answer.schema as AnswerRadio).selected = _radioOption.option;
+        answer.points = _radioOption.option.points;
       } else {
         (answer.schema as AnswerRadio).selected = null;
         answer.points = 0

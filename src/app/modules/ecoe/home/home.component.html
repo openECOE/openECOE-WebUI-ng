@@ -1,46 +1,31 @@
 <nz-content padding>
   <nz-page-header class="margin-top margin-bottom" [nzTitle]="'ECOES' | translate" [nzSubtitle]="'LIST' | translate"> </nz-page-header>
-  <div nz-row padding>
-    <div nz-col>
-      <nz-list *ngIf="userService?.userData" [nzDataSource]="ecoes" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 24, sm: 12, md: 10, lg: 8, xl: 6 }">
-        <ng-template #item let-item let-index="index">
-          <nz-list-item [nzContent]="index === 0 && userService.userData.isAdmin? first : nzContent">
-            <ng-template #first>
-              <nz-card [nzTitle]="'CREATE_ECOE' | translate">
-                <ng-container *ngTemplateOutlet="addECOE"></ng-container>
-              </nz-card>
-            </ng-template>
-            <ng-template #addECOE>
-              <div nz-row nzType="flex" nzJustify="center">
-                <div nz-col nzSpan="24">
-                  <a text-center nz-button nzSize="large" nzBlock (click)="showCreateEcoe = true">
-                    <i nz-icon nzType="plus" nzTheme="outline"></i>
-                  </a>
-                </div>
-              </div>
-            </ng-template>
-            <ng-template #nzContent>
-              <nz-card style="cursor: default"
-                       [nzTitle]="item['name']">
-                <ng-container *ngTemplateOutlet="delItem"></ng-container>
-              </nz-card>
-            </ng-template>
-            <ng-template #delItem>
-              <a nz-button [routerLink]="['/ecoe/' + item['id'] + (userService.userData.isEval ? '/eval' : '/admin')]"
+  <nz-list nzGrid *ngIf="user">
+    <div nz-row [nzGutter]="16">
+      <div *ngIf="user.isAdmin" nz-col [nzXXl]="8" [nzXl]="4" [nzLg]="6" [nzMd]="6" [nzSm]="12" [nzXs]="24">
+        <nz-list-item>
+          <nz-card [nzTitle]="'CREATE_ECOE' | translate">
+            <a nz-button nzSize="large" nzBlock (click)="showCreateEcoe = true" nzType="dashed">
+              <i nz-icon nzType="plus" nzTheme="outline"></i> {{ '' | translate }}
+            </a>
+          </nz-card>
+        </nz-list-item>
+      </div>
+      <div nz-col [nzXXl]="8" [nzXl]="4" [nzLg]="6" [nzMd]="6" [nzSm]="12" [nzXs]="24" *ngFor="let item of ecoes">
+        <nz-list-item>
+          <nz-card [nzTitle]="item.name">
+            <a nz-button [routerLink]="['/ecoe/' + item['id'] + (userService.userData.isEval ? '/eval' : '/admin')]"
                       nzSize="large" nzBlock
                       preserveFragment="false"
-                      nz-button nzType="primary">
+                      nzType="primary">
                 <i nz-icon nzType="setting" nzTheme="outline"></i> {{ '' | translate }}
             </a>
-            </ng-template>
-          </nz-list-item>
-        </ng-template>
-      </nz-list>
+          </nz-card>
+        </nz-list-item>
+      </div>
     </div>
-  </div>
-
+  </nz-list>
 </nz-content>
-
 
 <nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
            [nzMaskClosable]="true"

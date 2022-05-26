@@ -12,6 +12,9 @@ class CheckBoxOption {
 
   option: QuestionOption;
   checked: boolean;
+  get class() {
+    return this.option.points < 0 ? 'negative-points':'positive-points'
+  }
 }
 
 @Component({

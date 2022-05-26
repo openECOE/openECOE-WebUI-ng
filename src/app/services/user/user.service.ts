@@ -57,12 +57,10 @@ export class UserService {
       _userLogged.roles = (await _user.roles()).map(role => role.name)
       if (_user.isSuperadmin)
         {_userLogged.roles.push(enumRole.Admin)}
-      return new UserLogged(_userLogged);
+      return _userLogged;
     } catch (error) {
-      if (error.status === 401) {
-        this.auth.logout('/login');
-      }
-      return error;
+      this.auth.logout('/login');
+      throw error;
     }
 
   }

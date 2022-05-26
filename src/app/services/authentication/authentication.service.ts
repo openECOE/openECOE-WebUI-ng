@@ -20,22 +20,40 @@ export class AuthenticationService {
   private _userToken: IUserToken;
   userTokenChange: Subject<IUserToken> = new Subject<IUserToken>();
 
+  private storageToken = 'userLogged'
+
   constructor(private http: HttpClient,
               private router: Router) {
       this._init();
   }
 
   _init() {
-    this.userToken = this.userLogged
+    const _userLog = this.userLogged
+    if (_userLog) {
+      this.userToken = _userLog
+    }
+    
   }
 
   get userToken() {
+    if (!this._userToken) {
+      const _tokenStored = localStorage.getItem(this.storageToken);
+      try {
+        this.userToken = JSON.parse(_tokenStored)
+      } catch {}
+    }
+
     return this._userToken;
   }
 
   set userToken(data: IUserToken) {
     this._userToken = data;
-    localStorage.setItem('userLogged', JSON.stringify(data));
+    if (data) {
+      localStorage.setItem(this.storageToken, JSON.stringify(data));
+    } else {
+      localStorage.removeItem(this.storageToken)
+    }
+    
     this.userTokenChange.next(data);
   }
 
@@ -53,7 +71,7 @@ export class AuthenticationService {
         return !!data
       }),
       catchError(err => {
-        this.userToken = null;
+        this.logout();
         return throwError(err);
       })
     );
@@ -65,7 +83,6 @@ export class AuthenticationService {
   }
 
   get userLogged(): any {
-    const _userLogged = localStorage.getItem('userLogged');
-    return JSON.parse(_userLogged);
+    return this.userToken
   }
 }

@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {
   Area,
   Block,
-  QuestionOld,
   Option,
   RowQuestion,
   Station,
@@ -21,14 +20,15 @@ import {BehaviorSubject, Observable} from 'rxjs';
 export class QuestionsService {
 
   // tslint:disable-next-line:max-line-length
-  private readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string, block: string } = {
+  private readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string, block: string, range: string } = {
     order: 'order',
     description: 'description',
     reference: 'reference',
     points: 'points',
     ac: 'area',
     type: 'questionType',
-    block: 'block'
+    block: 'block',
+    range: 'range'
   };
 
   private readonly DEFAULT_LABEL = 'Sí';
@@ -282,7 +282,7 @@ export class QuestionsService {
       _schema.description = item[this.HEADER.description];
     }
     if (_schema instanceof QuestionRange) {
-      _schema.range = item[this.OPTIONS].length;
+      _schema.range = item[this.HEADER.range] || item[this.OPTIONS][0]['rateCount'] || 10;
       _schema.max_points = item[this.HEADER.points];
     } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
       const _options = item[this.OPTIONS];

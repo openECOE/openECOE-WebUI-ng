@@ -1,6 +1,6 @@
 import {AfterContentInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {QuestionCheckBox, QuestionRadio, QuestionRange, QuestionSchema, RowOption} from '@app/models';
+import {QuestionCheckBox, QuestionOption, QuestionRadio, QuestionRange, QuestionSchema, RowOption} from '@app/models';
 import {stringify} from 'querystring';
 @Component({
   selector: 'app-option-form',
@@ -59,13 +59,19 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
 
   initOptionsCache() {
     if ( this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox) {
+      this.schema.options = this.schema.options.map(option => {
+        const _option = new QuestionOption()
+        _option.id_option = option.id_option
+        _option.label = option.label
+        _option.order = option.order
+        _option.points = Number(option.points)
+        return _option
+      })
       this.optionsCache = this.schema.options;
     } else if (this.schema instanceof QuestionRange) {
-      const _multiplier = this.schema.max_points / this.schema.range;
-      this.optionsCache = Array.from(Array<RowOption>(this.schema.range), (x, index) => {
-        const _order = index + 1;
-        return new RowOption(_order, _order.toString(), _order * _multiplier);
-      });
+      const _rOption = new RowOption(0, null, this.schema.max_points)
+      _rOption.rateCount = this.schema.range;
+      this.optionsCache = [_rOption];
     }
   }
 
@@ -117,15 +123,15 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
         id: (params && params['id']) ? params['id'] : '',
         order: params ? params['order'] : '',
         label: [params ? params['label'] : this.defaultTextValues[index], [Validators.required, Validators.maxLength(255)]],
-        points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]]
+        points: [params ? params.points : '', [Validators.required, Validators.maxLength(2)]]
       });
     } else {
       return <RowOption>({
         id: (params && params['id']) ? params['id'] : '',
         order: '',
         label: [{value: ' ', disabled: true}, ],
-        points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]],
-        rateCount: this.nRateCount.current
+        points: [params ? params.points : null, [Validators.required]],
+        rateCount: [params ? params.rateCount : 10, [Validators.required]]
       });
     }
   }
@@ -273,26 +279,25 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     }
   }
 
-  parseOptions(options: RowOption[]) {
-    const length = options.length;
-    const rateCount = options[length - 1].rateCount;
+  parseOptions(options: RowOption[]) {    
+    return options;
 
-    if (this.type !== this.questionTypeOptions[2]) {
-      return options;
-    }
-    const auxOptions: RowOption[] = [];
-    let order;
-    let points;
-    for (let i = 0; i < rateCount; i++) {
-      order = i + 1;
-      points = parseInt(options[length - 1].points.toString(), 10);
+    // if (this.type !== this.questionTypeOptions[2]) {
+    //   return options;
+    // }
+    // const auxOptions: RowOption[] = [];
+    // let order;
+    // let points;
+    // for (let i = 0; i < rateCount; i++) {
+    //   order = i + 1;
+    //   points = parseInt(options[length - 1].points.toString(), 10);
 
-      auxOptions.push( new RowOption(
-        order,
-        '',
-        (points / rateCount) * order)
-      );
-    }
-    return auxOptions;
+    //   auxOptions.push( new RowOption(
+    //     order,
+    //     '',
+    //     (points / rateCount) * order)
+    //   );
+    // }
+    // return auxOptions;
   }
 }

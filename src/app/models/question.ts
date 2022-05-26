@@ -27,17 +27,18 @@ export class QuestionBase {
 
 export class QuestionOption {
   id_option: number;
-  private _points: number;
+  // private _points: number;
   label: string;
   order: number;
+  points: number;
 
-  get points() {
-    return this._points
-  }
+  // get points() {
+  //   return this._points
+  // }
 
-  set points(v) {
-    this._points = Number(v)
-  }
+  // set points(v) {
+  //   this._points = Number(v)
+  // }
 }
 
 export class QuestionRadio extends QuestionBase {
@@ -254,7 +255,7 @@ export class Answer extends Item {
 export class AnswerBase {
   constructor(type) {
     this.type = type;
-    this.selected = null;
+    this.selected = '';
   }
 
   readonly type: string;
@@ -269,7 +270,7 @@ export class AnswerRadio extends AnswerBase {
   constructor() {
     super('radio');
   }
-  selected: {id_option: number};
+  selected: QuestionOption;
 }
 
 export class AnswerCheckBox extends AnswerBase {
@@ -380,7 +381,7 @@ export class QuestionOld extends Question {
       for (const option of this.schema.options) {
         const _option = new Option();
 
-        // _option.id = option.id_option;
+        _option.id = option.id_option;
         _option.points = Number(option.points);
         _option.label = option.label;
         _option.id_question = this.id;
@@ -462,7 +463,7 @@ export class RowOption {
   order: any | number;
   label: any[] | string;
   points: any[] | number;
-  rateCount?: number;
+  rateCount?: any[] | number;
   id?: number;
 
   constructor(order, label, points) {
