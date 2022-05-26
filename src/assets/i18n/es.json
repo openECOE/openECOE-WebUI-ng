@@ -250,5 +250,6 @@
   "SETTINGS": "Ajustes",
   "INPUT_EMAIL": "Por favor, introduzca su usuario",
   "INPUT_PASSWORD": "Por favor, introduzca su contraseña",
-  "DNI": "DNI"
+  "DNI": "DNI",
+  "RANGE_PLACEHOLDER": "Rango"
 }

@@ -5,7 +5,7 @@ import {AuthenticationService} from '../../../services/authentication/authentica
 import {ApiService} from '../../../services/api/api.service';
 import { NzModalService } from 'ng-zorro-antd';
 import { TranslateService } from '@ngx-translate/core';
-import { ECOE} from '@app/models';
+import { ECOE, UserLogged} from '@app/models';
 import { UserService } from '@app/services/user/user.service';
 
 @Component({
@@ -16,9 +16,11 @@ import { UserService } from '@app/services/user/user.service';
 export class HomeComponent implements OnInit {
 
   showCreateEcoe: boolean;
-  ecoes: any[];
+  ecoes: ECOE[];
   ecoeForm: FormControl;
   organization: any;
+  
+  user: UserLogged;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -34,6 +36,7 @@ export class HomeComponent implements OnInit {
 
     this.userService.userDataChange.subscribe(user => {
       if (user) {
+        this.user = this.userService.userData;
         this.loadEcoes()
       } else {
         this.auth.logout('/login');
@@ -41,6 +44,7 @@ export class HomeComponent implements OnInit {
     })
 
     if (this.userService.userData) {
+      this.user = this.userService.userData;
       this.loadEcoes()
     }
   }
