@@ -16,7 +16,7 @@ import { UserService } from '@app/services/user/user.service';
 export class HomeComponent implements OnInit {
 
   showCreateEcoe: boolean;
-  ecoes: ECOE[];
+  ecoesList: ECOE[];
   ecoeForm: FormControl;
   organization: any;
   
@@ -25,7 +25,6 @@ export class HomeComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     public userService: UserService,
-    private auth: AuthenticationService,
     private apiService: ApiService,
     private modalSrv: NzModalService,
     private translate: TranslateService) {
@@ -33,21 +32,24 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
+    this.loadEcoes()
 
-    this.userService.userDataChange.subscribe(user => {
-      if (user) {
-        this.user = this.userService.userData;
-        this.loadEcoes()
-      } else {
-        this.auth.logout('/login');
-      }
-    })
+    // this.userService.userDataChange.subscribe(user => {
+    //   if (user) {
+    //     this.user = this.userService.userData;
+    //     this.loadEcoes()
+    //   } else {
+    //     this.auth.logout('/login');
+    //   }
+    // })
 
-    if (this.userService.userData) {
-      this.user = this.userService.userData;
-      this.loadEcoes()
-    }
+    // if (this.userService.userData) {
+    //   this.user = this.userService.userData;
+    //   this.loadEcoes()
+    // }
   }
+
+  
 
 
   closeDrawer() {
@@ -56,7 +58,9 @@ export class HomeComponent implements OnInit {
   }
 
   async loadEcoes() {
-    this.ecoes = await ECOE.query()
+    ECOE.query<ECOE>().then(_ecoes => {
+      this.ecoesList = _ecoes;
+    })
   }
 
   submitForm() {
