@@ -4,6 +4,7 @@ import {Schedule, Stage} from './schedule';
 import {Organization} from './organization';
 import {QuestionOld, Block, Question} from '@models/question';
 import {User} from '@models/user';
+import { Answer } from '.';
 
 export class ECOE extends Item {
   areas = Route.GET<Area | Pagination<Area>>('/areas');
@@ -84,7 +85,7 @@ export class Student extends Item {
   addAnswer ? = Route.POST('/answers');
 
   getAnswers ? = Route.GET('/answers');
-  getAllAnswers ? = Route.GET('/answers/all');
+  getAllAnswers ? = Route.GET<Array<Answer>>('/answers/all');
   // getAnswersStation ? = Route.GET('/answers/station/');
   getAnswersStation ? = (station: Number) => Route.GET('/answers/station/' + station.toString());
 

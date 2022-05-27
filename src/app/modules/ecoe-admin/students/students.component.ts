@@ -120,7 +120,12 @@ export class StudentsComponent implements OnInit {
    *
    * @param student Resource selected
    */
-  deleteItem(student: Student) {
+  async deleteItem(student: Student) {
+    const _answers = await student.getAllAnswers();
+    for (const _answer of _answers) {
+      _answer.destroy();
+    }
+
     student.destroy()
       .then(() => this.updateArrayStudents(student.id));
   }
