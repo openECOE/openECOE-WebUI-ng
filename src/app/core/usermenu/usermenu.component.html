@@ -1,15 +1,15 @@
 <a class="user" *ngIf="userData" nz-dropdown [nzDropdownMenu]="menu">
   <i nz-icon nzType="user" nzTheme="outline"></i> 
-  {{userData?.user && userData?.user?.name ? userData?.user.name : 'Usuario (sin nombre)'}}
+    {{userData?.user?.name}}
   <i nz-icon nzType="caret-down"></i>
 </a>
 <nz-dropdown-menu #menu="nzDropdownMenu">
-  <ul nz-menu nzSelectable>
-    <li nz-menu-item>
-      <a [routerLink]="'/control-panel'" >{{"SETTINGS" | translate}}</a>
+  <ul nz-menu nzSelectable >
+    <li nz-menu-item (click)="goTo('/control-panel')" *ngIf="userData?.isAdmin">
+      {{"SETTINGS" | translate}}
     </li>
-    <li nz-menu-item>
-      <a (click)="logout()" >{{"LOG_OUT" | translate}}</a>
+    <li nz-menu-item (click)="logout()">
+      {{"LOG_OUT" | translate}}
     </li>
   </ul>
 </nz-dropdown-menu>

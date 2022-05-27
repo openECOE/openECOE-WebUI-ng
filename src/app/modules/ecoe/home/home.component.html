@@ -2,7 +2,7 @@
   <nz-page-header class="margin-top margin-bottom" [nzTitle]="'ECOES' | translate" [nzSubtitle]="'LIST' | translate"> </nz-page-header>
   <nz-list nzGrid>
     <div nz-row [nzGutter]="16">
-      <div *ngIf="userService.userData?.isAdmin" nz-col [nzXXl]="8" [nzXl]="4" [nzLg]="6" [nzMd]="6" [nzSm]="12" [nzXs]="24">
+      <div *ngIf="userService.userData?.isAdmin" nz-col  [nzXXl]="6" [nzXl]="8" [nzSm]="12" [nzXs]="24">
         <nz-list-item>
           <nz-card [nzTitle]="'CREATE_ECOE' | translate">
             <a nz-button nzSize="large" nzBlock (click)="showCreateEcoe = true" nzType="dashed">
@@ -11,7 +11,7 @@
           </nz-card>
         </nz-list-item>
       </div>
-      <div nz-col [nzXXl]="8" [nzXl]="4" [nzLg]="6" [nzMd]="6" [nzSm]="12" [nzXs]="24" *ngFor="let item of ecoesList">
+      <div nz-col [nzXXl]="6" [nzXl]="8" [nzSm]="12" [nzXs]="24" *ngFor="let item of ecoesList">
         <nz-list-item>
           <nz-card [nzTitle]="item.name">
             <a nz-button [routerLink]="['/ecoe/' + item['id'] + (userService.userData.isEval ? '/eval' : '/admin')]"

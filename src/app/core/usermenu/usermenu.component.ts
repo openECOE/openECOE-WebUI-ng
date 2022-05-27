@@ -1,4 +1,5 @@
 import { Component, OnInit, Injector } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserLogged } from '@app/models';
 import { AuthenticationService } from '@app/services/authentication/authentication.service';
 import { UserService } from '@app/services/user/user.service';
@@ -12,7 +13,10 @@ export class UsermenuComponent implements OnInit {
 
   userData: UserLogged;
 
-  constructor(private userService: UserService, private auth: AuthenticationService) {
+  constructor(
+    private userService: UserService, 
+    public auth: AuthenticationService,
+    private router: Router) {
     this.userService.userDataChange.subscribe(user => {
       this.userData = user;
     })  
@@ -23,6 +27,10 @@ export class UsermenuComponent implements OnInit {
 
   logout(){
     this.auth.logout();
+  }
+
+  goTo(route: string){
+    this.router.navigate([route])
   }
 
 }
