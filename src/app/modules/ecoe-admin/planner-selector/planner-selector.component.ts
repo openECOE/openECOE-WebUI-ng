@@ -306,4 +306,8 @@ export class AppStudentSelectorComponent implements OnInit {
       })
       .catch(() => console.warn('no more results'));
   }
+
+  get plannerStudentsOrdered() {
+    return this.planner.students.sort((a, b) => a.plannerOrder > b.plannerOrder?1:-1)
+  }
 }
