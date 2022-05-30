@@ -61,7 +61,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
       if (checked && option) {
         const _radioOption = this._RadioOptions.find(_radio => _radio.option.id_option === option);
         (answer.schema as AnswerRadio).selected = _radioOption.option;
-        answer.points = _radioOption.option.points;
+        answer.points = Number(_radioOption.option.points);
       } else {
         (answer.schema as AnswerRadio).selected = null;
         answer.points = 0
