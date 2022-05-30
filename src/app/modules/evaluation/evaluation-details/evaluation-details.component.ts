@@ -78,7 +78,7 @@ export class EvaluationDetailsComponent implements OnInit {
       if (params['roundId'] && params['stationId']) {
         this.selectedRound = await Round.fetch(params['roundId'])
 
-        this.selectedStation = await Station.fetch(params['stationId'])
+        this.selectedStation = await Station.fetch(params['stationId'],{skip: ['parentStation', 'childrenStations']})
       }
     } catch (error) {
       console.error(error);
@@ -188,10 +188,28 @@ export class EvaluationDetailsComponent implements OnInit {
   getStations() {
     return Station.query({
       where: {ecoe: this.ecoeId},
-      sort: {order: false}
-    }).then( (stations: Station[]) => {
-      this.stations = stations;
-      if (!this.selectedStation) {this.selectedStation = this.checkForNextStep(stations); }
+      sort: {order: false},
+    }, {
+      skip: ['parentStation', 'childrenStations']
+    }).then(async (stations: Station[]) => {
+      for (const station of stations) {
+        const _eval = await station.can.evaluate()
+        if (_eval) {
+          this.stations.push(station);
+        }
+      }
+
+      if (!this.selectedStation) {this.selectedStation = this.checkForNextStep(this.stations); }
+
+
+      // const _stations = stations.filter(async (_station) => {
+      //  const _eval = await _station.can.evaluate()
+      //  return _eval;
+      // })
+
+      // this.stations = _stations;
+
+      
     }).catch(err => {
       console.error('[EvaluationDetailsComponent]','getStations()',err);
       return err;
