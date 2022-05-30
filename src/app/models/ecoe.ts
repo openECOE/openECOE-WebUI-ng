@@ -1,10 +1,31 @@
-import {Item, Pagination, route, Route} from '@openecoe/potion-client';
+import {Item as potionItem, Pagination, readonly, route, Route} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from './planner';
 import {Schedule, Stage} from './schedule';
 import {Organization} from './organization';
 import {QuestionOld, Block, Question} from '@models/question';
 import {User} from '@models/user';
 import { Answer } from '.';
+
+export class Permission extends potionItem {
+  "create": boolean
+  "delete": boolean
+  "evaluate": boolean
+  "manage": boolean
+  "read": boolean
+}
+
+export class Item extends potionItem {
+  @readonly
+  permissions = Route.GET<Permission>('/permissions')
+
+  can = {
+    create: async () => (await this.permissions()).create,
+    delete: async () => (await this.permissions()).delete,
+    evaluate: async () => (await this.permissions()).evaluate,
+    manage: async () => (await this.permissions()).manage,
+    read: async () => (await this.permissions()).read,
+  }
+}
 
 export class ECOE extends Item {
   areas = Route.GET<Area | Pagination<Area>>('/areas');
@@ -48,12 +69,12 @@ export class Station extends Item {
   order: number;
   parentStation?: Station;
   user: User;
-
-  children_stations: Station[];
+  childrenStations: Station[];
 
   qblocks = Route.GET<Pagination<Block>>('/blocks');
   schedules = Route.GET<Pagination<Schedule>>('/schedules');
   questions = Route.GET<Pagination<QuestionOld>>('/questions');
+  
 }
 
 export interface RowStation {
