@@ -19,7 +19,7 @@ export class QuestionComponent implements OnInit {
   @Input()
   set answers(answers: Array<Answer>) {
     this._answers = answers;
-    this.findAnswer(this.question, answers).then(value => this._questionAnswer = value);
+    this.findAnswer(this.question, this._answers).then(value => this._questionAnswer = value);
   }
 
   get answers(): Array<Answer> {
@@ -63,7 +63,6 @@ export class QuestionComponent implements OnInit {
       schema: new AnswerSchema(question.schema.type)
     })
 
-    _answer.save().catch(err => this.message.error(this.translate.instant('ERROR_SAVE_ANSWER', err)))
     return _answer
   }
 

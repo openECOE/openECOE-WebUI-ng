@@ -26,7 +26,10 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
 
   @Input() question: QuestionRadio;
 
-  _RadioOptions: Array<RadioOption> = [];
+  RadioOptions: Array<RadioOption> = [];
+
+  singleChecked: boolean = false;
+  singleLabel: string;
 
   constructor(protected message: NzMessageService,
               protected translate: TranslateService) {
@@ -34,7 +37,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
   }
 
   ngOnInit() {
-    this._RadioOptions = this.loadQuestion(this.question);
+    this.RadioOptions = this.loadQuestion(this.question);
   }
 
   loadQuestion(question: QuestionRadio): Array<RadioOption> {
@@ -47,11 +50,16 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
 
   loadSelected(answer: Answer) {
     if (answer) {
+      this.singleChecked = false;
       const _schema = (answer.schema as AnswerRadio);
+
+      if (typeof (_schema.selected) === 'string' && _schema.selected === '') {
+        _schema.selected = null;
+      }
+
       const _selected = _schema.selected;
-      if (this._RadioOptions.length === 1) {
-        const _radio = this._RadioOptions[0]
-        _radio.checked = _selected ? _selected.id_option === _radio.option.id_option : false;
+      if (this.RadioOptions.length === 1) {
+        this.singleChecked = _selected ? _selected.id_option === this.RadioOptions[0].option.id_option : false;
       } 
     }
   }
@@ -59,7 +67,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
   changeRadioAnswer(answer: Answer, option: number, checked: boolean) {
     if (answer) {
       if (checked && option) {
-        const _radioOption = this._RadioOptions.find(_radio => _radio.option.id_option === option);
+        const _radioOption = this.RadioOptions.find(_radio => _radio.option.id_option === option);
         (answer.schema as AnswerRadio).selected = _radioOption.option;
         answer.points = Number(_radioOption.option.points);
       } else {
@@ -68,6 +76,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
       }
       
       this.saveAnswer(answer)
+        .then(newAnswer => this.answer = newAnswer)
         .catch(reason => console.error(reason));
     }
   }

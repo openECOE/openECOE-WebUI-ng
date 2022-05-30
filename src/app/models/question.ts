@@ -218,31 +218,29 @@ export class Answer extends Item {
   student: Student;
   question: Question;
   points: number;
+  
+  answerSchema: string;
 
   private _answer_schema: AnswerSchema;
 
-  set answerSchema(schema: string) {
-    if (typeof schema !== 'string') {
-      throw new SyntaxError('schema is not string');
-    }
-      const _schema = JSON.parse(schema);
+  set schema(answerSchema: AnswerSchema | string) {
+    if (typeof answerSchema === 'string') {
+      const _schema = JSON.parse(answerSchema);
       this._answer_schema = Object.assign(new AnswerSchema(_schema.type), _schema);
-  }
-
-  get answerSchema() {
-    return this._answer_schema.toString();
-  }
-
-  set schema(answerSchema: AnswerSchema) {
-    this._answer_schema = answerSchema;
+    } else {
+      this._answer_schema = answerSchema;
+    }
   }
 
   get schema() {
+    if (!this._answer_schema) {
+      this.schema = this.answerSchema
+    }
     return this._answer_schema as AnswerBase;
   }
 
   save(): Promise<this> {
-    this._answer_schema = this.answerSchema;
+    this.answerSchema = this.schema.toString();
     return super.save();
   }
 

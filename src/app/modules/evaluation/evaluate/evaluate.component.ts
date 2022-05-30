@@ -150,17 +150,14 @@ export class EvaluateComponent implements OnInit {
     this.router.navigate(['/ecoe', this.ecoeId, 'eval', 'date', this.ecoeDay, 'round', this.roundId, 'station', this.stationId]);
   }
 
-  setCurrentStudent(currentStudent: Student) {
+  async setCurrentStudent(currentStudent: Student) {
     if (currentStudent) {
       this.isSpinning = true;
       this.currentStudent.student = Object.create(currentStudent);
       this.currentStudent.index = (this.students.indexOf(currentStudent) >= 0 ? this.students.indexOf(currentStudent) : 0);
-      this.getAnswers(this.currentStudent.student, this.station)
-        .then(answersList => {
-          this.currentStudent.answers = answersList;
-          this.isSpinning = false;
-        });
-
+      const _answerList = await this.getAnswers(this.currentStudent.student, this.station)
+      this.currentStudent.answers = _answerList;
+      this.isSpinning = false;
     }
   }
 
