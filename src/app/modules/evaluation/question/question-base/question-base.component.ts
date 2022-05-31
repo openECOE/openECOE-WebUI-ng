@@ -41,7 +41,10 @@ export class QuestionBaseComponent implements OnInit {
   saveAnswer(answer: Answer): Promise<Answer> {
     return new Promise<Answer>((resolve, reject) => {
       answer.save()
-        .then(value => resolve(value))
+        .then(value => {
+          this.answer = value
+          resolve(value)
+        })
         .catch(reason => {
           this.message.error(
             this.translate.instant('ANSWER_SAVING_ERROR', {questionName: this.question.description}),

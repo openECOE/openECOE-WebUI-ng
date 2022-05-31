@@ -56,7 +56,7 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
     }
   }
 
-  changeAnswer(answer: Answer, checkBoxOption: CheckBoxOption, checked: boolean) {
+  async changeAnswer(answer: Answer, checkBoxOption: CheckBoxOption, checked: boolean) {
     checkBoxOption.checked = checked;
 
     if (answer) {
@@ -69,7 +69,7 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
       answer.points = _sumPoints;
       (answer.schema as AnswerCheckBox).selected = _cbFiltered.map(optionChecked => ({id_option: optionChecked.option.id_option}));     
 
-      this.saveAnswer(answer).finally();
+      this.answer = await this.saveAnswer(answer).finally();
     }
   }
 

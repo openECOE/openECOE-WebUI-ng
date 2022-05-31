@@ -67,18 +67,34 @@ nz-switch {
   }
 }
 
+.ant-radio-button-wrapper {
+  height: 100%!important;
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
+  line-height: normal!important;
+}
+
 .positive-points.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
   color: #fff;
   background: #5cb85c !important;
   border-color: #5cb85c !important;
-  box-shadow: -1px 0 0 0 #60b760
+  box-shadow: -1px 0 0 0 #60b760;
 }
 
 .negative-points.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
   color: #fff;
   background: #CF1322 !important;
   border-color: #CF1322 !important;
-  box-shadow: -1px 0 0 0 #d01827
+  box-shadow: -1px 0 0 0 #d01827;
+}
+
+
+.positive-points.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before {
+  background-color: #5cb85c!important;
+}
+
+.negative-points.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before {
+  background-color: #CF1322!important;
 }
 
 nz-radio-group {
