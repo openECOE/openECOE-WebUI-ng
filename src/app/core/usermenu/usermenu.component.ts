@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { UserLogged } from '@app/models';
 import { AuthenticationService } from '@app/services/authentication/authentication.service';
 import { UserService } from '@app/services/user/user.service';
+import { NzContextMenuService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-usermenu',

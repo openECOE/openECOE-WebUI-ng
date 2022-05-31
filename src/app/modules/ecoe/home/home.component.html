@@ -14,7 +14,7 @@
       <div nz-col [nzXXl]="6" [nzXl]="8" [nzSm]="12" [nzXs]="24" *ngFor="let item of ecoesList">
         <nz-list-item>
           <nz-card [nzTitle]="item.name">
-            <a nz-button [routerLink]="['/ecoe/' + item['id'] + (userService.userData.isEval ? '/eval' : '/admin')]"
+            <a nz-button [routerLink]="['/ecoe/' + item['id'] + (userService?.userData?.isEval ? '/eval' : '/admin')]"
                       nzSize="large" nzBlock
                       preserveFragment="false"
                       nzType="primary">

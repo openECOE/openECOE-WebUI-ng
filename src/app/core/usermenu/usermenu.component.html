@@ -1,10 +1,10 @@
-<a class="user" *ngIf="userData" nz-dropdown [nzDropdownMenu]="menu">
+<a class="user" *ngIf="userData" nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
   <i nz-icon nzType="user" nzTheme="outline"></i> 
     {{userData?.user?.name}}
   <i nz-icon nzType="caret-down"></i>
 </a>
-<nz-dropdown-menu #menu="nzDropdownMenu">
-  <ul nz-menu nzSelectable >
+<nz-dropdown-menu #menu="nzDropdownMenu" >
+  <ul nz-menu>
     <li nz-menu-item (click)="goTo('/control-panel')" *ngIf="userData?.isAdmin">
       {{"SETTINGS" | translate}}
     </li>
