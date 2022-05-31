@@ -1,13 +1,8 @@
 <nz-content padding class="container">
   <ng-container *ngIf="selectedConfig && selectedRound; else noData">
     <nz-page-header class="margin-top margin-bottom" [nzTitle]="'ECOE(s)' | translate"></nz-page-header>
-    <nz-list padding
-      [nzDataSource]="ecoesConfig"
-      [nzRenderItem]="ListItem"
-    >
-    </nz-list>
-    <ng-template #ListItem let-ecoeConfig>
-      <nz-list-item>
+    <nz-list padding>
+      <nz-list-item *ngFor="let ecoeConfig of ecoesConfig">
         <nz-row width-100>
           <nz-col nzMd="6">
             <h2><strong>{{ecoeConfig.ecoe.name | uppercase}}</strong><br>
@@ -18,8 +13,8 @@
             <nz-col [nzMd]="ecoeConfig.rounds.length > 2 ? (18 / ecoeConfig.rounds.length) : 6">
 
               <nz-card success-color no-padding pointer nzHoverable margin-left
-                       class="not-completed"
-                       [routerLink]="['./ecoe', selectedConfig.ecoe.id, 'round' , round.id]"
+                      class="not-completed"
+                      [routerLink]="['./ecoe', selectedConfig.ecoe.id, 'round' , round.id]"
               >
                 <h3 text-center class="color-white bold">
                   {{round.name}}
@@ -29,9 +24,7 @@
           </ng-container>
         </nz-row>
       </nz-list-item>
-
-    </ng-template>
-
+    </nz-list>
   </ng-container>
 
   <ng-template #noData>
