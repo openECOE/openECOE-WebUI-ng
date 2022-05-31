@@ -8,6 +8,8 @@ class CheckBoxOption {
   constructor(option: QuestionOption, checked: boolean) {
     this.option = option;
     this.checked = checked;
+
+    this.option.points = Number(this.option.points)
   }
 
   option: QuestionOption;

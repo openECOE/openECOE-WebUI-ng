@@ -8,6 +8,8 @@ class RadioOption {
   constructor(option: QuestionOption, checked: boolean) {
     this.option = option;
     this.checked = checked;
+
+    this.option.points = Number(this.option.points)
   }
 
   option: QuestionOption;
@@ -69,7 +71,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
       if (checked && option) {
         const _radioOption = this.RadioOptions.find(_radio => _radio.option.id_option === option);
         (answer.schema as AnswerRadio).selected = _radioOption.option;
-        answer.points = Number(_radioOption.option.points);
+        answer.points = _radioOption.option.points;
       } else {
         (answer.schema as AnswerRadio).selected = null;
         answer.points = 0
