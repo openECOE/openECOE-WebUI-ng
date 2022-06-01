@@ -46,12 +46,12 @@ export class EvaluationDetailsComponent implements OnInit {
     if (this.authService.userLogged) {
       this.momentRef.locale(this.shared.getUsersLocale('en-US'));
       await this.getUrlParams();
-      this.setupCurrentStep();
       this.getData(this.ecoeId).then(() => {
           this.getShiftDays(this.shifts);
           this.getSelectedShift();
           // this.onChangeECOEDay(this.ecoeDays[this.selectedIndexShift]);
           this.getSelectedRound();
+          this.setupCurrentStep();
           this.isSpinning = false;
       });
     } else {
@@ -112,6 +112,7 @@ export class EvaluationDetailsComponent implements OnInit {
 
     if (!this.selectedEcoeDay) {
       this.selectedEcoeDay = this.checkForNextStep(this.ecoeDays); 
+      this.onEcoeDateSelected(this.selectedEcoeDay)
     } else {
       this.onChangeECOEDay(this.selectedEcoeDay)
     }
