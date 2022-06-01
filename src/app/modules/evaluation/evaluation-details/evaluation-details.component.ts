@@ -78,7 +78,7 @@ export class EvaluationDetailsComponent implements OnInit {
       if (params['roundId'] && params['stationId']) {
         this.selectedRound = await Round.fetch(params['roundId'])
 
-        this.selectedStation = await Station.fetch(params['stationId'],{skip: ['parentStation', 'childrenStations']})
+        this.selectedStation = await Station.fetch(params['stationId'],{skip: ['childrenStations']})
       }
     } catch (error) {
       console.error(error);

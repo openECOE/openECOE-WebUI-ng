@@ -1,6 +1,24 @@
 <nz-content class="long-div">
 
   <nz-card [nzLoading]="loading" [nzTitle]="HeaderRef">
+
+    <nz-alert  nz-col nzXs="24" [nzLg]="{span: 12, offset: 6}" [nzXXl]="{span: 8, offset: 8}" *ngIf="station?.parentStation && currentStudent.index == 0"
+      nzType="warning"
+      [nzMessage]="alertParentStation"
+      [nzDescription]="alertDescParentStation"
+      nzShowIcon>
+
+
+      <ng-template #alertParentStation>
+        
+        {{'STATION_DEPENDS_OF_STATION'| translate }}
+      </ng-template>
+    
+      <ng-template #alertDescParentStation>
+        <div [innerHTML]="'STATION_DEPENDS_OF_STATION_DESCRIPTION' | translate : {name: station.parentStation.name}"></div>
+      </ng-template>
+    </nz-alert>
+
     <ng-container *ngIf="questionsByQblock && currentStudent.student.id">
       <ng-container *ngFor="let qblock of this.questionsByQblock; let i = index">
         <nz-spin [nzSpinning]="isSpinning">
@@ -51,15 +69,6 @@
           <ng-template #noStudent>
             {{('NO_STUDENT' | translate)}}
           </ng-template>
-
-          <nz-alert *ngIf="station?.parentStation && currentStudent.index == 0"
-                    class="wrapword" nzType="warning" text-center
-                    [nzMessage]="alertParentStation">
-            <ng-template #alertParentStation>
-              <div [innerHTML]="'STATION_DEPENDS_OF_STATION_DESCRIPTION' | translate"></div>
-            </ng-template>
-          </nz-alert>
-
         </nz-skeleton>
 
         <div nz-row nzJustify="end">
@@ -92,7 +101,6 @@
       </div>
     </div>
   </ng-template>
-
 
   <button
     *ngIf="students.length > 0 && students.length !== (currentStudent.index + 1)"
