@@ -259,19 +259,22 @@ export class AppStudentSelectorComponent implements OnInit {
   addStudent(student: Student, order?: number) {
     order = order ? order : this.planner.students.length + 1;
 
-    student.planner_order = order;
-    student.planner = this.planner;
-    student.save().then(savedStudent => {
-      this.planner.students.push(savedStudent);
+    this.updateStudentPlanner(student, this.planner, order).then((updatedStudent) => {
+      this.planner.students.push(updatedStudent);
       this.searchListStudents = this.searchListStudents.filter(value => value.id !== student.id);
-    });
+    })
   }
 
   rmStudent(student: Student) {
-    student.planner_order = null;
-    student.planner = null;
-    this.planner.students = this.planner.students.filter(value => value.id !== student.id);
-    student.save();
+    this.updateStudentPlanner(student, null, null).then((updatedStudent)=> {
+      this.planner.students = this.planner.students.filter(value => value.id !== student.id);
+      this.searchListStudents.push(updatedStudent);
+    })
+  }
+
+  updateStudentPlanner(student: Student, planner: Planner, order: number) {
+    const data = {"planner": planner, "planner_order": order}
+    return student.update(data)
   }
 
   searchStudents(value?: string) {
