@@ -6,6 +6,7 @@ import {NzModalRef, NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 import {SharedService} from '../../../services/shared/shared.service';
 import {formatDate} from '@angular/common';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 /**
  * Component to select and display information about a Planner
@@ -238,6 +239,7 @@ export class AppStudentSelectorComponent implements OnInit {
   ngOnInit() {
 
     this.groupName = this.shift.shiftCode + this.round.roundCode;
+    this.planner.students = this.plannerStudentsOrdered
     this.searchStudents();
   }
 
@@ -269,6 +271,7 @@ export class AppStudentSelectorComponent implements OnInit {
     this.updateStudentPlanner(student, null, null).then((updatedStudent)=> {
       this.planner.students = this.planner.students.filter(value => value.id !== student.id);
       this.searchListStudents.push(updatedStudent);
+      this.reorderPlannerStudents(this.planner.students)
     })
   }
 
@@ -310,7 +313,22 @@ export class AppStudentSelectorComponent implements OnInit {
       .catch(() => console.warn('no more results'));
   }
 
+  
+
+  moveStudent(event: CdkDragDrop<string[]>): void {
+    moveItemInArray(this.planner.students, event.previousIndex, event.currentIndex);
+    this.reorderPlannerStudents(this.planner.students)
+
+  }
+
   get plannerStudentsOrdered() {
     return this.planner.students.sort((a, b) => a.plannerOrder > b.plannerOrder?1:-1)
+  }
+
+  reorderPlannerStudents(students: Array<Student>) {
+    students.forEach((student, index) => {
+      const _order = index + 1
+      this.updateStudentPlanner(student, this.planner, _order)
+    })
   }
 }

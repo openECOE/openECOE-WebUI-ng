@@ -16,6 +16,7 @@ import { PlannerComponent } from './planner/planner.component';
 import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner-selector/planner-selector.component';
 import { EcoeModule } from '../ecoe/ecoe.module';
 import { NzBreadCrumbModule, NzGridModule, NzInputModule, NzFormModule, NzModalModule, NzSelectModule, NzTagModule, NzButtonModule, NzIconModule, NzTableModule, NzAlertModule, NzDrawerModule, NzStatisticModule, NzCardModule, NzSkeletonModule, NzToolTipModule, NzPageHeaderModule, NzLayoutModule, NzEmptyModule, NzListModule, NzPopconfirmModule, NzInputNumberModule, NzProgressModule, NzDatePickerModule, NzTimePickerModule, NzTabsModule, NzMessageModule, NzSwitchModule } from 'ng-zorro-antd';
+import {DragDropModule} from '@angular/cdk/drag-drop'
 
 
 @NgModule({
@@ -67,7 +68,8 @@ import { NzBreadCrumbModule, NzGridModule, NzInputModule, NzFormModule, NzModalM
     NzTableModule,
     NzTabsModule,
     NzMessageModule,
-    NzSwitchModule
+    NzSwitchModule,
+    DragDropModule
   ],
   exports: [
     AreasComponent,
