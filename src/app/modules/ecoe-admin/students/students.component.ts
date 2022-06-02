@@ -8,6 +8,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from '../../../models';
 import {STUDENTS_TEMPLATE_URL} from '@constants/import-templates-routes';
+import { NzMessageService } from 'ng-zorro-antd';
 
 /**
  * Component with students.
@@ -19,7 +20,7 @@ import {STUDENTS_TEMPLATE_URL} from '@constants/import-templates-routes';
 })
 export class StudentsComponent implements OnInit {
   readonly STUDENTS_URL = STUDENTS_TEMPLATE_URL;
-  students: any[] = [];
+  students: Student[] = [];
   ecoeId: number;
   ecoe: ECOE;
   ecoe_name: String;
@@ -46,6 +47,11 @@ export class StudentsComponent implements OnInit {
 
   loading: boolean = false;
 
+  checked = false;
+  indeterminate = false;
+
+  setOfCheckedId = new Set<Student>();
+
   mapOfSort: { [key: string]: any } = {
     planner: null,
     dni: null,
@@ -58,7 +64,8 @@ export class StudentsComponent implements OnInit {
               public shared: SharedService,
               private fb: FormBuilder,
               private router: Router,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private message: NzMessageService) {
 
     this.studentForm = this.fb.group({
       studentRow: this.fb.array([])
@@ -78,6 +85,32 @@ export class StudentsComponent implements OnInit {
       this.loadStudents();
       this.InitStudentRow();
     });
+  }
+
+  updateCheckedSet(student: Student, checked: boolean): void {
+    if (checked) {
+      this.setOfCheckedId.add(student);
+    } else {
+      this.setOfCheckedId.delete(student);
+    }
+  }
+
+   refreshCheckedStatus(): void {
+    const listOfEnabledData = this.students;
+    this.checked = listOfEnabledData.every(( student ) => this.setOfCheckedId.has(student));
+    this.indeterminate = listOfEnabledData.some((student) => this.setOfCheckedId.has(student)) && !this.checked;
+  }
+
+  onItemChecked(student: Student, checked: boolean): void {
+    this.updateCheckedSet(student, checked);
+    this.refreshCheckedStatus();
+  }
+
+  onAllChecked(checked: boolean): void {
+    this.students
+      .filter(({ disabled }) => !disabled)
+      .forEach((student) => this.updateCheckedSet(student, checked));
+    this.refreshCheckedStatus();
   }
 
   /**
@@ -122,12 +155,43 @@ export class StudentsComponent implements OnInit {
    */
   async deleteItem(student: Student) {
     const _answers = await student.getAllAnswers();
+    
+    const _promisesDel = []
     for (const _answer of _answers) {
-      _answer.destroy();
+      const _promise = _answer.destroy().catch(err => {
+        console.error(err);
+      });
+      _promisesDel.push(_promise)
     }
 
-    student.destroy()
-      .then(() => this.updateArrayStudents(student.id));
+    return new Promise<void>((resolve, reject) => {
+      Promise.all(_promisesDel)
+      .then(() => {
+        student.destroy()
+        .then(() => {
+          this.updateArrayStudents(student.id as number)
+          resolve()
+        })
+        .catch(err => reject(err));
+      })
+      .catch(err => reject(err))
+    })
+  }
+
+  deleteSelected() {
+    this.loading = true
+    const delPromises = []
+    for (const student of this.setOfCheckedId) {
+      const _del = this.deleteItem(student).catch(err => console.error(err))
+      delPromises.push(_del)
+    }
+    return Promise.all(delPromises).then(()=> {
+      this.checked = false;
+      this.indeterminate = false;
+      this.loadStudents()
+      this.message.create('success', this.translate.instant('ITEMS_DELETED',{"num": delPromises.length, "item_type": this.translate.instant('STUDENTS')}));
+    })
+    .finally(() => this.loading = false)
   }
 
   /**
@@ -261,14 +325,16 @@ export class StudentsComponent implements OnInit {
 
     const student = new Student();
 
-    student.ecoe = this.ecoeId;
+    student.ecoe = this.ecoe;
     student.dni = dni.toString().trim();
     student.name = name.trim();
     student.surnames = surnames.trim();
-    student.plannerOrder = plannerOrder ? plannerOrder : null;
+    // student.plannerOrder = plannerOrder ? plannerOrder : null;
     student.planner = planner ? planner : null;
 
-    return student.save();
+    return student.save().catch(err => {
+      console.error(err);
+    });
 
   }
 
@@ -399,4 +465,5 @@ export class StudentsComponent implements OnInit {
   deleteRow(idx: number) {
     this.studentControl.removeAt(idx);
   }
+  
 }

@@ -25,6 +25,11 @@ export class Item extends potionItem {
     manage: async () => (await this.permissions()).manage,
     read: async () => (await this.permissions()).read,
   }
+
+  save(): Promise<this> {
+    delete this.can 
+    return super.save();
+  }
 }
 
 export class ECOE extends Item {
@@ -93,15 +98,21 @@ export class AnswerOld extends Item {
 }
 
 export class Student extends Item {
-  id: number;
   name: string;
   surnames: string;
   dni: string;
 
   ecoe: ECOE | number;
   planner: Planner | Item;
-  plannerOrder?: number;
   planner_order?: number;
+  
+  public set plannerOrder(v : number) {
+    this.planner_order = v;
+  }
+
+  public get plannerOrder() : number {
+    return this.planner_order;
+  }
 
   addAnswer ? = Route.POST('/answers');
 
@@ -109,6 +120,11 @@ export class Student extends Item {
   getAllAnswers ? = Route.GET<Array<Answer>>('/answers/all');
   // getAnswersStation ? = Route.GET('/answers/station/');
   getAnswersStation ? = (station: Number) => Route.GET('/answers/station/' + station.toString());
+
+
+  save(): Promise<this> {
+    return super.save()
+  }
 
 }
 

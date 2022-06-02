@@ -28,32 +28,29 @@
 
     <thead>
     <tr>
-      <th nzWidth="5px">
+      <th>
         <a (click)="loadStudents()">
           <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
-      <th nzWidth="150px"
-          nzShowSort
+      <th [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+      <th nzShowSort
           [(nzSortOrder)]="mapOfSort.planner"
           (nzSortOrderChange)="sort('planner', $event)">
         {{"PLANNER" | translate}}</th>
-      <th nzWidth="150px"
-          nzShowSort
+      <th nzShowSort
           [(nzSortOrder)]="mapOfSort.dni"
           (nzSortOrderChange)="sort('dni', $event)">
         {{"DNI" | translate}}</th>
-      <th nzWidth="400px"
-          nzShowSort
+      <th nzShowSort
           [(nzSortOrder)]="mapOfSort.surnames"
           (nzSortOrderChange)="sort('surnames', $event)">
         {{"SURNAMES" | translate}}</th>
-      <th nzWidth="200px"
-          nzShowSort
+      <th nzShowSort
           [(nzSortOrder)]="mapOfSort.name"
           (nzSortOrderChange)="sort('name', $event)">
         {{"NAME" | translate}}</th>
-      <th nzWidth="200px" text-right>
+      <th nzAlign="right" nzRight>
         <nz-button-group>
           <button nz-button [nzType]="'primary'" class="margin-left"
                   [nz-tooltip] [nzTooltipTitle]="'ADD_STUDENT' | translate"
@@ -61,6 +58,17 @@
             <i nz-icon [nzType]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
           <app-upload-and-parse [fileURL]="STUDENTS_URL" (parserResult)="importStudents($event)"></app-upload-and-parse>
+          <button nz-button
+            nz-popconfirm [nzPopconfirmTitle]="'DELETE_SELECTED_CONFIRMATION' | translate"
+            (nzOnConfirm)="deleteSelected()"
+            [nzOkText]="'DELETE_SELECTED' | translate"
+            nzOkType="danger"
+            nzDanger
+            [disabled]="setOfCheckedId.size === 0"
+            >
+            <i nz-icon nzType="delete" [nz-tooltip] [nzTooltipTitle]="'DELETE' | translate"></i>
+            {{'DELETE' | translate}}
+          </button>
         </nz-button-group>
       </th>
     </tr>
@@ -69,7 +77,10 @@
     <ng-template ngFor let-item [ngForOf]="table.data">
       <tr>
         <td></td>
-
+        <td
+            [nzChecked]="setOfCheckedId.has(item)"
+            (nzCheckedChange)="onItemChecked(item, $event)"
+          ></td>
         <td>
           <ng-container>
             <nz-tag *ngIf="item.planner?.shift && item.planner?.round"
@@ -109,7 +120,6 @@
           </ng-container>
         </td>
         <td text-right>
-
           <app-action-buttons [isEditing]="editCache[item.id].edit"
                               [isNewItem]="editCache[item.id].new_item"
                               (startEdit)="startEdit(item.id)"
