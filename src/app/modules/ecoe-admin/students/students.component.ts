@@ -125,9 +125,10 @@ export class StudentsComponent implements OnInit {
     for (const key in this.mapOfSort) {
       const value = this.mapOfSort[key];
       if (value !== null) {
-        sortDict[key] = value === 'ascend';
+        sortDict[key] = value !== 'ascend';
         if (key === 'planner') {
-          sortDict['planner_order'] = value === 'ascend';
+          sortDict['planner'] = value !== 'ascend';
+          sortDict['planner_order'] = value !== 'ascend';
         }
       }
     }
@@ -450,7 +451,6 @@ export class StudentsComponent implements OnInit {
   }
 
   sort(sortName: string, value: string): void {
-    // tslint:disable-next-line:forin
     for (const key in this.mapOfSort) {
       this.mapOfSort[key] = key === sortName ? value : null;
     }
