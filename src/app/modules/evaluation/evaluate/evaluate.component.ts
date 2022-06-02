@@ -78,7 +78,7 @@ export class EvaluateComponent implements OnInit {
       if (this.station && !this.station.parentStation && this.students.length > 0) {
         this.setCurrentStudent(this.students.filter(student => student && student.plannerOrder === this.station.order)[0]);
       } else {
-        this.setCurrentStudent({plannerOrder: 0} as Student);
+        this.setCurrentStudent({planner_order: 0} as Student);
       }
       return;
     });
@@ -211,7 +211,7 @@ export class EvaluateComponent implements OnInit {
       cleanArrStudents.unshift(...students);
       let n = cleanArrStudents.length;
       while (n < this.station.order) {
-        cleanArrStudents.unshift(({plannerOrder: n + 1} as Student));
+        cleanArrStudents.unshift(({planner_order: n + 1} as Student));
         n++;
       }
     }

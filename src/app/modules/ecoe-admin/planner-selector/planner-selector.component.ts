@@ -263,6 +263,7 @@ export class AppStudentSelectorComponent implements OnInit {
 
     this.updateStudentPlanner(student, this.planner, order).then((updatedStudent) => {
       this.planner.students.push(updatedStudent);
+      this.planner.students = this.plannerStudentsOrdered
       this.searchListStudents = this.searchListStudents.filter(value => value.id !== student.id);
     })
   }
