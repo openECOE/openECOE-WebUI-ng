@@ -93,6 +93,43 @@
     <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
     {{"AUTO_PLANNERS" | translate}}
   </button>
+
+  <ng-container>
+    <nz-drawer
+    [nzClosable]="true"
+    [nzVisible]="logPromisesERROR.length > 0"
+    nzPlacement="right"
+    [nzTitle]="'IMPORT_ERRORS' | translate"
+    (nzOnClose)="clearImportErrors()"
+    [nzWidth]="540">
+      <nz-alert *ngFor="let error of logPromisesERROR"
+                nzType="error"
+                nzCloseable
+                [nzMessage]="error.reason.statusText"
+                [nzDescription]="error.reason.message"
+                nzShowIcon>
+    </nz-alert>
+    </nz-drawer>
+  </ng-container>
+<!--
+  <ng-container>
+    <nz-drawer
+    [nzClosable]="true"
+    [nzVisible]="logPromisesERROR.length > 0"
+    nzPlacement="right"
+    [nzTitle]="'IMPORT_ERRORS' | translate"
+    (nzOnClose)="clearImportErrors()"
+    [nzWidth]="540">
+      <nz-alert *ngFor="let error of logPromisesERROR"
+                nzType="error"
+                nzCloseable
+                [nzMessage]="error.reason.statusText"
+                [nzDescription]="error.reason.message"
+                nzShowIcon>
+      </nz-alert>
+    </nz-drawer>
+  </ng-container>
+-->
 </nz-content>
 
 <nz-modal [(nzVisible)]="showAddShift"
