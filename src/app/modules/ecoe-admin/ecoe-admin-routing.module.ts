@@ -9,7 +9,7 @@ import { StudentsComponent } from './students/students.component';
 import { PlannerComponent } from './planner/planner.component';
 
 const routes: Routes = [
-  { 
+  {
     path: '',
     children: [
       { path: '', component: EcoeInfoComponent },

@@ -55,10 +55,19 @@ export class UsersAdminComponent implements OnInit {
       this.listRoles = roles;
       this.getUserForm();
     });
+
+    this.userService.userDataChange.subscribe(user => {
+      this.user = user;
+      this.activeUser = this.user.user;
+      this.loadUsers();
+    })
+
     this.user = this.userService.userData;
     this.activeUser = this.user.user;
     this.loadUsers();
+
   }
+
 
   async getUserForm() {
     // TODO: Validate if email exists
@@ -159,7 +168,7 @@ export class UsersAdminComponent implements OnInit {
   async updateUserRoles(userItem: CacheItem) {
     const _rolesNames = userItem.data.roleNames;
     const _roles: Array<Role> = await userItem.data.roles();
-      
+
     const _delList = _roles.filter(_role => {
       return !_rolesNames.includes(_role.name)
     })
@@ -323,9 +332,9 @@ export class UsersAdminComponent implements OnInit {
   isDissabled(idx: number, name: string) {
     let dissabled;
     if (name === this.SUPER_ADMIN) {
-      dissabled = !(this.editCache[idx].data.roleNames.length === 0 || this.editCache[idx].data.roleNames.indexOf(name) > -1);
+      dissabled = !(this.editCache[idx].data.rolesList.length === 0 || this.editCache[idx].data.rolesList.indexOf(name) > -1);
     } else {
-      dissabled =  (this.editCache[idx].data.roleNames.indexOf(this.SUPER_ADMIN) > -1);
+      dissabled =  (this.editCache[idx].data.rolesList.indexOf(this.SUPER_ADMIN) > -1);
     }
     return dissabled;
   }
