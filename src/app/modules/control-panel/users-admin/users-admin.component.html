@@ -190,16 +190,23 @@
     <nz-form-item>
       <nz-form-control>
         <nz-form-label >Roles</nz-form-label>
-        <div formArrayName="roles">
-
-          <ng-container *ngFor="let rol of validateForm.controls.roles['controls']; let i = index">
-            <nz-row>
-              <label nz-checkbox [formControlName]="i+''" (nzCheckedChange)="onCheckedChange(i)">
-                {{(listRoles[i].name | translate)}}
-              </label>
-            </nz-row>
-          </ng-container>
-
+        <div formArrayName="roles" >
+          <nz-select
+          *ngIf="showAddUser"
+          style="width: 100%"
+          nzSize="small"
+          [nzMaxTagCount]="5"
+          nzMode="multiple"
+          [nzPlaceHolder]="'SELECT_ROLES' | translate"
+          [nzAllowClear]="true"
+          nzAllowClear
+        >
+          <nz-option *ngFor="let role of listRoles"
+                    [nzLabel]="role.name | translate"
+                    [nzValue]="role.name"
+          >
+          </nz-option>
+        </nz-select>
         </div>
       </nz-form-control>
     </nz-form-item>
