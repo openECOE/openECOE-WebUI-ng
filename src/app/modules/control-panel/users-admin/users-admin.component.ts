@@ -34,7 +34,6 @@ export class UsersAdminComponent implements OnInit {
   loading: boolean = false;
 
   validateForm: FormGroup;
-  formArrayRoles: FormArray;
   showAddUser: boolean = false;
   importErrors: { value: any, reason: any }[] = [];
 
@@ -76,15 +75,10 @@ export class UsersAdminComponent implements OnInit {
       password: [null, [Validators.required]],
       userName: [null, [Validators.required]],
       userSurname: [null, [Validators.required]],
-      roles: new FormArray([])
+      roles: [null]
     });
 
-    this.formArrayRoles = <FormArray>this.validateForm.controls.roles;
 
-    this.listRoles.forEach((role) => {
-      const control = new FormControl(role.name === 'user');
-      this.formArrayRoles.push(control);
-    });
   }
 
   async getRoles() {
@@ -289,9 +283,10 @@ export class UsersAdminComponent implements OnInit {
         value.userSurname,
         value.password)
         .then(user => {
-          value.roles.forEach((rol, idx) => {
-            if (rol) { this.apiService.addUserRole(this.listRoles[idx].name, user.id).finally(); }
-          });
+          if(value.roles)
+            value.roles.forEach((rol: string) => {
+              this.apiService.addUserRole(rol, user.id).finally();
+            });
           this.loadUsers();
           this.closeModal();
         });
