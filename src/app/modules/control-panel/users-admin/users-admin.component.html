@@ -189,8 +189,8 @@
 
     <nz-form-item>
       <nz-form-control>
+        <nz-input-group>
         <nz-form-label >Roles</nz-form-label>
-        <div formArrayName="roles" >
           <nz-select
           *ngIf="showAddUser"
           style="width: 100%"
@@ -200,14 +200,16 @@
           [nzPlaceHolder]="'SELECT_ROLES' | translate"
           [nzAllowClear]="true"
           nzAllowClear
-        >
-          <nz-option *ngFor="let role of listRoles"
-                    [nzLabel]="role.name | translate"
-                    [nzValue]="role.name"
+          formControlName="roles"
           >
+            <nz-option *ngFor="let role of listRoles"
+                      [nzLabel]="role.name | translate"
+                      [nzValue]="role.name"
+            >
           </nz-option>
         </nz-select>
-        </div>
+
+        </nz-input-group>
       </nz-form-control>
     </nz-form-item>
 
