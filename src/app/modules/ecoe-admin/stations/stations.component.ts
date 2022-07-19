@@ -4,7 +4,7 @@ import {SharedService} from '@services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {getPotionID} from '@openecoe/potion-client';
+import {getPotionID, Pagination} from '@openecoe/potion-client';
 import {STATIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
 
 /**
@@ -30,7 +30,7 @@ export class StationsComponent implements OnInit {
   ecoe_name: String;
   editCache: { edit: boolean, new_item: boolean, item: Station }[] = [];
   index: number = 1;
-  pagStations: any;
+  pagStations: Pagination<Station>;
   control: FormArray;
   selectOptions: any [] = [];
   rowStation: RowStation = {
@@ -130,7 +130,7 @@ export class StationsComponent implements OnInit {
       }, {paginate: true, cache: false})
         .then(response => {
           this.editCache = [];
-          this.loadPage(response);
+          this.loadPage(response as unknown as Pagination<Station>);
         })
         .catch(err => {
           if (err.status === 404) {
@@ -152,9 +152,9 @@ export class StationsComponent implements OnInit {
    * and when user starts to write, the results will update calling [searchInSelect]{@link #searchInSelect}
    */
   loadOptions4Select(excludeItem: string = null, page: number = 1 ) {
-      return Station.query({
-        where: {'ecoe': this.ecoeId},
-        sort: {'order': false},
+      Station.query({
+        where: {ecoe: this.ecoeId},
+        sort: {order: false},
         page: page,
         perPage: 50
       }, {skip: this.EXCLUDE_ITEMS, paginate: true, cache: false})
@@ -197,7 +197,7 @@ export class StationsComponent implements OnInit {
       this.editCache[item.id] = {
         edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
         new_item: false,
-        item: Object.create(item)
+        item: Object.assign(new Station, item)
       };
     });
   }
@@ -237,7 +237,7 @@ export class StationsComponent implements OnInit {
    */
   cancelEdit(item: any): void {
     this.editCache[item.id].edit = false;
-    this.editCache[item.id].item = Object.create(item);
+    this.editCache[item.id].item = Object.assign({}, item);
   }
 
   /**
@@ -277,9 +277,10 @@ export class StationsComponent implements OnInit {
    * some variables.
    * @param pagination is a object type with all info about the current page.
    */
-  loadPage(pagination: any) {
+  loadPage(pagination: Pagination<Station>) {
     this.pagStations = pagination;
-    this.stations = [...this.pagStations.items];
+    const _stations = pagination.toArray()
+    this.stations = _stations;
     this.totalItems = this.pagStations.total;
     this.updateEditCache();
 
@@ -290,6 +291,7 @@ export class StationsComponent implements OnInit {
           .then(parentStation => value.parentStation = parentStation);
       }
     });
+    return;
   }
 
   /**
