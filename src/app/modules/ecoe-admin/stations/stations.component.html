@@ -90,10 +90,10 @@
               [(ngModel)]="editCache[item.id].item.parentStation"
               [nzPlaceHolder]="('PARENT_PLACEHOLDER' | translate)"
               nzFilterOption="true"
-              (nzOnSearch)="searchInSelect($event, editCache[item.id].item.name)"
+              (nzOnSearch)="searchInSelect($event, editCache[item.id].item)"
             >
               <!--<ng-container *ngFor="let pageOptions of selectOptions">-->
-                <nz-option *ngFor="let station of selectOptions['items']"  [nzLabel]="station.name" [nzValue]="station"> </nz-option>
+                <nz-option *ngFor="let station of selectOptions"  [nzLabel]="station.name" [nzValue]="station"> </nz-option>
               <!--</ng-container>-->
             </nz-select>
           </ng-container>
@@ -104,7 +104,7 @@
         <td text-right>
           <app-action-buttons [isEditing]="editCache[item.id]?.edit"
                               [isNewItem]="editCache[item.id]?.new_item"
-                              (startEdit)="startEdit(item,editCache[item.id].item.name)"
+                              (startEdit)="startEdit(item)"
                               (delete)="deleteItem(item)"
                               (save)="updateItem(editCache[item.id].item)"
                               (cancelEdit)="cancelEdit(item)">
@@ -168,7 +168,7 @@
                     formControlName="parentStation"
                     (nzOnSearch)="searchInSelect($event, getFormControl('name',i).value)"
                   >
-                    <nz-option *ngFor="let option of selectOptions['items']" [nzLabel]="option.name" [nzValue]="option.name"> </nz-option>
+                    <nz-option *ngFor="let option of selectOptions" [nzLabel]="option.name" [nzValue]="option.name"> </nz-option>
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>
