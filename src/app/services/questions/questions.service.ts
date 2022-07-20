@@ -390,7 +390,7 @@ export class QuestionsService {
    * @param stationId the id of the station.
    * @param n_qblocks total count of qblocks.
    */
-  saveArrayQblocks(items: any[], stationId: number, n_qblocks: number): Promise<any> {
+  saveArrayQblocks(items: any[], stationId: number | string, n_qblocks: number): Promise<any> {
     const savePromises = [];
     this.logPromisesERROR = [];
     this.logPromisesOK = [];

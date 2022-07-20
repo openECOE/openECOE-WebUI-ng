@@ -32,7 +32,7 @@ export class StationsComponent implements OnInit {
   index: number = 1;
   pagStations: Pagination<Station>;
   control: FormArray;
-  selectOptions: any [] = [];
+  selectOptions: Station[] = [];
   rowStation: RowStation = {
     order: [''],
     name: ['', Validators.required],
@@ -60,7 +60,7 @@ export class StationsComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.ecoeId = +params.ecoeId;
-      ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
+      ECOE.fetch<ECOE>(this.ecoeId).then(value => {
         this.ecoe = value;
         this.ecoe_name = this.ecoe.name;
       });
@@ -73,7 +73,7 @@ export class StationsComponent implements OnInit {
    * @param value string to search
    * @param exclude item to exclude form select
    */
-  searchInSelect(value: string, exclude?: string): void {
+  searchInSelect(value: string, excludeStation?: Station): void {
     if (value) {
       Station.query({
         where: {
@@ -83,12 +83,13 @@ export class StationsComponent implements OnInit {
         sort: {'order': false},
         page: 1,
         perPage: 50
-      }, {paginate: true, cache: false})
+      }, {paginate: true})
         .then(response => {
-          this.updateOptions(response, exclude).finally();
+          const _stationsPag = response as unknown as Pagination<Station>;
+          this.updateOptions(_stationsPag.toArray(), excludeStation);
         });
     } else {
-      this.loadOptions4Select(exclude).finally();
+      this.loadOptions4Select(excludeStation);
     }
   }
 
@@ -96,22 +97,17 @@ export class StationsComponent implements OnInit {
     this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
   }
 
-  updateOptions(response: any, exclude?: string) {
-    this.selectOptions = response;
+  updateOptions(stations: Station[], excludeStation?: Station) {
+    this.selectOptions = stations;
     for (const row of (this.stationForm.get('stationRow').value)) {
       if (row.name) {
-        this.selectOptions['items'].push(new Station({name: row.name}));
+        this.selectOptions.push(new Station({name: row.name}));
       }
     }
     // deleting current station in parent stations list.
-    if (exclude) {
-      const idx = this.selectOptions['items'].map(e => e.name).indexOf(exclude);
-      if (idx > -1) {
-        this.selectOptions['items'].splice(idx, 1);
-      }
+    if (excludeStation) {
+      this.selectOptions = this.selectOptions.filter(item => item.id !== excludeStation.id);
     }
-
-    return new Promise( resolve => resolve(this.selectOptions));
   }
 
   /**
@@ -122,15 +118,15 @@ export class StationsComponent implements OnInit {
     this.loading = true;
 
     return new Promise(resolve => {
-      Station.query({
+      Station.query<Station>({
         where: {ecoe: this.ecoeId},
         sort: {order: false},
         page: this.page,
         perPage: this.perPage
-      }, {paginate: true, cache: false})
+      }, {paginate: true})
         .then(response => {
           this.editCache = [];
-          this.loadPage(response as unknown as Pagination<Station>);
+          this.loadPage(response);
         })
         .catch(err => {
           if (err.status === 404) {
@@ -142,7 +138,7 @@ export class StationsComponent implements OnInit {
         })
         .finally(() => {
           this.loading = false;
-          resolve();
+          resolve(null);
         });
     });
   }
@@ -151,15 +147,16 @@ export class StationsComponent implements OnInit {
    * Load options for parent station select. By default gets the first 20 results
    * and when user starts to write, the results will update calling [searchInSelect]{@link #searchInSelect}
    */
-  loadOptions4Select(excludeItem: string = null, page: number = 1 ) {
+  loadOptions4Select(excludeStation: Station = null, page: number = 1 ) {
       Station.query({
         where: {ecoe: this.ecoeId},
         sort: {order: false},
         page: page,
         perPage: 50
-      }, {skip: this.EXCLUDE_ITEMS, paginate: true, cache: false})
+      }, {paginate: true})
         .then(response => {
-          return this.updateOptions(response, excludeItem);
+          const _stationsPag = response as unknown as Pagination<Station>;
+          this.updateOptions(_stationsPag.toArray(), excludeStation);
         });
   }
 
@@ -170,9 +167,8 @@ export class StationsComponent implements OnInit {
    * @param item selected resource of stations list
    * @param excludeItem exclude himself item
    */
-  startEdit(item: Station, excludeItem?: string) {
+  startEdit(item: Station) {
     this.editCache[item.id].edit = true;
-    this.loadOptions4Select(excludeItem).finally();
   }
 
   /**
@@ -224,7 +220,7 @@ export class StationsComponent implements OnInit {
 
     request.then(response => {
       this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
-      this.editCache[cacheItem.id].edit = false;
+      this.editCache[cacheItem.id].edit = false;      
     });
   }
 
@@ -277,10 +273,13 @@ export class StationsComponent implements OnInit {
    * some variables.
    * @param pagination is a object type with all info about the current page.
    */
-  loadPage(pagination: Pagination<Station>) {
-    this.pagStations = pagination;
-    const _stations = pagination.toArray()
-    this.stations = _stations;
+  loadPage(pagination: Pagination<Station>  | Station[]) {
+    this.pagStations = pagination as Pagination<Station>;
+    this.stations = [];
+    for (let station of this.pagStations.toArray()) {
+      this.stations.push(Object.assign(new Station, station));
+    }
+
     this.totalItems = this.pagStations.total;
     this.updateEditCache();
 
@@ -300,7 +299,7 @@ export class StationsComponent implements OnInit {
   showDrawer() {
     this.isVisible = true;
     this.InitStationRow();
-    this.loadOptions4Select().finally();
+    this.loadOptions4Select();
 
   }
 
