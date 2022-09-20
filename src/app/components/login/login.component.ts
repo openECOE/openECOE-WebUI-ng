@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit {
 
   submitForm(): void {
     this.error_login = false;
-    
+    this.validateForm.get('email').setValue(this.validateForm.value.email.trim())
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
