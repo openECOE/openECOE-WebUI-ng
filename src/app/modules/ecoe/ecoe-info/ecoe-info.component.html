@@ -93,7 +93,7 @@
       </div>
 
       <div nz-col [nzMd]="8" class="gutter-box">
-        <nz-card nzTitle="Planificador" [nzExtra]="linkPlanificador">
+        <nz-card nzTitle="{{ 'PLANNERS' | translate}}" [nzExtra]="linkPlanificador">
           <nz-spin [nzSpinning]="rounds.loading || shifts.loading">
             <nz-alert *ngIf="!(rounds.show || shifts.show)" nzType="error"
                       nzMessage="{{ 'NO_EXIST_SCHEDULES' | translate }}"></nz-alert>
@@ -103,6 +103,19 @@
         </nz-card>
         <ng-template #linkPlanificador>
           <button [disabled]="!(rounds.show || shifts.show)" nz-button nzType="primary" [routerLink]="['planner']"><i
+            nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
+        </ng-template>
+      </div>
+
+      <div nz-col [nzMd]="8" class="gutter-box">
+        <nz-card nzTitle="{{ 'STATISTICS' | translate}}" [nzExtra]="linkResultados">
+          <nz-spin [nzSpinning]="false">
+            <nz-alert  nzType="info"
+                      nzMessage="Proximo acceso al modulo de estadisticas"></nz-alert>
+          </nz-spin>
+        </nz-card>
+        <ng-template #linkResultados>
+          <button [disabled]="!(rounds.show || shifts.show)" nz-button nzType="primary" [routerLink]="['results']"><i
             nz-icon nzType="edit" nzTheme="outline"></i> {{ 'SETUP' | translate}}</button>
         </ng-template>
       </div>
