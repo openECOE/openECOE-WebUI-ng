@@ -1,3 +1,10 @@
+<nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'RESULTS' | translate" >
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ecoe_name}}</a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"RESULTS" | translate}}</nz-tag></nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </nz-page-header>
+
 <p>statistics works!</p>
 
 <p>Caja "Resultados", generada para acceder a los resultados que debe devolver el módulo "estadísticas" en la API</p>
