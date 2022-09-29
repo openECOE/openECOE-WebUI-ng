@@ -5,6 +5,42 @@
     </nz-breadcrumb>
   </nz-page-header>
 
-<p>statistics works!</p>
+<div id="resultados" name="resultados"><div>
+<nz-content *ngIf="results">
+  <!--  <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>-->
+    <nz-table #table 
+    [nzData]="results"
+    [nzShowPagination]="true"
+    [nzShowSizeChanger]="true"
 
-<p>Caja "Resultados", generada para acceder a los resultados que debe devolver el módulo "estadísticas" en la API</p>
+    [nzTotal]="totalItems"
+    [nzFrontPagination]="true"
+    [nzLoading]="false"
+
+    [(nzPageSize)]="per_page"
+    [(nzPageIndex)]="current_page"
+    nzSize="small"
+    (nzPageIndexChange)="pageChange()"
+    (nzPageSizeChange)="pageSizeChange($event)">
+    <!--  TODO::  [nzFrontPagination]="false" cuando consiga poner el resto de parámetros, hacer que pagine en backend -->
+      <thead>
+        <tr>
+          <th nzWidth="100px" [nzSortFn]="sortId">{{"ID_STUDENT" | translate}}</th>
+          <th nzWidth="100px" [nzSortFn]="sortDni">{{"ID_CODE" | translate}}</th>
+          <th nzWidth="150px" [nzSortFn]="sortName">{{"NAME" | translate}}</th>
+          <th nzWidth="200px" [nzSortFn]="sortSurnames">{{"SURNAMES" | translate}}</th>
+          <th nzWidth="200px" [nzSortFn]="sortAbsoluteScore" >{{"ABSOLUTE_GRADES"| translate}}</th>
+          <th nzWidth="200px" [nzSortFn]="sortRelativeScore">{{"RELATIVE_GRADES" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let results of table.data">
+          <td>{{results.idStudent}}</td>
+          <td>{{results.dni}}</td>
+          <td>{{results.name}}</td>
+          <td>{{results.surnames}}</td>
+          <td>{{results.absoluteScore}}</td>
+          <td>{{results.relativeScore}}</td>
+        </tr>
+      </tbody>
+    </nz-table>

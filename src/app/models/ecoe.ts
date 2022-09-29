@@ -46,6 +46,7 @@ export class ECOE extends Item {
   organization: Organization;
 
   configuration = Route.GET('/configuration');
+  results = Route.GET('/results');
 }
 
 export class Area extends Item {
