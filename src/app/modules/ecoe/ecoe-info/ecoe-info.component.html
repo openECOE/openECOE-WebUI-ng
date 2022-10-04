@@ -111,7 +111,7 @@
         <nz-card nzTitle="{{ 'RESULTS' | translate}}" [nzExtra]="linkResultados">
           <nz-spin [nzSpinning]="false">
             <nz-alert  nzType="info"
-                      nzMessage="{{ 'ALERT_RESULTS_1' | translate }} {{students.total}} {{ 'ALERT_RESULTS_2' | translate }}"></nz-alert>
+                      nzMessage="{{ 'ALERT_RESULTS' | translate : {numalumnos: students.total} }}"></nz-alert>
           </nz-spin>
         </nz-card>
         <ng-template #linkResultados>
