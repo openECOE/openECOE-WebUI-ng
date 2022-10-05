@@ -8,6 +8,7 @@ class Puntuacion {
   name?: string;
   surnames?: string;
   dni?: string;
+  points?: number;
   absoluteScore?: number;
   relativeScore?: number;
 
@@ -52,7 +53,7 @@ export class StatisticsComponent implements OnInit {
         this.ecoe.results()
           .then((response:Puntuacion[]) => {
             //this.results = response.sort((a, b) => a.idStudent - b.idStudent);
-            this.results = response.sort((a, b) => b.relativeScore - a.relativeScore); 
+            this.results = response.sort((a, b) => b.points - a.points); 
             this.totalItems = response.length;
           });
       });
@@ -90,6 +91,7 @@ export class StatisticsComponent implements OnInit {
   sortDni = (a: Puntuacion, b: Puntuacion) => a.dni.localeCompare(b.dni);
   sortName = (a: Puntuacion, b: Puntuacion) => a.name.localeCompare(b.name);
   sortSurnames = (a: Puntuacion, b: Puntuacion) => a.surnames.localeCompare(b.surnames);
-  sortAbsoluteScore = (a: Puntuacion, b: Puntuacion) => b.absoluteScore - a.absoluteScore;
-  sortRelativeScore = (a: Puntuacion, b: Puntuacion) => b.relativeScore - a.relativeScore;
+  sortPoints = (a: Puntuacion, b: Puntuacion) => b.points - a.points;
+  sortAbsoluteScore = (a: Puntuacion, b: Puntuacion) => b.points/b.absoluteScore - a.points/a.absoluteScore;
+  sortRelativeScore = (a: Puntuacion, b: Puntuacion) => b.points/b.relativeScore - a.points/a.relativeScore;
 }
