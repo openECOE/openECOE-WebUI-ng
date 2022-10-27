@@ -212,7 +212,7 @@ export class StudentsComponent implements OnInit {
    *
    * @param student Resource selected
    */
-  cancelEdit(student: any): void {
+  cancelEdit(student: Student): void {
     this.editCache[student.id].edit = false;
 
     if (this.editCache[student.id].new_item) {
@@ -265,7 +265,7 @@ export class StudentsComponent implements OnInit {
    *
    * @param studentId Id of the resource passed
    */
-  updateArrayStudents(studentId: number) {
+  updateArrayStudents(studentId: number | string | null) {
     delete this.editCache[studentId];
     this.students = this.students.filter(x => x.id !== studentId);
   }

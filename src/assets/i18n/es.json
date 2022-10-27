@@ -258,6 +258,7 @@
   "ABSOLUTE_GRADES": "Nota absoluta",
   "RELATIVE_GRADES": "Nota relativa",
   "ALERT_RESULTS": "Resultados de los {{numalumnos}} alumnos de esta ECOE",
+  "RESULTS_BY_AREA": "Resultados de los {{numalumnos}} alumnos por Área",
   "RANGE_PLACEHOLDER": "Rango",
   "DELETE_SELECTED_CONFIRMATION": "¿Seguro que desea borrar todos los elementos seleccionados?",
   "DELETE_SELECTED": "Eliminar seleccionados",
