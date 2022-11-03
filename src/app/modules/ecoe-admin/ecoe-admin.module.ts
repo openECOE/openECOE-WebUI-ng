@@ -18,6 +18,7 @@ import { StatisticsComponent } from './statistics/statistics.component';
 import { EcoeModule } from '../ecoe/ecoe.module';
 import { NzBreadCrumbModule, NzGridModule, NzInputModule, NzFormModule, NzModalModule, NzSelectModule, NzTagModule, NzButtonModule, NzIconModule, NzTableModule, NzAlertModule, NzDrawerModule, NzStatisticModule, NzCardModule, NzSkeletonModule, NzToolTipModule, NzPageHeaderModule, NzLayoutModule, NzEmptyModule, NzListModule, NzPopconfirmModule, NzInputNumberModule, NzProgressModule, NzDatePickerModule, NzTimePickerModule, NzTabsModule, NzMessageModule, NzSwitchModule } from 'ng-zorro-antd';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import { ItemScoreComponent } from './item-score/item-score.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     PlannerComponent,
     PlannerSelectorComponent,
     StatisticsComponent,
-    AppStudentSelectorComponent
+    AppStudentSelectorComponent,
+    ItemScoreComponent
   ],
   imports: [
     CommonModule,
