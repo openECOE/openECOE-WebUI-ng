@@ -99,7 +99,7 @@ export class StatisticsComponent implements OnInit {
   }
  
   downloadCSV() {
-    this.api.getResourceFile("ecoes/1/results/csv").subscribe(results => {
+    this.api.getResourceFile("ecoes/"+ this.ecoeId +"/results-csv").subscribe(results => {
       
       const blob = new Blob([results], { type: 'text/csv' });
       const url= window.URL.createObjectURL(blob);
@@ -145,7 +145,7 @@ export class StatisticsComponent implements OnInit {
       const areas = results['items'] as Area[];
       let array=[];
       for(const _area of areas){
-        let arearesults = this.api.getResource('ecoes/' + this.ecoeId + '/resultsarea?area=' + _area.id );
+        let arearesults = this.api.getResource('ecoes/' + this.ecoeId + '/results-area?area=' + _area.id );
         array.push(
           {
             id_area: _area.id,
