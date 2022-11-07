@@ -69,8 +69,7 @@ export interface RowArea {
   questions?: any[];
 }
 
-export class Station extends Item {
-  id: number;
+export class Station extends Item {  
   name: string;
   ecoe: ECOE;
   order: number;
