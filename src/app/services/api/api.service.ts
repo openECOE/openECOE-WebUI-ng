@@ -107,6 +107,20 @@ export class ApiService {
       }));
   }
 
+  
+  getResourceFile(ref: string): Observable<any> {
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
+    const _options = {
+      observe: 'body',
+      responseType: 'arraybuffer'
+    } 
+    // ,headers:{['Content-Disposition']:'attachment; filename=resultados_ecoe_1.csv' }
+    return this.http.get(url, {observe:'response',responseType: 'arraybuffer'})
+      .pipe(map(response => {
+        return response.body;
+      }));
+  }
+
   /**
    * Makes a HTTP POST request to the backend.
    *

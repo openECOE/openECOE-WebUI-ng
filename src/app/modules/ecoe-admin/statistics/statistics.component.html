@@ -8,6 +8,7 @@
 <div id="resultados" name="resultados"><div>
 <nz-content *ngIf="results">
   <!--  <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>-->
+  <button nz-button [nzType]="'primary'" (click)="downloadCSV()"><span>{{"DOWNLOAD_GRADES" | translate}} <i nz-icon nzType="download"></i></span></button>  
     <nz-table #table 
     [nzData]="results"
     [nzShowPagination]="true"
@@ -22,7 +23,6 @@
     nzSize="small"
     (nzPageIndexChange)="pageChange()"
     (nzPageSizeChange)="pageSizeChange($event)">
-    <!--  TODO::  [nzFrontPagination]="false" cuando consiga poner el resto de parámetros, hacer que pagine en backend -->
       <thead>
         <tr>
           <th nzWidth="100px" [nzSortFn]="sortId">{{"ID_STUDENT" | translate}}</th>
