@@ -5,7 +5,8 @@ import {AuthenticationService} from '../../../services/authentication/authentica
 import {ApiService} from '../../../services/api/api.service';
 import { NzModalService } from 'ng-zorro-antd';
 import { TranslateService } from '@ngx-translate/core';
-import { ECOE, UserLogged } from '@app/models';
+import { ECOE, UserLogged} from '@app/models';
+import { UserService } from '@app/services/user/user.service';
 
 @Component({
   selector: 'app-home',
@@ -15,13 +16,15 @@ import { ECOE, UserLogged } from '@app/models';
 export class HomeComponent implements OnInit {
 
   showCreateEcoe: boolean;
-  ecoes: any[];
+  ecoesList: ECOE[];
   ecoeForm: FormControl;
   organization: any;
+  
+  user: UserLogged;
 
   constructor(
     private formBuilder: FormBuilder,
-    public authService: AuthenticationService,
+    public userService: UserService,
     private apiService: ApiService,
     private modalSrv: NzModalService,
     private translate: TranslateService) {
@@ -29,13 +32,24 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.ecoeForm = this.formBuilder.control('', Validators.required);
+    this.loadEcoes()
 
-    if (this.authService.userLogged) {
-      this.loadEcoes()
-    } else {
-      this.authService.logout('/login');
-    }
+    // this.userService.userDataChange.subscribe(user => {
+    //   if (user) {
+    //     this.user = this.userService.userData;
+    //     this.loadEcoes()
+    //   } else {
+    //     this.auth.logout('/login');
+    //   }
+    // })
+
+    // if (this.userService.userData) {
+    //   this.user = this.userService.userData;
+    //   this.loadEcoes()
+    // }
   }
+
+  
 
 
   closeDrawer() {
@@ -44,7 +58,9 @@ export class HomeComponent implements OnInit {
   }
 
   async loadEcoes() {
-    this.ecoes = await ECOE.query()
+    ECOE.query<ECOE>().then(_ecoes => {
+      this.ecoesList = _ecoes;
+    })
   }
 
   submitForm() {

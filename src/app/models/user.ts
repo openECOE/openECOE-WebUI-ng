@@ -7,7 +7,6 @@ export class User extends Item {
   email: string;
   name: string;
   surname: string;
-  isSuperadmin: boolean;
   token_expiration: Date;
   organization: Organization;
   password: string;

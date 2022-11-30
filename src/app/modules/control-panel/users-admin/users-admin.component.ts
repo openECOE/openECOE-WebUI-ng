@@ -1,10 +1,15 @@
-import {Component, OnInit} from '@angular/core';
-import {User, UserLogged} from '../../../models';
-import {AuthenticationService} from '../../../services/authentication/authentication.service';
-import {Item} from '@openecoe/potion-client';
-import {SharedService} from '../../../services/shared/shared.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Component, NgZone, OnInit} from '@angular/core';
+import {Role, RoleType, User, UserLogged} from '@app/models';
+import {SharedService} from '@services/shared/shared.service';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
+import {ApiService} from '@services/api/api.service';
+import { UserService } from '@app/services/user/user.service';
+
+
+interface UserItem extends User {
+  rolesList: Array<Role>;
+}
 
 @Component({
   selector: 'app-users-admin',
@@ -19,7 +24,7 @@ export class UsersAdminComponent implements OnInit {
 
   passwordVisible = false;
 
-  users = [];
+  users: Array<UserItem> = [];
   usersPage: any;
   editCache: CacheItem[] = [];
 
@@ -32,40 +37,64 @@ export class UsersAdminComponent implements OnInit {
   showAddUser: boolean = false;
   importErrors: { value: any, reason: any }[] = [];
 
-  constructor(private authService: AuthenticationService,
-              private shared: SharedService,
+  listRoles: RoleType[] = [];
+
+  readonly SUPER_ADMIN = 'superadmin';
+
+  constructor(private userService: UserService,
+              private apiService: ApiService,
+              public shared: SharedService,
               private fb: FormBuilder,
+              private zone: NgZone,
               private router: Router) {
   }
 
-  ngOnInit() {
-    this.validateForm = this.getUserForm();
-    this.user = this.authService.userData;
+  async ngOnInit() {
+    this.getRoles().then(roles => {
+      this.listRoles = roles;
+      this.getUserForm();
+    });
+
+    this.userService.userDataChange.subscribe(user => {
+      this.user = user;
+      this.activeUser = this.user.user;
+      this.loadUsers();
+    })
+
+    this.user = this.userService.userData;
     this.activeUser = this.user.user;
     this.loadUsers();
+
   }
 
-  getUserForm(): FormGroup {
+
+  async getUserForm() {
     // TODO: Validate if email exists
-    return this.fb.group({
+    this.validateForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       password: [null, [Validators.required]],
-      userName: [null],
-      userSurname: [null],
-      isSuperadmin: [false]
+      userName: [null, [Validators.required]],
+      userSurname: [null, [Validators.required]],
+      roles: [null]
     });
+
+
+  }
+
+  async getRoles() {
+
+    return Role.types();
   }
 
   loadUsers() {
     this.loading = true;
-    User.query({
+    this.apiService.getUsersWithRoles({
       where: {organization: this.activeUser.organization},
       page: this.page,
       perPage: this.perPage
-    }, {paginate: true})
-      .then(page => {
-        this.loadPage(page);
-      })
+    })
+      .then(page => this.loadPage(page))
+      .catch(err => console.log(err))
       .finally(() => this.loading = false);
   }
 
@@ -86,14 +115,16 @@ export class UsersAdminComponent implements OnInit {
     this.usersPage = page;
     this.totalItems = this.usersPage.total;
     this.users = [...this.usersPage.items];
-    this.updateEditCache(this.users, this.editCache);
+    this.users.forEach(async _user => {_user.rolesList = await _user.roles() })
+    // console.log('Object.create(page.items)', page.items);
+    this.updateEditCache(page.items, this.editCache);
   }
 
-  assignEditCache(item: Item, editItem: boolean = false, newItem: boolean = false) {
+  assignEditCache(item: CacheItem, editItem: boolean = false, newItem: boolean = false) {
     return {
       editItem: editItem,
       newItem: newItem,
-      data: Object.assign(new User, item)
+      data: item
     };
   }
 
@@ -102,7 +133,7 @@ export class UsersAdminComponent implements OnInit {
     listItems.forEach((item, index) => {
       editCache[index] = this.assignEditCache(item, editCache[index] ? editCache[index].editItem : false, false);
     });
-    this.editCache = editCache;
+    this.editCache = Object.create(editCache);
   }
 
   addUser(email: string = '',
@@ -116,36 +147,60 @@ export class UsersAdminComponent implements OnInit {
       name: name,
       surname: surname,
       organization: this.activeUser.organization,
-      isSuperadmin: !!superAdmin,
       password: password ? password : this.shared.generateRandomPassword()
     });
 
     return newUser.save();
   }
 
+
+
   editUser(idx: number) {
     this.editCache[idx].editItem = true;
   }
 
-  saveUser(item: any) {
-    var usercache = this.editCache.find(f => f.data.id == item.id);
-    if (!usercache.data.name || !usercache.data.surname || !usercache.data.email) {
+  async updateUserRoles(userItem: CacheItem) {
+    const _rolesNames = userItem.data.roleNames;
+    const _roles: Array<Role> = await userItem.data.roles();
+
+    const _delList = _roles.filter(_role => {
+      return !_rolesNames.includes(_role.name)
+    })
+
+    const _addList = _rolesNames.filter(_roleName => {
+      const _rolesNameList = _roles.map(r => r.name);
+      return !_rolesNameList.includes(_roleName)
+    })
+
+    _addList.forEach( _roleName => this.apiService.addUserRole(_roleName, userItem.data.id))
+    _delList.forEach( _role => this.apiService.deleteUserRole(_role))
+  }
+
+  async saveUser(item: any) {
+    this.loading = true;
+    const usercache = this.editCache.find(f => f.data.id === item.id);
+    if (!usercache.data.email) {
+      this.loading = false;
+      usercache.editItem = false;
       return;
     }
 
+    this.updateUserRoles(usercache).finally();
+
     const body = {
       email: usercache.data.email,
-      surname: usercache.data.surname,
-      name: usercache.data.name,
+      surname: usercache.data.surname || '-',
+      name: usercache.data.name || '-',
     };
 
     const request = item.update(body);
 
-    request.then(response => {
-      var idx = this.editCache.indexOf(usercache);
-      Object.assign(this.users[idx], Object.assign(usercache.data, response));
-      usercache.editItem = false;
-    });
+    request
+      .then(() => {
+        this.loadUsers();
+        usercache.editItem = false;
+      })
+      .finally(() => this.loading = false);
   }
 
   delUser(idx: number) {
@@ -205,9 +260,6 @@ export class UsersAdminComponent implements OnInit {
       .finally(() => this.loadUsers());
   }
 
-  cleanError(idx: number) {
-  }
-
   cleanImportErrors() {
     this.importErrors = [];
   }
@@ -221,29 +273,69 @@ export class UsersAdminComponent implements OnInit {
     this.showAddUser = false;
   }
 
-  submitFormUser(value: any) {
-    this.addUser(
-      value.email,
-      value.userName,
-      value.userSurname,
-      value.isSuperadmin,
-      value.password)
-      .then(user => {
-        this.users = [...this.users, user];
-        this.editCache.push(this.assignEditCache(user, false, true));
-        this.shared.cleanForm(this.validateForm);
-        this.loadUsers();
-        this.closeModal();
-      });
+  submitFormUser(form: FormGroup) {
+    this.shared.doFormDirty(form);
+    if (form.valid) {
+      const value = form.value;
+      this.addUser(
+        value.email,
+        value.userName,
+        value.userSurname,
+        value.password)
+        .then(user => {
+          if(value.roles)
+            value.roles.forEach((rol: string) => {
+              this.apiService.addUserRole(rol, user.id).finally();
+            });
+          this.loadUsers();
+          this.closeModal();
+        });
+    }
   }
 
   onBack() {
     this.router.navigate(['/control-panel']).finally();
   }
 
+  onCheckedChange(idx: number) {
+    if (this.listRoles[idx].name === this.SUPER_ADMIN) {
+      for (const idxRol in this.listRoles) {
+        if (this.listRoles.hasOwnProperty(idxRol)) {
+          if (+idxRol !== idx) {
+            this.shared.getFormControl(this.validateForm, 'roles', +idxRol).setValue(false);
+          }
+        }
+      }
+    } else {
+      this.listRoles.forEach((rol, i) => {
+        if (rol.name === this.SUPER_ADMIN) {
+          this.shared.getFormControl(this.validateForm, 'roles', i).setValue(false);
+        }
+      });
+    }
+  }
+  onRolesChanged(role: any, $event: string[]) {
+    if ($event[$event.length - 1] === this.SUPER_ADMIN) {
+      this.zone.run(() => {
+        this.editCache[role].data.roleNames = [this.SUPER_ADMIN];
+      });
+    } else {
+      this.editCache[role].data.roleNames = [... this.editCache[role].data.roleNames.filter(roleName => roleName !== this.SUPER_ADMIN)];
+    }
+  }
+
+  isDissabled(idx: number, name: string) {
+    let dissabled;
+    if (name === this.SUPER_ADMIN) {
+      dissabled = !(this.editCache[idx].data.rolesList.length === 0 || this.editCache[idx].data.rolesList.indexOf(name) > -1);
+    } else {
+      dissabled =  (this.editCache[idx].data.rolesList.indexOf(this.SUPER_ADMIN) > -1);
+    }
+    return dissabled;
+  }
 }
 
-export class CacheItem {
+export interface CacheItem extends UserItem {
   data: any;
   editItem: boolean;
   newItem: boolean;

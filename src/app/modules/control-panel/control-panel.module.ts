@@ -4,21 +4,57 @@ import { CommonModule } from '@angular/common';
 import { ControlPanelRoutingModule } from './control-panel-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { UsersAdminComponent } from './users-admin/users-admin.component';
-import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComponentsModule } from '@components/components.module';
+import {
+  NzBreadCrumbModule,
+  NzGridModule,
+  NzInputModule,
+  NzFormModule,
+  NzModalModule,
+  NzSelectModule,
+  NzTagModule,
+  NzButtonModule,
+  NzIconModule,
+  NzTableModule,
+  NzAlertModule,
+  NzDrawerModule,
+  NzStatisticModule,
+  NzCardModule,
+  NzSkeletonModule,
+  NzToolTipModule,
+  NzPageHeaderModule,
+  NzLayoutModule
+} from "ng-zorro-antd";
 
 @NgModule({
   declarations: [DashboardComponent, UsersAdminComponent],
   imports: [
     CommonModule,
     ControlPanelRoutingModule,
-    NgZorroAntdModule,
+    NzBreadCrumbModule,
     TranslateModule,
     FormsModule,
     ReactiveFormsModule,
-    ComponentsModule
+    ComponentsModule,
+    NzGridModule,
+    NzInputModule,
+    NzFormModule,
+    NzModalModule,
+    NzSelectModule,
+    NzTagModule,
+    NzButtonModule,
+    NzIconModule,
+    NzTableModule,
+    NzAlertModule,
+    NzDrawerModule,
+    NzStatisticModule,
+    NzCardModule,
+    NzSkeletonModule,
+    NzToolTipModule,
+    NzPageHeaderModule,
+    NzLayoutModule
   ],
   exports: [DashboardComponent, UsersAdminComponent]
 })

@@ -1,8 +1,8 @@
 import {PotionResources} from '@openecoe/potion-client';
 import {
   Organization, User, Planner, Round, Shift,
-  Area, ECOE, Question, Option, Station, Student, QBlock,
-  Schedule, Stage, Event, Role
+  Area, ECOE, Station, Student, Block,
+  Schedule, Stage, Event, Question, Answer, Role
 } from './models';
 
 export const resources: PotionResources = {
@@ -10,10 +10,10 @@ export const resources: PotionResources = {
   '/ecoes': ECOE,
   '/areas': Area,
   '/stations': Station,
-  '/qblocks': QBlock,
+  '/blocks': Block,
   '/questions': Question,
-  '/options': Option,
   '/students': Student,
+  '/answers': Answer,
   '/schedules': Schedule,
   '/stages': Stage,
   '/events': Event,

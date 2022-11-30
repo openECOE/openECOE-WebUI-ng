@@ -14,8 +14,8 @@ export class OutsideChronoComponent implements OnInit {
 
   ecoeId: number;
   roundId: number;
-  private ecoeName: string;
-  private roundDescription: string;
+  ecoeName: string;
+  roundDescription: string;
 
   private config: ECOEConfig;
 

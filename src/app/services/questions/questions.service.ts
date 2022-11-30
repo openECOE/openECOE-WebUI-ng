@@ -1,5 +1,16 @@
-import { Injectable } from '@angular/core';
-import {Area, QBlock, Question, Option, RowQuestion, Station, BlockType} from '../../models';
+import {Injectable} from '@angular/core';
+import {
+  Area,
+  Block,
+  Option,
+  RowQuestion,
+  Station,
+  BlockType,
+  Question,
+  QuestionSchema,
+  QuestionBase,
+  QuestionRange, QuestionCheckBox, QuestionRadio, QuestionOption, ECOE
+} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {BehaviorSubject, Observable} from 'rxjs';
 
@@ -8,13 +19,16 @@ import {BehaviorSubject, Observable} from 'rxjs';
 })
 export class QuestionsService {
 
-  private readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string } = {
+  // tslint:disable-next-line:max-line-length
+  private readonly HEADER: { order: string, description: string, reference: string, points: string, ac: string, type: string, block: string, range: string } = {
     order: 'order',
     description: 'description',
     reference: 'reference',
     points: 'points',
     ac: 'area',
-    type: 'questionType'
+    type: 'questionType',
+    block: 'block',
+    range: 'range'
   };
 
   private readonly DEFAULT_LABEL = 'Sí';
@@ -25,7 +39,8 @@ export class QuestionsService {
   private logPromisesERROR: any[] = [];
   private logPromisesOK: any[] = [];
 
-  constructor() { }
+  constructor() {
+  }
 
 
   /**
@@ -82,7 +97,7 @@ export class QuestionsService {
    * @param stationId id of the station.
    */
   private saveImportedItems(file: BlockType[], station: Station) {
-    let currentBlockId: number;
+    let currentBlock: Block;
 
     if (!file) {
       return;
@@ -90,15 +105,15 @@ export class QuestionsService {
 
     return Promise.all(file.map(async (block, idx) => {
         await this.hasQblock(block.name, station)
-          .then(async (result) => {
-            if (result && (<Array<any>>result).length === 1) {
-              currentBlockId = result[0]['id'];
-              return await this.addQuestions(block.questions, currentBlockId, station);
-            } else if (!result) {
+          .then(async (blocks) => {
+            if (blocks && (<Array<any>>blocks).length === 1) {
+              currentBlock = blocks[0];
+              return await this.addQuestions(block.questions, currentBlock);
+            } else if (!blocks) {
               return await this.addQblock(block.name, (idx + 1), station)
-                .then(async res => {
-                  currentBlockId = res['id'];
-                  return await this.addQuestions(block.questions, currentBlockId, station);
+                .then(async newBlock => {
+                  currentBlock = newBlock;
+                  return await this.addQuestions(block.questions, currentBlock);
                 })
                 .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
             }
@@ -143,7 +158,7 @@ export class QuestionsService {
    */
   private hasQblock(name: string, station: Station) {
     return new Promise((resolve, reject) => {
-      QBlock.query({
+      Block.query({
         where: {name: name, station: station}
       }, {skip: [], cache: false})
         .then((response: Array<any>) => {
@@ -166,7 +181,7 @@ export class QuestionsService {
    * @param station station
    */
   addQblock(name: string, order: number, station: Station) {
-    const qblock = new QBlock({name: name, station: station, order: order});
+    const qblock = new Block({name: name, station: station, order: order});
     return qblock.save()
       .catch(reason => {
         this.logPromisesERROR.push({value: qblock, reason: reason});
@@ -174,11 +189,44 @@ export class QuestionsService {
       });
   }
 
-  private async getArea(area: Area | string, ecoe: number) {
+  private async getArea(area: Area | String, ecoe: ECOE | number): Promise<Area> {
     return (area instanceof Area) ? area : (await Area.first({where: {code: (area + ''), ecoe: ecoe}}));
   }
 
   private async addOptions(questionItem: RowQuestion, idQuestion: number) {
+    // const _schema = new QuestionSchema(questionItem.questionType);
+    //
+    // if (_schema instanceof QuestionBase) {
+    //   _schema.reference = questionItem.reference;
+    //   _schema.description = item[this.HEADER.reference];
+    // }
+    // if (_schema instanceof QuestionRange) {
+    //   _schema.range = item[this.OPTIONS].length;
+    //   _schema.max_points = item[this.HEADER.points];
+    // } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
+    //   // _schema.max_points = item[this.HEADER.points];
+    //   const _options = item[this.OPTIONS];
+    //
+    //   for (const { index, value } of _options.map((opt, idx) => ({ idx, opt }))) {
+    //     const _questionOption = new QuestionOption();
+    //
+    //     _questionOption.id_option = index;
+    //     _questionOption.points = value.points;
+    //     _questionOption.label = value.label;
+    //     _questionOption.order = value.order ? value.order : index;
+    //
+    //     _schema.options.push(_questionOption);
+    //   }
+
+
+      // const body = {
+      //   label: ((item[this.OPTION + (idx + 1)])) ? (item[this.OPTION + (idx + 1)]).toString() : item['label'],
+      //   order: (item[this.HEADER.order]) ? item[this.HEADER.order] : idx,
+      //   points: (item[this.POINTS + (idx + 1)]) ? (item[this.POINTS + (idx + 1)]) : item[this.POINTS],
+      //   question: idQuestion
+      // };
+
+
     const savePromises = [];
     const options = questionItem[this.OPTIONS];
     if (options && options.length === 0) {
@@ -204,7 +252,7 @@ export class QuestionsService {
           points: (item[this.POINTS + (idx + 1)]) ? (item[this.POINTS + (idx + 1)]) : item[this.POINTS],
           question: idQuestion
         };
-         await (new Option(body)).save()
+        await (new Option(body)).save()
           .then(result => {
             this.logPromisesOK.push(result);
             return result;
@@ -224,31 +272,80 @@ export class QuestionsService {
   }
 
   /**
+   * Build schema from RowQuestion
+   * @param item RowQuestion
+   */
+  buildSchema(item: RowQuestion): QuestionSchema {
+    const _schema = new QuestionSchema(item.questionType as string);
+    if (_schema instanceof QuestionBase) {
+      _schema.reference = item[this.HEADER.reference];
+      _schema.description = item[this.HEADER.description];
+    }
+    if (_schema instanceof QuestionRange) {
+      _schema.range = item[this.HEADER.range] || item[this.OPTIONS][0]['rateCount'] || 10;
+      _schema.max_points = item[this.HEADER.points];
+    } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
+      const _options = item[this.OPTIONS];
+
+      if (_options.length === 0) {
+        _options.push(
+          new Option({
+            points: item[this.HEADER.points],
+            label: this.DEFAULT_LABEL,
+          })
+        );
+      }
+
+      // tslint:disable-next-line:no-shadowed-variable
+      for (const { idx, opt } of _options.map((opt, idx) => ({ idx: idx + 1, opt }))) {
+        const _questionOption = new QuestionOption();
+
+        _questionOption.id_option = idx;
+        _questionOption.points = opt.points || opt[`points${idx}`];
+        _questionOption.label = opt.label || opt[`option${idx}`];
+        _questionOption.order = opt.order ? opt.order : idx;
+
+        _schema.options.push(_questionOption);
+      }
+    }
+    return _schema;
+  }
+
+  /**
+   * Conversion of rowQuestion to new model Question.
+   * @param rowQuestion to convert
+   * @param station optional to allow pass station with qblock null
+   */
+  async rowQuestiontoQuestion(rowQuestion: RowQuestion, station: Station): Promise<Question> {
+    const _question = new Question();
+
+    _question.area = (await this.getArea(rowQuestion[this.HEADER.ac], station.ecoe));
+    _question.station = station;
+    _question.order = rowQuestion[this.HEADER.order];
+    _question.block = rowQuestion[this.HEADER.block];
+    _question.schema = this.buildSchema(rowQuestion);
+
+    return _question;
+
+  }
+
+  /**
    * Adds question by question with them options.
    * @param items array of questions
-   * @param idBlock which questions will be asociated
+   * @param block which questions will be asociated
    */
-  async addQuestions(items: any[], idBlock: number, station: Station) {
+  async addQuestions(items: Question[] | RowQuestion[], block: Block) {
     for (const item of items) {
-      const body = {
-        area: (await this.getArea(item[this.HEADER.ac], station.ecoe.id)),
-        description: item[this.HEADER.description],
-        options: [],
-        order: item[this.HEADER.order],
-        qblocks: [idBlock],
-        question_type: item[this.HEADER.type],
-        reference: item[this.HEADER.reference]
-      };
+      item[this.HEADER.block] = block;
+      const _question = item instanceof Question ? item : await this.rowQuestiontoQuestion(item, block.station);
 
-      await (new Question(body)).save()
+      await _question.save()
         .then(async (question) => {
           this.logPromisesOK.push(question);
-
-          await this.addOptions(item, question.id);
         })
         .catch(reason => {
           this.logPromisesERROR.push({
-            value: new Question(body),
+            value: _question,
             reason: reason
           });
           return reason;
@@ -268,17 +365,14 @@ export class QuestionsService {
     const question = Question.fetch(item.id as number);
 
     await question.then(async (questionResponse: Question) => {
-      await questionResponse.update({
-        description: item.description,
+      const _data = {
         area: item.area,
         order: item.order,
-        questionType: item.questionType,
-        reference: item.reference
-      });
+        block: item.block,
+        schema: this.buildSchema(item),
+      };
 
-      await this.deleteOptions(questionResponse.options);
-
-      await this.addOptions(item, questionResponse.id);
+      await questionResponse.update(_data);
     });
   }
 
@@ -296,7 +390,7 @@ export class QuestionsService {
    * @param stationId the id of the station.
    * @param n_qblocks total count of qblocks.
    */
-  saveArrayQblocks(items: any[], stationId: number, n_qblocks: number): Promise<any> {
+  saveArrayQblocks(items: any[], stationId: number | string, n_qblocks: number): Promise<any> {
     const savePromises = [];
     this.logPromisesERROR = [];
     this.logPromisesOK = [];
@@ -306,7 +400,7 @@ export class QuestionsService {
         item['station'] = stationId;
         item['order'] = n_qblocks + (idx + 1);
 
-        const qblock = new QBlock(item);
+        const qblock = new Block(item);
 
         const promise = qblock.save()
           .then(result => {
@@ -335,24 +429,15 @@ export class QuestionsService {
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
    *
-   * @param questions source where will be deleted
-   * @param id Resource selected
+   * @param question source where will be deleted
    */
-  async deleteQuestion(questions: Question[], id: number) {
-    const idx = questions.map(item => item.id).indexOf(id);
-    const options: Option[] = (questions[idx].options) ? questions[idx].options : [];
-
-    if (options.length > 0) {
-      for (const option of options) {
-        await option.destroy();
-      }
-    }
-    return questions[idx].destroy();
+  async deleteQuestion(question: Question) {
+    return question.destroy();
   }
 
   loadQuestions(blockId: number, paginate: boolean, page: number = 1, perPage: number = 20) {
     return Question.query<Question, Pagination<Question>>({
-        where: {qblocks: {$contains: blockId}},
+        where: {block: blockId},
         sort: {order: false},
         page: page,
         perPage: perPage
@@ -368,34 +453,37 @@ export class QuestionsService {
     const questionsObservable = new BehaviorSubject<BlockType[]>(questionsByBlock);
     let counterNext = 0;
 
-      QBlock.query({
-        where: {station: station.id},
-        sort: {order: false}
-        }, {
-        cache: false,
-        skip: []
-      })
-      .then((qblocks: QBlock[]) => {
+    Block.query({
+      where: {station: station.id},
+      sort: {order: false}
+    }, {
+      cache: false,
+      skip: []
+    })
+      .then((qblocks: Block[]) => {
         for (const qblock of qblocks) {
           Question.query({
-            where: {qblocks: {$contains: qblock}},
+            where: {block: qblock},
             sort: {order: false},
-        }, {paginate: false,
+          }, {
+            paginate: false,
             cache: false,
             skip: ['area']
           })
-          .then((questions: Question[]) => {
-            questionsByBlock.push({
-              name: qblock.name,
-              order: qblock.order,
-              questions: questions
+            .then((questions: Question[]) => {
+              questionsByBlock.push({
+                name: qblock.name,
+                order: qblock.order,
+                questions: questions
+              });
+              counterNext++;
+              if (counterNext <= qblocks.length) {
+                questionsObservable.next(questionsByBlock.sort((a, b) => a['order'] - b['order']));
+                if (counterNext === qblocks.length) {
+                  setTimeout(() => questionsObservable.complete(), 200);
+                }
+              }
             });
-            counterNext++;
-            if (counterNext <= qblocks.length) {
-              questionsObservable.next(questionsByBlock.sort((a, b) => a['order'] - b['order']));
-              if (counterNext === qblocks.length) { setTimeout(() => questionsObservable.complete(), 200); }
-            }
-          });
         }
       });
     return questionsObservable;

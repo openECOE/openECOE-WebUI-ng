@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {RowQblock} from '../../../pages/admin/ecoe/questions/questions.component';
-import {QBlock} from '../../../models';
+import {Block, RowQblock} from '@app/models';
 
 @Component({
   selector: 'app-qblock-form',
@@ -11,7 +10,7 @@ import {QBlock} from '../../../models';
 export class QblockFormComponent implements OnInit {
 
   @Output() returnData = new EventEmitter();
-  @Input() qblocks?: QBlock[];
+  @Input() qblocks?: Block[];
 
   qblockForm: FormGroup;
   private control: FormArray;
@@ -47,14 +46,14 @@ export class QblockFormComponent implements OnInit {
    * @param name of the field, in our case can be 'name' or 'code'
    * @param idx the index of the field.
    */
-  private getFormControl(name: string, idx: number): AbstractControl {
+  getFormControl(name: string, idx: number): AbstractControl {
     return this.qblockForm.get('qblockRow')['controls'][idx].controls[name];
   }
 
   /**
    * Adds new row (name field) qblock to the form
    */
-  private addQblockRow() {
+  addQblockRow() {
      this.control.push(this.fb.group(this.rowQblock));
   }
 
@@ -63,7 +62,7 @@ export class QblockFormComponent implements OnInit {
    * in other cases resets the number of rows to 1 when the
    * form window was closed.
    */
-  private InitQblockRow() {
+  InitQblockRow() {
     if (this.control.length === 0) {
       this.addQblockRow();
     } else {

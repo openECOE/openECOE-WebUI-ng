@@ -6,6 +6,7 @@ import {NzModalRef, NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
 import {SharedService} from '../../../services/shared/shared.service';
 import {formatDate} from '@angular/common';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 /**
  * Component to select and display information about a Planner
@@ -238,6 +239,7 @@ export class AppStudentSelectorComponent implements OnInit {
   ngOnInit() {
 
     this.groupName = this.shift.shiftCode + this.round.roundCode;
+    this.planner.students = this.plannerStudentsOrdered
     this.searchStudents();
   }
 
@@ -259,19 +261,24 @@ export class AppStudentSelectorComponent implements OnInit {
   addStudent(student: Student, order?: number) {
     order = order ? order : this.planner.students.length + 1;
 
-    student.planner_order = order;
-    student.planner = this.planner;
-    student.save().then(savedStudent => {
-      this.planner.students.push(savedStudent);
+    this.updateStudentPlanner(student, this.planner, order).then((updatedStudent) => {
+      this.planner.students.push(updatedStudent);
+      this.planner.students = this.plannerStudentsOrdered
       this.searchListStudents = this.searchListStudents.filter(value => value.id !== student.id);
-    });
+    })
   }
 
   rmStudent(student: Student) {
-    student.planner_order = null;
-    student.planner = null;
-    this.planner.students = this.planner.students.filter(value => value.id !== student.id);
-    student.save();
+    this.updateStudentPlanner(student, null, null).then((updatedStudent)=> {
+      this.planner.students = this.planner.students.filter(value => value.id !== student.id);
+      this.searchListStudents.push(updatedStudent);
+      this.reorderPlannerStudents(this.planner.students)
+    })
+  }
+
+  updateStudentPlanner(student: Student, planner: Planner, order: number) {
+    const data = {"planner": planner, "planner_order": order}
+    return student.update(data)
   }
 
   searchStudents(value?: string) {
@@ -305,5 +312,24 @@ export class AppStudentSelectorComponent implements OnInit {
         this.searchListStudents = [...this.searchListStudents, ...page['items']];
       })
       .catch(() => console.warn('no more results'));
+  }
+
+  
+
+  moveStudent(event: CdkDragDrop<string[]>): void {
+    moveItemInArray(this.planner.students, event.previousIndex, event.currentIndex);
+    this.reorderPlannerStudents(this.planner.students)
+
+  }
+
+  get plannerStudentsOrdered() {
+    return this.planner.students.sort((a, b) => a.plannerOrder > b.plannerOrder?1:-1)
+  }
+
+  reorderPlannerStudents(students: Array<Student>) {
+    students.forEach((student, index) => {
+      const _order = index + 1
+      this.updateStudentPlanner(student, this.planner, _order)
+    })
   }
 }

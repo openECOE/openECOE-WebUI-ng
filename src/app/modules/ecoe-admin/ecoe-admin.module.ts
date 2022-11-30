@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { EcoeAdminRoutingModule } from './ecoe-admin-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { TranslateModule } from '@ngx-translate/core';
 import {PipesModule} from '@pipes/pipes.module';
 import { ComponentsModule } from '@components/components.module';
@@ -15,7 +14,10 @@ import { EventsComponent } from './events-schedule/events.component';
 import { StudentsComponent } from './students/students.component';
 import { PlannerComponent } from './planner/planner.component';
 import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner-selector/planner-selector.component';
+import { StatisticsComponent } from './statistics/statistics.component';
 import { EcoeModule } from '../ecoe/ecoe.module';
+import { NzBreadCrumbModule, NzGridModule, NzInputModule, NzFormModule, NzModalModule, NzSelectModule, NzTagModule, NzButtonModule, NzIconModule, NzTableModule, NzAlertModule, NzDrawerModule, NzStatisticModule, NzCardModule, NzSkeletonModule, NzToolTipModule, NzPageHeaderModule, NzLayoutModule, NzEmptyModule, NzListModule, NzPopconfirmModule, NzInputNumberModule, NzProgressModule, NzDatePickerModule, NzTimePickerModule, NzTabsModule, NzMessageModule, NzSwitchModule } from 'ng-zorro-antd';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -28,6 +30,7 @@ import { EcoeModule } from '../ecoe/ecoe.module';
     StudentsComponent,
     PlannerComponent,
     PlannerSelectorComponent,
+    StatisticsComponent,
     AppStudentSelectorComponent
   ],
   imports: [
@@ -35,11 +38,40 @@ import { EcoeModule } from '../ecoe/ecoe.module';
     EcoeAdminRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    NgZorroAntdModule,
     TranslateModule,
     PipesModule,
     ComponentsModule,
-    EcoeModule
+    EcoeModule,
+    NzBreadCrumbModule,
+    NzGridModule,
+    NzInputModule,
+    NzFormModule,
+    NzModalModule,
+    NzSelectModule,
+    NzTagModule,
+    NzButtonModule,
+    NzIconModule,
+    NzTableModule,
+    NzAlertModule,
+    NzDrawerModule,
+    NzStatisticModule,
+    NzCardModule,
+    NzSkeletonModule,
+    NzToolTipModule,
+    NzPageHeaderModule,
+    NzLayoutModule,
+    NzEmptyModule,
+    NzListModule,
+    NzPopconfirmModule,
+    NzInputNumberModule,
+    NzProgressModule,
+    NzTimePickerModule,
+    NzDatePickerModule,
+    NzTableModule,
+    NzTabsModule,
+    NzMessageModule,
+    NzSwitchModule,
+    DragDropModule
   ],
   exports: [
     AreasComponent,

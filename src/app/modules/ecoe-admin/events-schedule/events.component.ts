@@ -56,8 +56,8 @@ export class EventsComponent implements OnInit {
               private fb: FormBuilder,
   ) {
     this.validateFormEvent = this.fb.group({
-      eventTimeMin: ['', [Validators.required]],
-      eventTimeSec: ['', [Validators.required]],
+      eventTimeMin: [0, [Validators.required]],
+      eventTimeSec: [0, [Validators.required]],
       eventCountdown: [false],
       eventText: [null, [Validators.required]],
       eventSound: [null],

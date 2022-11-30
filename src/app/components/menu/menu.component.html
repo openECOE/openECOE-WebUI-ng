@@ -9,7 +9,7 @@
   <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
 
     <li nz-menu-item *ngFor="let item of menu_options" [routerLink]="[item.path]">
-      <i nz-icon [type]="item.icon" [nzTheme]="item.theme ? item.theme : 'fill'"></i>
+      <i nz-icon [nzType]="item.icon" [nzTheme]="item.theme ? item.theme : 'fill'"></i>
       <span class="nav-text">{{item.title | translate}}</span>
     </li>
 

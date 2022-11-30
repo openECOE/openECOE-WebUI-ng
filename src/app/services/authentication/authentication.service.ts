@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, map} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {UserLogged, User, Role, enumRole} from '../../models';
 
 interface IUserToken {
   token: string;
@@ -14,106 +13,76 @@ interface IUserToken {
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthenticationService {
 
-  authUrl: string = '/auth/tokens';
-  private _userData: UserLogged;
-  userDataChange: Subject<UserLogged> = new Subject<UserLogged>();
-
+  private authUrl: string = '/auth/tokens';
+  
   private _userToken: IUserToken;
   userTokenChange: Subject<IUserToken> = new Subject<IUserToken>();
 
+  private storageToken = 'userLogged'
+
   constructor(private http: HttpClient,
               private router: Router) {
-      this.userDataChange.subscribe((data) => {
-        this._userData = data;
-      })
-
       this._init();
   }
 
-  async _init() {
-    if (this.userLogged) {
-      this._userData = await this.loadUserData()
+  _init() {
+    const _userLog = this.userLogged
+    if (_userLog) {
+      this.userToken = _userLog
     }
-  }
-
-  get userData() {
-    return this._userData;
-  }
-
-  set userData(data: UserLogged) {
-    this.userDataChange.next(data);
+    
   }
 
   get userToken() {
+    if (!this._userToken) {
+      const _tokenStored = localStorage.getItem(this.storageToken);
+      try {
+        this.userToken = JSON.parse(_tokenStored)
+      } catch {}
+    }
+
     return this._userToken;
   }
 
   set userToken(data: IUserToken) {
+    this._userToken = data;
+    if (data) {
+      localStorage.setItem(this.storageToken, JSON.stringify(data));
+    } else {
+      localStorage.removeItem(this.storageToken)
+    }
+    
     this.userTokenChange.next(data);
   }
 
   loginUser(userData: { email: string, password: string }): Observable<any> {
     const hashedCredentials = btoa(userData.email + ':' + userData.password);
-    localStorage.setItem('userLogged', JSON.stringify({authData: hashedCredentials}));
 
-    return this.http.post(environment.API_ROUTE + this.authUrl, userData).pipe(
-      map(async (data: any) => {
-        localStorage.removeItem('userLogged');
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${hashedCredentials}` });
+    let options = { headers: headers };
 
-        if (data) {
-          localStorage.setItem('userLogged', JSON.stringify(data));
-          this.userData = await this.loadUserData();
-          return true;
-        } else {
-          return false;
-        }
+    return this.http.post(environment.API_ROUTE + this.authUrl, userData, options).pipe(
+      map(async (data: IUserToken) => {
+        this.userToken = data;
+        return !!data
       }),
       catchError(err => {
-        localStorage.removeItem('userLogged');
+        this.logout();
         return throwError(err);
       })
     );
   }
 
   logout(route: string = '/login') {
-    localStorage.removeItem('userLogged');
-    this.userData = undefined;
+    this.userToken = null;
     this.router.navigate([route]);
   }
 
   get userLogged(): any {
-    const _userLogged = localStorage.getItem('userLogged');
-    return JSON.parse(_userLogged);
-  }
-
-  async getData(): Promise<UserLogged> {
-    if (!this.userData && this.userLogged) {
-      return this.loadUserData()
-    } else {
-      return this.userData
-    }
-    
-  }
-
-  async loadUserData(): Promise<UserLogged> {
-    try {
-      const _user = await User.me();
-      const _userLogged = new UserLogged();
-
-      _userLogged.user = _user;
-      _userLogged.roles = (await _user.roles()).map(role => role.name)
-      if (_user.isSuperadmin)
-        {_userLogged.roles.push(enumRole.Admin)}
-      return new UserLogged(_userLogged);
-    } catch (error) {
-      if (error.status === 401) {
-        this.logout('/login');
-      }
-      return error;
-    }
-
+    return this.userToken
   }
 }

@@ -12,7 +12,7 @@
     <i nz-icon nzType="user"></i>
   </ng-template>
   <ng-template #cardContent>
-    <nz-statistic [nzValue]="usersPage.total"
+    <nz-statistic [nzValue]="usersPage['total']"
                   [nzSuffix]="'USERS' | translate"></nz-statistic>
     <a [routerLink]="['users']"><span><i nz-icon nzType="setting" nzTheme="outline"></i> {{ 'SHOW' | translate }}</span></a>
   </ng-template>

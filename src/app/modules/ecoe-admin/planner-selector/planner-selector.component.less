@@ -1,12 +1,11 @@
+::ng-deep .cdk-drag-preview {
+  display: table;
 
-.complete {
-  color: #3F8600;
+  ::ng-deep [nz-list-item-actions] {
+    display: none;
+  }
 }
 
-.incomplete {
-  color: #ff9300;
-}
-
-.empty {
-  color: #CF1322;
+::ng-deep .cdk-drag-placeholder {
+  opacity: 0;
 }

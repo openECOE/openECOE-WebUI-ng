@@ -1,9 +1,9 @@
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Option, QBlock, Question} from '../../models';
+import {Option, Block, Question} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {ActivatedRoute} from '@angular/router';
-import {QuestionsService} from '../../services/questions/questions.service';
+import {QuestionsService} from '@services/questions/questions.service';
 
 @Component({
   selector: 'app-questions-list',
@@ -12,14 +12,14 @@ import {QuestionsService} from '../../services/questions/questions.service';
 })
 export class QuestionsListComponent implements OnInit, OnChanges {
 
-  @Input() qblock: QBlock = new QBlock();
+  @Input() qblock: Block = new Block();
   @Input() questionsList: Question[] = [];
   @Input() preview: boolean = false;
   @Input() refreshQuestions: boolean = false;
   @Input() answers: Option[] = [];
 
   @Output() newQuestion: EventEmitter<number> = new EventEmitter<number>();
-  @Output() editQuestion: EventEmitter<any> = new EventEmitter<any>();
+  @Output() editQuestion: EventEmitter<Question> = new EventEmitter<Question>();
   @Output() answerQuestion: EventEmitter<any> = new EventEmitter<any>();
 
   questionsPage: Pagination<Question>;
@@ -33,9 +33,9 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   defaultExpand: boolean = false;
 
   questionTypeOptions: Array<{ type: string, label: string }> = [
-    {type: 'RB', label: 'ONE_ANSWER'},
-    {type: 'CH', label: 'MULTI_ANSWER'},
-    {type: 'RS', label: 'VALUE_RANGE'}
+    {type: 'radio', label: 'ONE_ANSWER'},
+    {type: 'checkbox', label: 'MULTI_ANSWER'},
+    {type: 'range', label: 'VALUE_RANGE'}
   ];
 
   constructor(private route: ActivatedRoute,
@@ -88,11 +88,10 @@ export class QuestionsListComponent implements OnInit, OnChanges {
     this.editCache = [];
 
     this.questionsList.forEach(item => {
-      if (preview) {
-        item.id = item.order;
-      }
-      this.editCache[item.id] = {
-        edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
+      const cache_id = preview ? item.order : item.id;
+
+      this.editCache[cache_id] = {
+        edit: this.editCache[cache_id] ? this.editCache[cache_id].edit : false,
         new_item: false,
         item: Object.create(item),
         expand: this.defaultExpand
@@ -104,22 +103,21 @@ export class QuestionsListComponent implements OnInit, OnChanges {
    * Sets the editCache variable to true.
    * Changes text-view tags by input tags.
    *
-   * @param id Id of the selected resource
+   * @param question item selected resource
    */
-  onEditQuestion(id: number) {
-    const idx = this.questionsList.map(item => item.id).indexOf(id);
-    this.editQuestion.next(this.questionsList[idx]);
+  onEditQuestion(question: Question) {
+    this.editQuestion.next(question);
   }
 
   /**
    * Calls ApiService to delete the resource passed.
    * Then calls [updateArrayQuestions]{@link #updateArrayQuestions} function.
    *
-   * @param questions array where search the id question
-   * @param id Resource selected
+   * @param question to remove
    */
-  deleteQuestion(questions: Question[], id: number) {
-    this.questionService.deleteQuestion(questions, id)
+  deleteQuestion(question: Question) {
+    const id = question.id;
+    this.questionService.deleteQuestion(question)
       .then(() => {
         this.updateArrayQuestions(id);
         this.loadQuestions(this.qblock.id, this.page, this.perPage);

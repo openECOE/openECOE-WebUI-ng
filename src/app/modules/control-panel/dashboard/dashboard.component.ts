@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {User, UserLogged} from '../../../models';
-import {Item} from '@openecoe/potion-client';
-import {AuthenticationService} from '../../../services/authentication/authentication.service';
+import {User, UserLogged} from '@app/models';
+import { UserService } from '@app/services/user/user.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,11 +15,11 @@ export class DashboardComponent implements OnInit {
 
   loading: boolean = false;
 
-  constructor(private authService: AuthenticationService) {
+  constructor(private userService: UserService) {
   }
 
   ngOnInit() {
-    this.userData = this.authService.userData;
+    this.userData = this.userService.userData;
     this.loadUsers();
   }
 

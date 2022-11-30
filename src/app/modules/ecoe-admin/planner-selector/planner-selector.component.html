@@ -1,7 +1,6 @@
 <ng-container *ngIf="planner && !loading; else noPlanner">
-  <nz-statistic  [nzValue]="planner?.students?.length" [nzSuffix]="sufixPlanner"
-                [ngClass]="planner?.students?.length == 0 ? 'empty' :
-                  planner.students?.length < stationsNum ? 'incomplete' : 'complete'">
+  <!-- TODO: Recuperar color según si esta lleno -->
+  <nz-statistic  [nzValue]="planner?.students?.length" [nzSuffix]="sufixPlanner">
 
   </nz-statistic>
   <ng-template #sufixPlanner>
@@ -20,7 +19,7 @@
           (click)="createComponentModal(modalFooterPlanner)"
           [nzBlock]="true"
           [nzLoading]="loading">
-    <i nz-icon [type]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
+    <i nz-icon [nzType]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
   </button>
 </ng-template>
 
@@ -28,7 +27,7 @@
   <button *ngIf="planner"
           nz-button
           [nzType]="'danger'"
-          nz-popconfirm [nzTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deletePlanner(planner)"
+          nz-popconfirm [nzPopconfirmTitle]="'DELETE_CONFIRMATION' | translate" (nzOnConfirm)="deletePlanner(planner)"
           style="float: left;">
     <span>{{"DELETE_PLANNER" | translate}}</span>
   </button>

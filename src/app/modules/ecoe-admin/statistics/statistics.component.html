@@ -1,0 +1,46 @@
+<nz-page-header class="margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'RESULTS' | translate" >
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ecoe_name}}</a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"RESULTS" | translate}}</nz-tag></nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </nz-page-header>
+
+<div id="resultados" name="resultados"><div>
+<nz-content *ngIf="results">
+  <!--  <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>-->
+    <nz-table #table 
+    [nzData]="results"
+    [nzShowPagination]="true"
+    [nzShowSizeChanger]="true"
+
+    [nzTotal]="totalItems"
+    [nzFrontPagination]="true"
+    [nzLoading]="false"
+
+    [(nzPageSize)]="per_page"
+    [(nzPageIndex)]="current_page"
+    nzSize="small"
+    (nzPageIndexChange)="pageChange()"
+    (nzPageSizeChange)="pageSizeChange($event)">
+    <!--  TODO::  [nzFrontPagination]="false" cuando consiga poner el resto de parámetros, hacer que pagine en backend -->
+      <thead>
+        <tr>
+          <th nzWidth="100px" [nzSortFn]="sortId">{{"ID_STUDENT" | translate}}</th>
+          <th nzWidth="100px" [nzSortFn]="sortDni">{{"ID_CODE" | translate}}</th>
+          <th nzWidth="150px" [nzSortFn]="sortName">{{"NAME" | translate}}</th>
+          <th nzWidth="200px" [nzSortFn]="sortSurnames">{{"SURNAMES" | translate}}</th>
+          <th nzWidth="200px" [nzSortFn]="sortAbsoluteScore" >{{"ABSOLUTE_GRADES"| translate}}</th>
+          <th nzWidth="200px" [nzSortFn]="sortRelativeScore">{{"RELATIVE_GRADES" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let results of table.data">
+          <td>{{results.idStudent}}</td>
+          <td>{{results.dni}}</td>
+          <td>{{results.name}}</td>
+          <td>{{results.surnames}}</td>
+          <td>{{results.absoluteScore}}</td>
+          <td>{{results.relativeScore}}</td>
+        </tr>
+      </tbody>
+    </nz-table>

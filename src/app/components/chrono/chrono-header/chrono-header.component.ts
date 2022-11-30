@@ -15,9 +15,9 @@ export class ChronoHeaderComponent implements OnInit {
   @Input() seconds: number = 0;
   @Input() stageName: string;
   @Input() rerunsDescription: string;
-  @Input() private round: Round;
-  @Input() private idEcoe: number;
-  @Input() private currentCountDownEvent: {event: {}, minutes: number, seconds: number} = { event: null, minutes: 0, seconds: 0};
+  @Input() round: Round;
+  @Input() idEcoe: number;
+  @Input() currentCountDownEvent: {event: {}, minutes: number, seconds: number} = { event: null, minutes: 0, seconds: 0};
 
   constructor(private evalService: EvaluationService,
               private router: Router) { }

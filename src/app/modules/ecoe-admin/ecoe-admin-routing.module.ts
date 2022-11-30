@@ -7,9 +7,10 @@ import { StationDetailsComponent } from './station-details/station-details.compo
 import { ScheduleComponent } from './schedule/schedule.component';
 import { StudentsComponent } from './students/students.component';
 import { PlannerComponent } from './planner/planner.component';
+import { StatisticsComponent } from './statistics/statistics.component';
 
 const routes: Routes = [
-  { 
+  {
     path: '',
     children: [
       { path: '', component: EcoeInfoComponent },
@@ -18,7 +19,8 @@ const routes: Routes = [
       { path: 'stations/:stationId', component: StationDetailsComponent },
       { path: 'schedule', component: ScheduleComponent },
       { path: 'students', component: StudentsComponent },
-      { path: 'planner', component: PlannerComponent }
+      { path: 'planner', component: PlannerComponent },
+      { path: 'results', component: StatisticsComponent }
     ]
   }
 ];

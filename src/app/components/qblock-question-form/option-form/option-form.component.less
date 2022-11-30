@@ -1,20 +1,46 @@
-/deep/ .br-horizontal {
+::ng-deep .br-horizontal {
   display: -webkit-inline-box;
   margin: 0 !important;
 }
 
-/deep/ .br-horizontal .br-unit.br-selected {
+::ng-deep .br-horizontal .br-unit.br-selected {
   background-color: #5cb85c !important;
 }
 
-/deep/ .br-unit.br-active {
+::ng-deep .br-unit.br-active {
   background-color: #5cb85c !important;
 }
 
-/deep/ .br-unit {
+::ng-deep .br-unit {
   background-color: #c0f8c7 !important;
 }
 
-/deep/ .br-text {
+::ng-deep .br-text {
   color: #5cb85c !important;
+}
+
+.dynamic-delete-button {
+  cursor: pointer;
+  position: relative;
+  top: 4px;
+  font-size: 24px;
+  color: #999;
+  transition: all 0.3s;
+}
+
+.dynamic-delete-button:hover {
+  color: #777;
+}
+
+.passenger-input {
+  width: 60%;
+  margin-right: 8px;
+}
+
+[nz-form] {
+  max-width: 600px;
+}
+
+.add-button {
+  width: 60%;
 }

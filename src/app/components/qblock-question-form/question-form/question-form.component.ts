@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges, ViewChildren} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Area, RowQuestion, Station} from '@app/models';
+import {Area, Block, Question, QuestionSchema, RowQuestion, Station} from '@app/models';
 import {Pagination} from '@openecoe/potion-client';
 
 import {OptionFormComponent} from '../option-form/option-form.component';
@@ -15,11 +15,11 @@ export class QuestionFormComponent implements OnInit, OnChanges {
 
   @ViewChildren(OptionFormComponent) optionsRef: QueryList<OptionFormComponent>;
 
-  @Input()  questionsCache: RowQuestion[] = [];
-  @Input()  qblock: {id: number, lastOrder: number};
+  @Input()  questionsCache: Question[] = [];
+  @Input()  qblock: {block: Block, lastOrder: number} = {block: null, lastOrder: null};
   @Input()  formVisible: boolean = false;
   @Input()  action: 'ADD' | 'EDIT' | 'ADD_WITH_QBLOCK';
-  @Output() returnData: EventEmitter<any> = new EventEmitter();
+  @Output() returnData: EventEmitter<RowQuestion[]> = new EventEmitter();
 
   questionForm: FormGroup;
   control: FormArray;
@@ -30,12 +30,14 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   ecoeId: number;
 
   public questionTypeOptions: Array<{ type: string, label: string }> = [
-    {type: 'RB', label: 'ONE_ANSWER'},
-    {type: 'CH', label: 'MULTI_ANSWER'},
-    {type: 'RS', label: 'VALUE_RANGE'}
+    {type: 'radio', label: 'ONE_ANSWER'},
+    {type: 'checkbox', label: 'MULTI_ANSWER'},
+    {type: 'range', label: 'VALUE_RANGE'}
   ];
 
-  private selectedQType: string = this.questionTypeOptions[0].type;
+  selectedQType: string = this.questionTypeOptions[0].type;
+
+  defaultQuestion: Question = new Question({block: this.qblock.block , schema: new QuestionSchema('radio')});
 
 
   constructor(private fb: FormBuilder,
@@ -62,7 +64,7 @@ export class QuestionFormComponent implements OnInit, OnChanges {
     }
   }
 
-  resetFormValues(questions?: RowQuestion[]) {
+  resetFormValues(questions?: Question[]) {
     if (this.questionForm) {
       const form = this.questionForm.get('questionRow')['controls'];
       for (const i in form) {
@@ -87,13 +89,13 @@ export class QuestionFormComponent implements OnInit, OnChanges {
     return (form && form['controls'][idx]) ? form['controls'][idx].controls[name] : null;
   }
 
-  initRowQuestions(questions?: RowQuestion[]) {
+  initRowQuestions(questions?: Question[]) {
     if (questions && questions.length > 0) {
       questions.forEach(item => {
         this.addQuestionRow(item);
       });
     } else if (this.control.controls.length === 0) {
-      this.addQuestionRow();
+      this.addQuestionRow(this.defaultQuestion);
     }
   }
 
@@ -103,14 +105,14 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         parseInt(params['order'], 10)
       ,
       description: [
-        params['description'],
+        params['schema']['description'],
         [
           Validators.required,
           Validators.maxLength(500)
         ]
       ],
       reference: [
-        params['reference'],
+        params['schema']['reference'],
         [
           Validators.required,
           Validators.maxLength(100)
@@ -121,14 +123,14 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         Validators.required
       ],
       questionType: [
-        (params['questionType'] ? params['questionType'] : null),
+        (params['schema']['type'] ? params['schema']['type'] : null),
         Validators.required
       ],
       points: [
         {value: 0, disabled: false},
         Validators.required
       ],
-      qblocks: [ (params['qblocks'] ? params['qblocks'] : null), ],
+      block: [ (params['block'] ? params['block'] : this.qblock.block), ],
       id: [ (params['id'] ? params['id'] : null)]
     });
   }

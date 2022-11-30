@@ -6,25 +6,23 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {NgZorroAntdModule, NZ_I18N, es_ES, NZ_MESSAGE_CONFIG} from 'ng-zorro-antd';
+import {NzButtonModule, NZ_I18N, es_ES, NzAlertModule, NzBreadCrumbModule, NzCardModule, NzDrawerModule, NzEmptyModule, NzFormModule, NzGridModule, NzIconModule, NzInputModule, NzLayoutModule, NzListModule, NzModalModule, NzPageHeaderModule, NzRateModule, NzSelectModule, NzSkeletonModule, NzStatisticModule, NzTableModule, NzTagModule, NzToolTipModule, NzBackTopModule, NzNotificationModule} from 'ng-zorro-antd';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeEsExtra from '@angular/common/locales/extra/es';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AuthInterceptor} from './interceptors/auth.interceptor';
-import { LoginComponent } from './components/login/login.component';
+import { LoginComponent } from '@components/login/login.component';
 import {environment} from '../environments/environment';
 
 import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-client';
 
 import {resources} from './app.resources';
-import {PipesModule} from './pipes/pipes.module';
+import {PipesModule} from '@pipes/pipes.module';
 import {BarRatingModule} from 'ngx-bar-rating';
 import { CoreModule } from './core/core.module';
 import { EcoeModule } from './modules/ecoe/ecoe.module';
-import { StateComponent } from './modules/chrono-admin/state/state.component';
-import { ChronoAdminModule } from './modules/chrono-admin/chrono-admin.module';
 
 
 registerLocaleData(localeEs, 'es', localeEsExtra);
@@ -46,7 +44,7 @@ export function createTranslateLoader(http: HttpClient) {
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgZorroAntdModule,
+    NzButtonModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -57,18 +55,35 @@ export function createTranslateLoader(http: HttpClient) {
     PotionModule,
     PipesModule,
     EcoeModule,
-    BarRatingModule
+    BarRatingModule,
+    NzBreadCrumbModule,
+    NzGridModule,
+    NzInputModule,
+    NzFormModule,
+    NzModalModule,
+    NzSelectModule,
+    NzTagModule,
+    NzButtonModule,
+    NzIconModule,
+    NzTableModule,
+    NzAlertModule,
+    NzDrawerModule,
+    NzStatisticModule,
+    NzCardModule,
+    NzSkeletonModule,
+    NzToolTipModule,
+    NzPageHeaderModule,
+    NzLayoutModule,
+    NzEmptyModule,
+    NzListModule,
+    NzRateModule,
+    NzBackTopModule,
+    NzNotificationModule
   ],
   providers: [
     {
       provide: NZ_I18N,
       useValue: es_ES
-    },
-    {
-      provide: NZ_MESSAGE_CONFIG,
-      useValue: {
-        nzMaxStack: 1,
-      }
     },
     {
       provide: HTTP_INTERCEPTORS,

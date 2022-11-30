@@ -1,7 +1,7 @@
 import {AfterContentInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {RowOption} from '@app/models';
-
+import {QuestionCheckBox, QuestionOption, QuestionRadio, QuestionRange, QuestionSchema, RowOption} from '@app/models';
+import {stringify} from 'querystring';
 @Component({
   selector: 'app-option-form',
   templateUrl: './option-form.component.html',
@@ -10,31 +10,34 @@ import {RowOption} from '@app/models';
 export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit {
 
   @Input() questionOrder: number;
-  @Input() type: 'RB' | 'CH'  | 'RS' | string;
-  @Input() optionsCache: RowOption[] = [];
+  @Input() type: 'radio' | 'checkbox'  | 'range';
+  // @Input() optionsCache: RowOption[] = [];
+  @Input() schema: QuestionSchema;
 
   @Output() returnData:   EventEmitter<any> = new EventEmitter();
   @Output() pointValues:  EventEmitter<any[]> = new EventEmitter();
   @Output() saveForm:     EventEmitter<Function> = new EventEmitter();
 
-  private optionForm: FormGroup;
-  private control: FormArray;
+  optionForm: FormGroup;
+  control: FormArray;
+  optionsCache: RowOption[] = [];
 
-  private nRateCount: {max: number, min: number, current: number} = {
+  nRateCount: {max: number, min: number, current: number} = {
     max: 10,
     min: 1,
     current: 10
   };
 
   current_number_options: number = 0;
-  private arrPoints: Array<{ option: number, value: number }> = [];
-  private defaultTextValues: string[] = ['Sí'];
-  public questionTypeOptions: string[] = ['RB', 'CH', 'RS'];
+  arrPoints: Array<{ option: number, value: number }> = [];
+  defaultTextValues: string[] = ['Sí'];
+  public questionTypeOptions: string[] = ['radio', 'checkbox', 'range'];
 
   constructor(
     private fb: FormBuilder) { }
 
   ngOnInit() {
+    this.initOptionsCache();
     this.initOptionForm();
   }
 
@@ -51,6 +54,24 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
         this.initOptionRow(changes.type.previousValue);
       }
       this.getTotalPoints();
+    }
+  }
+
+  initOptionsCache() {
+    if ( this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox) {
+      this.schema.options = this.schema.options.map(option => {
+        const _option = new QuestionOption()
+        _option.id_option = option.id_option
+        _option.label = option.label
+        _option.order = option.order
+        _option.points = Number(option.points)
+        return _option
+      })
+      this.optionsCache = this.schema.options;
+    } else if (this.schema instanceof QuestionRange) {
+      const _rOption = new RowOption(0, null, this.schema.max_points)
+      _rOption.rateCount = this.schema.range;
+      this.optionsCache = [_rOption];
     }
   }
 
@@ -102,15 +123,15 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
         id: (params && params['id']) ? params['id'] : '',
         order: params ? params['order'] : '',
         label: [params ? params['label'] : this.defaultTextValues[index], [Validators.required, Validators.maxLength(255)]],
-        points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]]
+        points: [params ? params.points : '', [Validators.required, Validators.maxLength(2)]]
       });
     } else {
       return <RowOption>({
         id: (params && params['id']) ? params['id'] : '',
         order: '',
         label: [{value: ' ', disabled: true}, ],
-        points: [params ? params['points'] : '', [Validators.required, Validators.maxLength(2)]],
-        rateCount: this.nRateCount.current
+        points: [params ? params.points : null, [Validators.required]],
+        rateCount: [params ? params.rateCount : 10, [Validators.required]]
       });
     }
   }
@@ -258,26 +279,25 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     }
   }
 
-  parseOptions(options: RowOption[]) {
-    const length = options.length;
-    const rateCount = options[length - 1].rateCount;
+  parseOptions(options: RowOption[]) {    
+    return options;
 
-    if (this.type !== this.questionTypeOptions[2]) {
-      return options;
-    }
-    const auxOptions: RowOption[] = [];
-    let order;
-    let points;
-    for (let i = 0; i < rateCount; i++) {
-      order = i + 1;
-      points = parseInt(options[length - 1].points.toString(), 10);
+    // if (this.type !== this.questionTypeOptions[2]) {
+    //   return options;
+    // }
+    // const auxOptions: RowOption[] = [];
+    // let order;
+    // let points;
+    // for (let i = 0; i < rateCount; i++) {
+    //   order = i + 1;
+    //   points = parseInt(options[length - 1].points.toString(), 10);
 
-      auxOptions.push( new RowOption(
-        order,
-        '',
-        (points / rateCount) * order)
-      );
-    }
-    return auxOptions;
+    //   auxOptions.push( new RowOption(
+    //     order,
+    //     '',
+    //     (points / rateCount) * order)
+    //   );
+    // }
+    // return auxOptions;
   }
 }

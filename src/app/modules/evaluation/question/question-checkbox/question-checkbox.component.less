@@ -1,0 +1,62 @@
+nz-switch {
+  justify-content: center;
+  padding-bottom: 5px;
+}
+
+
+::ng-deep .ant-switch-checked::after,
+::ng-deep .ant-switch::after {
+  height: 100%;
+  border-radius: 4px;
+  // margin-top: -1px;
+  width: 13px;
+}
+
+::ng-deep nz-switch > button {
+  height: auto !important;
+  width: 100% !important;
+  max-width: 150px !important;
+
+  .ng-star-inserted {
+    font-size: larger !important;
+    word-wrap: break-word;
+  }
+}
+
+.positive-points {
+  ::ng-deep .ant-switch-checked {
+    background-color: #5cb85c !important;
+  }
+}
+
+.negative-points {
+  ::ng-deep .ant-switch-checked {
+    background-color: #CF1322 !important;
+  }
+}
+
+
+::ng-deep .br-horizontal .br-unit.br-selected {
+  background-color: #5cb85c !important;
+}
+
+::ng-deep .br-unit.br-active {
+  background-color: #5cb85c !important;
+}
+
+::ng-deep .br-unit {
+  background-color: #c0f8c7 !important;
+}
+
+::ng-deep .br-text {
+  color: #5cb85c !important;
+}
+
+
+.rate-in {
+  background-color: #5cb85c;
+}
+
+.rate-out {
+  background-color: #fafafa;
+}

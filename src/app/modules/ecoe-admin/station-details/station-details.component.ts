@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {QBlock, Question, RowQuestion, Station} from '../../../models';
+import {Block, Question, RowQuestion, Station} from '../../../models';
 import {Location} from '@angular/common';
 import {QuestionsService} from '@services/questions/questions.service';
 import {NzModalService} from 'ng-zorro-antd';
@@ -15,16 +15,16 @@ import {QUESTIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
 })
 export class StationDetailsComponent implements OnInit {
   readonly QUESTIONS_URL = QUESTIONS_TEMPLATE_URL;
-  public editCache: { edit: boolean, new_item: boolean, item: QBlock, expand?: boolean }[] = [];
-  public refreshQuestions: boolean = false;
-  public defaultExpand: boolean = false;
-  public pagQblocks: any;
-  selectedQblock: {id: number, lastOrder: number} = {id: null, lastOrder: null};
+  editCache: { edit: boolean, new_item: boolean, item: Block, expand?: boolean }[] = [];
+  refreshQuestions: boolean = false;
+  defaultExpand: boolean = false;
+  pagQblocks: any;
+  selectedQblock: {block: Block, lastOrder: number} = {block: null, lastOrder: null};
   drawerQUestionVisible: boolean = false;
-  questionToEdit: RowQuestion[] = [];
+  questionToEdit: Question[] = [];
   isVisible: boolean = false;
   totalItems: number = 0;
-  qblocks: QBlock[] = [];
+  qblocks: Block[] = [];
   perPage: number = 20;
   id_station: number;
   page: number = 1;
@@ -70,7 +70,7 @@ export class StationDetailsComponent implements OnInit {
    getQblocks(station: Station) {
      this.loading = true;
 
-      QBlock.query({
+      Block.query({
         where: {station: station},
         sort: {order: false},
         page: this.page,
@@ -110,7 +110,7 @@ export class StationDetailsComponent implements OnInit {
    */
   updateEditCache(): void {
     this.editCache = [];
-    this.qblocks.forEach( (item: QBlock)  => {
+    this.qblocks.forEach( (item: Block)  => {
       this.editCache[item.id] = {
         edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
         new_item: false,
@@ -135,7 +135,7 @@ export class StationDetailsComponent implements OnInit {
    *
    * @param item selected resource of stations list
    */
-  startEdit(item: QBlock) {   console.log('StartEdit:qblock', item, this.editCache[item.id]);
+  startEdit(item: Block) {   console.log('StartEdit:qblock', item, this.editCache[item.id]);
     this.editCache[item.id].edit = true;
   }
 
@@ -145,7 +145,7 @@ export class StationDetailsComponent implements OnInit {
    *
    * @param qblock Resource selected
    */
-  deleteItem(qblock: QBlock) {
+  deleteItem(qblock: Block) {
     this.modalService.confirm({
       nzTitle: this.translate.instant('CONFIRM_ALSO_DELETE_QUESTIONS'),
       nzOnOk: () => {
@@ -167,7 +167,7 @@ export class StationDetailsComponent implements OnInit {
       .then( (result: Question[]) => {
         console.log(result);
         for (const question of result) {
-          const promise = this.questionService.deleteQuestion([question], question.id)
+          const promise = this.questionService.deleteQuestion(question)
             .catch(err => {
               console.error(err);
               this.logPromisesERROR.push(err);
@@ -246,7 +246,7 @@ export class StationDetailsComponent implements OnInit {
   onItemClicked(item: any) {
     item['clicked'] = (item['clicked'] !== true);
     item.expand = !item.expand;
-    this.selectedQblock.id = item.id;
+    this.selectedQblock.block = item;
   }
 
   onNewQuestion(order: number) {
@@ -257,6 +257,7 @@ export class StationDetailsComponent implements OnInit {
   onEditQuestion($event) {
     this.questionToEdit = [];
     this.drawerQUestionVisible = true;
+
     this.questionToEdit.push($event);
   }
 
@@ -272,7 +273,7 @@ export class StationDetailsComponent implements OnInit {
         .catch(err => console.error('ERROR: ', err))
         .finally(() => this.closeDrawer('question'));
     } else {
-      this.questionService.addQuestions(questions, this.selectedQblock.id, this.station)
+      this.questionService.addQuestions(questions, this.selectedQblock.block)
         .then(() => this.sendRefreshQuestions())
         .catch(err => console.error('ERROR: ', err))
         .finally(() => this.closeDrawer('question'));

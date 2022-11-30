@@ -2,8 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
 import { ActionButtonsComponent } from './action-buttons/action-buttons.component';
-import {PapaParseModule} from 'ngx-papaparse';
-import {NgZorroAntdModule} from 'ng-zorro-antd';
+import {NzAlertModule, NzBreadCrumbModule, NzButtonModule, NzCardModule, NzDividerModule, NzDrawerModule, NzEmptyModule, NzFormModule, NzGridModule, NzIconModule, NzInputModule, NzInputNumberModule, NzLayoutModule, NzListModule, NzMenuModule, NzModalModule, NzPageHeaderModule, NzPopconfirmModule, NzProgressModule, NzRateModule, NzSelectModule, NzSkeletonModule, NzStatisticModule, NzStepsModule, NzSwitchModule, NzTableModule, NzTagModule, NzToolTipModule, NzUploadModule} from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import { MenuComponent } from './menu/menu.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -17,11 +16,11 @@ import { QblockQuestionFormComponent } from './qblock-question-form/qblock-quest
 import {QuestionsListComponent} from './questions-list/questions-list.component';
 import {OptionsListComponent} from './questions-list/options/options-list/options-list.component';
 import { ChronoComponent } from './chrono/chrono.component';
-import {PipesModule} from '../pipes/pipes.module';
-import { OptionsEvalComponent } from './questions-list/options/options-eval/options-eval.component';
+import {PipesModule} from '@pipes/pipes.module';
 import {BarRatingModule} from 'ngx-bar-rating';
 import { ProgressBarComponent } from './chrono/progress-bar/progress-bar.component';
 import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.component';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -35,15 +34,12 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     QblockQuestionFormComponent,
     QuestionsListComponent,
     OptionsListComponent,
-    OptionsEvalComponent,
     ChronoComponent,
     ProgressBarComponent,
     ChronoHeaderComponent
   ],
   imports: [
     CommonModule,
-    PapaParseModule,
-    NgZorroAntdModule,
     TranslateModule,
     RouterModule,
     ReactiveFormsModule,
@@ -51,7 +47,37 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     PipesModule,
     BarRatingModule,
     DragDropModule,
-    ScrollingModule
+    ScrollingModule,
+    NzBreadCrumbModule,
+    NzGridModule,
+    NzInputModule,
+    NzFormModule,
+    NzModalModule,
+    NzSelectModule,
+    NzTagModule,
+    NzButtonModule,
+    NzIconModule,
+    NzTableModule,
+    NzAlertModule,
+    NzDrawerModule,
+    NzStatisticModule,
+    NzCardModule,
+    NzSkeletonModule,
+    NzToolTipModule,
+    NzPageHeaderModule,
+    NzLayoutModule,
+    NzEmptyModule,
+    NzListModule,
+    NzRateModule,
+    NzSwitchModule,
+    NzProgressModule,
+    NzStepsModule,
+    NzDividerModule,
+    NzPopconfirmModule,
+    NzUploadModule,
+    NzMenuModule,
+    NzInputNumberModule,
+    NzSpaceModule
   ],
   exports: [
     UploadAndParseComponent,
@@ -60,9 +86,7 @@ import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.comp
     QblockQuestionFormComponent,
     QuestionsListComponent,
     QuestionFormComponent,
-    ChronoComponent,
-    OptionsListComponent,
-    OptionsEvalComponent
+    ChronoComponent
   ]
 })
 export class ComponentsModule {}

@@ -1,8 +1,0 @@
-<app-menu
-  [menu_options]="menu"
-  (collapsedChanged)="collapsedChanged($event)"
-> </app-menu>
-
-<nz-layout padding [ngStyle]="{'margin-left.px': isCollapsed ? '80' : '200'}">
-  <router-outlet></router-outlet>
-</nz-layout>

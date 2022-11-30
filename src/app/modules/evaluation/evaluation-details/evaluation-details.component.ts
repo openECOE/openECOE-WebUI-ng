@@ -13,17 +13,16 @@ import {EvaluationService} from '@services/evaluation/evaluation.service';
   styleUrls: ['./evaluation-details.component.less']
 })
 export class EvaluationDetailsComponent implements OnInit {
-  private rounds: Round[] = [];
-  // @ts-ignore
-  private stations: Station[] = [];
+  rounds: Round[] = [];
+  stations: Station[] = [];
 
   ecoeDays: any[] = [];
 
   selectedIndexRound = 0;
   selectedIndexShift = 0;
   shifts: Shift[];
-  private filteredShifts: Shift[] = [];
-  private ecoeId: number;
+  filteredShifts: Shift[] = [];
+  ecoeId: number;
   ecoe: ECOE;
 
   momentRef = moment;
@@ -35,7 +34,7 @@ export class EvaluationDetailsComponent implements OnInit {
   selectedStation: Station;
 
   constructor(private route: ActivatedRoute,
-              private location: Location,
+              public location: Location,
               private router: Router,
               private shared: SharedService,
               private cdRef: ChangeDetectorRef,
@@ -47,12 +46,12 @@ export class EvaluationDetailsComponent implements OnInit {
     if (this.authService.userLogged) {
       this.momentRef.locale(this.shared.getUsersLocale('en-US'));
       await this.getUrlParams();
-      this.setupCurrentStep();
       this.getData(this.ecoeId).then(() => {
           this.getShiftDays(this.shifts);
           this.getSelectedShift();
-          this.onChangeECOEDay(this.ecoeDays[this.selectedIndexShift]);
+          // this.onChangeECOEDay(this.ecoeDays[this.selectedIndexShift]);
           this.getSelectedRound();
+          this.setupCurrentStep();
           this.isSpinning = false;
       });
     } else {
@@ -79,7 +78,7 @@ export class EvaluationDetailsComponent implements OnInit {
       if (params['roundId'] && params['stationId']) {
         this.selectedRound = await Round.fetch(params['roundId'])
 
-        this.selectedStation = await Station.fetch(params['stationId'])
+        this.selectedStation = await Station.fetch(params['stationId'],{skip: ['childrenStations']})
       }
     } catch (error) {
       console.error(error);
@@ -113,6 +112,9 @@ export class EvaluationDetailsComponent implements OnInit {
 
     if (!this.selectedEcoeDay) {
       this.selectedEcoeDay = this.checkForNextStep(this.ecoeDays); 
+      this.onEcoeDateSelected(this.selectedEcoeDay)
+    } else {
+      this.onChangeECOEDay(this.selectedEcoeDay)
     }
   }
 
@@ -187,10 +189,28 @@ export class EvaluationDetailsComponent implements OnInit {
   getStations() {
     return Station.query({
       where: {ecoe: this.ecoeId},
-      sort: {order: false}
-    }).then( (stations: Station[]) => {
-      this.stations = stations;
-      if (!this.selectedStation) {this.selectedStation = this.checkForNextStep(stations); }
+      sort: {order: false},
+    }, {
+      skip: ['parentStation', 'childrenStations']
+    }).then(async (stations: Station[]) => {
+      for (const station of stations) {
+        const _eval = await station.can.evaluate()
+        if (_eval) {
+          this.stations.push(station);
+        }
+      }
+
+      if (!this.selectedStation) {this.selectedStation = this.checkForNextStep(this.stations); }
+
+
+      // const _stations = stations.filter(async (_station) => {
+      //  const _eval = await _station.can.evaluate()
+      //  return _eval;
+      // })
+
+      // this.stations = _stations;
+
+      
     }).catch(err => {
       console.error('[EvaluationDetailsComponent]','getStations()',err);
       return err;
@@ -207,6 +227,7 @@ export class EvaluationDetailsComponent implements OnInit {
 
   onEcoeDateSelected(item) {
     this.selectedEcoeDay = item;
+    this.onChangeECOEDay(this.selectedEcoeDay)
     this.setupCurrentStep();
   }
 

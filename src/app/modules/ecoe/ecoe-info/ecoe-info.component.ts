@@ -1,17 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Location} from '@angular/common';
-import { Area, ECOE, Round, Schedule, Shift, Stage, Station, Student } from '@models/index';
-import { Router, ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService, NzModalService } from 'ng-zorro-antd';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ChronoService } from '@services/chrono/chrono.service';
-import { Item, Pagination } from '@openecoe/potion-client';
+import {Area, ECOE, Round, Schedule, Shift, Stage, Station, Student} from '@models/index';
+import {Router, ActivatedRoute} from '@angular/router';
+import {TranslateService} from '@ngx-translate/core';
+import {NzMessageService, NzModalService} from 'ng-zorro-antd';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {ChronoService} from '@services/chrono/chrono.service';
+import {Item, Pagination} from '@openecoe/potion-client';
 
-
-interface Class<T> {
-  new(...args: any[]): T;
+interface ISummaryItems {
+  total: number;
+  show: Boolean;
+  loading?: Boolean;
 }
 
 @Component({
@@ -22,20 +23,21 @@ interface Class<T> {
 export class EcoeInfoComponent implements OnInit {
 
   ecoeId: number;
-  ecoeName: String ;
+  ecoeName: String;
   ecoe: ECOE;
 
-  areasTotal: number;
-  stationsTotal: number;
-  studentsTotal: number;
-  roundsTotal: number;
-  shiftsTotal: number;
-  stagesTotal: number;
+  areas: ISummaryItems = {total: 0, show: true, loading: true};
+  stations: ISummaryItems = {total: 0, show: false, loading: true};
+  students: ISummaryItems = {total: 0, show: false, loading: true};
+  stages: ISummaryItems = {total: 0, show: false, loading: true};
+  rounds: ISummaryItems = {total: 0, show: false, loading: true};
+  shifts: ISummaryItems = {total: 0, show: false, loading: true};
+
   show_areas: Boolean = true;
 
   // Eliminar ECOE
   eliminando: Boolean = false;
-  //--
+  // --
 
   // Form ECOE name
   show_ecoe_name_drawer: Boolean = false;
@@ -45,8 +47,8 @@ export class EcoeInfoComponent implements OnInit {
 
   // Manage ECOE states
   changing_state: Boolean = false;
-  // --
 
+  // --
 
   constructor(
     private location: Location,
@@ -56,7 +58,8 @@ export class EcoeInfoComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private chronoService: ChronoService,
-    private modalSrv: NzModalService) { }
+    private modalSrv: NzModalService) {
+  }
 
   ngOnInit() {
     this.ecoe_name_form = this.fb.group({
@@ -67,7 +70,7 @@ export class EcoeInfoComponent implements OnInit {
       this.ecoeId = params.ecoeId;
     });
 
-    if (!this.ecoeId){
+    if (!this.ecoeId) {
       console.log('Error EcoeInfoComponent: params required');
       this.location.back();
     }
@@ -77,36 +80,49 @@ export class EcoeInfoComponent implements OnInit {
       this.ecoeName = this.ecoe.name;
 
       this.ecoe_name_form.get('ecoe_name_2edit').setValue(this.ecoe.name);
-
+      
       this.getTotalItems(Area).then(cont => {
-        this.areasTotal = cont;
+        this.areas.total = cont;
+        this.areas.loading = false;
+
+        this.stations.show = this.show_stations;
       });
 
       this.getTotalItems(Station).then(cont => {
-        this.stationsTotal = cont;
+        this.stations.total = cont;
+        this.stations.loading = false;
+
+        this.stations.show = this.show_stations;
       });
 
-      this.getTotalItems(Student)
-        .then(cont => {
-          this.studentsTotal = cont;
-        });
+      this.getTotalItems(Stage).then(cont => {
+        this.stages.total = cont;
+        this.stages.loading = false;
+        this.stages.show = this.show_schedules
+      });
+
+      this.getTotalItems(Student).then(cont => {
+        this.students.total = cont;
+        this.students.loading = false;
+        this.students.show = this.show_students
+      });
 
       this.getTotalItems(Round).then(cont => {
-        this.roundsTotal = cont;
+        this.rounds.total = cont;
+        this.rounds.loading = false;
+        this.rounds.show = this.show_planner;
       });
 
       this.getTotalItems(Shift).then(cont => {
-        this.shiftsTotal = cont;
-      });
-
-      this.getTotalItems(Schedule).then(cont => {
-        this.stagesTotal = cont;
+        this.shifts.total = cont;
+        this.shifts.loading = false;
+        this.shifts.show = this.show_planner;
       });
 
     });
   }
 
-    /**
+  /**
    * Calls ApiService to delete the actual ECOE.
    * Then navigates to /home page.
    */
@@ -119,16 +135,16 @@ export class EcoeInfoComponent implements OnInit {
       }
     ).catch(
       error => {
-        this.message.error(this.translate.instant('ERROR_REQUEST_CONTENT'), { nzDuration: 5000 });
+        this.message.error(this.translate.instant('ERROR_REQUEST_CONTENT'), {nzDuration: 5000});
       }
     ).finally(
       () => {
         this.eliminando = false;
       }
-    )
+    );
   }
 
-    /**
+  /**
    * Show/Hide form to edit ECOE name
    *
    * @param show If true show drawer, if false hide drawer
@@ -146,13 +162,13 @@ export class EcoeInfoComponent implements OnInit {
 
     new ECOE(this.ecoe).update({name: this.ecoe_name_form.get('ecoe_name_2edit').value}).then(
       response => {
-        this.message.success(this.translate.instant('OK_REQUEST_CONTENT'), { nzDuration: 5000 });
+        this.message.success(this.translate.instant('OK_REQUEST_CONTENT'), {nzDuration: 5000});
         this.ecoe = response;
         this.ecoeName = this.ecoe.name;
       }
     ).catch(
       error => {
-        this.message.error(this.translate.instant('ERROR_REQUEST_CONTENT'), { nzDuration: 5000 });
+        this.message.error(this.translate.instant('ERROR_REQUEST_CONTENT'), {nzDuration: 5000});
         this.ecoe_name_form.get('ecoe_name_2edit').setValue(this.ecoe.name);
       }
     ).finally(
@@ -186,39 +202,39 @@ export class EcoeInfoComponent implements OnInit {
   draftECOE() {
     this.changing_state = true;
     this.chronoService.draftECOE(this.ecoeId).toPromise()
-    .then(result => this.reloadECOE())
-    .catch(err => {
-      console.warn(err);
-      this.modalSrv.error({
-        nzMask: false,
-        nzTitle: this.translate.instant('ERROR_ACTION_STATE_DRAFT')
+      .then(result => this.reloadECOE())
+      .catch(err => {
+        console.warn(err);
+        this.modalSrv.error({
+          nzMask: false,
+          nzTitle: this.translate.instant('ERROR_ACTION_STATE_DRAFT')
+        });
+      })
+      .finally(() => {
+        this.changing_state = false;
       });
-    })
-    .finally(()=>{
-      this.changing_state = false;
-    })
   }
 
-  reloadECOE(){
+  reloadECOE() {
     ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
       this.ecoe = value;
     });
   }
 
   get show_students(): boolean {
-    return this.stagesTotal > 0 || this.studentsTotal > 0;
+    return this.stages.total > 0 || this.students.total > 0;
   }
 
   get show_stations(): boolean {
-    return this.areasTotal > 0 || this.stationsTotal > 0;
+    return this.areas.total > 0 || this.stations.total > 0;
   }
 
   get show_schedules(): boolean {
-    return this.stationsTotal > 0 || this.stagesTotal > 0;
+    return this.stations.total > 0 || this.stages.total > 0;
   }
 
   get show_planner(): boolean {
-    return this.stagesTotal > 0 || this.roundsTotal > 0 || this.shiftsTotal > 0;
+    return this.stages.total > 0 || this.rounds.total > 0 || this.shifts.total > 0;
   };
   
   async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
