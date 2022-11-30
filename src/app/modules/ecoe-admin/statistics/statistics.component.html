@@ -26,9 +26,11 @@
       <thead>
         <tr>
           <th nzWidth="100px" [nzSortFn]="sortId">{{"ID_STUDENT" | translate}}</th>
-          <th nzWidth="100px" [nzSortFn]="sortDni">{{"ID_CODE" | translate}}</th>
-          <th nzWidth="150px" [nzSortFn]="sortName">{{"NAME" | translate}}</th>
           <th nzWidth="200px" [nzSortFn]="sortSurnames">{{"SURNAMES" | translate}}</th>
+          <th nzWidth="150px" [nzSortFn]="sortName">{{"NAME" | translate}}</th>
+          <th nzWidth="100px" [nzSortFn]="sortDni">{{"ID_CODE" | translate}}</th>
+          <th nzWidth="100px" [nzSortFn]="sortAbsoluteScore">{{"HITS" | translate}}</th>
+          <th nzWidth="100px" [nzSortFn]="sortPoints">{{"POINTS" | translate}}</th>
           <th nzWidth="200px" [nzSortFn]="sortAbsoluteScore" >{{"ABSOLUTE_GRADES"| translate}}</th>
           <th nzWidth="200px" [nzSortFn]="sortRelativeScore">{{"RELATIVE_GRADES" | translate}}</th>
         </tr>
@@ -36,11 +38,13 @@
       <tbody>
         <tr *ngFor="let results of table.data">
           <td>{{results.idStudent}}</td>
-          <td>{{results.dni}}</td>
-          <td>{{results.name}}</td>
           <td>{{results.surnames}}</td>
-          <td>{{results.absoluteScore}}</td>
-          <td>{{results.relativeScore}}</td>
+          <td>{{results.name}}</td>
+          <td>{{results.dni}}</td>
+          <td>{{results.points/results.absoluteScore | percent:'0.2-2'}}</td>
+          <td>{{results.points | number}}</td>
+          <td>{{results.points / results.absoluteScore * 10 | number:'1.2-2'}}</td>
+          <td>{{results.points / results.relativeScore * 10 | number:'1.2-2'}}</td>
         </tr>
       </tbody>
     </nz-table>
