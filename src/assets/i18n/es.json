@@ -254,11 +254,16 @@
   "INPUT_EMAIL": "Por favor, introduzca su usuario",
   "INPUT_PASSWORD": "Por favor, introduzca su contraseña",
   "DNI": "DNI",
-  "ABSOLUTE_GRADES":"Puntuación absoluta",
-  "RELATIVE_GRADES":"Puntuación relativa",
-  "ALERT_RESULTS":"Resultados de los {{numalumnos}} alumnos de esta ECOE",
+  "HITS": "Aciertos",
+  "ABSOLUTE_GRADES": "Nota absoluta",
+  "RELATIVE_GRADES": "Nota relativa",
+  "ALERT_RESULTS": "Resultados de los {{numalumnos}} alumnos de esta ECOE",
+  "RESULTS_BY_AREA": "Resultados de los {{numalumnos}} alumnos por Área",
   "RANGE_PLACEHOLDER": "Rango",
   "DELETE_SELECTED_CONFIRMATION": "¿Seguro que desea borrar todos los elementos seleccionados?",
   "DELETE_SELECTED": "Eliminar seleccionados",
-  "ITEMS_DELETED": "{{num}} {{item_type}} Eliminados"
+  "ITEMS_DELETED": "{{num}} {{item_type}} Eliminados",
+  "DOWNLOAD_GRADES": "Descargar Notas",
+  "ITEMS_EVAL": "Items del evaluativo",
+  "ITEMS_EVAL_INFO": "Porcentaje de acierto de las preguntas de {{ecoe_name}}"
 }

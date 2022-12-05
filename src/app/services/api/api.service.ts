@@ -86,9 +86,13 @@ export class ApiService {
       params
     })
       .pipe(map(response => {
+        if (response != null)
         return response.map(data => {
-          const id = this.getIdFromRef(data['$uri']);
-          return {id, ...data};
+          if (typeof data['$uri'] != "undefined"){
+            const id = this.getIdFromRef(data['$uri']);
+            return {id, ...data};
+          }
+          return;
         });
       }));
   }
@@ -99,11 +103,30 @@ export class ApiService {
    * @param ref Reference path of the resource
    * @returns Observable<any> The object of the reference passed
    */
-  getResource(ref: string): Observable<any> {
-    return this.http.get<any>(environment.API_ROUTE + ref)
+  getResource(ref: string, requestParams?: {}): Observable<any> {
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
+    const params: HttpParams = new HttpParams({fromObject: requestParams});
+
+    return this.http.get<any>(url, {
+      params
+    })
       .pipe(map(response => {
-        const itemId = this.getIdFromRef(response['$uri']);
-        return {id: itemId, ...response};
+        if(typeof response != undefined)
+        return {...response};
+      }));
+  }
+
+  
+  getResourceFile(ref: string): Observable<any> {
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
+    const _options = {
+      observe: 'body',
+      responseType: 'arraybuffer'
+    } 
+    // ,headers:{['Content-Disposition']:'attachment; filename=resultados_ecoe_1.csv' }
+    return this.http.get(url, {observe:'response',responseType: 'arraybuffer'})
+      .pipe(map(response => {
+        return response.body;
       }));
   }
 
