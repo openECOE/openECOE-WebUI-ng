@@ -265,5 +265,8 @@
   "ITEMS_DELETED": "{{num}} {{item_type}} Eliminados",
   "DOWNLOAD_GRADES": "Descargar Notas",
   "ITEMS_EVAL": "Items del evaluativo",
-  "ITEMS_EVAL_INFO": "Porcentaje de acierto de las preguntas de {{ecoe_name}}"
+  "ITEMS_EVAL_INFO": "Porcentaje de acierto de las preguntas de {{ecoe_name}}",
+  "SHOW_ARCHIVED_ECOES": "Mostrar ECOES Archivadas",
+  "SHOW_ECOES": "Mostrar ECOES",
+  "RESTORE_ECOE": "Restaurar ECOE"
 }
