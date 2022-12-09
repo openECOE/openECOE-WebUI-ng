@@ -265,5 +265,9 @@
   "ITEMS_DELETED": "{{num}} {{item_type}} Eliminados",
   "DOWNLOAD_GRADES": "Descargar Notas",
   "ITEMS_EVAL": "Items del evaluativo",
-  "ITEMS_EVAL_INFO": "Porcentaje de acierto de las preguntas de {{ecoe_name}}"
+  "ITEMS_EVAL_INFO": "Porcentaje de acierto de las preguntas de {{ecoe_name}}",
+  "DOWNLOAD": "Descargar",
+  "GENERATE_RESULTS": "Generar informes",
+  "GENERATE": "Generar",
+  "ADD_SIGNATURES": "Añadir firmantes"
 }

@@ -9,11 +9,15 @@ import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComponentsModule } from '@components/components.module';
 import { NzBreadCrumbModule, NzGridModule, NzInputModule, NzFormModule, NzModalModule, NzSelectModule, NzTagModule, NzButtonModule, NzIconModule, NzTableModule, NzAlertModule, NzDrawerModule, NzStatisticModule, NzCardModule, NzSkeletonModule, NzToolTipModule, NzPageHeaderModule, NzLayoutModule, NzEmptyModule, NzListModule, NzSpinModule, NzPopconfirmModule } from 'ng-zorro-antd';
+import { EcoeResultsComponent } from './ecoe-results/ecoe-results.component';
+import { GenerateReportsComponent } from './ecoe-results/generate-reports/generate-reports.component';
 
 @NgModule({
   declarations: [
     EcoeInfoComponent,
-    HomeComponent
+    HomeComponent,
+    EcoeResultsComponent,
+    GenerateReportsComponent
   ],
   imports: [
     CommonModule,
