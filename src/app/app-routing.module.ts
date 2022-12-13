@@ -3,8 +3,8 @@ import { Routes, RouterModule } from "@angular/router";
 import { HomeComponent } from "./modules/ecoe/home/home.component";
 import { LoginComponent } from "@components/login/login.component";
 import { AuthenticationGuard } from "./guards/authentication/authentication.guard";
-import { EcoeResultsComponent } from "./modules/ecoe/ecoe-results/ecoe-results.component";
-import { GenerateReportsComponent } from "./modules/ecoe/ecoe-results/generate-reports/generate-reports.component";
+import { EcoeResultsComponent } from "./modules/ecoe-results/ecoe-results.component";
+import { GenerateReportsComponent } from "./modules/ecoe-results/generate-reports/generate-reports.component";
 
 const routes: Routes = [
   { path: "", redirectTo: "ecoe", pathMatch: "full" },

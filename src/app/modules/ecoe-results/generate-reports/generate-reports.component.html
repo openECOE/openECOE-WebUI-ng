@@ -1,0 +1,207 @@
+<nz-content>
+  <div class="blueprint">
+    <div nz-row>
+      <div nz-col nzSpan="6">
+        <img
+          src="../../../assets/logo_umh.jpg"
+          alt="log_umh"
+          height="250"
+          width="200"
+        />
+      </div>
+      <div nz-col nzSpan="18" class="initial_data">
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="18" nzRequired nzFor="ECOE_type"
+            >ECOE</nz-form-label
+          >
+          <nz-form-control nz-col nzSpan="16">
+            <input
+              class="basic_info"
+              nz-input-name="ecoe"
+              type="text"
+              nzSize="large"
+              id="ECOE_type"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="18" nzRequired nzFor="faculty"
+            >Facultad</nz-form-label
+          >
+          <nz-form-control nz-col nzSpan="16">
+            <input
+              class="basic_info"
+              nz-input-name="faculty"
+              type="text"
+              nzSize="large"
+              id="faculty"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="18" nzRequired nzFor="uni"
+            >Universidad</nz-form-label
+          >
+          <nz-form-control nz-col nzSpan="16">
+            <input
+              class="basic_info"
+              nz-input-name="uni"
+              type="text"
+              nzSize="large"
+              id="uni"
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div>
+      <nz-list nzGrid>
+        <nz-list-item>
+          <p>Estudiante: <b>Apellidos, Nombre</b></p>
+        </nz-list-item>
+        <nz-list-item>
+          <p>DNI: <b>DNI Estudiante</b></p>
+        </nz-list-item>
+        <nz-list-item>
+          <p>Ref.ECOE: <b>Referencia ECOE realizada</b></p>
+        </nz-list-item>
+        <nz-list-item>
+          <p>
+            Fecha realizaci&oacute;n:
+            <input type="text" class="date_ecoe" id="ECOE_date" />
+          </p>
+        </nz-list-item>
+      </nz-list>
+    </div>
+    <div>
+      <textarea
+        nz-input
+        placeholder="Explicaci&oacute; de la prueba"
+        [nzAutosize]="{ minRows: 3, maxRows: 5 }"
+        id="ECOE_explanation"
+      ></textarea>
+    </div>
+    <h3>EVALUACI&Oacute;N DE LA COMPETENCIA CL&Iacute;NICA</h3>
+
+    <div>
+      <nz-table #resultsTable [nzData]="dataSet">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Clasificaci&oacute;n</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Area 1</b></td>
+            <td>Dato 1</td>
+            <td>Dato 1</td>
+          </tr>
+          <tr>
+            <td><b>Area 1</b></td>
+            <td>Dato 1</td>
+            <td>Dato 1</td>
+          </tr>
+          <tr>
+            <td><b>Area 2</b></td>
+            <td>Dato 2</td>
+            <td>Dato 2</td>
+          </tr>
+          <tr>
+            <td><b>Area 3</b></td>
+            <td>Dato 3</td>
+            <td>Dato 3</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+    <div>
+      <textarea
+        nz-input
+        placeholder="Explicaci&oacute; de los resultados"
+        [nzAutosize]="{ minRows: 3, maxRows: 5 }"
+        id="results_explanation"
+      ></textarea>
+    </div>
+    <br />
+    <p>Firmantes</p>
+    <form
+      nz-form
+      nzLayout="inline"
+      formGroup="validateForm"
+      class="form_signatures"
+    >
+      <nz-form-item *ngFor="let control of listOfControl; let i = index">
+        <nz-form-control [nzXs]="8" [nzSm]="8" [nzOffset]="i === 0" [id]="i">
+          <input
+            class="signature_type"
+            nz-input
+            placeholder="Tipo de firma"
+            formControlName="add_signatures"
+            attr.id="st.{{ i }}"
+            [formControlName]="control.controlInstance"
+          />
+          <input
+            class="profesor"
+            nz-input
+            placeholder="Persona que firma"
+            attr.id="sp.{{ i }}"
+            [formControlName]="control.controlInstance"
+          />
+          <input
+            class="job"
+            nz-input
+            placeholder="Posici&oacute;n/Status firmante"
+            attr.id="ss.{{ i }}"
+            [formControlName]="control.controlInstance"
+          />
+          <input
+            class="sign_faculty"
+            nz-input
+            placeholder="Facultad"
+            attr.id="sf.{{ i }}"
+            [formControlName]="control.controlInstance"
+          />
+          <span
+            nz-icon
+            nzType="minus-circle-o"
+            class="dynamic-delete-button"
+            (click)="removeField(control, $event)"
+          ></span>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control
+          [nzXs]="{ span: 8, offset: 0 }"
+          [nzSm]="{ span: 8, offset: 0 }"
+        >
+          <button
+            nz-button
+            nzType="dashed"
+            class="add-button"
+            (click)="addField($event)"
+          >
+            <span nz-icon nzType="plus"></span>
+            {{ "ADD_SIGNATURES" | translate }}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control
+          [nzXs]="{ span: 8, offset: 0 }"
+          [nzSm]="{ span: 8, offset: 0 }"
+        >
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+    <br />
+    <button
+      nz-button
+      nzType="primary"
+      (click)="submitData()"
+      [routerLink]="['../']"
+    >
+      Generar
+    </button>
+  </div>
+</nz-content>

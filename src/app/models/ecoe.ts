@@ -1,22 +1,28 @@
-import {Item as potionItem, Pagination, readonly, route, Route} from '@openecoe/potion-client';
-import {Planner, Round, Shift} from './planner';
-import {Schedule, Stage} from './schedule';
-import {Organization} from './organization';
-import {QuestionOld, Block, Question} from '@models/question';
-import {User} from '@models/user';
-import { Answer } from '.';
+import {
+  Item as potionItem,
+  Pagination,
+  readonly,
+  route,
+  Route,
+} from "@openecoe/potion-client";
+import { Planner, Round, Shift } from "./planner";
+import { Schedule, Stage } from "./schedule";
+import { Organization } from "./organization";
+import { QuestionOld, Block, Question } from "@models/question";
+import { User } from "@models/user";
+import { Answer } from ".";
 
 export class Permission extends potionItem {
-  "create": boolean
-  "delete": boolean
-  "evaluate": boolean
-  "manage": boolean
-  "read": boolean
+  "create": boolean;
+  "delete": boolean;
+  "evaluate": boolean;
+  "manage": boolean;
+  "read": boolean;
 }
 
 export class Item extends potionItem {
   @readonly
-  permissions = Route.GET<Permission>('/permissions')
+  permissions = Route.GET<Permission>("/permissions");
 
   can = {
     create: async () => (await this.permissions()).create,
@@ -24,30 +30,43 @@ export class Item extends potionItem {
     evaluate: async () => (await this.permissions()).evaluate,
     manage: async () => (await this.permissions()).manage,
     read: async () => (await this.permissions()).read,
-  }
+  };
 
   save(): Promise<this> {
-    delete this.can 
+    delete this.can;
     return super.save();
   }
 }
 
+export class Job extends Item {
+  id: string;
+  name: string;
+  progress: number;
+  complete: boolean;
+  user: User;
+  created: Date;
+  finished: Date;
+  description: string;
+  file: string;
+}
+
 export class ECOE extends Item {
-  areas = Route.GET<Area | Pagination<Area>>('/areas');
-  stations = Route.GET<Station | Pagination<Station>>('/stations');
-  schedules = Route.GET<Schedule | Pagination<Schedule>>('/schedules');
-  students = Route.GET<Student | Pagination<Student>>('/students');
-  rounds = Route.GET<Round | Round[] | Pagination<Round>>('/rounds');
-  shifts = Route.GET<Shift | Shift[] | Pagination<Shift>>('/shifts');
-  stages = Route.GET<Stage | Pagination<Stage>>('/stages');
+  areas = Route.GET<Area | Pagination<Area>>("/areas");
+  stations = Route.GET<Station | Pagination<Station>>("/stations");
+  schedules = Route.GET<Schedule | Pagination<Schedule>>("/schedules");
+  students = Route.GET<Student | Pagination<Student>>("/students");
+  rounds = Route.GET<Round | Round[] | Pagination<Round>>("/rounds");
+  shifts = Route.GET<Shift | Shift[] | Pagination<Shift>>("/shifts");
+  stages = Route.GET<Stage | Pagination<Stage>>("/stages");
 
   id: number;
   name: string;
   organization: Organization;
+  jobReports: Job;
 
-  configuration = Route.GET('/configuration');
-  results = Route.GET('/results');
-  itemscore = Route.GET('/item-score');
+  configuration = Route.GET("/configuration");
+  results = Route.GET("/results");
+  itemscore = Route.GET("/item-score");
 }
 
 export class Area extends Item {
@@ -69,7 +88,7 @@ export interface RowArea {
   questions?: any[];
 }
 
-export class Station extends Item {  
+export class Station extends Item {
   name: string;
   ecoe: ECOE;
   order: number;
@@ -77,10 +96,9 @@ export class Station extends Item {
   user: User;
   childrenStations: Station[];
 
-  qblocks = Route.GET<Pagination<Block>>('/blocks');
-  schedules = Route.GET<Pagination<Schedule>>('/schedules');
-  questions = Route.GET<Pagination<QuestionOld>>('/questions');
-  
+  qblocks = Route.GET<Pagination<Block>>("/blocks");
+  schedules = Route.GET<Pagination<Schedule>>("/schedules");
+  questions = Route.GET<Pagination<QuestionOld>>("/questions");
 }
 
 export interface RowStation {
@@ -106,27 +124,26 @@ export class Student extends Item {
   ecoe: ECOE | number;
   planner: Planner | Item;
   planner_order?: number;
-  
-  public set plannerOrder(v : number) {
+
+  public set plannerOrder(v: number) {
     this.planner_order = v;
   }
 
-  public get plannerOrder() : number {
+  public get plannerOrder(): number {
     return this.planner_order;
   }
 
-  addAnswer ? = Route.POST('/answers');
+  addAnswer? = Route.POST("/answers");
 
-  getAnswers ? = Route.GET('/answers');
-  getAllAnswers ? = Route.GET<Array<Answer>>('/answers/all');
+  getAnswers? = Route.GET("/answers");
+  getAllAnswers? = Route.GET<Array<Answer>>("/answers/all");
   // getAnswersStation ? = Route.GET('/answers/station/');
-  getAnswersStation ? = (station: Number) => Route.GET('/answers/station/' + station.toString());
-
+  getAnswersStation? = (station: Number) =>
+    Route.GET("/answers/station/" + station.toString());
 
   save(): Promise<this> {
-    return super.save()
+    return super.save();
   }
-
 }
 
 export interface BlockType {

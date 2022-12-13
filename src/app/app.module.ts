@@ -57,6 +57,10 @@ import { PipesModule } from "@pipes/pipes.module";
 import { BarRatingModule } from "ngx-bar-rating";
 import { CoreModule } from "./core/core.module";
 import { EcoeModule } from "./modules/ecoe/ecoe.module";
+import { GenerateReportsComponent } from "./modules/ecoe-results/generate-reports/generate-reports.component";
+import { RouterModule } from "@angular/router";
+import { EcoeResultsComponent } from "./modules/ecoe-results/ecoe-results.component";
+import { NzProgressModule } from "ng-zorro-antd/progress";
 
 registerLocaleData(localeEs, "es", localeEsExtra);
 
@@ -65,7 +69,12 @@ export function createTranslateLoader(http: HttpClient) {
 }
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    GenerateReportsComponent,
+    EcoeResultsComponent,
+  ],
   imports: [
     CoreModule,
     BrowserModule,
@@ -75,6 +84,7 @@ export function createTranslateLoader(http: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
     NzButtonModule,
+    NzProgressModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -109,6 +119,7 @@ export function createTranslateLoader(http: HttpClient) {
     NzRateModule,
     NzBackTopModule,
     NzNotificationModule,
+    RouterModule,
   ],
   providers: [
     {
