@@ -21,6 +21,8 @@ export class EcoeResultsComponent implements OnInit {
   ecoe: ECOE;
   ecoeID: number;
   ecoe_job: Job;
+  job_id: any;
+  progress: number;
 
   rounds: ISummaryItems = { total: 0, show: false, loading: true };
   shifts: ISummaryItems = { total: 0, show: false, loading: true };
@@ -37,26 +39,28 @@ export class EcoeResultsComponent implements OnInit {
       this.ecoe = value;
       this.ecoeID = this.ecoe.id;
       this.ecoe_job = this.ecoe.jobReports;
-    });
-
-    if (!this.ecoe_job) {
+      this.job_id = this.ecoe_job.id;
       this.checkGenerated();
-    }
+      return;
+    });
   }
 
   checkGenerated() {
     var completation = setInterval(() => {
       /*this.completion = this.api.getResource(
-        "ecoes/" + this.ecoeId + "/results-report"
-      )[0].progress;
-      console.log();
-*/
-      this.completion = this.ecoe.jobReports.progress;
-      if (this.completion == 100.0) {
-        clearInterval(completation);
-        this.areGenerated == true;
-      }
-      return this.completion;
+          "ecoes/" + this.ecoeId + "/results-report"
+        )[0].progress;
+        console.log();
+  */
+      Job.fetch<Job>(this.job_id, { cache: false }).then((value) => {
+        this.progress = this.ecoe_job.progress;
+        this.completion = this.progress;
+        if (this.completion == 100.0) {
+          clearInterval(completation);
+          this.areGenerated == true;
+        }
+        console.log(this.completion);
+      });
     }, 3000);
   }
 

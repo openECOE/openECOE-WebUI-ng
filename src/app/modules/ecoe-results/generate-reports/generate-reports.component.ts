@@ -5,6 +5,7 @@ import { NzFormModule } from "ng-zorro-antd";
 import { stringify } from "querystring";
 import { ApiService } from "@app/services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
+import { flatMap } from "rxjs/operators";
 
 @Component({
   selector: "app-generate-reports",
@@ -97,13 +98,17 @@ export class GenerateReportsComponent implements OnInit {
     //FdataList.push(this.listOfControl);
     var cadenaJSON = JSON.stringify(FData);
     //llamada a la api para enviar este objeto (post)
-    let arearesults = this.api.postResource(
-      "ecoes/" + this.ecoeId + "/results-report",
-      null,
-      { cadenaJSON }
-    );
+    let arearesults = this.api
+      .postResource("ecoes/" + this.ecoeId + "/results-report", null, {
+        cadenaJSON,
+      })
+      //Para poder hacer la redireccion  desde el observable se tiene que implementar un pipe con un flatmap dentro
+      .pipe(
+        flatMap(() =>
+          this.router.navigate(["ecoe/" + this.ecoeId + "/results"])
+        )
+      );
     arearesults.subscribe();
-    this.form_data.emit(this.FData);
   }
 
   fillSignList() {
