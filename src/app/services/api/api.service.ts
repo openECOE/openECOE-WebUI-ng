@@ -103,17 +103,19 @@ export class ApiService {
    * @param ref Reference path of the resource
    * @returns Observable<any> The object of the reference passed
    */
+
   getResource(ref: string, requestParams?: {}): Observable<any> {
+
     const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
     const params: HttpParams = new HttpParams({fromObject: requestParams});
 
     return this.http.get<any>(url, {
       params
     })
-      .pipe(map(response => {
-        if(typeof response != undefined)
-        return {...response};
-      }));
+    .pipe(map(response => {
+      if(typeof response != undefined)
+      return {...response};
+    }));
   }
 
   
@@ -129,6 +131,26 @@ export class ApiService {
         return response.body;
       }));
   }
+
+/**
+   * Makes a HTTP POST request to the backend and gets an item.
+   *
+   * @param ref Reference path of the resource
+   * @param body Body of the resource
+   * @returns Observable<any> The object of the reference passed
+   */
+ postResource(ref: string, body?: any, requestParams?: {}): Observable<any> {
+  const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
+  const params: HttpParams = new HttpParams({fromObject: requestParams});
+
+  return this.http.post<any>(url, body,{
+    params
+  })
+    .pipe(map(response => {
+      if(typeof response != undefined)
+      return {...response};
+    }));
+}
 
   /**
    * Makes a HTTP POST request to the backend.
