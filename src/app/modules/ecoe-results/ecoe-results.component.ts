@@ -1,5 +1,5 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { ApiService } from "@app/services/api/api.service";
 import { ECOE, Job } from "@models/index";
 
@@ -23,11 +23,17 @@ export class EcoeResultsComponent implements OnInit {
   ecoe_job: Job;
   job_id: any;
   progress: number;
+  job_reports_file: string;
+  file_name: string;
 
   rounds: ISummaryItems = { total: 0, show: false, loading: true };
   shifts: ISummaryItems = { total: 0, show: false, loading: true };
 
-  constructor(private api: ApiService, private route: ActivatedRoute) {}
+  constructor(
+    private api: ApiService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     //this.checkGenerated();
@@ -44,8 +50,16 @@ export class EcoeResultsComponent implements OnInit {
       return;
     });
   }
+  onBack() {
+    this.router.navigate(["/ecoe"]).finally();
+  }
 
   checkGenerated() {
+    Job.fetch<Job>(this.job_id, { cache: false }).then((value) => {
+      this.progress = this.ecoe_job.progress;
+      this.completion = this.progress;
+      this.file_name = this.ecoe_job.file;
+    });
     var completation = setInterval(() => {
       /*this.completion = this.api.getResource(
           "ecoes/" + this.ecoeId + "/results-report"
@@ -57,6 +71,7 @@ export class EcoeResultsComponent implements OnInit {
         this.completion = this.progress;
         if (this.completion == 100.0) {
           clearInterval(completation);
+          this.job_reports_file = this.ecoe_job.uri;
           this.areGenerated == true;
         }
         console.log(this.completion);
@@ -64,5 +79,7 @@ export class EcoeResultsComponent implements OnInit {
     }, 3000);
   }
 
-  downloadGenerated() {}
+  downloadGenerated() {
+    this.api.getJobFile(this.job_id, this.file_name);
+  }
 }

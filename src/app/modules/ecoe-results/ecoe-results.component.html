@@ -1,4 +1,11 @@
 <nz-content>
+  <nz-page-header
+    class="margin-top"
+    (nzBack)="onBack()"
+    nzBackIcon
+    [nzTitle]="ecoe?.name"
+  >
+  </nz-page-header>
   <div nz-row>
     <div nz-col [nzMd]="8" class="gutter-box">
       <nz-card
@@ -9,7 +16,7 @@
           [disabled]="!ecoe_job.complete"
           nz-button
           nzType="primary"
-          [routerLink]="['']"
+          (click)="downloadGenerated()"
         >
           <i nz-icon nzType="download" nzTheme="outline"></i>
           {{ "DOWNLOAD" | translate }}

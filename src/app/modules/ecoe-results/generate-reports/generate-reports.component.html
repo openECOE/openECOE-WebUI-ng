@@ -1,4 +1,26 @@
 <nz-content>
+  <nz-page-header
+    class="margin-bottom"
+    (nzBack)="onBack()"
+    nzBackIcon
+    [nzTitle]="'RESULTS' | translate"
+  >
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item
+        ><a
+          class="secondary-link"
+          [routerLink]="['/ecoe/' + ecoeId + '/results']"
+          >{{ ecoe_name }}</a
+        ></nz-breadcrumb-item
+      >
+      <nz-breadcrumb-item
+        ><nz-tag class="secondary-tag">{{
+          "RESULTS" | translate
+        }}</nz-tag></nz-breadcrumb-item
+      >
+    </nz-breadcrumb>
+  </nz-page-header>
+
   <div class="blueprint">
     <div nz-row>
       <div nz-col nzSpan="6">

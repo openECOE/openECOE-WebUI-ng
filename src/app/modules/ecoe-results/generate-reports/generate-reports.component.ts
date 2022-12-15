@@ -33,6 +33,7 @@ export class GenerateReportsComponent implements OnInit {
   signer_status: any;
   signature_faculty: any;
   ecoeId: number;
+  ecoe_name: any;
 
   constructor(
     private api: ApiService,
@@ -80,6 +81,9 @@ export class GenerateReportsComponent implements OnInit {
     }
   }
 
+  onBack() {
+    this.router.navigate(["/ecoe/" + this.ecoeId + "/results"]).finally();
+  }
   submitData() {
     FData = {
       ecoe: (<HTMLInputElement>document.getElementById("ECOE_type")).value,
