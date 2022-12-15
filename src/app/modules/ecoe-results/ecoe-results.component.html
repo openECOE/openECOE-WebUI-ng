@@ -1,0 +1,42 @@
+<nz-content>
+  <nz-page-header
+    class="margin-top"
+    (nzBack)="onBack()"
+    nzBackIcon
+    [nzTitle]="ecoe?.name"
+  >
+  </nz-page-header>
+  <div nz-row>
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card
+        nzTitle="{{ 'GENERATE_RESULTS' | translate }}"
+        [nzExtra]="linkInformes"
+      >
+        <button
+          [disabled]="!ecoe_job.complete"
+          nz-button
+          nzType="primary"
+          (click)="downloadGenerated()"
+        >
+          <i nz-icon nzType="download" nzTheme="outline"></i>
+          {{ "DOWNLOAD" | translate }}
+        </button>
+        <!--Aqui el componente de la progress bar-->
+        <div>
+          <nz-progress [(nzPercent)]="completion"></nz-progress>
+        </div>
+      </nz-card>
+      <ng-template #linkInformes>
+        <button
+          nz-button
+          nzType="primary"
+          [routerLink]="['generate-reports']"
+          onclick="checkGenerated"
+        >
+          <i nz-icon nzType="plus-circle" nzTheme="outline"></i>
+          {{ "GENERATE" | translate }}
+        </button>
+      </ng-template>
+    </div>
+  </div>
+</nz-content>

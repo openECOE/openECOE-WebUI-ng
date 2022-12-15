@@ -1,40 +1,79 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserModule } from "@angular/platform-browser";
+import { NgModule } from "@angular/core";
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {NzButtonModule, NZ_I18N, es_ES, NzAlertModule, NzBreadCrumbModule, NzCardModule, NzDrawerModule, NzEmptyModule, NzFormModule, NzGridModule, NzIconModule, NzInputModule, NzLayoutModule, NzListModule, NzModalModule, NzPageHeaderModule, NzRateModule, NzSelectModule, NzSkeletonModule, NzStatisticModule, NzTableModule, NzTagModule, NzToolTipModule, NzBackTopModule, NzNotificationModule} from 'ng-zorro-antd';
-import { registerLocaleData } from '@angular/common';
-import localeEs from '@angular/common/locales/es';
-import localeEsExtra from '@angular/common/locales/extra/es';
-import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {AuthInterceptor} from './interceptors/auth.interceptor';
-import { LoginComponent } from '@components/login/login.component';
-import {environment} from '../environments/environment';
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  HttpClientModule,
+} from "@angular/common/http";
+import {
+  NzButtonModule,
+  NZ_I18N,
+  es_ES,
+  NzAlertModule,
+  NzBreadCrumbModule,
+  NzCardModule,
+  NzDrawerModule,
+  NzEmptyModule,
+  NzFormModule,
+  NzGridModule,
+  NzIconModule,
+  NzInputModule,
+  NzLayoutModule,
+  NzListModule,
+  NzModalModule,
+  NzPageHeaderModule,
+  NzRateModule,
+  NzSelectModule,
+  NzSkeletonModule,
+  NzStatisticModule,
+  NzTableModule,
+  NzTagModule,
+  NzToolTipModule,
+  NzBackTopModule,
+  NzNotificationModule,
+} from "ng-zorro-antd";
+import { registerLocaleData } from "@angular/common";
+import localeEs from "@angular/common/locales/es";
+import localeEsExtra from "@angular/common/locales/extra/es";
+import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
+import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { AuthInterceptor } from "./interceptors/auth.interceptor";
+import { LoginComponent } from "@components/login/login.component";
+import { environment } from "../environments/environment";
 
-import {POTION_CONFIG, POTION_RESOURCES, PotionModule} from '@openecoe/potion-client';
+import {
+  POTION_CONFIG,
+  POTION_RESOURCES,
+  PotionModule,
+} from "@openecoe/potion-client";
 
-import {resources} from './app.resources';
-import {PipesModule} from '@pipes/pipes.module';
-import {BarRatingModule} from 'ngx-bar-rating';
-import { CoreModule } from './core/core.module';
-import { EcoeModule } from './modules/ecoe/ecoe.module';
+import { resources } from "./app.resources";
+import { PipesModule } from "@pipes/pipes.module";
+import { BarRatingModule } from "ngx-bar-rating";
+import { CoreModule } from "./core/core.module";
+import { EcoeModule } from "./modules/ecoe/ecoe.module";
+import { GenerateReportsComponent } from "./modules/ecoe-results/generate-reports/generate-reports.component";
+import { RouterModule } from "@angular/router";
+import { EcoeResultsComponent } from "./modules/ecoe-results/ecoe-results.component";
+import { NzProgressModule } from "ng-zorro-antd/progress";
 
-
-registerLocaleData(localeEs, 'es', localeEsExtra);
+registerLocaleData(localeEs, "es", localeEsExtra);
 
 export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+  return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
 }
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    GenerateReportsComponent,
+    EcoeResultsComponent,
   ],
   imports: [
     CoreModule,
@@ -45,12 +84,13 @@ export function createTranslateLoader(http: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
     NzButtonModule,
+    NzProgressModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
+        useFactory: createTranslateLoader,
+        deps: [HttpClient],
+      },
     }),
     PotionModule,
     PipesModule,
@@ -78,17 +118,18 @@ export function createTranslateLoader(http: HttpClient) {
     NzListModule,
     NzRateModule,
     NzBackTopModule,
-    NzNotificationModule
+    NzNotificationModule,
+    RouterModule,
   ],
   providers: [
     {
       provide: NZ_I18N,
-      useValue: es_ES
+      useValue: es_ES,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
+      multi: true,
     },
     /*{
       provide: HTTP_INTERCEPTORS,
@@ -99,15 +140,15 @@ export function createTranslateLoader(http: HttpClient) {
       provide: POTION_CONFIG,
       useValue: {
         host: environment.API_ROUTE,
-        prefix: '/api/v1'
-      }
+        prefix: "/api/v1",
+      },
     },
     {
       provide: POTION_RESOURCES,
       useValue: resources,
-      multi: true
-    }
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
