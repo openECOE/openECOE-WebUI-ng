@@ -269,5 +269,8 @@
   "DOWNLOAD": "Descargar",
   "GENERATE_RESULTS": "Generar informes",
   "GENERATE": "Generar",
-  "ADD_SIGNATURES": "Añadir firmantes"
+  "ADD_SIGNATURES": "Añadir firmantes",
+  "SHOW_ARCHIVED_ECOES": "Mostrar ECOES Archivadas",
+  "SHOW_ECOES": "Mostrar ECOES",
+  "RESTORE_ECOE": "Restaurar ECOE"
 }
