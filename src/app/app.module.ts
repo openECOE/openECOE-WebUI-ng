@@ -63,6 +63,7 @@ import { EcoeResultsComponent } from "./modules/ecoe-results/ecoe-results.compon
 import { NzProgressModule } from "ng-zorro-antd/progress";
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import { GradesComponent } from "./modules/ecoe-results/grades/grades.component";
+import { EvaluationItemsComponent } from './modules/ecoe-results/evaluation-items/evaluation-items.component';
 
 registerLocaleData(localeEs, "es", localeEsExtra);
 
@@ -77,6 +78,7 @@ export function createTranslateLoader(http: HttpClient) {
     GenerateReportsComponent,
     EcoeResultsComponent,
     GradesComponent,
+    EvaluationItemsComponent,
   ],
   imports: [
     CoreModule,

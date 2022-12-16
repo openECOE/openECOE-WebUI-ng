@@ -22,8 +22,9 @@
           {{ "DOWNLOAD" | translate }}
         </button>
         <!--Aqui el componente de la progress bar-->
+
         <div>
-          <nz-progress [(nzPercent)]="completion"></nz-progress>
+          <nz-progress [(nzPercent)]="completion" nzSize="small"></nz-progress>
         </div>
       </nz-card>
       <ng-template #linkInformes>
@@ -45,7 +46,7 @@
           <nz-alert
             nzType="info"
             nzMessage="{{
-              'ALERT_RESULTS' | translate : { numalumnos: students }
+              'ALERT_RESULTS' | translate : { numalumnos: students.total }
             }}"
           ></nz-alert>
         </nz-spin>
@@ -55,7 +56,7 @@
           [disabled]="!(rounds.show || shifts.show)"
           nz-button
           nzType="primary"
-          [routerLink]="['results']"
+          [routerLink]="['grades']"
         >
           <i nz-icon nzType="edit" nzTheme="outline"></i>
           {{ "SETUP" | translate }}
@@ -82,7 +83,7 @@
           [disabled]="!(rounds.show || shifts.show)"
           nz-button
           nzType="primary"
-          [routerLink]="['item-score']"
+          [routerLink]="['evaluation-items']"
         >
           <i nz-icon nzType="edit" nzTheme="outline"></i>
           {{ "SETUP" | translate }}

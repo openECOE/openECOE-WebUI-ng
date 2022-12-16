@@ -1,7 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApiService } from "@app/services/api/api.service";
-import { ECOE, Job, Student } from "@models/index";
+import { ECOE, Job, Student, Round, Shift } from "@models/index";
 import { Item, Pagination } from "@openecoe/potion-client";
 
 interface ISummaryItems {
@@ -57,6 +57,18 @@ export class EcoeResultsComponent implements OnInit {
         this.students.loading = false;
         this.students.show = this.show_students;
       });
+
+      this.getTotalItems(Round).then((cont) => {
+        this.rounds.total = cont;
+        this.rounds.loading = false;
+        this.rounds.show = this.show_planner;
+      });
+
+      this.getTotalItems(Shift).then((cont) => {
+        this.shifts.total = cont;
+        this.shifts.loading = false;
+        this.shifts.show = this.show_planner;
+      });
       this.checkGenerated();
       return;
     });
@@ -98,6 +110,11 @@ export class EcoeResultsComponent implements OnInit {
     return this.stages.total > 0 || this.students.total > 0;
   }
 
+  get show_planner(): boolean {
+    return (
+      this.stages.total > 0 || this.rounds.total > 0 || this.shifts.total > 0
+    );
+  }
   async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
     const _pag: Pagination<Item> = await (itemClass as unknown as Item).query(
       {
