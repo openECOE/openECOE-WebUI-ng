@@ -5,6 +5,8 @@ import { LoginComponent } from "@components/login/login.component";
 import { AuthenticationGuard } from "./guards/authentication/authentication.guard";
 import { EcoeResultsComponent } from "./modules/ecoe-results/ecoe-results.component";
 import { GenerateReportsComponent } from "./modules/ecoe-results/generate-reports/generate-reports.component";
+import { GradesComponent } from "./modules/ecoe-results/grades/grades.component";
+import { EvaluationItemsComponent } from "./modules/ecoe-results/evaluation-items/evaluation-items.component";
 
 const routes: Routes = [
   { path: "", redirectTo: "ecoe", pathMatch: "full" },
@@ -46,6 +48,16 @@ const routes: Routes = [
   {
     path: "ecoe/:ecoeId/results/generate-reports",
     component: GenerateReportsComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  {
+    path: "ecoe/:ecoeId/results/grades",
+    component: GradesComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  {
+    path: "ecoe/:ecoeId/results/evaluation-items",
+    component: EvaluationItemsComponent,
     canActivate: [AuthenticationGuard],
   },
   {

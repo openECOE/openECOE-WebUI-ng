@@ -22,8 +22,9 @@
           {{ "DOWNLOAD" | translate }}
         </button>
         <!--Aqui el componente de la progress bar-->
+
         <div>
-          <nz-progress [(nzPercent)]="completion"></nz-progress>
+          <nz-progress [(nzPercent)]="completion" nzSize="small"></nz-progress>
         </div>
       </nz-card>
       <ng-template #linkInformes>
@@ -35,6 +36,57 @@
         >
           <i nz-icon nzType="plus-circle" nzTheme="outline"></i>
           {{ "GENERATE" | translate }}
+        </button>
+      </ng-template>
+    </div>
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card nzTitle="{{ 'RESULTS' | translate }}" [nzExtra]="linkResultados">
+        <nz-spin [nzSpinning]="false">
+          <!--en el { numalumnos: students falta que students sea students.total}-->
+          <nz-alert
+            nzType="info"
+            nzMessage="{{
+              'ALERT_RESULTS' | translate : { numalumnos: students.total }
+            }}"
+          ></nz-alert>
+        </nz-spin>
+      </nz-card>
+      <ng-template #linkResultados>
+        <button
+          [disabled]="!(rounds.show || shifts.show)"
+          nz-button
+          nzType="primary"
+          [routerLink]="['grades']"
+        >
+          <i nz-icon nzType="edit" nzTheme="outline"></i>
+          {{ "SETUP" | translate }}
+        </button>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card
+        nzTitle="{{ 'ITEMS_EVAL' | translate }}"
+        [nzExtra]="linkItemScore"
+      >
+        <nz-spin [nzSpinning]="false">
+          <nz-alert
+            nzType="info"
+            nzMessage="{{
+              'ITEMS_EVAL_INFO' | translate : { ecoe_name: ecoeName }
+            }}"
+          ></nz-alert>
+        </nz-spin>
+      </nz-card>
+      <ng-template #linkItemScore>
+        <button
+          [disabled]="!(rounds.show || shifts.show)"
+          nz-button
+          nzType="primary"
+          [routerLink]="['evaluation-items']"
+        >
+          <i nz-icon nzType="edit" nzTheme="outline"></i>
+          {{ "SETUP" | translate }}
         </button>
       </ng-template>
     </div>

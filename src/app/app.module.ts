@@ -61,6 +61,9 @@ import { GenerateReportsComponent } from "./modules/ecoe-results/generate-report
 import { RouterModule } from "@angular/router";
 import { EcoeResultsComponent } from "./modules/ecoe-results/ecoe-results.component";
 import { NzProgressModule } from "ng-zorro-antd/progress";
+import { NzSpinModule } from "ng-zorro-antd/spin";
+import { GradesComponent } from "./modules/ecoe-results/grades/grades.component";
+import { EvaluationItemsComponent } from './modules/ecoe-results/evaluation-items/evaluation-items.component';
 
 registerLocaleData(localeEs, "es", localeEsExtra);
 
@@ -74,6 +77,8 @@ export function createTranslateLoader(http: HttpClient) {
     LoginComponent,
     GenerateReportsComponent,
     EcoeResultsComponent,
+    GradesComponent,
+    EvaluationItemsComponent,
   ],
   imports: [
     CoreModule,
@@ -120,6 +125,7 @@ export function createTranslateLoader(http: HttpClient) {
     NzBackTopModule,
     NzNotificationModule,
     RouterModule,
+    NzSpinModule,
   ],
   providers: [
     {

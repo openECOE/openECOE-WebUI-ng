@@ -1,0 +1,59 @@
+<nz-page-header
+  class="margin-bottom"
+  (nzBack)="onBack()"
+  nzBackIcon
+  [nzTitle]="'ITEMS_EVAL' | translate"
+>
+  <nz-breadcrumb nz-page-header-breadcrumb>
+    <nz-breadcrumb-item
+      ><a
+        class="secondary-link"
+        [routerLink]="['/ecoe/' + ecoeId + '/results']"
+        >{{ ecoe_name }}</a
+      ></nz-breadcrumb-item
+    >
+    <nz-breadcrumb-item
+      ><nz-tag class="secondary-tag">{{
+        "ITEMS_EVAL" | translate
+      }}</nz-tag></nz-breadcrumb-item
+    >
+  </nz-breadcrumb>
+</nz-page-header>
+<div id="aciertoItems" name="aciertoItems">
+  <nz-content *ngIf="results">
+    <h1>{{ "ITEMS_EVAL_INFO" | translate : { ecoe_name: ecoe_name } }}</h1>
+    <nz-table
+      #table
+      [nzData]="results"
+      [nzShowPagination]="true"
+      [nzShowSizeChanger]="true"
+      nzTableLayout="fixed"
+    >
+      <thead>
+        <tr>
+          <th
+            nzWidth="100px"
+            [nzFilters]="filter"
+            [nzFilterMultiple]="true"
+            [nzFilterFn]="filterStationName"
+          >
+            Estación
+          </th>
+          <th nzWidth="100px">Id. Pregunta</th>
+          <th nzWidth="100px">Referencia</th>
+          <th nzWidth="300px">Descripcion</th>
+          <th nzWidth="100px">Porcentaje de acierto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let registro of table.data">
+          <td>{{ registro.stationName }}</td>
+          <td>{{ registro.idQuestion }}</td>
+          <td>{{ registro.reference }}</td>
+          <td>{{ registro.description }}</td>
+          <td>{{ registro.acierto * 100 | number : "1.0-2" }}%</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-content>
+</div>
