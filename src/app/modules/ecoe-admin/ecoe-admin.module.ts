@@ -1,25 +1,54 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
-import { EcoeAdminRoutingModule } from './ecoe-admin-routing.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
-import {PipesModule} from '@pipes/pipes.module';
-import { ComponentsModule } from '@components/components.module';
-import { AreasComponent } from './areas/areas.component';
-import { StationsComponent } from './stations/stations.component';
-import { StationDetailsComponent } from './station-details/station-details.component';
-import { ScheduleComponent } from './schedule/schedule.component';
-import { EventsComponent } from './events-schedule/events.component';
-import { StudentsComponent } from './students/students.component';
-import { PlannerComponent } from './planner/planner.component';
-import { PlannerSelectorComponent, AppStudentSelectorComponent } from './planner-selector/planner-selector.component';
-import { StatisticsComponent } from './statistics/statistics.component';
-import { EcoeModule } from '../ecoe/ecoe.module';
-import { NzBreadCrumbModule, NzGridModule, NzInputModule, NzFormModule, NzModalModule, NzSelectModule, NzTagModule, NzButtonModule, NzIconModule, NzTableModule, NzAlertModule, NzDrawerModule, NzStatisticModule, NzCardModule, NzSkeletonModule, NzToolTipModule, NzPageHeaderModule, NzLayoutModule, NzEmptyModule, NzListModule, NzPopconfirmModule, NzInputNumberModule, NzProgressModule, NzDatePickerModule, NzTimePickerModule, NzTabsModule, NzMessageModule, NzSwitchModule } from 'ng-zorro-antd';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-import { ItemScoreComponent } from './item-score/item-score.component';
-
+import { EcoeAdminRoutingModule } from "./ecoe-admin-routing.module";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { TranslateModule } from "@ngx-translate/core";
+import { PipesModule } from "@pipes/pipes.module";
+import { ComponentsModule } from "@components/components.module";
+import { AreasComponent } from "./areas/areas.component";
+import { StationsComponent } from "./stations/stations.component";
+import { StationDetailsComponent } from "./station-details/station-details.component";
+import { ScheduleComponent } from "./schedule/schedule.component";
+import { EventsComponent } from "./events-schedule/events.component";
+import { StudentsComponent } from "./students/students.component";
+import { PlannerComponent } from "./planner/planner.component";
+import {
+  PlannerSelectorComponent,
+  AppStudentSelectorComponent,
+} from "./planner-selector/planner-selector.component";
+import { EcoeModule } from "../ecoe/ecoe.module";
+import {
+  NzBreadCrumbModule,
+  NzGridModule,
+  NzInputModule,
+  NzFormModule,
+  NzModalModule,
+  NzSelectModule,
+  NzTagModule,
+  NzButtonModule,
+  NzIconModule,
+  NzTableModule,
+  NzAlertModule,
+  NzDrawerModule,
+  NzStatisticModule,
+  NzCardModule,
+  NzSkeletonModule,
+  NzToolTipModule,
+  NzPageHeaderModule,
+  NzLayoutModule,
+  NzEmptyModule,
+  NzListModule,
+  NzPopconfirmModule,
+  NzInputNumberModule,
+  NzProgressModule,
+  NzDatePickerModule,
+  NzTimePickerModule,
+  NzTabsModule,
+  NzMessageModule,
+  NzSwitchModule,
+} from "ng-zorro-antd";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [
@@ -31,9 +60,7 @@ import { ItemScoreComponent } from './item-score/item-score.component';
     StudentsComponent,
     PlannerComponent,
     PlannerSelectorComponent,
-    StatisticsComponent,
     AppStudentSelectorComponent,
-    ItemScoreComponent
   ],
   imports: [
     CommonModule,
@@ -73,7 +100,7 @@ import { ItemScoreComponent } from './item-score/item-score.component';
     NzTabsModule,
     NzMessageModule,
     NzSwitchModule,
-    DragDropModule
+    DragDropModule,
   ],
   exports: [
     AreasComponent,
@@ -84,8 +111,8 @@ import { ItemScoreComponent } from './item-score/item-score.component';
     StudentsComponent,
     PlannerComponent,
     PlannerSelectorComponent,
-    AppStudentSelectorComponent
+    AppStudentSelectorComponent,
   ],
-  entryComponents: [AppStudentSelectorComponent]
+  entryComponents: [AppStudentSelectorComponent],
 })
-export class EcoeAdminModule { }
+export class EcoeAdminModule {}
