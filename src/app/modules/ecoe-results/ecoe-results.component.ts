@@ -97,7 +97,6 @@ export class EcoeResultsComponent implements OnInit {
           this.job_reports_file = this.ecoe_job.uri;
           this.areGenerated == true;
         }
-        console.log(this.completion);
       });
     }, 3000);
   }
