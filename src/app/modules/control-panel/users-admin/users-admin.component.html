@@ -59,7 +59,7 @@
   </thead>
   <tbody>
 
-  <ng-template ngFor let-item let-idx="index" [ngForOf]="table.data">
+  <ng-template ngFor let-item  let-idx="index" [ngForOf]="table.data">
     <tr>
       <td>
         <ng-container>
@@ -68,32 +68,26 @@
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[idx]?.editItem; else editEmail">
+        <ng-container>
           {{item.email}}
         </ng-container>
-        <ng-template #editEmail>
-          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx]?.data.email">
-        </ng-template>
+
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[idx]?.editItem; else editName">
+        <ng-container>
           {{item.name}}
         </ng-container>
-        <ng-template #editName>
-          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx]?.data.name">
-        </ng-template>
+
       </td>
 
       <td>
-        <ng-container *ngIf="!editCache[idx]?.editItem; else editSurname">
+        <ng-container>
           {{item.surname}}
         </ng-container>
-        <ng-template #editSurname>
-          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[idx]?.data.surname">
-        </ng-template>
-      </td>
 
+      </td>
+      
       <td>
         <ng-container *ngIf="!editCache[idx]?.editItem; else editRoles">
           <ng-container *ngFor="let rol of item.rolesList">
@@ -125,15 +119,13 @@
           <ng-template #tagPlaceHolder let-selectedList> and {{ selectedList.length }} more selected </ng-template>
         </ng-template>
       </td>
-
+      <!---
+        XXX
+      -->
       <td text-right>
-        <app-action-buttons [isEditing]="editCache[idx]?.editItem"
-                            [isNewItem]="editCache[idx]?.newItem"
-                            [showDeleteButton]="!(activeUser.id === item.id)"
-                            (startEdit)="editUser(idx)"
-                            (delete)="delUser(idx)"
-                            (save)="saveUser(item)"
-                            (cancelEdit)="cancelUser(idx)">
+        <app-action-buttons [showDeleteButton]="!(activeUser.id === item.id)"
+                            (startEdit)="showModalEdit(item)"
+                            (delete)="delUser(item)">
         </app-action-buttons>
       </td>
     </tr>
@@ -141,6 +133,9 @@
   </tbody>
 </nz-table>
 
+<!--
+  MODAL DE ADD_USER
+-->
 <nz-modal *ngIf="validateForm"
   [(nzVisible)]="showAddUser"
   [nzTitle]="'ADD_USER' | translate"
@@ -212,7 +207,84 @@
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
-
   </form>
+</nz-modal>
 
+  <!---
+    SPRINT #1: Botones derechos de editar usuario y cancelar [CAMBIAR POR MODAL] // issue #55 // TO DO
+    MODAL DE EDIT_USER
+  -->
+
+<nz-modal *ngIf="validateForm"
+  [(nzVisible)]="showEditUser"
+  [nzTitle]="'EDIT_USER' | translate"
+  [nzOkText]="'ACCEPT' | translate"
+  [nzCancelText]="'CANCEL' | translate"
+  (nzOnOk)="submitEditFormUser(validateForm)"
+  (nzOnCancel)="closeModal()">
+
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'EMAIL_NOT_VALID' | translate">
+        <nz-input-group [nzPrefixIcon]="'mail'">
+          <input type="email" nz-input [(ngModel)]="usuarioEditar.email" formControlName="email" id="edit_email" [placeholder]="'EMAIL' | translate">
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'PASSWORD_REQUIRED' | translate">
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input [type]="passwordVisible ? 'text' : 'password'" nz-input
+                 formControlName="password"
+                 id="edit_password"
+                 [placeholder]="'PASSWORD' | translate">
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
+        <nz-input-group nzCompact>
+          <input nz-input [(ngModel)]="usuarioEditar.name" id="edit_name" formControlName="userName" placeholder="{{'NAME' | translate}}">
+        </nz-input-group>
+      </nz-form-control>
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="'SURNAME_REQUIRED' | translate">
+        <nz-input-group nzCompact>
+          <input nz-input [(ngModel)]="usuarioEditar.surname" id="edit_surname" formControlName="userSurname" placeholder="{{'SURNAMES' | translate}}">
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control>
+        <nz-input-group>
+        <nz-form-label >Roles</nz-form-label>
+        <!--
+                    [(ngModel)]="usuarioOriginal.rolesList"
+        -->
+        <nz-select
+          [(ngModel)]="usuarioOriginal.roleNames"
+          *ngIf="showEditUser"
+          style="width: 100%"
+          nzSize="small"
+          [nzMaxTagCount]="5"
+          nzMode="multiple"
+          [nzPlaceHolder]="'SELECT_ROLES' | translate"
+          [nzAllowClear]="true"
+          nzAllowClear
+          formControlName="roles"
+          >
+            <nz-option *ngFor="let role of listRoles"
+                      [nzLabel]="role.name | translate"
+                      [ngModel]= "usuarioEditar.roles"
+                      [nzValue]="role.name"
+            >
+          </nz-option>
+        </nz-select>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  
 </nz-modal>
