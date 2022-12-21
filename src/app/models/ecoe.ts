@@ -65,6 +65,9 @@ export class ECOE extends Item {
   jobReports: Job;
   jobCsv: Job;
 
+  static archive = Route.GET<ECOE | Pagination<ECOE>>("/archive");
+  static dearchive = Route.POST("/archive/<int:id>/restore");
+
   configuration = Route.GET("/configuration");
   results = Route.GET("/results");
   itemscore = Route.GET("/item-score");

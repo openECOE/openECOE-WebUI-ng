@@ -272,4 +272,7 @@
   "ADD_SIGNATURES": "Añadir firmantes",
   "GENERATE_ECOE_DATA": "Generar datos ECOE",
   "CHECK": "Comprobar"
+  "SHOW_ARCHIVED_ECOES": "Mostrar ECOES Archivadas",
+  "SHOW_ECOES": "Mostrar ECOES",
+  "RESTORE_ECOE": "Restaurar ECOE"
 }
