@@ -63,6 +63,7 @@ export class ECOE extends Item {
   name: string;
   organization: Organization;
   jobReports: Job;
+  jobCsv: Job;
 
   configuration = Route.GET("/configuration");
   results = Route.GET("/results");

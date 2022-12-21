@@ -269,5 +269,7 @@
   "DOWNLOAD": "Descargar",
   "GENERATE_RESULTS": "Generar informes",
   "GENERATE": "Generar",
-  "ADD_SIGNATURES": "Añadir firmantes"
+  "ADD_SIGNATURES": "Añadir firmantes",
+  "GENERATE_ECOE_DATA": "Generar datos ECOE",
+  "CHECK": "Comprobar"
 }

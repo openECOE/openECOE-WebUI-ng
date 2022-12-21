@@ -18,14 +18,26 @@ export class EcoeResultsComponent implements OnInit {
   areGenerated: any;
   ecoeId: number;
   completion: number;
+  completion_csv: number;
   arrayResource: any;
   ecoe: ECOE;
   ecoeID: number;
-  ecoe_job: Job;
-  job_id: any;
-  progress: number;
+
+  ecoe_job_reports: Job | any;
+  job_id_reports: any;
   job_reports_file: string;
-  file_name: string;
+  file_name_reports: string;
+
+  ecoe_csv: Job | any;
+  job_id_csv: any;
+  job_csv_file: string;
+  file_name_csv: string;
+
+  progress: number;
+  progress_csv: number;
+
+  btn_csv: boolean = true;
+  btn_dwl_csv: boolean = false;
 
   rounds: ISummaryItems = { total: 0, show: false, loading: true };
   shifts: ISummaryItems = { total: 0, show: false, loading: true };
@@ -40,7 +52,6 @@ export class EcoeResultsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    //this.checkGenerated();
     this.route.params.subscribe((params) => {
       this.ecoeId = params.ecoeId;
     });
@@ -48,8 +59,22 @@ export class EcoeResultsComponent implements OnInit {
     ECOE.fetch<ECOE>(this.ecoeId, { cache: false }).then((value) => {
       this.ecoe = value;
       this.ecoeID = this.ecoe.id;
-      this.ecoe_job = this.ecoe.jobReports;
-      this.job_id = this.ecoe_job.id;
+
+      this.ecoe_job_reports = this.ecoe.jobReports;
+      if (this.ecoe_job_reports) {
+        this.job_id_reports = this.ecoe_job_reports.id;
+      } else {
+        this.ecoe_job_reports = new Job();
+        this.ecoe_job_reports.complete = false;
+      }
+
+      this.ecoe_csv = this.ecoe.jobCsv;
+      if (this.ecoe_csv) this.job_id_csv = this.ecoe_csv.id;
+      else {
+        this.ecoe_csv = new Job();
+        this.ecoe_csv.complete = false;
+      }
+
       this.ecoeName = this.ecoe.name;
 
       this.getTotalItems(Student).then((cont) => {
@@ -69,7 +94,11 @@ export class EcoeResultsComponent implements OnInit {
         this.shifts.loading = false;
         this.shifts.show = this.show_planner;
       });
-      this.checkGenerated();
+      if (this.job_id_reports) this.checkGenerated();
+      if (this.job_id_csv) {
+        this.updateProgressCsv();
+      }
+
       return;
     });
   }
@@ -78,31 +107,56 @@ export class EcoeResultsComponent implements OnInit {
   }
 
   checkGenerated() {
-    Job.fetch<Job>(this.job_id, { cache: false }).then((value) => {
-      this.progress = this.ecoe_job.progress;
+    Job.fetch<Job>(this.job_id_reports, { cache: false }).then(() => {
+      this.progress = this.ecoe_job_reports.progress;
       this.completion = this.progress;
-      this.file_name = this.ecoe_job.file;
+      this.file_name_reports = this.ecoe_job_reports.file;
     });
     var completation = setInterval(() => {
-      /*this.completion = this.api.getResource(
-          "ecoes/" + this.ecoeId + "/results-report"
-        )[0].progress;
-        console.log();
-  */
-      Job.fetch<Job>(this.job_id, { cache: false }).then((value) => {
-        this.progress = this.ecoe_job.progress;
-        this.completion = this.progress;
-        if (this.completion == 100.0) {
+      Job.fetch<Job>(this.job_id_reports, { cache: false }).then(() => {
+        this.progress = this.ecoe_job_reports.progress;
+        if (this.progress == 100.0) {
           clearInterval(completation);
-          this.job_reports_file = this.ecoe_job.uri;
+          this.job_reports_file = this.ecoe_job_reports.uri;
           this.areGenerated == true;
         }
       });
-    }, 3000);
+    }, 500);
   }
 
   downloadGenerated() {
-    this.api.getJobFile(this.job_id, this.file_name);
+    this.api.getJobFile(this.job_id_reports, this.file_name_reports);
+  }
+
+  async generateEcoeData() {
+    this.progress_csv = 0;
+    this.btn_csv = false;
+    this.btn_dwl_csv = false;
+    await this.api
+      .postResource("ecoes/" + this.ecoeId + "/csv")
+      .subscribe((value) => value);
+    this.updateProgressCsv();
+  }
+  async updateProgressCsv() {
+    await ECOE.fetch<ECOE>(this.ecoeId, { cache: false }).then(
+      (response) => (this.job_id_csv = response.jobCsv.id)
+    );
+
+    this.ecoe_csv = await Job.fetch<Job>(this.job_id_csv, { cache: false });
+
+    this.file_name_csv = this.ecoe_csv.file;
+
+    var completation_csv = setInterval(() => {
+      var progress = this.getProgressCsv().then((progress) => {
+        if (progress == 100) {
+          clearInterval(completation_csv);
+          this.btn_dwl_csv = true;
+        }
+      });
+    }, 500);
+  }
+  downloadCSV() {
+    this.api.getJobFile(this.job_id_csv, "CSV_" + this.ecoeName);
   }
 
   get show_students(): boolean {
@@ -112,6 +166,20 @@ export class EcoeResultsComponent implements OnInit {
   get show_planner(): boolean {
     return (
       this.stages.total > 0 || this.rounds.total > 0 || this.shifts.total > 0
+    );
+  }
+  async getProgressCsv() {
+    return await Job.fetch<Job>(this.job_id_csv, { cache: false }).then(
+      (value) => {
+        this.progress_csv = value.progress;
+        if (this.progress_csv == 100.0) {
+          this.job_csv_file = this.ecoe_csv.uri;
+          this.areGenerated == true;
+          this.btn_csv = true;
+          this.btn_dwl_csv = true;
+        }
+        return value.progress;
+      }
     );
   }
   async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
