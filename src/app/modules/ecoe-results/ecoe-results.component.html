@@ -13,7 +13,7 @@
         [nzExtra]="linkInformes"
       >
         <button
-          [disabled]="!ecoe_job.complete"
+          [disabled]="!ecoe_job_reports.complete"
           nz-button
           nzType="primary"
           (click)="downloadGenerated()"
@@ -24,11 +24,11 @@
         <!--Aqui el componente de la progress bar-->
 
         <div>
-          <nz-progress [(nzPercent)]="completion" nzSize="small"></nz-progress>
+          <nz-progress [(nzPercent)]="progress" nzSize="small"></nz-progress>
         </div>
       </nz-card>
-      <ng-template #linkInformes>
-        <button
+      <ng-template #linkInformes
+        ><button
           nz-button
           nzType="primary"
           [routerLink]="['generate-reports']"
@@ -39,6 +39,7 @@
         </button>
       </ng-template>
     </div>
+
     <div nz-col [nzMd]="8" class="gutter-box">
       <nz-card nzTitle="{{ 'RESULTS' | translate }}" [nzExtra]="linkResultados">
         <nz-spin [nzSpinning]="false">
@@ -59,7 +60,7 @@
           [routerLink]="['grades']"
         >
           <i nz-icon nzType="edit" nzTheme="outline"></i>
-          {{ "SETUP" | translate }}
+          {{ "CHECK" | translate }}
         </button>
       </ng-template>
     </div>
@@ -86,7 +87,47 @@
           [routerLink]="['evaluation-items']"
         >
           <i nz-icon nzType="edit" nzTheme="outline"></i>
-          {{ "SETUP" | translate }}
+          {{ "CHECK" | translate }}
+        </button>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card
+        nzTitle="{{ 'GENERATE_ECOE_DATA' | translate }}"
+        [nzExtra]="linkCsv"
+      >
+        <!--cambiar ecoe_job por ecoe_job_data   [disabled]="!ecoe_job.complete"
+        
+          
+        -->
+        <button
+          [disabled]="!btn_dwl_csv"
+          nz-button
+          nzType="primary"
+          (click)="downloadCSV()"
+        >
+          <i nz-icon nzType="download" nzTheme="outline"></i>
+          {{ "DOWNLOAD" | translate }}
+        </button>
+        <!--Aqui el componente de la progress bar-->
+
+        <div>
+          <nz-progress
+            [(nzPercent)]="progress_csv"
+            nzSize="small"
+          ></nz-progress>
+        </div>
+      </nz-card>
+      <ng-template #linkCsv>
+        <button
+          [disabled]="!btn_csv"
+          nz-button
+          nzType="primary"
+          (click)="generateEcoeData()"
+        >
+          <i nz-icon nzType="plus-circle" nzTheme="outline"></i>
+          {{ "GENERATE" | translate }}
         </button>
       </ng-template>
     </div>

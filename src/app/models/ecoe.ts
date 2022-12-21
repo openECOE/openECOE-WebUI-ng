@@ -63,6 +63,7 @@ export class ECOE extends Item {
   name: string;
   organization: Organization;
   jobReports: Job;
+  jobCsv: Job;
 
   static archive = Route.GET<ECOE | Pagination<ECOE>>("/archive");
   static dearchive = Route.POST("/archive/<int:id>/restore");
