@@ -9,7 +9,7 @@
   "ARCHIVE": "Archivar",
   "START_STOP_ECOE": "Iniciar/Detener ECOE",
   "EDIT_ECOE": "Editar ECOE",
-  "EDIT_USER":"Editar usuario",
+  "EDIT_USER": "Editar usuario",
   "ORGANIZATION": "Organización",
   "STATIONS": "Estaciones",
   "NO_STATIONS": "No hay estaciones",
@@ -272,7 +272,7 @@
   "GENERATE": "Generar",
   "ADD_SIGNATURES": "Añadir firmantes",
   "GENERATE_ECOE_DATA": "Generar datos ECOE",
-  "CHECK": "Comprobar"
+  "CHECK": "Comprobar",
   "SHOW_ARCHIVED_ECOES": "Mostrar ECOES Archivadas",
   "SHOW_ECOES": "Mostrar ECOES",
   "RESTORE_ECOE": "Restaurar ECOE"
