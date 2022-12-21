@@ -84,7 +84,8 @@ editEmail: any;
     this.activeUser = this.user.user;
     this.loadUsers();
 
-    this.submitEditFormUser.arguments(this.users);
+    await this.submitEditFormUser.arguments(this.users);
+    this.loading= false;
 
   }
 
