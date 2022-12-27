@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { Location } from "@angular/common";
-import { NavigationEnd, Router } from "@angular/router";
+import { NavigationEnd, NavigationCancel, Router } from "@angular/router";
 import { filter } from "rxjs/operators";
 import { UserService } from "@app/services/user/user.service";
 
@@ -25,11 +25,17 @@ export class SubmenuComponent implements OnInit {
 
   ngOnInit() {
     this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((val: NavigationEnd) => {
-        this.ecoeId = +val.urlAfterRedirects.split("/")[2];
-        const activeLink = val.urlAfterRedirects.split("/")[3];
-
+      .pipe(filter((event) => {
+        if(event instanceof NavigationEnd)
+          return true; 
+        if(event instanceof NavigationCancel)
+          return true;
+        return false;
+        }))
+      .subscribe(async () => {
+        this.ecoeId = +this.router.url.split("/")[2];
+        const activeLink = this.router.url.split("/")[3];
+        await this.userService.loadUserData();
         const _userData = this.userService.userData;
 
         if (_userData) {
