@@ -38,6 +38,18 @@ export class Item extends potionItem {
   }
 }
 
+export class Job extends Item {
+  id: string;
+  name: string;
+  progress: number;
+  complete: boolean;
+  user: User;
+  created: Date;
+  finished: Date;
+  description: string;
+  file: string;
+}
+
 export class ECOE extends Item {
   areas = Route.GET<Area | Pagination<Area>>("/areas");
   stations = Route.GET<Station | Pagination<Station>>("/stations");
@@ -50,6 +62,8 @@ export class ECOE extends Item {
   id: number;
   name: string;
   organization: Organization;
+  jobReports: Job;
+  jobCsv: Job;
 
   static archive = Route.GET<ECOE | Pagination<ECOE>>("/archive");
   static dearchive = Route.POST("/archive/<int:id>/restore");

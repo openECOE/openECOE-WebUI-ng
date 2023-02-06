@@ -357,6 +357,7 @@ export class EventsComponent implements OnInit {
 
   cleanForm(form: FormGroup): void {
     form.reset();
+    form.controls.eventCountdown.setValue(false);
     for (const key of Object.keys(form.controls)) {
       form.controls[key].markAsPristine();
       form.controls[key].updateValueAndValidity();
