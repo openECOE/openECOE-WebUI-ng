@@ -30,7 +30,7 @@
     "@types/socket.io-client": "^1.4.32",
     "autolinker": "^1.8.3",
     "core-js": "^2.6.5",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "ng-zorro-antd": "9.3.0",
     "ngx-bar-rating": "^1.1.0",
     "ngx-papaparse": "^5.1.0",
