@@ -1,0 +1,135 @@
+<nz-content>
+  <nz-page-header
+    class="margin-top"
+    (nzBack)="onBack()"
+    nzBackIcon
+    [nzTitle]="ecoe?.name"
+  >
+  </nz-page-header>
+  <div nz-row>
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card
+        nzTitle="{{ 'GENERATE_RESULTS' | translate }}"
+        [nzExtra]="linkInformes"
+      >
+        <button
+          [disabled]="!ecoe_job_reports.complete"
+          nz-button
+          nzType="primary"
+          (click)="downloadGenerated()"
+        >
+          <i nz-icon nzType="download" nzTheme="outline"></i>
+          {{ "DOWNLOAD" | translate }}
+        </button>
+        <!--Aqui el componente de la progress bar-->
+
+        <div>
+          <nz-progress [(nzPercent)]="progress" nzSize="small"></nz-progress>
+        </div>
+      </nz-card>
+      <ng-template #linkInformes
+        ><button
+          nz-button
+          nzType="primary"
+          [routerLink]="['generate-reports']"
+          onclick="checkGenerated"
+        >
+          <i nz-icon nzType="plus-circle" nzTheme="outline"></i>
+          {{ "GENERATE" | translate }}
+        </button>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card nzTitle="{{ 'RESULTS' | translate }}" [nzExtra]="linkResultados">
+        <nz-spin [nzSpinning]="false">
+          <!--en el { numalumnos: students falta que students sea students.total}-->
+          <nz-alert
+            nzType="info"
+            nzMessage="{{
+              'ALERT_RESULTS' | translate : { numalumnos: students.total }
+            }}"
+          ></nz-alert>
+        </nz-spin>
+      </nz-card>
+      <ng-template #linkResultados>
+        <button
+          [disabled]="!(rounds.show || shifts.show)"
+          nz-button
+          nzType="primary"
+          [routerLink]="['grades']"
+        >
+          <i nz-icon nzType="edit" nzTheme="outline"></i>
+          {{ "CHECK" | translate }}
+        </button>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card
+        nzTitle="{{ 'ITEMS_EVAL' | translate }}"
+        [nzExtra]="linkItemScore"
+      >
+        <nz-spin [nzSpinning]="false">
+          <nz-alert
+            nzType="info"
+            nzMessage="{{
+              'ITEMS_EVAL_INFO' | translate : { ecoe_name: ecoeName }
+            }}"
+          ></nz-alert>
+        </nz-spin>
+      </nz-card>
+      <ng-template #linkItemScore>
+        <button
+          [disabled]="!(rounds.show || shifts.show)"
+          nz-button
+          nzType="primary"
+          [routerLink]="['evaluation-items']"
+        >
+          <i nz-icon nzType="edit" nzTheme="outline"></i>
+          {{ "CHECK" | translate }}
+        </button>
+      </ng-template>
+    </div>
+
+    <div nz-col [nzMd]="8" class="gutter-box">
+      <nz-card
+        nzTitle="{{ 'GENERATE_ECOE_DATA' | translate }}"
+        [nzExtra]="linkCsv"
+      >
+        <!--cambiar ecoe_job por ecoe_job_data   [disabled]="!ecoe_job.complete"
+        
+          
+        -->
+        <button
+          [disabled]="!btn_dwl_csv"
+          nz-button
+          nzType="primary"
+          (click)="downloadCSV()"
+        >
+          <i nz-icon nzType="download" nzTheme="outline"></i>
+          {{ "DOWNLOAD" | translate }}
+        </button>
+        <!--Aqui el componente de la progress bar-->
+
+        <div>
+          <nz-progress
+            [(nzPercent)]="progress_csv"
+            nzSize="small"
+          ></nz-progress>
+        </div>
+      </nz-card>
+      <ng-template #linkCsv>
+        <button
+          [disabled]="!btn_csv"
+          nz-button
+          nzType="primary"
+          (click)="generateEcoeData()"
+        >
+          <i nz-icon nzType="plus-circle" nzTheme="outline"></i>
+          {{ "GENERATE" | translate }}
+        </button>
+      </ng-template>
+    </div>
+  </div>
+</nz-content>

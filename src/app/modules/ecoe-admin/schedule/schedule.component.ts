@@ -201,39 +201,47 @@ export class ScheduleComponent implements OnInit {
     let promises = [];
 
     Schedule.query(query)
-      .then(itemsSchedule => {
-        itemsSchedule.forEach(retSchedule => {
-          // @ts-ignore
-          promises = [...promises, this.deleteSchedule(retSchedule)];
-        });
+      .then(async itemsSchedule => {
+        for (const schedule of itemsSchedule){
+          promises.push(this.deleteSchedule(<Schedule>schedule));
+        }
 
-        Promise.all(promises)
-          .then(() => {
-            item.stage.destroy()
-              .then(() => {
-                console.log('[DELETE] Stage', item.stage);
-                this.schedules = this.schedules.filter(x => x.id !== item.id);
-              })
-              .catch(reason => console.log('delete Stage error:', reason));
-          });
+        await Promise.all(promises);
+
+        item.stage.destroy()
+        .then(() => {
+          console.log('[DELETE] Stage', item.stage);
+          this.schedules = this.schedules.filter(x => x.id !== item.id);
+        })
+        .catch(reason => {
+          console.error('delete Event error:', reason);
+          this.schedules = this.schedules.filter(x => x.id !== item.id);
+        })
       });
   }
 
   async deleteSchedule(schedule: Schedule): Promise<any> {
     const events: Pagination<Event> = await schedule.events({perPage: 50}, {paginate: true});
 
-    if (events['items']) {
-      events['items'].forEach(async event => await event.destroy()
+    const delete_events = []
+    for (const event of events['items']) {
+      delete_events.push(
+        event.destroy()
         .then(() => console.log('[DELETE] Event', event))
         .catch(reason => console.error('delete Event error:', reason))
-      );
+      )
     }
+    
+    if (delete_events.length > 0) await Promise.all(delete_events);
 
     return schedule.destroy()
       .then(() => {
         console.log('[DELETE] Schedule', schedule);
       })
-      .catch(reason => console.log('delete Schedule error:', reason));
+      .catch(reason => {
+        console.log('delete Schedule error:', reason)
+        }
+      );
   }
 
   onDeselectTabStage(schedule: Schedule): void {

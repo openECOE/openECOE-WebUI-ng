@@ -37,6 +37,9 @@ export class PlannerComponent implements OnInit {
 
   loading: boolean = false;
 
+  logPromisesERROR: any[] = [];
+
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
@@ -59,7 +62,7 @@ export class PlannerComponent implements OnInit {
       this.loading = true;
 
       const excludeItems = [];
-  
+
       this.ecoeId = +params.ecoeId;
       ECOE.fetch(this.ecoeId, {skip: excludeItems})
         .then(value => {
@@ -92,9 +95,16 @@ export class PlannerComponent implements OnInit {
   }
 
   saveRound(round: Round | Item): Promise<any> {
+    this.logPromisesERROR = [];
     return round.save()
       .then(value => console.log('Round Saved', value))
-      .catch(reason => console.error('Round Saving Error', reason));
+      .catch(err => {
+        this.logPromisesERROR.push({
+          value: round,
+          reason: err
+        });
+        return err;
+      });
   }
 
   createRound(round_code: string, description: string): Promise<void> {
@@ -147,7 +157,13 @@ export class PlannerComponent implements OnInit {
   saveShift(shift: Shift | Item): Promise<any> {
     return shift.save()
       .then(value => console.log('Shift Saved', value))
-      .catch(reason => console.error('Shift Saving Error', reason));
+      .catch(err => {
+        this.logPromisesERROR.push({
+          value: shift,
+          reason: err
+        });
+        return err;
+      });
   }
 
   /**
@@ -482,4 +498,13 @@ export class PlannerComponent implements OnInit {
   onBack() {
     this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
   }
+
+  /**
+   * Resets the array of promise errors when tried to save on
+   * data base.
+   */
+   clearImportErrors() {
+    this.logPromisesERROR = [];
+  }
 }
+

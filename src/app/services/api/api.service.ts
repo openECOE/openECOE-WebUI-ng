@@ -1,71 +1,67 @@
-import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {environment} from '../../../environments/environment';
-import {map} from 'rxjs/operators';
-import {Role, User, Option} from '@app/models';
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { environment } from "../../../environments/environment";
+import { map } from "rxjs/operators";
+import { Role, User, Option } from "@app/models";
 
 /**
  * Service with the HTTP requests to the backend.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ApiService {
-
   /**
-  * Constant with the 'api' path.
-  */
-  apiUrl: string = 'api/v1';
+   * Constant with the 'api' path.
+   */
+  apiUrl: string = "api/v1";
 
   constructor(private http: HttpClient) {}
 
   removeAnswer(studentId: number, option: Option) {
     const url = `${environment.API_ROUTE}/${this.apiUrl}/students/${studentId}/answers/${option.id}`;
     const options = {
-      headers: new HttpHeaders()
+      headers: new HttpHeaders(),
     };
     return this.http.delete(url, options);
   }
 
   getRolesTypes() {
-    const RolesPath = 'roles/types';
+    const RolesPath = "roles/types";
     const url = `${environment.API_ROUTE}/${this.apiUrl}/${RolesPath}`;
 
-    return this.http.get(url)
-      .pipe(
-        map((roles: Role[]) => {
-          roles.forEach(role => {
-            role.name = role.name.toUpperCase();
-          });
+    return this.http.get(url).pipe(
+      map((roles: Role[]) => {
+        roles.forEach((role) => {
+          role.name = role.name.toUpperCase();
+        });
 
-          return roles;
-        })
-      );
+        return roles;
+      })
+    );
   }
 
   getUsersWithRoles(queryParams) {
-    return User.query(queryParams, {paginate: true})
+    return User.query(queryParams, { paginate: true })
       .then((page: any) => {
         page.items.forEach(async (item: User) => {
           const auxRoles = Array.from(await item.roles());
-          item.roleNames = [...auxRoles.map(role => role['name'])];
+          item.roleNames = [...auxRoles.map((role) => role["name"])];
         });
         return page;
       })
-      .catch(err => err);
+      .catch((err) => err);
   }
 
   addUserRole(role: string, userID: number) {
-
     const _role = new Role({
       name: role,
-      user: userID
+      user: userID,
     });
 
     return _role.save();
   }
-
 
   deleteUserRole(role: Role) {
     return role.destroy();
@@ -80,17 +76,24 @@ export class ApiService {
    */
   getResources(resource: string, requestParams?: {}): Observable<any[]> {
     const url = `${environment.API_ROUTE}/${this.apiUrl}/${resource}`;
-    const params: HttpParams = new HttpParams({fromObject: requestParams});
+    const params: HttpParams = new HttpParams({ fromObject: requestParams });
 
-    return this.http.get<any[]>(url, {
-      params
-    })
-      .pipe(map(response => {
-        return response.map(data => {
-          const id = this.getIdFromRef(data['$uri']);
-          return {id, ...data};
-        });
-      }));
+    return this.http
+      .get<any[]>(url, {
+        params,
+      })
+      .pipe(
+        map((response) => {
+          if (response != null)
+            return response.map((data) => {
+              if (typeof data["$uri"] != "undefined") {
+                const id = this.getIdFromRef(data["$uri"]);
+                return { id, ...data };
+              }
+              return;
+            });
+        })
+      );
   }
 
   /**
@@ -99,12 +102,79 @@ export class ApiService {
    * @param ref Reference path of the resource
    * @returns Observable<any> The object of the reference passed
    */
-  getResource(ref: string): Observable<any> {
-    return this.http.get<any>(environment.API_ROUTE + ref)
-      .pipe(map(response => {
-        const itemId = this.getIdFromRef(response['$uri']);
-        return {id: itemId, ...response};
-      }));
+
+  getResource(ref: string, requestParams?: {}): Observable<any> {
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
+
+    const params: HttpParams = new HttpParams({ fromObject: requestParams });
+
+    return this.http
+      .get<any>(url, {
+        params,
+      })
+      .pipe(
+        map((response) => {
+          if (typeof response != undefined) return { ...response };
+        })
+      );
+  }
+
+  /**
+   * Makes a HTTP POST request to the backend and gets an item.
+   *
+   * @param ref Reference path of the resource
+   * @param body Body of the resource
+   * @returns Observable<any> The object of the reference passed
+   */
+  postResource(ref: string, body?: any, requestParams?: {}): Observable<any> {
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
+    const params: HttpParams = new HttpParams({ fromObject: requestParams });
+
+    return this.http
+      .post<any>(url, body, {
+        params,
+      })
+      .pipe(
+        map((response) => {
+          if (typeof response != undefined) return { ...response };
+        })
+      );
+  }
+
+  getResourceFile(ref: string): Observable<any> {
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
+    const _options = {
+      observe: "body",
+      responseType: "arraybuffer",
+    };
+    // ,headers:{['Content-Disposition']:'attachment; filename=resultados_ecoe_1.csv' }
+    return this.http
+      .get(url, { observe: "response", responseType: "arraybuffer" })
+      .pipe(
+        map((response) => {
+          return response.body;
+        })
+      );
+  }
+
+  /**
+   * Makes a HTTP GET request to retrive a file generated by a job and downloads it
+   *
+   * @param ref Id of the job
+   * @param filename Name given to the downloaded file
+   */
+  getJobFile(ref: string, filename: string) {
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/jobs/${ref}/download`;
+    this.http
+      .get(url, { observe: "response", responseType: "blob" as "json" })
+      .subscribe((response: any) => {
+        let blob: Blob = response.body;
+        let downloadLink = document.createElement("a");
+        downloadLink.href = window.URL.createObjectURL(blob);
+        if (filename) downloadLink.setAttribute("download", filename);
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+      });
   }
 
   /**
@@ -115,12 +185,15 @@ export class ApiService {
    * @returns Observable<any> The object of the item created
    */
   createResource(resource: string, body: any): Observable<any> {
-    return this.http.post(`${environment.API_ROUTE}/${this.apiUrl}/${resource}`, body)
-      .pipe(map(response => {
-        const reference = response['$uri'] || response['$ref'];
-        const itemId = this.getIdFromRef(reference);
-        return {id: itemId, ...response};
-      }));
+    return this.http
+      .post(`${environment.API_ROUTE}/${this.apiUrl}/${resource}`, body)
+      .pipe(
+        map((response) => {
+          const reference = response["$uri"] || response["$ref"];
+          const itemId = this.getIdFromRef(reference);
+          return { id: itemId, ...response };
+        })
+      );
   }
 
   /**
@@ -130,6 +203,6 @@ export class ApiService {
    * @returns The id obtained
    */
   getIdFromRef(ref: string): number {
-    return +ref.substr(ref.lastIndexOf('/') + 1);
+    return +ref.substr(ref.lastIndexOf("/") + 1);
   }
 }

@@ -1,10 +1,14 @@
-import {Component, NgZone, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, inject, Input, NgZone, OnInit, Output} from '@angular/core';
 import {Role, RoleType, User, UserLogged} from '@app/models';
 import {SharedService} from '@services/shared/shared.service';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import {ApiService} from '@services/api/api.service';
+import { DOCUMENT } from '@angular/common';
 import { UserService } from '@app/services/user/user.service';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { valueFunctionProp } from 'ng-zorro-antd';
+import { findLast } from '@angular/compiler/src/directive_resolver';
 
 
 interface UserItem extends User {
@@ -22,6 +26,9 @@ export class UsersAdminComponent implements OnInit {
   user: UserLogged;
   activeUser: User;
 
+  @Input() showDeleteButton: boolean = true;
+  @Output() delete: EventEmitter<void> = new EventEmitter<void>();
+
   passwordVisible = false;
 
   users: Array<UserItem> = [];
@@ -33,19 +40,30 @@ export class UsersAdminComponent implements OnInit {
   totalItems: number = 0;
   loading: boolean = false;
 
+  // FORMULARIO EDITAR
+  usuarioEditar: User| null; 
+  usuarioOriginal: User;
+
   validateForm: FormGroup;
-  formArrayRoles: FormArray;
   showAddUser: boolean = false;
+  showMessageDelete: boolean=false;
+  showEditUser: boolean = false;
   importErrors: { value: any, reason: any }[] = [];
 
   listRoles: RoleType[] = [];
 
   readonly SUPER_ADMIN = 'superadmin';
 
-  constructor(private userService: UserService,
+idx: any;
+item: any;
+editEmail: any;
+
+  constructor(@Inject(DOCUMENT) document: Document,
+              private userService: UserService,
               private apiService: ApiService,
               public shared: SharedService,
               private fb: FormBuilder,
+              public formBuilder: FormBuilder,
               private zone: NgZone,
               private router: Router) {
   }
@@ -55,11 +73,23 @@ export class UsersAdminComponent implements OnInit {
       this.listRoles = roles;
       this.getUserForm();
     });
+
+    this.userService.userDataChange.subscribe(user => {
+      this.user = user;
+      this.activeUser = this.user.user;
+      this.loadUsers();
+    })
+
     this.user = this.userService.userData;
     this.activeUser = this.user.user;
     this.loadUsers();
+
+    await this.submitEditFormUser.arguments(this.users);
+    this.loading= false;
+
   }
 
+  
   async getUserForm() {
     // TODO: Validate if email exists
     this.validateForm = this.fb.group({
@@ -67,15 +97,10 @@ export class UsersAdminComponent implements OnInit {
       password: [null, [Validators.required]],
       userName: [null, [Validators.required]],
       userSurname: [null, [Validators.required]],
-      roles: new FormArray([])
+      roles: [null]
     });
 
-    this.formArrayRoles = <FormArray>this.validateForm.controls.roles;
 
-    this.listRoles.forEach((role) => {
-      const control = new FormControl(role.name === 'user');
-      this.formArrayRoles.push(control);
-    });
   }
 
   async getRoles() {
@@ -151,15 +176,28 @@ export class UsersAdminComponent implements OnInit {
   }
 
 
+  updateUser(item: any): void {
+    new User(item).update({email: item.email, name: item.name, surname: item.surname})
+      .then((response: any) => {
+        this.editCache[item.$id].edit = false;
+        this.users = this.users.map(x => (x.id === item.id) ? response : x);
+      })
+     .catch( err => {
+       console.error('ERROR: ', err);
+     });
+ }
 
+
+  /*
   editUser(idx: number) {
     this.editCache[idx].editItem = true;
   }
+  */ 
 
   async updateUserRoles(userItem: CacheItem) {
     const _rolesNames = userItem.data.roleNames;
     const _roles: Array<Role> = await userItem.data.roles();
-      
+
     const _delList = _roles.filter(_role => {
       return !_rolesNames.includes(_role.name)
     })
@@ -200,6 +238,19 @@ export class UsersAdminComponent implements OnInit {
       .finally(() => this.loading = false);
   }
 
+  delUser(user: User) {
+    var indice = this.users.findIndex( (element) => {return element.id == user.id;})
+    this.users[indice].destroy();
+    this.removeUserList(this.users[indice].id);
+  }
+
+  removeUserList(idx: number) {
+    delete this.users[idx];
+    delete this.editCache[idx];
+    this.users = this.users.filter((value) => value !== this.users[idx]);
+  }
+
+/*
   delUser(idx: number) {
     this.users[idx].destroy()
       .then(() => {
@@ -221,7 +272,7 @@ export class UsersAdminComponent implements OnInit {
       :
       Object.assign(this.editCache[idx].data, this.users[idx]);
   }
-
+*/
   importUsers(parserResult: Array<any>) {
     this.importErrors = [];
     const respPromises = [];
@@ -265,9 +316,64 @@ export class UsersAdminComponent implements OnInit {
     this.showAddUser = true;
   }
 
+  showModalDelete() {
+    this.showMessageDelete = true;
+  }
+
   closeModal() {
     this.shared.cleanForm(this.validateForm);
     this.showAddUser = false;
+    this.showEditUser = false;
+  }
+
+  showModalEdit(modalEditUser: User) {
+    this.usuarioOriginal = modalEditUser;
+    this.usuarioEditar =  Object.assign(new User, modalEditUser);
+    
+    // TIENE QUE SER UNA LISTA DE ROLES 
+    let rolesListEdit = this.usuarioEditar.roleNames;
+
+    console.log(rolesListEdit);
+
+    console.log(modalEditUser.id);
+    this.showEditUser = true;
+  }
+
+/*
+  email
+  password
+  nombre
+  apellidos
+  roles
+    --Aceptar
+*/
+  submitEditFormUser(form: FormGroup) {
+    
+    const _email = (<HTMLInputElement>document.getElementById("edit_email")).value ;
+    const _password = (<HTMLInputElement>document.getElementById("edit_password")).value;
+    const _name =(<HTMLInputElement>document.getElementById("edit_name")).value;
+    const _surname = (<HTMLInputElement>document.getElementById("edit_surname")).value;
+
+    const updateData = {
+      email: _email,
+      password: _password, 
+      name: _name,
+      surname: _surname
+    }
+    const usercache = this.editCache.find(f => f.data.id === this.usuarioOriginal.id);
+
+    const value = form.value;
+    this.usuarioOriginal.update(updateData)
+    .then(user => {
+      if(value.roles){
+        value.roles.forEach((rol: string) => {
+        this.updateUserRoles(usercache).finally();
+        this.usuarioOriginal.updateData;
+        });
+      }
+      this.loadUsers();
+      this.closeModal();
+    });
   }
 
   submitFormUser(form: FormGroup) {
@@ -280,9 +386,10 @@ export class UsersAdminComponent implements OnInit {
         value.userSurname,
         value.password)
         .then(user => {
-          value.roles.forEach((rol, idx) => {
-            if (rol) { this.apiService.addUserRole(this.listRoles[idx].name, user.id).finally(); }
-          });
+          if(value.roles)
+            value.roles.forEach((rol: string) => {
+              this.apiService.addUserRole(rol, user.id).finally();
+            });
           this.loadUsers();
           this.closeModal();
         });
@@ -323,9 +430,9 @@ export class UsersAdminComponent implements OnInit {
   isDissabled(idx: number, name: string) {
     let dissabled;
     if (name === this.SUPER_ADMIN) {
-      dissabled = !(this.editCache[idx].data.roleNames.length === 0 || this.editCache[idx].data.roleNames.indexOf(name) > -1);
+      dissabled = !(this.editCache[idx].data.rolesList.length === 0 || this.editCache[idx].data.rolesList.indexOf(name) > -1);
     } else {
-      dissabled =  (this.editCache[idx].data.roleNames.indexOf(this.SUPER_ADMIN) > -1);
+      dissabled =  (this.editCache[idx].data.rolesList.indexOf(this.SUPER_ADMIN) > -1);
     }
     return dissabled;
   }
@@ -336,3 +443,13 @@ export interface CacheItem extends UserItem {
   editItem: boolean;
   newItem: boolean;
 }
+
+export interface editarUser {
+  id: string;
+  email: string;
+  password: string;
+  username: string;
+  surname: string;
+}
+
+let userEditar : editarUser
