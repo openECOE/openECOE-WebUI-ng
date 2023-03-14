@@ -42,12 +42,9 @@
       </nz-switch>
 
       <ng-container *ngIf="question.schema.type == 'range'">
-        <bar-rating
-          [rate]="option.range"
-          [max]="option.range"
-          showText="false"
-          theme="horizontal">
-        </bar-rating>
+        <nz-radio-group nzButtonStyle="solid">
+          <label *ngFor="let number of [].constructor(option.range + 1); let i = index" nz-radio-button>{{i}}</label>
+        </nz-radio-group>
       </ng-container>
 
     </td>
