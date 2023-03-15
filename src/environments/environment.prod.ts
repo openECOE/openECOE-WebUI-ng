@@ -1,10 +1,8 @@
 export const environment = {
   production: true,
-  SERVER_NAME: 'openecoe.umh.es',
-  SECRET_KEY: 'f24b05095b4748a8b9d13df5cdb8d83c',
-  DEBUG: false,
   TESTING: false,
-  API_ROUTE: 'https://api.openecoe.umh.es',
-  API_AUTH_TOKEN: 'https://api.openecoe.umh.es/auth/tokens',
-  CHRONO_ROUTE: 'https://chrono.openecoe.umh.es'
+  DEBUG: window["env"]["debug"] || false,
+  API_ROUTE: window["env"]["apiUrl"] || "default",
+  CHRONO_ROUTE: window["env"]["chronoUrl"] || "default",
+  SECRET_KEY: window["env"]["secretKey"] || "default",
 };

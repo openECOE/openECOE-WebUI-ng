@@ -1,5 +1,13 @@
 # OpenECOE-WebUI-Ng
 
+## Environment Variables
+```shell
+DEBUG=true
+SECRET_KEY=1111111111111111111
+API_URL=https://api.openecoe.es
+CHRONO_ROUTE=https://chrono.openecoe.es
+```
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.3.
 
 ## Development server

@@ -4,13 +4,11 @@
 
 export const environment = {
   production: false,
-  SERVER_NAME: 'localhost:5000',
-  SECRET_KEY: '111111111111111111111111111111111',
-  DEBUG: true,
   TESTING: false,
-  API_ROUTE: 'http://localhost:5000',
-  API_AUTH_TOKEN: 'http://localhost:5000/auth/tokens',
-  CHRONO_ROUTE: 'http://localhost:6080'
+  DEBUG: window["env"]["debug"] || false,
+  API_ROUTE: window["env"]["apiUrl"] || "default",
+  CHRONO_ROUTE: window["env"]["chronoUrl"] || "default",
+  SECRET_KEY: window["env"]["secretKey"] || "default",
 };
 
 /*

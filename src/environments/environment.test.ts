@@ -4,13 +4,11 @@
 
 export const environment = {
   production: false,
-  SERVER_NAME: 'local.openecoe.es:5080',
-  SECRET_KEY: 'f24b05095b4748a8b9d13df5cdb8d83c',
-  DEBUG: true,
   TESTING: true,
-  API_ROUTE: 'http://api.local.openecoe.es:5000',
-  API_AUTH_TOKEN: 'http://api.local.openecoe.es:5000/auth/tokens',
-  CHRONO_ROUTE: 'http://chrono.local.openecoe.es:6080'
+  DEBUG: window["env"]["debug"] || false,
+  API_ROUTE: window["env"]["apiUrl"] || "default",
+  CHRONO_ROUTE: window["env"]["chronoUrl"] || "default",
+  SECRET_KEY: window["env"]["secretKey"] || "default",
 };
 
 /*

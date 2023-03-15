@@ -8,16 +8,8 @@ RUN npm install -g @angular/cli
 
 COPY . /app
 
-ENV NODE_OPTIONS --max_old_space_size=4096
-ENV GENERATE_SOURCEMAP false
-
 RUN ng build --prod --output-path dist
 
-FROM nginx:1.23.3-alpine
+FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
-
-# expose port 80
-EXPOSE 80
-
-# run nginx
-CMD ["nginx", "-g", "daemon off;"]
+COPY .docker/deploy/90-envsubst-on-webui.sh /docker-entrypoint.d/90-envsubst-on-webui.sh
