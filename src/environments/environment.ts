@@ -5,9 +5,9 @@
 export const environment = {
   production: false,
   TESTING: false,
-  DEBUG: window["env"]["debug"] || false,
-  API_ROUTE: window["env"]["apiUrl"] || "default",
-  CHRONO_ROUTE: window["env"]["chronoUrl"] || "default",
+  DEBUG: window["env"]["debug"] || true,
+  API_ROUTE: window["env"]["apiUrl"] || "http://localhost:5000",
+  CHRONO_ROUTE: window["env"]["chronoUrl"] || "http://localhost:5000",
   SECRET_KEY: window["env"]["secretKey"] || "default",
 };
 
