@@ -7,9 +7,9 @@
       <img alt="logo" src="../assets/logo.png">
     </div>
 
-    <app-usermenu style="margin: auto;"></app-usermenu>
+    <app-usermenu *ngIf="isLoggedIn()" style="margin: auto;"></app-usermenu>
 
-    <app-submenu [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>
+    <app-submenu *ngIf="isLoggedIn()" [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>
 
 
   </nz-header>
