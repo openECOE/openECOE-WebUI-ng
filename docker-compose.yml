@@ -6,9 +6,7 @@ services:
     image: openecoe/webui-ng
     container_name: openecoe-webui
     environment:
-      SECRET_KEY: eiQuain4_aelohKa3_giGh6Fai_reeTh6Ai_Aegeic6l_ekuigo0M_aeph6Qua_uuZaac5n
       DEBUG: "True"
-      API_URL:  http://localhost:5000
-      CHRONO_ROUTE: http://localhost:5000
+      BACKEND_URL: "http://localhost:8081"
     ports:
       - 80:80

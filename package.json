@@ -34,7 +34,7 @@
     "ngx-papaparse": "5.1.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.3",
-    "socket.io-client": "^2.3.0",
+    "socket.io-client": "^2.3.1",
     "tslib": "^1.10.0",
     "yarn": "^1.22.19",
     "zone.js": "~0.10.2"

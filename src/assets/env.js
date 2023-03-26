@@ -1,9 +1,11 @@
 (function(window) {
   window["env"] = window["env"] || {};
+  
+  _location = "http://localhost:8080"
 
   // Environment variables
-  window["env"]["debug"] = true;
-  window["env"]["secretKey"] = "1111111111111111111111111";
-  window["env"]["apiUrl"] = "https://api.openecoe.es";
-  window["env"]["chronoUrl"] = "https://chrono.openecoe.es";
+  window["env"]["debug"] = false;
+  window["env"]["backUrl"] = _location;
+  window["env"]["apiUrl"] = _location + "/backend";
+  window["env"]["chronoUrl"] = _location + "/chrono";
 })(this);

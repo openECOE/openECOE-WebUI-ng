@@ -4,5 +4,5 @@ export const environment = {
   DEBUG: window["env"]["debug"] || false,
   API_ROUTE: window["env"]["apiUrl"] || "default",
   CHRONO_ROUTE: window["env"]["chronoUrl"] || "default",
-  SECRET_KEY: window["env"]["secretKey"] || "default",
+  BACK_ROUTE: window["env"]["backUrl"] || "default",
 };
