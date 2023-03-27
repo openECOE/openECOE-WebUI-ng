@@ -1,6 +1,6 @@
 {
   "name": "open-ecoe-web-ui-ng",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "scripts": {
     "start": "ng serve",
     "testServer": "ng serve --configuration=test",
