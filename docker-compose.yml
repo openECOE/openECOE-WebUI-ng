@@ -3,10 +3,10 @@ services:
   openecoe-webui:
     build:
       context: .
-    image: openecoe/webui-ng
+    image: openecoe/webui:latest
     container_name: openecoe-webui
     environment:
       DEBUG: "True"
       BACKEND_URL: "http://localhost:8081"
     ports:
-      - 80:80
+      - 8082:80
