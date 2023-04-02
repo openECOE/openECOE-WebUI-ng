@@ -17,9 +17,6 @@
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
-.vscode/*
-
 # misc
 /.sass-cache
 /connect.lock
