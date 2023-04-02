@@ -26,18 +26,19 @@ export class OutsideChronoComponent implements OnInit {
   async ngOnInit() {
     this.ecoeId = this.route.snapshot.params.ecoeId;
     this.roundId = this.route.snapshot.params.roundId;
+    
+    this.fetchConfig();
+  }
 
-    this.chronoService.getChronoConfiguration(this.ecoeId)
-      .toPromise()
-      .then(result => {
-        this.config = result[0] || null;
-
-        if (!this.config) {return; }
-
-        this.ecoeName = this.config.ecoe.name;
-        const auxRound = (this.config.rounds.filter(item => +item.id === +this.roundId));
-        this.roundDescription = (auxRound.length > 0) ? auxRound[0].name : null;
-      });
+  async fetchConfig() {
+    const result = await this.chronoService.getChronoConfiguration(this.ecoeId).toPromise();
+    this.config = result[0] || null;
+  
+    if (!this.config) { return; }
+  
+    this.ecoeName = this.config.ecoe.name;
+    const auxRound = this.config.rounds.filter(item => +item.id === +this.roundId);
+    this.roundDescription = (auxRound.length > 0) ? auxRound[0].name : null;
   }
 
   onBack() {

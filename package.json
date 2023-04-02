@@ -1,9 +1,8 @@
 {
   "name": "open-ecoe-web-ui-ng",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "scripts": {
     "start": "ng serve",
-    "startProd": "ng serve --configuration=prodDebug",
     "testServer": "ng serve --configuration=test",
     "prod": "ng serve --prod",
     "build": "ng build",
@@ -32,11 +31,10 @@
     "core-js": "^2.6.5",
     "moment": "^2.24.0",
     "ng-zorro-antd": "9.3.0",
-    "ngx-bar-rating": "^1.1.0",
-    "ngx-papaparse": "^5.1.0",
+    "ngx-papaparse": "5.1.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.3",
-    "socket.io-client": "^2.3.0",
+    "socket.io-client": "^2.3.1",
     "tslib": "^1.10.0",
     "yarn": "^1.22.19",
     "zone.js": "~0.10.2"

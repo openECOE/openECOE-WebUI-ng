@@ -4,15 +4,14 @@ import { filter } from "rxjs/operators";
 import { NavigationEnd, Router } from "@angular/router";
 import { SharedService } from "./services/shared/shared.service";
 import { AuthenticationService } from "./services/authentication/authentication.service";
-import { GenerateReportsComponent } from "./modules/ecoe-results/generate-reports/generate-reports.component";
-import { EcoeResultsComponent } from "./modules/ecoe-results/ecoe-results.component";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.less"],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit { 
+
   language: string = "es";
   year: string = "";
   isCollapsed: Boolean = false;
@@ -56,5 +55,9 @@ export class AppComponent implements OnInit {
 
   toCollapse(event) {
     this.isCollapsed = false;
+  }
+
+  isLoggedIn(): boolean {
+    return this.authService.userLogged ? true : false;
   }
 }

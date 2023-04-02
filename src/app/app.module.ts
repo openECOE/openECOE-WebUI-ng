@@ -54,7 +54,6 @@ import {
 
 import { resources } from "./app.resources";
 import { PipesModule } from "@pipes/pipes.module";
-import { BarRatingModule } from "ngx-bar-rating";
 import { CoreModule } from "./core/core.module";
 import { EcoeModule } from "./modules/ecoe/ecoe.module";
 import { GenerateReportsComponent } from "./modules/ecoe-results/generate-reports/generate-reports.component";
@@ -100,7 +99,6 @@ export function createTranslateLoader(http: HttpClient) {
     PotionModule,
     PipesModule,
     EcoeModule,
-    BarRatingModule,
     NzBreadCrumbModule,
     NzGridModule,
     NzInputModule,
@@ -145,8 +143,8 @@ export function createTranslateLoader(http: HttpClient) {
     {
       provide: POTION_CONFIG,
       useValue: {
-        host: environment.API_ROUTE,
-        prefix: "/api/v1",
+        host: environment.BACK_ROUTE,
+        prefix: "/backend/api/v1",
       },
     },
     {

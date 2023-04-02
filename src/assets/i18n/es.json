@@ -275,5 +275,6 @@
   "CHECK": "Comprobar",
   "SHOW_ARCHIVED_ECOES": "Mostrar ECOES Archivadas",
   "SHOW_ECOES": "Mostrar ECOES",
-  "RESTORE_ECOE": "Restaurar ECOE"
+  "RESTORE_ECOE": "Restaurar ECOE",
+  "ECOE_NAME_REQUIRED": "Nombre de la ECOE requerido"
 }

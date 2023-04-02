@@ -17,9 +17,6 @@
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
-.vscode/*
-
 # misc
 /.sass-cache
 /connect.lock
@@ -36,3 +33,8 @@ Thumbs.db
 
 # Compodoc
 /documentation
+
+# Environment files
+*.env
+!template.env
+!local.env

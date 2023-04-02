@@ -12,7 +12,6 @@ import {QuestionComponent} from './question/question.component';
 import {QuestionRadioComponent} from './question/question-radio/question-radio.component';
 import {QuestionCheckboxComponent} from './question/question-checkbox/question-checkbox.component';
 import {QuestionRangeComponent} from './question/question-range/question-range.component';
-import {BarRatingModule} from 'ngx-bar-rating';
 import {
   NzBreadCrumbModule,
   NzGridModule,
@@ -51,7 +50,6 @@ import {
     FormsModule,
     PipesModule,
     ComponentsModule,
-    BarRatingModule,
     NzBreadCrumbModule,
     NzGridModule,
     NzInputModule,
