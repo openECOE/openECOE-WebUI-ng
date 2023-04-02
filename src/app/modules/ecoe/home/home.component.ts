@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { mergeMap } from "rxjs/operators";
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
-import { AuthenticationService } from "../../../services/authentication/authentication.service";
+import { debounceTime } from "rxjs/operators";
+import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
 import { NzModalService } from "ng-zorro-antd";
 import { TranslateService } from "@ngx-translate/core";
@@ -9,7 +8,8 @@ import { UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
 
-import { Router, ActivatedRoute } from "@angular/router";
+import { Router } from "@angular/router";
+import { Observable, Observer } from "rxjs";
 
 @Component({
   selector: "app-home",
@@ -28,14 +28,21 @@ export class HomeComponent implements OnInit {
   Listed: any;
   Delisted: any;
 
+  validateForm!: FormGroup;
+
   constructor(
     private formBuilder: FormBuilder,
     public userService: UserService,
     private apiService: ApiService,
     private modalSrv: NzModalService,
     private translate: TranslateService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private fb: FormBuilder,
+  ) {
+    this.validateForm = this.fb.group({
+      ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
+    });
+  }
 
   ngOnInit() {
     this.Listed = true;
@@ -135,5 +142,44 @@ export class HomeComponent implements OnInit {
         });
       }
     );
+  }
+
+  userNameAsyncValidator = (control: FormControl) =>
+    new Observable((observer: Observer<ValidationErrors | null>) => {
+      setTimeout(async () => {
+        const _ecoe = ECOE.first({where: {name: control.value, organization: this.organization}})
+        if (_ecoe) {
+          // you have to return `{error: true}` to mark it as an error event
+          observer.next({ error: true, duplicated: true });
+        } else {
+          observer.next(null);
+        }
+        observer.complete();
+      }, 1000);
+    });
+
+  async submitFormECOE(value: { ecoeName: string}) { 
+    for (const key in this.validateForm.controls) {
+      this.validateForm.controls[key].markAsDirty();
+      this.validateForm.controls[key].updateValueAndValidity();
+    }
+    
+    const _ecoe = new ECOE();
+    _ecoe.name = value.ecoeName;
+    _ecoe.organization = this.organization;
+    
+    try {
+      await _ecoe.save();
+    } catch (error) {
+      console.log(error);
+      var msg =
+          error.status == 409
+            ? this.translate.instant("ERROR_DUPLICATE_ECOE")
+            : this.translate.instant("ERROR_REQUEST_CONTENT");
+        this.modalSrv.error({
+          nzMask: false,
+          nzTitle: msg,
+        });
+    }
   }
 }
