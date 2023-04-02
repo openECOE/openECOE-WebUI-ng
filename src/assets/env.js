@@ -1,7 +1,7 @@
 (function(window) {
   window["env"] = window["env"] || {};
   
-  _location = "http://localhost:8080"
+  _location = "http://localhost:8081"
 
   // Environment variables
   window["env"]["debug"] = false;
