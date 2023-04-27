@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Inject, inject, Input, NgZone, OnInit, Output} from '@angular/core';
 import {Role, RoleType, User, UserLogged} from '@app/models';
 import {SharedService} from '@services/shared/shared.service';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import {ApiService} from '@services/api/api.service';
 import { DOCUMENT } from '@angular/common';
 import { UserService } from '@app/services/user/user.service';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { valueFunctionProp } from 'ng-zorro-antd';
+import { NzMessageService, valueFunctionProp } from 'ng-zorro-antd';
 import { findLast } from '@angular/compiler/src/directive_resolver';
 
 
@@ -41,7 +41,7 @@ export class UsersAdminComponent implements OnInit {
   loading: boolean = false;
 
   // FORMULARIO EDITAR
-  usuarioEditar: User| null; 
+  usuarioEditar: User; 
   usuarioOriginal: User;
 
   validateForm: FormGroup;
@@ -58,21 +58,18 @@ idx: any;
 item: any;
 editEmail: any;
 
-  constructor(@Inject(DOCUMENT) document: Document,
-              private userService: UserService,
+  constructor(private userService: UserService,
               private apiService: ApiService,
               public shared: SharedService,
               private fb: FormBuilder,
               public formBuilder: FormBuilder,
+              private message: NzMessageService,
               private zone: NgZone,
               private router: Router) {
   }
 
   async ngOnInit() {
-    this.getRoles().then(roles => {
-      this.listRoles = roles;
-      this.getUserForm();
-    });
+    this.listRoles = await this.getRoles()
 
     this.userService.userDataChange.subscribe(user => {
       this.user = user;
@@ -80,11 +77,13 @@ editEmail: any;
       this.loadUsers();
     })
 
+    this.getUserForm();
+
     this.user = this.userService.userData;
     this.activeUser = this.user.user;
+    
     this.loadUsers();
 
-    await this.submitEditFormUser.arguments(this.users);
     this.loading= false;
 
   }
@@ -94,13 +93,24 @@ editEmail: any;
     // TODO: Validate if email exists
     this.validateForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required]],
+      password: [null, [this.requiredWhenAddingUser]],
       userName: [null, [Validators.required]],
       userSurname: [null, [Validators.required]],
       roles: [null]
     });
 
 
+  }
+
+  //CUstom Validator to make required only when adding a new user
+  requiredWhenAddingUser() {
+    return (control: AbstractControl) => {
+      if (this.showAddUser) {
+        return Validators.required(control);
+      } else {
+        return null;
+      }
+    }
   }
 
   async getRoles() {
@@ -250,29 +260,6 @@ editEmail: any;
     this.users = this.users.filter((value) => value !== this.users[idx]);
   }
 
-/*
-  delUser(idx: number) {
-    this.users[idx].destroy()
-      .then(() => {
-        this.removeUserList(idx);
-      });
-  }
-
-  removeUserList(idx: number) {
-    delete this.users[idx];
-    delete this.editCache[idx];
-    this.users = this.users.filter((value) => value !== this.users[idx]);
-  }
-
-  cancelUser(idx: number) {
-    this.editCache[idx].editItem = false;
-
-    this.editCache[idx].newItem ?
-      this.removeUserList(idx)
-      :
-      Object.assign(this.editCache[idx].data, this.users[idx]);
-  }
-*/
   importUsers(parserResult: Array<any>) {
     this.importErrors = [];
     const respPromises = [];
@@ -326,16 +313,22 @@ editEmail: any;
     this.showEditUser = false;
   }
 
-  showModalEdit(modalEditUser: User) {
+  async showModalEdit(modalEditUser: User) {
     this.usuarioOriginal = modalEditUser;
-    this.usuarioEditar =  Object.assign(new User, modalEditUser);
+
+    this.validateForm.controls['email'].setValue(modalEditUser.email);
+    this.validateForm.controls['userName'].setValue(modalEditUser.name);
+    this.validateForm.controls['userSurname'].setValue(modalEditUser.surname);
+
+    const _roles = await modalEditUser.roles()
+
+    let roles = [];
+    for (const rol of _roles) {
+      roles.push(rol.name);
+    }
+
+    this.validateForm.controls['roles'].setValue(roles);
     
-    // TIENE QUE SER UNA LISTA DE ROLES 
-    let rolesListEdit = this.usuarioEditar.roleNames;
-
-    console.log(rolesListEdit);
-
-    console.log(modalEditUser.id);
     this.showEditUser = true;
   }
 
@@ -376,23 +369,40 @@ editEmail: any;
     });
   }
 
-  submitFormUser(form: FormGroup) {
+  async submitFormUser(form: FormGroup) {
     this.shared.doFormDirty(form);
     if (form.valid) {
       const value = form.value;
-      this.addUser(
-        value.email,
-        value.userName,
-        value.userSurname,
-        value.password)
-        .then(user => {
-          if(value.roles)
-            value.roles.forEach((rol: string) => {
-              this.apiService.addUserRole(rol, user.id).finally();
-            });
-          this.loadUsers();
-          this.closeModal();
-        });
+      try {
+        if (this.showAddUser) {
+          const newUser = await this.addUser(
+            value.email,
+            value.userName,
+            value.userSurname,
+            false,
+            value.password)
+          
+          if(value.roles) {
+            for (const rol of value.roles) {
+              await this.apiService.addUserRole(rol, newUser.id);
+            }
+        }
+      } else if (this.showEditUser) {
+        this.usuarioOriginal.email = value.email;
+        this.usuarioOriginal.name = value.userName;
+        this.usuarioOriginal.surname = value.userSurname;
+        if (value.password) {
+          this.usuarioOriginal.password = value.password;
+        }
+
+        const userUpdated = await this.usuarioOriginal.update();
+      }
+        
+      } catch (error) {
+        console.error(error);
+        this.message.create('error', 'Error al guardar la información del usuario');
+
+      }
     }
   }
 
