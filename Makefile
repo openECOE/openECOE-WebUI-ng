@@ -4,9 +4,8 @@ up:
 	docker compose up -d
 down:
 	docker compose down
+	docker compose -p openecoe-backend -f docker-compose.dev.api.yml down
 show_logs:
 	docker compose logs
-persistence:
-	docker compose -p openecoe-persistence -f .docker/docker-compose.persistence.yml up --build -d --remove-orphans 
-build-prod:
-	docker compose -p openecoe-api-prod -f .docker/docker-compose.prod.yml up --build -d --remove-orphans
+backend:
+	docker compose -p openecoe-backend -f docker-compose.dev.api.yml up -d --remove-orphans
