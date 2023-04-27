@@ -137,8 +137,8 @@
   MODAL DE ADD_USER
 -->
 <nz-modal *ngIf="validateForm"
-  [(nzVisible)]="showAddUser"
-  [nzTitle]="'ADD_USER' | translate"
+  [(nzVisible)]="showAddUser || showEditUser"
+  [nzTitle]="showAddUser?('ADD_USER' | translate) : ('EDIT_USER' | translate)"
   [nzOkText]="'ACCEPT' | translate"
   [nzCancelText]="'CANCEL' | translate"
   (nzOnOk)="submitFormUser(validateForm)"
@@ -187,7 +187,6 @@
         <nz-input-group>
         <nz-form-label >Roles</nz-form-label>
           <nz-select
-          *ngIf="showAddUser"
           style="width: 100%"
           nzSize="small"
           [nzMaxTagCount]="5"
@@ -215,7 +214,7 @@
     MODAL DE EDIT_USER
   -->
 
-<nz-modal *ngIf="validateForm"
+<!-- <nz-modal *ngIf="validateForm"
   [(nzVisible)]="showEditUser"
   [nzTitle]="'EDIT_USER' | translate"
   [nzOkText]="'ACCEPT' | translate"
@@ -227,7 +226,7 @@
     <nz-form-item>
       <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'EMAIL_NOT_VALID' | translate">
         <nz-input-group [nzPrefixIcon]="'mail'">
-          <input type="email" nz-input [(ngModel)]="usuarioEditar.email" formControlName="email" id="edit_email" [placeholder]="'EMAIL' | translate">
+          <input type="email" nz-input formControlName="email" id="edit_email" [placeholder]="'EMAIL' | translate">
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -246,12 +245,12 @@
     <nz-form-item>
       <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
         <nz-input-group nzCompact>
-          <input nz-input [(ngModel)]="usuarioEditar.name" id="edit_name" formControlName="userName" placeholder="{{'NAME' | translate}}">
+          <input nz-input id="edit_name" formControlName="userName" placeholder="{{'NAME' | translate}}">
         </nz-input-group>
       </nz-form-control>
       <nz-form-control [nzSpan]="24" [nzErrorTip]="'SURNAME_REQUIRED' | translate">
         <nz-input-group nzCompact>
-          <input nz-input [(ngModel)]="usuarioEditar.surname" id="edit_surname" formControlName="userSurname" placeholder="{{'SURNAMES' | translate}}">
+          <input nz-input id="edit_surname" formControlName="userSurname" placeholder="{{'SURNAMES' | translate}}">
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -260,9 +259,6 @@
       <nz-form-control>
         <nz-input-group>
         <nz-form-label >Roles</nz-form-label>
-        <!--
-                    [(ngModel)]="usuarioOriginal.rolesList"
-        -->
         <nz-select
           [(ngModel)]="usuarioOriginal.roleNames"
           *ngIf="showEditUser"
@@ -277,7 +273,6 @@
           >
             <nz-option *ngFor="let role of listRoles"
                       [nzLabel]="role.name | translate"
-                      [ngModel]= "usuarioEditar.roles"
                       [nzValue]="role.name"
             >
           </nz-option>
@@ -287,4 +282,4 @@
     </nz-form-item>
   </form>
   
-</nz-modal>
+</nz-modal> -->

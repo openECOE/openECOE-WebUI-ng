@@ -32,4 +32,5 @@ export class UserLogged {
   get role() {return this.user.is_superadmin ? "administrator" : null}
   get isEval() {return this.roles.includes("evaluator")} 
   get isAdmin() {return this.roles.includes("administrator")}
+  get isSuper() {return this.roles.includes("superadmin")}
 }
