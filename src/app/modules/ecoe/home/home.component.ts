@@ -147,7 +147,7 @@ export class HomeComponent implements OnInit {
   userNameAsyncValidator = (control: FormControl) =>
     new Observable((observer: Observer<ValidationErrors | null>) => {
       setTimeout(async () => {
-        const _ecoe = ECOE.first({where: {name: control.value, organization: this.organization}})
+        const _ecoe = await ECOE.first({where: {name: control.value, organization: this.organization}})
         if (_ecoe) {
           // you have to return `{error: true}` to mark it as an error event
           observer.next({ error: true, duplicated: true });
