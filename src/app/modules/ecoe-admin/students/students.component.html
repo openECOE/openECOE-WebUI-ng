@@ -57,7 +57,7 @@
                   (click)="showDrawer()">
             <i nz-icon [nzType]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
-          <app-upload-and-parse [fileURL]="STUDENTS_URL" (parserResult)="importStudents($event)"></app-upload-and-parse>
+          <app-upload-and-parse [parserFile]="studentsParser" (parserResult)="importStudents($event)"></app-upload-and-parse>
           <button nz-button
             nz-popconfirm [nzPopconfirmTitle]="'DELETE_SELECTED_CONFIRMATION' | translate"
             (nzOnConfirm)="deleteSelected()"

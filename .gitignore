@@ -38,3 +38,6 @@ Thumbs.db
 *.env
 !template.env
 !local.env
+
+#Data Files
+/.data

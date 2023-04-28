@@ -29,16 +29,16 @@
       </p>
     </nz-upload>
   </div>
-  <div style="height: 15%">
+  <div style="height: 15%" *ngIf="parserFile">
     <nz-row nzType="flex" nzAlign="middle" nzJustify="center">
       <nz-col nzSpan="24" text-center>
         <span>{{'DOWNLOAD_TEMPLATE_HERE' | translate}}</span>
       </nz-col>
       <nz-col nzSpan="24" text-center>
-        <a nz-button nzSize="default" nzType="primary" [href]="fileURL">
+        <button nz-button nzSize="default" nzType="primary" (click)="generateCSV()">
           <i nz-icon nzType="download"></i>
           {{'DOWNLOAD_TEMPLATE' | translate}}
-        </a>
+        </button>
       </nz-col>
     </nz-row>
   </div>

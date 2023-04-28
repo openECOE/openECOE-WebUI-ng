@@ -96,31 +96,22 @@ export class QuestionsService {
    * @param file obtained from form array or array form.
    * @param stationId id of the station.
    */
-  private saveImportedItems(file: BlockType[], station: Station) {
-    let currentBlock: Block;
-
+  private async saveImportedItems(file: BlockType[], station: Station) {
     if (!file) {
       return;
     }
 
-    return Promise.all(file.map(async (block, idx) => {
-        await this.hasQblock(block.name, station)
-          .then(async (blocks) => {
-            if (blocks && (<Array<any>>blocks).length === 1) {
-              currentBlock = blocks[0];
-              return await this.addQuestions(block.questions, currentBlock);
-            } else if (!blocks) {
-              return await this.addQblock(block.name, (idx + 1), station)
-                .then(async newBlock => {
-                  currentBlock = newBlock;
-                  return await this.addQuestions(block.questions, currentBlock);
-                })
-                .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
-            }
-          })
-          .catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
-      })
-    );
+    try {
+      for (const block of file) {
+        let _block = await this.hasQblock(block.name, station);
+        if (!_block) {
+          _block = await this.addQblock(block.name, null, station);
+        }
+        this.addQuestions(block.questions, _block).catch(err => this.logPromisesERROR.push({value: block.name, reason: err}));
+      }
+    } catch (error) {
+      this.logPromisesERROR.push({value: file, reason: error})
+    }
   }
 
   /**
@@ -156,22 +147,13 @@ export class QuestionsService {
    * @param name of the block to verify if exists
    * @param station whose block name to search
    */
-  private hasQblock(name: string, station: Station) {
-    return new Promise((resolve, reject) => {
-      Block.query({
-        where: {name: name, station: station}
-      }, {skip: [], cache: false})
-        .then((response: Array<any>) => {
-          if (response.length === 1) {
-            resolve(response);
-          } else if (response.length === 0) {
-            resolve(false);
-          } else if (response.length > 1) {
-            reject('TOO_MANY_ROWS');
-          }
-        })
-        .catch(err => reject(err));
-    });
+  private async hasQblock(name: string, station: Station) {
+    try {
+      const _block = await Block.first<Block>({where: {name: name, station: station}});
+      return _block;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -180,13 +162,26 @@ export class QuestionsService {
    * @param order his order position
    * @param station station
    */
-  addQblock(name: string, order: number, station: Station) {
-    const qblock = new Block({name: name, station: station, order: order});
-    return qblock.save()
-      .catch(reason => {
-        this.logPromisesERROR.push({value: qblock, reason: reason});
-        return reason;
-      });
+  async addQblock(name: string, order: number, station: Station) {
+    try {
+      if (!order) {
+        //Recuperamos el orden del ultimo bloque
+        const _pagBlocks = await Block.query({where: {station: station}, page: 1, perPage: 1},{paginate: true, cache: false}) as Pagination<Block>;
+        order = _pagBlocks.total + 1;
+      }
+      const qblock = new Block({name: name, station: station, order: order});
+      return qblock.save()
+      
+    } catch (error) {
+      this.logPromisesERROR.push({value: name, reason: error});
+      return error;
+      
+    }
+
+    
+
+
+    
   }
 
   private async getArea(area: Area | String, ecoe: ECOE | number): Promise<Area> {
@@ -276,39 +271,61 @@ export class QuestionsService {
    * @param item RowQuestion
    */
   buildSchema(item: RowQuestion): QuestionSchema {
-    const _schema = new QuestionSchema(item.questionType as string);
-    if (_schema instanceof QuestionBase) {
-      _schema.reference = item[this.HEADER.reference];
-      _schema.description = item[this.HEADER.description];
-    }
-    if (_schema instanceof QuestionRange) {
-      _schema.range = item[this.HEADER.range] || item[this.OPTIONS][0]['rateCount'] || 10;
-      _schema.max_points = item[this.HEADER.points];
-    } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
-      const _options = item[this.OPTIONS];
+    try {
+      const _schema = new QuestionSchema(item.questionType as string);
 
-      if (_options.length === 0) {
-        _options.push(
-          new Option({
-            points: item[this.HEADER.points],
-            label: this.DEFAULT_LABEL,
-          })
-        );
+      if (_schema instanceof QuestionBase) {
+        _schema.reference = item[this.HEADER.reference];
+        _schema.description = item[this.HEADER.description];
       }
-
-      // tslint:disable-next-line:no-shadowed-variable
-      for (const { idx, opt } of _options.map((opt, idx) => ({ idx: idx + 1, opt }))) {
-        const _questionOption = new QuestionOption();
-
-        _questionOption.id_option = idx;
-        _questionOption.points = opt.points || opt[`points${idx}`];
-        _questionOption.label = opt.label || opt[`option${idx}`];
-        _questionOption.order = opt.order ? opt.order : idx;
-
-        _schema.options.push(_questionOption);
+      if (_schema instanceof QuestionRange) {
+        
+        const getRateCount = () => {
+          const _options = item[this.OPTIONS];
+          if (_options) {
+            return _options['ratecount'];
+          } else {
+            return 10;
+          }
+        }
+          
+        _schema.range = item[this.HEADER.range] || getRateCount();
+        
+        _schema.max_points = item[this.HEADER.points];
+      } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
+        const _options = item[this.OPTIONS];
+  
+        if (_options.length === 0) {
+          _options.push(
+            new Option({
+              points: item[this.HEADER.points],
+              label: this.DEFAULT_LABEL,
+            })
+          );
+        }
+  
+        // tslint:disable-next-line:no-shadowed-variable
+        for (const { idx, opt } of _options.map((opt, idx) => ({ idx: idx + 1, opt }))) {
+          const _questionOption = new QuestionOption();
+  
+          _questionOption.id_option = idx;
+          _questionOption.points = opt.points || opt[`points${idx}`];
+          _questionOption.label = opt.label || opt[`option${idx}`];
+          _questionOption.order = opt.order ? opt.order : idx;
+  
+          _schema.options.push(_questionOption);
+        }
       }
+      return _schema;
+    } catch (error) {
+      this.logPromisesERROR.push({
+        value: item,
+        reason: error
+      });
+      throw error;
     }
-    return _schema;
+
+    
   }
 
   /**
@@ -320,6 +337,16 @@ export class QuestionsService {
     const _question = new Question();
 
     _question.area = (await this.getArea(rowQuestion[this.HEADER.ac], station.ecoe));
+    
+    //Si no hay area devolvemos un error y marcamos que no se puede realizar la importación
+    if (!_question.area) {
+      this.logPromisesERROR.push({
+        value: rowQuestion,
+        reason: 'No se ha encontrado el área'
+      });
+      return null;
+    }
+
     _question.station = station;
     _question.order = rowQuestion[this.HEADER.order];
     _question.block = rowQuestion[this.HEADER.block];

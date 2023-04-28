@@ -5,10 +5,10 @@
 export const environment = {
   production: false,
   TESTING: false,
-  DEBUG: window["env"]["debug"] || true,
-  API_ROUTE: window["env"]["apiUrl"] || "default",
-  CHRONO_ROUTE: window["env"]["chronoUrl"] || "default",
-  BACK_ROUTE: window["env"]["backUrl"] || "default",
+  DEBUG: true,
+  API_ROUTE: "http://localhost:8081/backend",
+  CHRONO_ROUTE: "http://localhost:8081/chrono",
+  BACK_ROUTE: "http://localhost:8081/",
 };
 
 

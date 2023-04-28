@@ -7,8 +7,8 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from '../../../models';
-import {STUDENTS_TEMPLATE_URL} from '@constants/import-templates-routes';
 import { NzMessageService } from 'ng-zorro-antd';
+import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 
 /**
  * Component with students.
@@ -19,7 +19,6 @@ import { NzMessageService } from 'ng-zorro-antd';
   styleUrls: ['./students.component.less']
 })
 export class StudentsComponent implements OnInit {
-  readonly STUDENTS_URL = STUDENTS_TEMPLATE_URL;
   students: Student[] = [];
   ecoeId: number;
   ecoe: ECOE;
@@ -59,6 +58,12 @@ export class StudentsComponent implements OnInit {
     name: null
   };
 
+  studentsParser: ParserFile = {
+    "filename": "students.csv",
+    "fields": ["dni", "name", "surnames"],
+    "data": ["12345678A", "Name", "Surname1 Surname2"]
+  };
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               public shared: SharedService,
@@ -80,6 +85,7 @@ export class StudentsComponent implements OnInit {
       ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
         this.ecoe = value;
         this.ecoe_name = this.ecoe.name;
+        this.studentsParser.filename = this.ecoe.name + "_students.csv";
       });
 
       this.loadStudents();

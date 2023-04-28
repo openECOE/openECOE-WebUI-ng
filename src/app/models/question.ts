@@ -289,7 +289,10 @@ export class AnswerRange extends AnswerBase {
 export const QuestionType: any = {
   'radio': {class: QuestionRadio, answerClass: AnswerRadio, label: 'ONE_ANSWER'},
   'checkbox': {class: QuestionCheckBox, answerClass: AnswerCheckBox, label: 'MULTI_ANSWER'},
-  'range': {class: QuestionRange, answerClass: AnswerRange, label: 'VALUE_RANGE'}
+  'range': {class: QuestionRange, answerClass: AnswerRange, label: 'VALUE_RANGE'},
+  'RB': {class: QuestionRadio, answerClass: AnswerRadio, label: 'ONE_ANSWER'},
+  'CH': {class: QuestionCheckBox, answerClass: AnswerCheckBox, label: 'MULTI_ANSWER'},
+  'RS': {class: QuestionRange, answerClass: AnswerRange, label: 'VALUE_RANGE'}
 };
 
 export class QuestionSchema {
