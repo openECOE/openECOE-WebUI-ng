@@ -4,7 +4,7 @@ import {ApiService} from '@services/api/api.service';
 import {SharedService} from '@services/shared/shared.service';
 import {Area, EditCache, RowArea, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AREAS_TEMPLATE_URL} from '@constants/import-templates-routes';
+import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 
 /**
  * Component with areas and number of questions by area.
@@ -15,7 +15,6 @@ import {AREAS_TEMPLATE_URL} from '@constants/import-templates-routes';
   styleUrls: ['./areas.component.less']
 })
 export class AreasComponent implements OnInit {
-  readonly AREAS_URL = AREAS_TEMPLATE_URL;
   areas:        any[] = [];
   editCache:    EditCache[] = [];
   ecoeId:       number;
@@ -43,6 +42,12 @@ export class AreasComponent implements OnInit {
   logPromisesERROR: { value: any, reason: any }[] = [];
   logPromisesOK:    any[] = [];
 
+  areasParser: ParserFile = {
+    "filename": "areas.csv",
+    "fields": ["name", "code"], 
+    "data": ["Anamnesis", "1"]
+  };
+
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private router: Router,
@@ -63,6 +68,7 @@ export class AreasComponent implements OnInit {
       ECOE.fetch<ECOE>(this.ecoeId, {cache: false}).then(value => {
         this.ecoe = value;
         this.ecoe_name = this.ecoe.name;
+        this.areasParser.filename = this.ecoe_name + '_' + this.areasParser.filename;
 
         const excludeItems = [];
         this.ecoe.areas({
@@ -80,7 +86,9 @@ export class AreasComponent implements OnInit {
       });
     });
     this.InitAreaRow();
+    
   }
+
 
   /**
    * Load areas by the passed ECOE.

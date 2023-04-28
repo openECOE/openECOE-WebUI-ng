@@ -1,28 +1,30 @@
 import {Component, EventEmitter, Inject, inject, Input, NgZone, OnInit, Output} from '@angular/core';
 import {Role, RoleType, User, UserLogged} from '@app/models';
 import {SharedService} from '@services/shared/shared.service';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import {ApiService} from '@services/api/api.service';
 import { DOCUMENT } from '@angular/common';
 import { UserService } from '@app/services/user/user.service';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { NzMessageService, valueFunctionProp } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService, valueFunctionProp } from 'ng-zorro-antd';
 import { findLast } from '@angular/compiler/src/directive_resolver';
+import { TranslateService } from '@ngx-translate/core';
+import { Observable, Observer } from 'rxjs';
+import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 
 
 interface UserItem extends User {
   rolesList: Array<Role>;
+  checked: boolean;
 }
 
 @Component({
-  selector: 'app-users-admin',
-  templateUrl: './users-admin.component.html',
-  styleUrls: ['./users-admin.component.less']
+  selector: "app-users-admin",
+  templateUrl: "./users-admin.component.html",
+  styleUrls: ["./users-admin.component.less"],
 })
-
 export class UsersAdminComponent implements OnInit {
-
   user: UserLogged;
   activeUser: User;
 
@@ -41,101 +43,148 @@ export class UsersAdminComponent implements OnInit {
   loading: boolean = false;
 
   // FORMULARIO EDITAR
-  usuarioEditar: User; 
+  usuarioEditar: User;
   usuarioOriginal: User;
 
   validateForm: FormGroup;
   showAddUser: boolean = false;
-  showMessageDelete: boolean=false;
+  showMessageDelete: boolean = false;
   showEditUser: boolean = false;
-  importErrors: { value: any, reason: any }[] = [];
+  importErrors: { value: any; reason: any }[] = [];
 
   listRoles: RoleType[] = [];
 
-  readonly SUPER_ADMIN = 'superadmin';
+  readonly SUPER_ADMIN = "superadmin";
 
-idx: any;
-item: any;
-editEmail: any;
+  idx: any;
+  item: any;
+  editEmail: any;
 
-  constructor(private userService: UserService,
-              private apiService: ApiService,
-              public shared: SharedService,
-              private fb: FormBuilder,
-              public formBuilder: FormBuilder,
-              private message: NzMessageService,
-              private zone: NgZone,
-              private router: Router) {
-  }
+  usersParser: ParserFile = {
+    "filename": "users.csv",
+    "fields": ["email", "password", "userName", "userSurname", "roles"], 
+    "data": ["email@email.es", "password", "name", "surname", "administrator, user, evaluator"]
+  };
+
+  constructor(
+    private userService: UserService,
+    private apiService: ApiService,
+    public shared: SharedService,
+    private fb: FormBuilder,
+    public formBuilder: FormBuilder,
+    private message: NzMessageService,
+    private zone: NgZone,
+    private router: Router,
+    private translate: TranslateService,
+    private modalService: NzModalService,
+  ) {}
 
   async ngOnInit() {
-    this.listRoles = await this.getRoles()
+    this.listRoles = await this.getRoles();
 
-    this.userService.userDataChange.subscribe(user => {
+    this.userService.userDataChange.subscribe((user) => {
       this.user = user;
       this.activeUser = this.user.user;
       this.loadUsers();
-    })
+    });
 
     this.getUserForm();
 
     this.user = this.userService.userData;
     this.activeUser = this.user.user;
-    
+
     this.loadUsers();
 
-    this.loading= false;
-
+    this.loading = false;
   }
 
-  
   async getUserForm() {
     // TODO: Validate if email exists
     this.validateForm = this.fb.group({
-      email: [null, [Validators.required, Validators.email]],
-      password: [null, [this.requiredWhenAddingUser]],
+      email: [
+        null,
+        [Validators.required, Validators.email],
+        [this.userEmailAsyncValidator],
+      ],
+      password: [null, [this.requiredWhenAddingUser, Validators.minLength(8)]],
+      checkPassword: [
+        null,
+        [this.requiredWhenAddingUser, this.confirmationValidator],
+      ],
       userName: [null, [Validators.required]],
       userSurname: [null, [Validators.required]],
-      roles: [null]
+      roles: [null],
     });
-
-
   }
 
   //CUstom Validator to make required only when adding a new user
-  requiredWhenAddingUser() {
-    return (control: AbstractControl) => {
-      if (this.showAddUser) {
-        return Validators.required(control);
-      } else {
-        return null;
-      }
+  requiredWhenAddingUser = (control: FormControl) => {
+    if (this.showAddUser) {
+      return Validators.required(control);
+    } else {
+      return null;
     }
-  }
+  };
+
+  //Validator to check if email exists, and wait a time to check it
+  userEmailAsyncValidator = (control: FormControl) =>
+    new Observable((observer: Observer<ValidationErrors | null>) => {
+      const _email = control.value;
+      // If showAddUser is true, we are adding a new user, so we have to check if email exists
+      // otherwise, we are editing a user, so we have to check if email exists, but not for the user we are editing
+      if (this.showAddUser || this.usuarioOriginal.email !== _email) {
+        setTimeout(async () => {
+          const _user = await User.first({ where: { email: _email } });
+
+          if (_user) {
+            // you have to return `{error: true}` to mark it as an error event
+            observer.next({ error: true, duplicated: true });
+          } else {
+            observer.next(null);
+          }
+          observer.complete();
+        }, 1000);
+      } else {
+        observer.next(null);
+        observer.complete();
+      }
+    });
+
+  //Validator to ckeck if password and confirm password are the same
+  confirmationValidator = (control: FormControl): { [s: string]: boolean } => {
+    if (
+      control.value &&
+      control.value !== this.validateForm.controls.password.value
+    ) {
+      return { confirm: true, error: true };
+    }
+    return {};
+  };
 
   async getRoles() {
-
     return Role.types();
   }
 
   loadUsers() {
     this.loading = true;
-    this.apiService.getUsersWithRoles({
-      where: {organization: this.activeUser.organization},
-      page: this.page,
-      perPage: this.perPage
-    })
-      .then(page => this.loadPage(page))
-      .catch(err => console.log(err))
-      .finally(() => this.loading = false);
+    this.apiService
+      .getUsersWithRoles({
+        where: { organization: this.activeUser.organization },
+        page: this.page,
+        perPage: this.perPage,
+      })
+      .then((page) => this.loadPage(page))
+      .catch((err) => console.log(err))
+      .finally(() => (this.loading = false));
   }
 
   pageChange(page: number) {
     this.loading = true;
     this.page = page;
-    this.usersPage.changePageTo(page)
-      .then(retPage => this.loadPage(retPage))
-      .finally(() => this.loading = false);
+    this.usersPage
+      .changePageTo(page)
+      .then((retPage) => this.loadPage(retPage))
+      .finally(() => (this.loading = false));
   }
 
   pageSizeChange(pageSize: number) {
@@ -143,99 +192,132 @@ editEmail: any;
     this.loadUsers();
   }
 
-  loadPage(page: any) {
+  async loadPage(page: any) {
     this.usersPage = page;
     this.totalItems = this.usersPage.total;
-    this.users = [...this.usersPage.items];
-    this.users.forEach(async _user => {_user.rolesList = await _user.roles() })
+    const _users: Array<UserItem> = [...this.usersPage.items];
+    
+    for (const user of _users) {
+      user.rolesList = await user.roles();
+      user.checked = false;
+    }
     // console.log('Object.create(page.items)', page.items);
     this.updateEditCache(page.items, this.editCache);
+    this.users = _users;
   }
 
-  assignEditCache(item: CacheItem, editItem: boolean = false, newItem: boolean = false) {
+  assignEditCache(
+    item: CacheItem,
+    editItem: boolean = false,
+    newItem: boolean = false
+  ) {
     return {
       editItem: editItem,
       newItem: newItem,
-      data: item
+      data: item,
     };
   }
 
   updateEditCache(listItems: any[], editCache: any[]) {
     editCache = [];
     listItems.forEach((item, index) => {
-      editCache[index] = this.assignEditCache(item, editCache[index] ? editCache[index].editItem : false, false);
+      editCache[index] = this.assignEditCache(
+        item,
+        editCache[index] ? editCache[index].editItem : false,
+        false
+      );
     });
     this.editCache = Object.create(editCache);
   }
 
-  addUser(email: string = '',
-          name: string = '',
-          surname: string = '',
-          superAdmin: boolean = false,
-          password: string = null): Promise<any> {
+  async addUser(
+    email: string = "",
+    name: string = "",
+    surname: string = "",
+    password: string = null,
+    roles: Array<string> = [],
+    batch: boolean = false
+  ): Promise<User> {
+    try {
+      const newUser = new User({
+        email: email,
+        name: name,
+        surname: surname,
+        organization: this.activeUser.organization,
+        password: password ? password : this.shared.generateRandomPassword(),
+      });
 
-    const newUser = new User({
-      email: email,
-      name: name,
-      surname: surname,
-      organization: this.activeUser.organization,
-      password: password ? password : this.shared.generateRandomPassword()
+      const _user = await newUser.save();
+
+      for (const rol of roles) {
+        await this.apiService.addUserRole(rol, _user.id);
+      }
+
+      if (!batch) {
+        this.message.success(
+          this.translate.instant("USER_CREATED", { email: _user.email })
+        );
+      }
+      
+      return _user;
+    } catch (error) {
+      console.log(error);
+      this.message.error(this.translate.instant("ERROR_CREATE_USER"));
+      //raise error to stop batch creation
+      throw error;
+    }
+  }
+
+  async updateUser(user: User, value: any) {
+    const updateData = {
+      email: value.email,
+      name: value.userName,
+      surname: value.userSurname,
+    };
+
+    if (value.password) {
+      updateData["password"] = value.password;
+    }
+    await user.update(updateData);
+    await this.updateUserRoles(user, value.roles);
+
+    this.message.success(
+      this.translate.instant("USER_UPDATED", { email: user.email })
+    );
+  }
+
+  async updateUserRoles(user: User, newRoles: Array<string>) {
+    const _rolesNames = newRoles;
+    const _roles: Array<Role> = await user.roles();
+
+    const _delList = _roles.filter((_role) => {
+      return !_rolesNames.includes(_role.name);
     });
 
-    return newUser.save();
-  }
+    const _addList = _rolesNames.filter((_roleName) => {
+      const _rolesNameList = _roles.map((r) => r.name);
+      return !_rolesNameList.includes(_roleName);
+    });
 
-
-  updateUser(item: any): void {
-    new User(item).update({email: item.email, name: item.name, surname: item.surname})
-      .then((response: any) => {
-        this.editCache[item.$id].edit = false;
-        this.users = this.users.map(x => (x.id === item.id) ? response : x);
-      })
-     .catch( err => {
-       console.error('ERROR: ', err);
-     });
- }
-
-
-  /*
-  editUser(idx: number) {
-    this.editCache[idx].editItem = true;
-  }
-  */ 
-
-  async updateUserRoles(userItem: CacheItem) {
-    const _rolesNames = userItem.data.roleNames;
-    const _roles: Array<Role> = await userItem.data.roles();
-
-    const _delList = _roles.filter(_role => {
-      return !_rolesNames.includes(_role.name)
-    })
-
-    const _addList = _rolesNames.filter(_roleName => {
-      const _rolesNameList = _roles.map(r => r.name);
-      return !_rolesNameList.includes(_roleName)
-    })
-
-    _addList.forEach( _roleName => this.apiService.addUserRole(_roleName, userItem.data.id))
-    _delList.forEach( _role => this.apiService.deleteUserRole(_role))
+    _addList.forEach((_roleName) =>
+      this.apiService.addUserRole(_roleName, user.id)
+    );
+    _delList.forEach((_role) => this.apiService.deleteUserRole(_role));
   }
 
   async saveUser(item: any) {
     this.loading = true;
-    const usercache = this.editCache.find(f => f.data.id === item.id);
+    const usercache = this.editCache.find((f) => f.data.id === item.id);
     if (!usercache.data.email) {
       this.loading = false;
       usercache.editItem = false;
       return;
     }
 
-    this.updateUserRoles(usercache).finally();
-
     const body = {
       email: usercache.data.email,
-      surname: usercache.data.surname || '-',
-      name: usercache.data.name || '-',
+      surname: usercache.data.surname || "-",
+      name: usercache.data.name || "-",
     };
 
     const request = item.update(body);
@@ -245,54 +327,102 @@ editEmail: any;
         this.loadUsers();
         usercache.editItem = false;
       })
-      .finally(() => this.loading = false);
+      .finally(() => (this.loading = false));
   }
 
-  delUser(user: User) {
-    var indice = this.users.findIndex( (element) => {return element.id == user.id;})
-    this.users[indice].destroy();
-    this.removeUserList(this.users[indice].id);
+  async delUser(user: User, batch: boolean = false) {
+    try {
+      await user.destroy();
+      
+      if (!batch) {
+        this.message.success(
+          this.translate.instant("USER_DELETED", { email: user.email })
+        );
+      }
+
+      this.loadUsers();
+    } catch (error) {
+      this.message.error(this.translate.instant("ERROR_DELETE_USER"));
+    }
   }
 
-  removeUserList(idx: number) {
-    delete this.users[idx];
-    delete this.editCache[idx];
-    this.users = this.users.filter((value) => value !== this.users[idx]);
+  delUsers(users: Array<User>) {
+    const _delPromises = [];
+
+    for (const user of users) {
+      _delPromises.push(this.delUser(user, true));
+    }
+
+    Promise.all(_delPromises)
+    .then(() => {
+      this.message.success(this.translate.instant("USERS_DELETED"));
+    })
+    .finally(() => this.loadUsers());
   }
+
+  delSelected() {
+    const _delUsers = this.users.filter((u) => u.checked);
+    
+    if (_delUsers.length === 0) {
+      this.message.warning(this.translate.instant("NO_USERS_SELECTED"));
+      return;
+    } else {
+      this.modalService.confirm({
+        nzTitle: this.translate.instant("DELETE_USER"),
+        nzContent: this.translate.instant("DELETE_USER_CONFIRM"),
+        nzOkText: this.translate.instant("YES"),
+        nzOkType: "danger",
+        nzOnOk: () => {
+          this.delUsers(_delUsers);
+        },
+        nzCancelText: this.translate.instant("NO"),
+      });
+      return;
+    }
+  }  
 
   importUsers(parserResult: Array<any>) {
     this.importErrors = [];
     const respPromises = [];
 
-    parserResult.forEach((value) => {
-
+    for (const value of parserResult) {
+      let roles = [];
+      if (value.roles) {
+         roles = value.roles.split(",");
+      }
+      //Check all values are present
+      if (!value.email || !value.userName || !value.userSurname) {
+        continue; //skip this user        
+      }
 
       const promise = this.addUser(
         value.email.toString(),
-        value.name.toString(),
-        value.surname.toString(),
-        false,
-        value.password.toString()
+        value.userName.toString(),
+        value.userSurname.toString(),
+        value.password.toString(),
+        roles,
+        true
       )
-        .then(resp => {
-          console.log('User import', resp.email, resp);
+        .then((resp) => {
+          console.log("User import", resp.email, resp);
           return resp;
         })
-        .catch(reason => {
-          console.warn('User import error', value, reason);
-          this.importErrors.push(
-            {
-              value: value,
-              reason: reason
-            });
+        .catch((reason) => {
+          console.warn("User import error", value, reason);
+          this.importErrors.push({
+            value: value,
+            reason: reason,
+          });
           return reason;
         });
 
       respPromises.push(promise);
-    });
+    };
 
     Promise.all(respPromises)
-      .finally(() => this.loadUsers());
+    .finally(() => {
+      this.loadUsers()
+    });
   }
 
   cleanImportErrors() {
@@ -316,98 +446,63 @@ editEmail: any;
   async showModalEdit(modalEditUser: User) {
     this.usuarioOriginal = modalEditUser;
 
-    this.validateForm.controls['email'].setValue(modalEditUser.email);
-    this.validateForm.controls['userName'].setValue(modalEditUser.name);
-    this.validateForm.controls['userSurname'].setValue(modalEditUser.surname);
+    this.validateForm.controls["email"].setValue(modalEditUser.email);
+    this.validateForm.controls["userName"].setValue(modalEditUser.name);
+    this.validateForm.controls["userSurname"].setValue(modalEditUser.surname);
 
-    const _roles = await modalEditUser.roles()
+    const _roles = await modalEditUser.roles();
 
     let roles = [];
     for (const rol of _roles) {
       roles.push(rol.name);
     }
 
-    this.validateForm.controls['roles'].setValue(roles);
-    
+    this.validateForm.controls["roles"].setValue(roles);
+
     this.showEditUser = true;
-  }
-
-/*
-  email
-  password
-  nombre
-  apellidos
-  roles
-    --Aceptar
-*/
-  submitEditFormUser(form: FormGroup) {
-    
-    const _email = (<HTMLInputElement>document.getElementById("edit_email")).value ;
-    const _password = (<HTMLInputElement>document.getElementById("edit_password")).value;
-    const _name =(<HTMLInputElement>document.getElementById("edit_name")).value;
-    const _surname = (<HTMLInputElement>document.getElementById("edit_surname")).value;
-
-    const updateData = {
-      email: _email,
-      password: _password, 
-      name: _name,
-      surname: _surname
-    }
-    const usercache = this.editCache.find(f => f.data.id === this.usuarioOriginal.id);
-
-    const value = form.value;
-    this.usuarioOriginal.update(updateData)
-    .then(user => {
-      if(value.roles){
-        value.roles.forEach((rol: string) => {
-        this.updateUserRoles(usercache).finally();
-        this.usuarioOriginal.updateData;
-        });
-      }
-      this.loadUsers();
-      this.closeModal();
-    });
   }
 
   async submitFormUser(form: FormGroup) {
     this.shared.doFormDirty(form);
-    if (form.valid) {
-      const value = form.value;
-      try {
-        if (this.showAddUser) {
-          const newUser = await this.addUser(
-            value.email,
-            value.userName,
-            value.userSurname,
-            false,
-            value.password)
-          
-          if(value.roles) {
-            for (const rol of value.roles) {
-              await this.apiService.addUserRole(rol, newUser.id);
-            }
+    if (form.pending) {
+      const sub = form.statusChanges.subscribe(() => {
+        if (form.valid) {
+          this.submitForm(form.value);
         }
-      } else if (this.showEditUser) {
-        this.usuarioOriginal.email = value.email;
-        this.usuarioOriginal.name = value.userName;
-        this.usuarioOriginal.surname = value.userSurname;
-        if (value.password) {
-          this.usuarioOriginal.password = value.password;
-        }
-
-        const userUpdated = await this.usuarioOriginal.update();
-      }
-        
-      } catch (error) {
-        console.error(error);
-        this.message.create('error', 'Error al guardar la información del usuario');
-
-      }
+        sub.unsubscribe();
+      });
+    } else if (form.valid) {
+      this.submitForm(form.value);
     }
   }
 
+  async submitForm(value: any) {
+    try {
+      if (this.showAddUser) {
+        await this.addUser(
+          value.email,
+          value.userName,
+          value.userSurname,
+          value.password,
+          value.roles
+        );
+      } else if (this.showEditUser) {
+        await this.updateUser(this.usuarioOriginal, value);
+      }
+
+      this.loadUsers();
+    } catch (error) {
+      console.error(error);
+      this.message.create(
+        "error",
+        "Error al guardar la información del usuario"
+      );
+    }
+    this.closeModal();
+  }
+
   onBack() {
-    this.router.navigate(['/control-panel']).finally();
+    this.router.navigate(["/control-panel"]).finally();
   }
 
   onCheckedChange(idx: number) {
@@ -415,14 +510,18 @@ editEmail: any;
       for (const idxRol in this.listRoles) {
         if (this.listRoles.hasOwnProperty(idxRol)) {
           if (+idxRol !== idx) {
-            this.shared.getFormControl(this.validateForm, 'roles', +idxRol).setValue(false);
+            this.shared
+              .getFormControl(this.validateForm, "roles", +idxRol)
+              .setValue(false);
           }
         }
       }
     } else {
       this.listRoles.forEach((rol, i) => {
         if (rol.name === this.SUPER_ADMIN) {
-          this.shared.getFormControl(this.validateForm, 'roles', i).setValue(false);
+          this.shared
+            .getFormControl(this.validateForm, "roles", i)
+            .setValue(false);
         }
       });
     }
@@ -433,16 +532,24 @@ editEmail: any;
         this.editCache[role].data.roleNames = [this.SUPER_ADMIN];
       });
     } else {
-      this.editCache[role].data.roleNames = [... this.editCache[role].data.roleNames.filter(roleName => roleName !== this.SUPER_ADMIN)];
+      this.editCache[role].data.roleNames = [
+        ...this.editCache[role].data.roleNames.filter(
+          (roleName) => roleName !== this.SUPER_ADMIN
+        ),
+      ];
     }
   }
 
   isDissabled(idx: number, name: string) {
     let dissabled;
     if (name === this.SUPER_ADMIN) {
-      dissabled = !(this.editCache[idx].data.rolesList.length === 0 || this.editCache[idx].data.rolesList.indexOf(name) > -1);
+      dissabled = !(
+        this.editCache[idx].data.rolesList.length === 0 ||
+        this.editCache[idx].data.rolesList.indexOf(name) > -1
+      );
     } else {
-      dissabled =  (this.editCache[idx].data.rolesList.indexOf(this.SUPER_ADMIN) > -1);
+      dissabled =
+        this.editCache[idx].data.rolesList.indexOf(this.SUPER_ADMIN) > -1;
     }
     return dissabled;
   }

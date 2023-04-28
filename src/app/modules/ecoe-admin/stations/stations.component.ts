@@ -5,7 +5,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID, Pagination} from '@openecoe/potion-client';
-import {STATIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
 
 /**
  * Component with stations and qblocks by station.
@@ -17,7 +16,6 @@ import {STATIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
 })
 
 export class StationsComponent implements OnInit {
-  readonly STATIONS_URL = STATIONS_TEMPLATE_URL;
   stations: Station[] = [];
   page: number = 1;
   totalItems: number = 0;
@@ -44,6 +42,16 @@ export class StationsComponent implements OnInit {
 
   readonly EXCLUDE_ITEMS = [];
 
+  stationsParser = {
+    "filename": "stations.csv",
+    "fields": ["order", "name", "parentStation"],
+    "data": [
+      ["1", "Station 1", ""],
+      ["2", "Station 2", ""],
+      ["3", "Station 3", "Station 2"],
+    ]
+  };
+
   constructor(private route: ActivatedRoute,
               private router: Router,
               private translate: TranslateService,
@@ -63,6 +71,7 @@ export class StationsComponent implements OnInit {
       ECOE.fetch<ECOE>(this.ecoeId).then(value => {
         this.ecoe = value;
         this.ecoe_name = this.ecoe.name;
+        this.stationsParser.filename = this.ecoe.name + '_' + this.stationsParser.filename;
       });
       this.loadStations().finally();
     });

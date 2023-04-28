@@ -1,6 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Papa} from 'ngx-papaparse';
 
+export interface ParserFile {
+  filename: string;
+  fields: string[];
+  data: any[];
+}
+
 /**
  * Component with the upload files component and FileReader functionality.
  */
@@ -12,6 +18,7 @@ import {Papa} from 'ngx-papaparse';
 export class UploadAndParseComponent implements OnInit {
   @Output() parserResult = new EventEmitter();
   @Input() fileURL: string;
+  @Input() parserFile: ParserFile;
 
   isVisible: boolean;
   /**
@@ -48,6 +55,25 @@ export class UploadAndParseComponent implements OnInit {
       }
     });
   }
+
+  //Generate CSV file to download with papaparse
+  generateCSV() {
+    let csv = this.papaParser.unparse({
+      fields: this.parserFile.fields,
+      data: this.parserFile.data
+    }, {delimiter: ';'});
+
+    //Download file with generated CSV data and filename from parserFile.filename
+    let blob = new Blob([csv], {type: 'text/csv'});
+    let url = window.URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = this.parserFile.filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  }
+   
 
   openDDModal() {
     this.isVisible = true;

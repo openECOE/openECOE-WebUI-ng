@@ -5,7 +5,7 @@ import {Location} from '@angular/common';
 import {QuestionsService} from '@services/questions/questions.service';
 import {NzModalService} from 'ng-zorro-antd';
 import {TranslateService} from '@ngx-translate/core';
-import {QUESTIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
+import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 
 
 @Component({
@@ -14,7 +14,6 @@ import {QUESTIONS_TEMPLATE_URL} from '@constants/import-templates-routes';
   styleUrls: ['./station-details.component.less']
 })
 export class StationDetailsComponent implements OnInit {
-  readonly QUESTIONS_URL = QUESTIONS_TEMPLATE_URL;
   editCache: { edit: boolean, new_item: boolean, item: Block, expand?: boolean }[] = [];
   refreshQuestions: boolean = false;
   defaultExpand: boolean = false;
@@ -36,6 +35,25 @@ export class StationDetailsComponent implements OnInit {
   private logPromisesERROR = [];
   private logPromisesOK = [];
 
+  questionsParser: ParserFile = {
+    "filename": "questions.csv",
+    "fields": ["order", "description", "reference", "points", "area", "questionType", "range", "option1", "points1", "option2", "points2", "option3", "points3", "option4", "points4", "option5", "points5", "option6", "points6", "option7", "points7", "option8", "points8", "option9", "points9", "option10", "points10"],
+    "data": [
+      ["", "example 1st block name or description"],
+      ["1", "question description 1", "reference name 1", "1", "1", "checkbox"],
+      ["2", "question description 2", "reference name 2", "3", "1", "checkbox"],
+      ["3", "question description 3", "reference name 3", "4", "1", "checkbox"],
+      ["", "example 2nd block name or description"],
+      ["4", "question description 4", "reference name 4", "4", "1", "checkbox"],
+      ["5", "question description 5", "reference name 5", "3", "1", "checkbox"],
+      ["6", "question description 6", "reference name 6", "3", "1", "checkbox"],
+      ["7", "question description 7", "reference name 7", "5", "1", "radio","","Si","5","No","-10"],
+      ["8", "question description 8", "reference name 8", "-10", "1", "checkbox","","No hace exploración","-10"],
+      ["9", "question description 9", "reference name 9", "6", "1", "range", "5"],
+      ["10", "question description 10", "reference name 10", "6", "1", "range"],
+    ]
+  };
+
   constructor(private route: ActivatedRoute,
               private location: Location,
               private questionService: QuestionsService,
@@ -50,6 +68,7 @@ export class StationDetailsComponent implements OnInit {
         this.station = response;
         this.ecoe_name = response.ecoe.name;
         this.ecoeId = response.ecoe.id;
+        this.questionsParser.filename = this.ecoe_name + '_' + this.station.name + '_questions.csv';
 
         this.getQblocks(this.station);
       });
