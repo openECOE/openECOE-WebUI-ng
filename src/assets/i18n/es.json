@@ -295,5 +295,6 @@
   "USERS_DELETED": "Usuarios eliminados",
   "USERS_IMPORTED": "Usuarios importados correctamente",
   "ERROR_IMPORT_USERS": "Error importando usuarios",
-  "ERRORS.ERROR_IN_QUESTION_SCHEMA": "Error en QuestionType"
+  "ERRORS.ERROR_IN_QUESTION_SCHEMA": "Error en QuestionType",
+  "ECOE_CREATED": "{{name}} creada correctamente"
 }

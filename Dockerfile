@@ -3,9 +3,10 @@ WORKDIR /app
 
 # install and cache app dependencies
 COPY package.json package.json
+COPY yarn.lock yarn.lock
 
-RUN npm install
-RUN npm install -g @angular/cli
+RUN yarn install
+RUN yarn install -g @angular/cli
 
 COPY . /app
 

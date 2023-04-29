@@ -10,6 +10,7 @@ import { UserService } from "@app/services/user/user.service";
 
 import { Router } from "@angular/router";
 import { Observable, Observer } from "rxjs";
+import { SharedService } from "@app/services/shared/shared.service";
 
 @Component({
   selector: "app-home",
@@ -36,8 +37,8 @@ export class HomeComponent implements OnInit {
     private apiService: ApiService,
     private modalSrv: NzModalService,
     private translate: TranslateService,
-    private router: Router,
     private fb: FormBuilder,
+    private shared: SharedService
   ) {
     this.validateForm = this.fb.group({
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
@@ -49,20 +50,6 @@ export class HomeComponent implements OnInit {
     this.Delisted = false;
     this.ecoeForm = this.formBuilder.control("", Validators.required);
     this.loadEcoes();
-
-    // this.userService.userDataChange.subscribe(user => {
-    //   if (user) {
-    //     this.user = this.userService.userData;
-    //     this.loadEcoes()
-    //   } else {
-    //     this.auth.logout('/login');
-    //   }
-    // })
-
-    // if (this.userService.userData) {
-    //   this.user = this.userService.userData;
-    //   this.loadEcoes()
-    // }
   }
 
   closeDrawer() {
@@ -107,48 +94,15 @@ export class HomeComponent implements OnInit {
         window.location.reload();
       }
     });
-    /*new ECOE(this.ecoe)
-      .dearchive()
-      .then((result) => {
-        this.router.navigate(["/ecoe"]);
-      })
-      .catch((error) => {
-        this.message.error(this.translate.instant("ERROR_REQUEST_CONTENT"), {
-          nzDuration: 5000,
-        });
-      });*/
-  }
-  submitForm() {
-    const body = {
-      name: this.ecoeForm.value,
-      organization: this.organization,
-    };
-
-    this.apiService.createResource("ecoes", body).subscribe(
-      (result) => {
-        if (result) {
-          this.loadEcoes();
-          this.closeDrawer();
-        }
-      },
-      (error) => {
-        var msg =
-          error.status == 409
-            ? this.translate.instant("ERROR_DUPLICATE_ECOE")
-            : this.translate.instant("ERROR_REQUEST_CONTENT");
-        this.modalSrv.error({
-          nzMask: false,
-          nzTitle: msg,
-        });
-      }
-    );
   }
 
   userNameAsyncValidator = (control: FormControl) =>
     new Observable((observer: Observer<ValidationErrors | null>) => {
       setTimeout(async () => {
         const _ecoe = await ECOE.first({where: {name: control.value, organization: this.organization}})
-        if (_ecoe) {
+        const _ecoeArchived = await ECOE.archive({where: {name: control.value, organization: this.organization}})
+
+        if (_ecoe || _ecoeArchived.length > 0) {
           // you have to return `{error: true}` to mark it as an error event
           observer.next({ error: true, duplicated: true });
         } else {
@@ -158,18 +112,35 @@ export class HomeComponent implements OnInit {
       }, 1000);
     });
 
-  async submitFormECOE(value: { ecoeName: string}) { 
-    for (const key in this.validateForm.controls) {
-      this.validateForm.controls[key].markAsDirty();
-      this.validateForm.controls[key].updateValueAndValidity();
+  async submitFormECOE(form: FormGroup) { 
+
+    this.shared.doFormDirty(this.validateForm)
+    if (form.pending) {
+      const sub = form.statusChanges.subscribe(() => {
+        if (form.valid) {
+          this.submitForm(form.value);
+        }
+        sub.unsubscribe();
+      });
+    } else if (form.valid) {
+      this.submitForm(form.value);
     }
-    
+  }
+
+  async submitForm(value: any) {
     const _ecoe = new ECOE();
     _ecoe.name = value.ecoeName;
     _ecoe.organization = this.organization;
     
     try {
-      await _ecoe.save();
+      const newEcoe = await _ecoe.save();
+      this.ecoesList.push(newEcoe);
+
+      this.modalSrv.success({
+        nzMask: false,
+        nzTitle: this.translate.instant("ECOE_CREATED", { name: newEcoe.name }),
+      });
+      this.closeDrawer();
     } catch (error) {
       console.log(error);
       var msg =
