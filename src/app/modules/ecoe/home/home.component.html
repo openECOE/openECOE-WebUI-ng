@@ -131,7 +131,7 @@
   [nzTitle]="'CREATE_ECOE' | translate"
   (nzOnClose)="closeDrawer()"
 >
-  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormECOE(validateForm.value)">
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormECOE(validateForm)">
     <nz-form-item>
       <nz-form-control nzHasFeedback [nzValidatingTip]="'VALIDATING' | translate" [nzErrorTip]="userErrorTpl">
         <input nz-input formControlName="ecoeName" [placeholder]="'ECOE_NAME' | translate" />
