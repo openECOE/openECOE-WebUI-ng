@@ -3,7 +3,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ECOEConfig, InfoData} from '../../../models/chrono';
 import {Subscription} from 'rxjs';
 import {ChronoService} from '../../../services/chrono/chrono.service';
-import {AuthenticationService} from '../../../services/authentication/authentication.service';
 
 @Component({
   selector: 'app-outside',
@@ -17,10 +16,8 @@ export class OutsideComponent implements OnInit, OnDestroy {
   selectedConfig: ECOEConfig;
 
   chronoSubs: Subscription;
-  authenticated: boolean;
 
-  constructor(private chronoService: ChronoService,
-              private authenticationService: AuthenticationService) {}
+  constructor(private chronoService: ChronoService) {}
 
   ngOnInit() {
     this.chronoSubs = this.chronoService.getChronoConfiguration()
@@ -34,7 +31,6 @@ export class OutsideComponent implements OnInit, OnDestroy {
         console.warn(error);
       }
     );
-    this.authenticated = this.authenticationService.userLogged;
   }
 
   onChangeRound(round: InfoData) {

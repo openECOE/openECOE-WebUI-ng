@@ -7,6 +7,7 @@ import { UsersAdminComponent } from './users-admin/users-admin.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComponentsModule } from '@components/components.module';
+import { OrganizationsListComponent } from './users-admin/organizations-list/organizations-list.component';
 import {
   NzBreadCrumbModule,
   NzGridModule,
@@ -25,11 +26,12 @@ import {
   NzSkeletonModule,
   NzToolTipModule,
   NzPageHeaderModule,
-  NzLayoutModule
+  NzLayoutModule,
+  NzMessageModule,
 } from "ng-zorro-antd";
 
 @NgModule({
-  declarations: [DashboardComponent, UsersAdminComponent],
+  declarations: [DashboardComponent, UsersAdminComponent, OrganizationsListComponent],
   imports: [
     CommonModule,
     ControlPanelRoutingModule,
@@ -54,7 +56,8 @@ import {
     NzSkeletonModule,
     NzToolTipModule,
     NzPageHeaderModule,
-    NzLayoutModule
+    NzLayoutModule,
+    NzMessageModule
   ],
   exports: [DashboardComponent, UsersAdminComponent]
 })

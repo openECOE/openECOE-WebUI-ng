@@ -43,7 +43,7 @@
                     (click)="showDrawer()">
               <i nz-icon [nzType]="'plus-circle'" icon-16></i>
             </button>
-            <app-upload-and-parse [fileURL]="AREAS_URL" (parserResult)="importAreas($event)"></app-upload-and-parse>
+            <app-upload-and-parse [parserFile]="areasParser" (parserResult)="importAreas($event)"></app-upload-and-parse>
           </nz-button-group>
         </th>
       </tr>

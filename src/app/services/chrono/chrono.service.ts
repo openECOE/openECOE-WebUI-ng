@@ -18,6 +18,7 @@ export class ChronoService {
   private readonly URL_CHRONO = environment.CHRONO_ROUTE;
   private readonly API_ROUTE = environment.API_ROUTE;
   private readonly API_V1: string = '/api/v1';
+  private readonly URI_SOCKETIO = environment.BACK_ROUTE
 
   constructor(private http: HttpClient) {}
 
@@ -28,7 +29,7 @@ export class ChronoService {
    */
   onConnected(round: number) {
     const command = '/round';
-    this.socket = io.connect(this.URL_CHRONO + command + round, {
+    this.socket = io.connect(this.URI_SOCKETIO + command + round, {
       transports: ['websocket'],
       reconnectionDelayMax: 1000,
       forceNew: true
@@ -160,8 +161,16 @@ export class ChronoService {
     const url = this.URL_CHRONO + command;
 
     return this.http.get(url)
-      .pipe(
-        map((response: ECOEConfig[]) => id ? response.filter(config => +config.ecoe.id === +id) : response)
-      );
+    .pipe(
+      map((response: ECOEConfig[]) => {
+        if (id) {
+          return response.filter(config => +config.ecoe.id === +id);
+        } else {
+          return response;
+        }
+      })
+    ); 
+
+
   }
 }

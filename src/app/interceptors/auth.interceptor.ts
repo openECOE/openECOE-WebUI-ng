@@ -23,8 +23,14 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (_userLogged) {
       const currentUser = _userLogged;
-      const authHeader = currentUser && currentUser.token ? `Bearer ${currentUser.token}` :
-        currentUser && currentUser.authData ? `Basic ${currentUser.authData}` : '';
+      let authHeader = '';
+
+      
+      if (currentUser?.token) {
+        authHeader = `Bearer ${currentUser.token}`;
+      } else if (currentUser?.authData) {
+        authHeader = `Basic ${currentUser.authData}`;
+      }
 
       request = request.clone({
         setHeaders: {

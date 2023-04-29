@@ -4,14 +4,13 @@
 
 export const environment = {
   production: false,
-  SERVER_NAME: 'localhost:5000',
-  SECRET_KEY: '111111111111111111111111111111111',
-  DEBUG: true,
   TESTING: false,
-  API_ROUTE: 'http://localhost:5000',
-  API_AUTH_TOKEN: 'http://localhost:5000/auth/tokens',
-  CHRONO_ROUTE: 'http://localhost:6080'
+  DEBUG: true,
+  API_ROUTE: "http://localhost:8081/backend",
+  CHRONO_ROUTE: "http://localhost:8081/chrono",
+  BACK_ROUTE: "http://localhost:8081/",
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file

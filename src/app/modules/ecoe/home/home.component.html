@@ -125,45 +125,29 @@
 </nz-content>
 
 <nz-drawer
-  [nzBodyStyle]="{
-    height: 'calc(100% - 55px)',
-    overflow: 'auto',
-    'padding-bottom': '53px'
-  }"
+  [nzWidth]="400"
   [nzMaskClosable]="true"
   [nzVisible]="showCreateEcoe"
   [nzTitle]="'CREATE_ECOE' | translate"
   (nzOnClose)="closeDrawer()"
 >
-  <form nz-form (submit)="submitForm()">
-    <div nz-row>
-      <nz-form-item>
-        <nz-form-label [nzRequired]="true" [nzFor]="'name'">{{
-          "ECOE_NAME" | translate
-        }}</nz-form-label>
-        <nz-form-control>
-          <input nz-input id="name" [formControl]="ecoeForm" />
-        </nz-form-control>
-      </nz-form-item>
-    </div>
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormECOE(validateForm)">
+    <nz-form-item>
+      <nz-form-control nzHasFeedback [nzValidatingTip]="'VALIDATING' | translate" [nzErrorTip]="userErrorTpl">
+        <input nz-input formControlName="ecoeName" [placeholder]="'ECOE_NAME' | translate" />
+        <ng-template #userErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            {{ "ECOE_NAME_REQUIRED" | translate }}
+          </ng-container>
+          <ng-container *ngIf="control.hasError('duplicated')">
+            {{'ERROR_DUPLICATE_ECOE' | translate }}
+          </ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
 
-    <div class="footer">
-      <button
-        type="button"
-        nz-button
-        (click)="closeDrawer()"
-        class="margin-right"
-      >
-        <span>{{ "CANCEL" | translate }}</span>
-      </button>
-      <button
-        type="submit"
-        nz-button
-        [nzType]="'primary'"
-        [disabled]="!ecoeForm.valid"
-      >
-        <span>{{ "ACCEPT" | translate }}</span>
-      </button>
-    </div>
+    <button type="submit" nz-button nzType="primary" [disabled]="!validateForm.valid">
+      <span>{{ "ACCEPT" | translate }}</span>
+    </button>
   </form>
 </nz-drawer>

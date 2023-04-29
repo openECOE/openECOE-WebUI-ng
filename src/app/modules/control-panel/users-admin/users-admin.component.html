@@ -45,14 +45,19 @@
     <th>{{"NAME" | translate}}</th>
     <th>{{"SURNAMES" | translate}}</th>
     <th nzWidth="450px">{{"ROLES" | translate}}</th>
-    <th nzWidth="200px">
+    <th nzWidth="250px">
       <nz-button-group>
         <button nz-button [nzType]="'primary'" class="margin-left"
                 [nz-tooltip] [nzTooltipTitle]="'ADD_USER' | translate"
                 (click)="showModal()">
           <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
         </button>
-        <app-upload-and-parse (parserResult)="importUsers($event)"></app-upload-and-parse>
+        <app-upload-and-parse [parserFile]="usersParser" (parserResult)="importUsers($event)"></app-upload-and-parse>
+        <button nz-button nzType="danger" class="margin-left"
+                [nz-tooltip] [nzTooltipTitle]="'DELETE_SELECTED' | translate"
+                (click)="delSelected()">
+          <i nz-icon nzType="delete" icon-16></i>
+        </button>
       </nz-button-group>
     </th>
   </tr>
@@ -61,10 +66,8 @@
 
   <ng-template ngFor let-item  let-idx="index" [ngForOf]="table.data">
     <tr>
-      <td>
-        <ng-container>
-          {{item.id}}
-        </ng-container>
+      <td  
+      [(nzChecked)]="item.checked">
       </td>
 
       <td>
@@ -137,31 +140,57 @@
   MODAL DE ADD_USER
 -->
 <nz-modal *ngIf="validateForm"
-  [(nzVisible)]="showAddUser"
-  [nzTitle]="'ADD_USER' | translate"
+  [(nzVisible)]="showAddUser || showEditUser"
+  [nzTitle]="showAddUser?('ADD_USER' | translate) : ('EDIT_USER' | translate: {email: usuarioOriginal?.email})"
   [nzOkText]="'ACCEPT' | translate"
   [nzCancelText]="'CANCEL' | translate"
   (nzOnOk)="submitFormUser(validateForm)"
   (nzOnCancel)="closeModal()">
 
   <form nz-form [formGroup]="validateForm">
-    <nz-form-item>
-      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'EMAIL_NOT_VALID' | translate">
+    <nz-form-item *ngIf="showAddUser">
+      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="emailErrorTpl">
         <nz-input-group [nzPrefixIcon]="'mail'">
           <input type="email" nz-input
                  formControlName="email"
                  [placeholder]="'EMAIL' | translate">
         </nz-input-group>
+        <ng-template #emailErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('email')">{{'EMAIL_NOT_VALID' | translate}}</ng-container>
+          <ng-container *ngIf="control.hasError('duplicated')">{{'EMAIL_EXISTS' | translate}}</ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'PASSWORD_REQUIRED' | translate">
+      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="errorPasswordTpl">
         <nz-input-group [nzPrefixIcon]="'lock'" >
           <input [type]="passwordVisible ? 'text' : 'password'" nz-input
                  formControlName="password"
                  [placeholder]="'PASSWORD' | translate">
         </nz-input-group>
+        <ng-template #errorPasswordTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">{{'PASSWORD_REQUIRED' | translate}}</ng-container>
+          <ng-container *ngIf="control.hasError('minlength')">
+            {{'PASSWORD_MIN_LENGTH' | translate : {min: control.getError('minlength').requiredLength} }}
+          </ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="errorPasswordCheckTpl">
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input [type]="passwordVisible ? 'text' : 'password'" nz-input
+                 formControlName="checkPassword"
+                 [placeholder]="'CONFIRM_PASSWORD' | translate">
+        </nz-input-group>
+        <ng-template #errorPasswordCheckTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">{{'PLEASE_CONFIRM_PASSWORD' | translate}}</ng-container>
+          <ng-container *ngIf="control.hasError('confirm')">
+            {{'PASSWORD_CONFIRM_ERROR' | translate}}
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
@@ -187,7 +216,6 @@
         <nz-input-group>
         <nz-form-label >Roles</nz-form-label>
           <nz-select
-          *ngIf="showAddUser"
           style="width: 100%"
           nzSize="small"
           [nzMaxTagCount]="5"
@@ -208,83 +236,4 @@
       </nz-form-control>
     </nz-form-item>
   </form>
-</nz-modal>
-
-  <!---
-    SPRINT #1: Botones derechos de editar usuario y cancelar [CAMBIAR POR MODAL] // issue #55 // TO DO
-    MODAL DE EDIT_USER
-  -->
-
-<nz-modal *ngIf="validateForm"
-  [(nzVisible)]="showEditUser"
-  [nzTitle]="'EDIT_USER' | translate"
-  [nzOkText]="'ACCEPT' | translate"
-  [nzCancelText]="'CANCEL' | translate"
-  (nzOnOk)="submitEditFormUser(validateForm)"
-  (nzOnCancel)="closeModal()">
-
-  <form nz-form [formGroup]="validateForm">
-    <nz-form-item>
-      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'EMAIL_NOT_VALID' | translate">
-        <nz-input-group [nzPrefixIcon]="'mail'">
-          <input type="email" nz-input [(ngModel)]="usuarioEditar.email" formControlName="email" id="edit_email" [placeholder]="'EMAIL' | translate">
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-
-    <nz-form-item>
-      <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="'PASSWORD_REQUIRED' | translate">
-        <nz-input-group [nzPrefixIcon]="'lock'" >
-          <input [type]="passwordVisible ? 'text' : 'password'" nz-input
-                 formControlName="password"
-                 id="edit_password"
-                 [placeholder]="'PASSWORD' | translate">
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-
-    <nz-form-item>
-      <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
-        <nz-input-group nzCompact>
-          <input nz-input [(ngModel)]="usuarioEditar.name" id="edit_name" formControlName="userName" placeholder="{{'NAME' | translate}}">
-        </nz-input-group>
-      </nz-form-control>
-      <nz-form-control [nzSpan]="24" [nzErrorTip]="'SURNAME_REQUIRED' | translate">
-        <nz-input-group nzCompact>
-          <input nz-input [(ngModel)]="usuarioEditar.surname" id="edit_surname" formControlName="userSurname" placeholder="{{'SURNAMES' | translate}}">
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-
-    <nz-form-item>
-      <nz-form-control>
-        <nz-input-group>
-        <nz-form-label >Roles</nz-form-label>
-        <!--
-                    [(ngModel)]="usuarioOriginal.rolesList"
-        -->
-        <nz-select
-          [(ngModel)]="usuarioOriginal.roleNames"
-          *ngIf="showEditUser"
-          style="width: 100%"
-          nzSize="small"
-          [nzMaxTagCount]="5"
-          nzMode="multiple"
-          [nzPlaceHolder]="'SELECT_ROLES' | translate"
-          [nzAllowClear]="true"
-          nzAllowClear
-          formControlName="roles"
-          >
-            <nz-option *ngFor="let role of listRoles"
-                      [nzLabel]="role.name | translate"
-                      [ngModel]= "usuarioEditar.roles"
-                      [nzValue]="role.name"
-            >
-          </nz-option>
-        </nz-select>
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-  </form>
-  
 </nz-modal>

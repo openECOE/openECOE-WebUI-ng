@@ -1,0 +1,60 @@
+version: '3'
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+  db:
+    image: mysql:latest
+    ports:
+      - 8083:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: openecoe_1234
+      MYSQL_DATABASE: openECOE_dev
+      MYSQL_USER: openecoe
+      MYSQL_PASSWORD: openecoe
+    volumes:
+      - ./.data:/docker-entrypoint-initdb.d
+    command: []
+    cap_add:
+      - SYS_NICE
+    healthcheck:
+      test: "mysqladmin ping -p$$MYSQL_ROOT_PASSWORD"
+      timeout: 5s
+      retries: 3
+  api:
+    image: openecoe/api:latest
+    ports:
+      - 8081:80
+    environment:
+      OPENECOE_SECRET: eiQuain4_aelohKa3_giGh6Fai_reeTh6Ai_Aegeic6l_ekuigo0M_aeph6Qua_uuZaac5n
+      OPENECOE_DB_HOST: db
+      OPENECOE_DB_PORT: 3306
+      OPENECOE_DB_USER: openecoe
+      OPENECOE_DB_PASSWORD: openecoe
+      OPENECOE_DB_NAME: openECOE_dev
+      OPENECOE_REDIS_HOST: redis
+      OPENECOE_REDIS_PORT: 6379
+      OPENECOE_REDIS_DB: 0
+
+      # Usuario por defecto
+      EMAIL: ecoe@openecoe.es
+      PASSWORD: ecoe
+      FIRSTNAME: Open
+      SURNAME: ECOE
+      ORGANIZATION: openECOE
+      ALEMBIC_UPGRADE: DO
+
+      # Configruación debug
+      DEBUG: "True"
+      LOG_TO_STDOUT: "True"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/status/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
