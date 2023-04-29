@@ -98,7 +98,7 @@ jobs:
           file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           #tags: ${{ steps.meta.outputs.tags }}
-          tags: latest
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: openecoe/weebui:latest
+          labels: "docker.io/openecoe/webui:latest"
           cache-from: type=gha
           cache-to: type=gha,mode=max
