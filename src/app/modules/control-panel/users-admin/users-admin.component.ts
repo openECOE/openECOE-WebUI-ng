@@ -63,7 +63,7 @@ export class UsersAdminComponent implements OnInit {
   usersParser: ParserFile = {
     "filename": "users.csv",
     "fields": ["email", "password", "userName", "userSurname", "roles"], 
-    "data": ["email@email.es", "password", "name", "surname", "administrator, user, evaluator"]
+    "data": ["email@email.es", "password", "name", "surname", "administrator,user,evaluator"]
   };
 
   constructor(
@@ -250,7 +250,7 @@ export class UsersAdminComponent implements OnInit {
       const _user = await newUser.save();
 
       for (const rol of roles) {
-        await this.apiService.addUserRole(rol, _user.id);
+        await this.apiService.addUserRole(rol.trim(), _user.id);
       }
 
       if (!batch) {
@@ -389,6 +389,7 @@ export class UsersAdminComponent implements OnInit {
       let roles = [];
       if (value.roles) {
          roles = value.roles.split(",");
+         roles = roles.map((r) => r.trim());
       }
       //Check all values are present
       if (!value.email || !value.userName || !value.userSurname) {
