@@ -6,12 +6,15 @@ name: Docker
 # documentation.
 
 on:
-  schedule:
-    - cron: '15 11 * * *'
+  #schedule:
+  #  - cron: '15 11 * * *'
   push:
     branches: [ "master" ]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    #tags: [ 'v*.*.*' ]
+    tags: |
+      # set latest tag for default branch
+      type=raw,value=latest,enable={{is_default_branch}}
   pull_request:
     branches: [ "master" ]
 
