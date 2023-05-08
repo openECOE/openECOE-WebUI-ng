@@ -5,9 +5,6 @@
 			"type": "npm",
 			"script": "start",
 			"isBackground": true,
-			"options": {"env": {
-				"NODE_OPTIONS":"--openssl-legacy-provider"
-			}},
 			"problemMatcher": [{
 				"pattern": [
 					{
