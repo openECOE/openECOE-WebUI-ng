@@ -50,22 +50,37 @@ export class UploadAndParseComponent implements OnInit {
     this.papaParser.parse(fileString, {
       header: true,
       dynamicTyping: true,
+      skipEmptyLines: true,
+      quoteChar: '"',
+      escapeChar: '"',
       complete: (results, file) => {
         this.parserResult.emit(results.data);
-      }
+      },
     });
   }
 
   //Generate CSV file to download with papaparse
   generateCSV() {
-    let csv = this.papaParser.unparse({
-      fields: this.parserFile.fields,
-      data: this.parserFile.data
-    }, {delimiter: ';'});
+    let csv = this.papaParser.unparse(
+      {
+        fields: this.parserFile.fields,
+        data: this.parserFile.data,
+      },
+      {
+        delimiter: ";",
+        quotes: true,
+        quoteChar: '"',
+        escapeChar: '"',
+        header: true,
+      }
+    );
 
     //Download file with generated CSV data and filename from parserFile.filename
-    let blob = new Blob([csv], {type: 'text/csv'});
+    const BOMprefix = "\uFEFF";
+    // const encodedCsv = encodeURIComponent(BOMprefix + csv);
+    const blob = new Blob([BOMprefix + csv], { type: "text/csv;charset=" + document.characterSet });
     let url = window.URL.createObjectURL(blob);
+
     let a = document.createElement('a');
     a.href = url;
     a.download = this.parserFile.filename;
@@ -73,7 +88,7 @@ export class UploadAndParseComponent implements OnInit {
     window.URL.revokeObjectURL(url);
     a.remove();
   }
-   
+
 
   openDDModal() {
     this.isVisible = true;

@@ -44,8 +44,17 @@ export class AreasComponent implements OnInit {
 
   areasParser: ParserFile = {
     "filename": "areas.csv",
-    "fields": ["name", "code"], 
-    "data": ["Anamnesis", "1"]
+    "fields": ["name", "code"],
+    "data": [
+      ["Anamnesis", "1"],
+      ["Exploración física", "2"],
+      ["Habilidades técnicas y procedimientos", "3"],
+      ["Habilidades de comunicación", "4"],
+      ["Juicio clínico y plan de manejo diagnóstico y terapéutico", "5"],
+      ["Prevención y promoción de la salud", "6"],
+      ["Relaciones interprofesionales , Aspectos éticos-legales y profesionalismo", "7"],
+      ["Otros","9"]
+    ]
   };
 
   constructor(private apiService: ApiService,
@@ -86,7 +95,7 @@ export class AreasComponent implements OnInit {
       });
     });
     this.InitAreaRow();
-    
+
   }
 
 
@@ -191,10 +200,10 @@ export class AreasComponent implements OnInit {
 
     for (const item of items) {
       if (item.name && item.code) {
-        item['ecoe'] = this.ecoeId;
-        item.code = item.code.toString();
-
-        const area = new Area(item);
+        const area = new Area();
+        area.ecoe = this.ecoe;
+        area.name = item.name;
+        area.code = item.code.toString();
 
         const promise = area.save()
           .then(result => {
