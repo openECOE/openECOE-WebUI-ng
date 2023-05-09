@@ -218,7 +218,7 @@ export class Answer extends Item {
   student: Student;
   question: Question;
   points: number;
-  
+
   answerSchema: string;
 
   private _answer_schema: AnswerSchema;
@@ -464,7 +464,7 @@ export class RowOption {
   order: any | number;
   label: any[] | string;
   points: any[] | number;
-  rateCount?: any[] | number;
+  ratecount?: any[] | number;
   id?: number;
 
   constructor(order, label, points) {
