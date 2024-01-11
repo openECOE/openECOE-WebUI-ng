@@ -106,4 +106,4 @@ jobs:
         with:
           url: ${{ secrets.WEBHOOK_BUILD_ONE_FOR_ALL }}
           headers: '{"repository": "${{ github.repository }}"}'
-          body: '{"event": "build", "repository": "${{ github.repository_owner }}", "tag": "api-${{ steps.meta.outputs.tags }}"}'
+          body: '{"event": "build", "repository": "${{ github.repository_owner }}", "tag": "webui-${{ steps.meta.outputs.tags }}"}'
