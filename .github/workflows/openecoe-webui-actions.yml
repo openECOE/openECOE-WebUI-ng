@@ -151,11 +151,11 @@ jobs:
         shell: bash
         run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            TAG="${GITHUB_REF#refs/tags/}"
+            TAG=${GITHUB_REF#refs/tags/}
           elif [[ $GITHUB_REF == refs/heads/master ]]; then
             TAG="latest"
           else
-            TAG="${GITHUB_REF#refs/heads/}""
+            TAG=${GITHUB_REF#refs/heads/}
           fi
           echo "tag=webui-$TAG" >> $GITHUB_OUTPUT
 
