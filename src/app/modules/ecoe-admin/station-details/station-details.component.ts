@@ -76,12 +76,31 @@ export class StationDetailsComponent implements OnInit {
   }
 
   importQblocksWithQuestions(items: any[], station: Station) {
+    items = this.convertQuestionTypes(items);
+
     this.questionService.importQblockWithQuestions(items, station)
       .then(() => this.getQblocks(station))
       .catch( err => console.log(err))
       .finally(() => this.loading = false);
   }
 
+  convertQuestionTypes(items: any[]): any[] {
+    const spanishToEnglishQuestionType = {
+      'simple': 'checkbox',
+      'multiple': 'radio',
+      'rango': 'range'
+    };
+
+    return items.map(item => {
+      const spanishQuestionType = item['questionType'];
+      const englishQuestionType = spanishToEnglishQuestionType[spanishQuestionType];
+      if (englishQuestionType) {
+        item['questionType'] = englishQuestionType;
+      }
+      return item;
+    });
+  }
+  
   onBack() {
     this.router.navigate(['/ecoe/' + this.ecoeId + '/admin/stations']).finally();
   }
