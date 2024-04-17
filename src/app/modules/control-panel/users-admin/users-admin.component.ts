@@ -7,7 +7,10 @@ import {ApiService} from '@services/api/api.service';
 import { DOCUMENT } from '@angular/common';
 import { UserService } from '@app/services/user/user.service';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { NzMessageService, NzModalService, valueFunctionProp } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzSafeAny } from 'ng-zorro-antd/core/types';
+
 import { findLast } from '@angular/compiler/src/directive_resolver';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
