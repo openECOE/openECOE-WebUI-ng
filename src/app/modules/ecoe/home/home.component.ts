@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { debounceTime } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
-import { NzModalService } from "ng-zorro-antd";
+import { NzModalService } from "ng-zorro-antd/modal";
 import { TranslateService } from "@ngx-translate/core";
 import { UserLogged } from "@app/models";
 import { ECOE } from "../../../models";

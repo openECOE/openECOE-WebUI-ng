@@ -171,17 +171,17 @@ export class QuestionsService {
       }
       const qblock = new Block({name: name, station: station, order: order});
       return qblock.save()
-
+      
     } catch (error) {
       this.logPromisesERROR.push({value: name, reason: error});
       return error;
-
+      
     }
 
+    
 
 
-
-
+    
   }
 
   private async getArea(area: Area | String, ecoe: ECOE | number): Promise<Area> {
@@ -279,7 +279,7 @@ export class QuestionsService {
         _schema.description = item[this.HEADER.description];
       }
       if (_schema instanceof QuestionRange) {
-
+        
         const getRateCount = () => {
           const _options = item[this.OPTIONS];
           if (_options) {
@@ -288,13 +288,13 @@ export class QuestionsService {
             return 10;
           }
         }
-
+          
         _schema.range = item[this.HEADER.range] || getRateCount();
-
+        
         _schema.max_points = item[this.HEADER.points];
       } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
         const _options = item[this.OPTIONS];
-
+  
         if (_options.length === 0) {
           _options.push(
             new Option({
@@ -303,16 +303,16 @@ export class QuestionsService {
             })
           );
         }
-
+  
         // tslint:disable-next-line:no-shadowed-variable
         for (const { idx, opt } of _options.map((opt, idx) => ({ idx: idx + 1, opt }))) {
           const _questionOption = new QuestionOption();
-
+  
           _questionOption.id_option = idx;
           _questionOption.points = opt.points || opt[`points${idx}`];
           _questionOption.label = opt.label || opt[`option${idx}`];
           _questionOption.order = opt.order ? opt.order : idx;
-
+  
           _schema.options.push(_questionOption);
         }
       }
@@ -325,7 +325,7 @@ export class QuestionsService {
       throw error;
     }
 
-
+    
   }
 
   /**
@@ -337,7 +337,7 @@ export class QuestionsService {
     const _question = new Question();
 
     _question.area = (await this.getArea(rowQuestion[this.HEADER.ac], station.ecoe));
-
+    
     //Si no hay area devolvemos un error y marcamos que no se puede realizar la importación
     if (!_question.area) {
       this.logPromisesERROR.push({

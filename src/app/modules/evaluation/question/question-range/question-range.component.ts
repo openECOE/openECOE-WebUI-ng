@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Answer, AnswerRange, QuestionRange} from '@app/models';
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
-import {NzMessageService} from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({

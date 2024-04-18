@@ -6,7 +6,10 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { UsermenuComponent } from './usermenu/usermenu.component';
-import { NzDropDownModule, NzIconModule, NzPageHeaderModule } from 'ng-zorro-antd';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
+
 
 
 @NgModule({

@@ -70,7 +70,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
       this.optionsCache = this.schema.options;
     } else if (this.schema instanceof QuestionRange) {
       const _rOption = new RowOption(0, null, this.schema.max_points)
-      _rOption.ratecount = this.schema.range;
+      _rOption.rateCount = this.schema.range;
       this.optionsCache = [_rOption];
     }
   }
@@ -131,7 +131,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
         order: '',
         label: [{value: ' ', disabled: true}, ],
         points: [params ? params.points : null, [Validators.required]],
-        ratecount: [params ? params.ratecount : 10, [Validators.required]]
+        rateCount: [params ? params.rateCount : 10, [Validators.required]]
       });
     }
   }
@@ -269,22 +269,18 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   increaseRateCount(pos: number, value: number) {
     if (value < this.nRateCount.max) {
       this.nRateCount.current = ++value;
-      this.getFormControl('ratecount', pos).setValue(this.nRateCount.current);
+      this.getFormControl('rateCount', pos).setValue(this.nRateCount.current);
     }
   }
   decreaseRateCount(pos: number, value: number) {
     if (value > this.nRateCount.min) {
       this.nRateCount.current = --value;
-      this.getFormControl('ratecount', pos).setValue(this.nRateCount.current);
+      this.getFormControl('rateCount', pos).setValue(this.nRateCount.current);
     }
   }
 
-  parseOptions(options: RowOption[]) {
-    if (this.type !== this.questionTypeOptions[2]) {
-      return options;
-    } else {
-      return options[0];
-    }
+  parseOptions(options: RowOption[]) {    
+    return options;
 
     // if (this.type !== this.questionTypeOptions[2]) {
     //   return options;
@@ -292,14 +288,14 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     // const auxOptions: RowOption[] = [];
     // let order;
     // let points;
-    // for (let i = 0; i < ratecount; i++) {
+    // for (let i = 0; i < rateCount; i++) {
     //   order = i + 1;
     //   points = parseInt(options[length - 1].points.toString(), 10);
 
     //   auxOptions.push( new RowOption(
     //     order,
     //     '',
-    //     (points / ratecount) * order)
+    //     (points / rateCount) * order)
     //   );
     // }
     // return auxOptions;
