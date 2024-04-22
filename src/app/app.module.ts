@@ -36,6 +36,7 @@ import {
   NzToolTipModule,
   NzBackTopModule,
   NzNotificationModule,
+  NzDropDownModule
 } from "ng-zorro-antd";
 import { registerLocaleData } from "@angular/common";
 import localeEs from "@angular/common/locales/es";
@@ -124,6 +125,7 @@ export function createTranslateLoader(http: HttpClient) {
     NzNotificationModule,
     RouterModule,
     NzSpinModule,
+    NzDropDownModule
   ],
   providers: [
     {
