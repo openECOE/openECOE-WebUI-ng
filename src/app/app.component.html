@@ -7,6 +7,22 @@
       <img alt="logo" src="../assets/logo.png">
     </div>
 
+    <div *ngIf="userIsSuperAdmin()">
+      <button nz-button nz-dropdown [nzDropdownMenu]="organizaciones" style="margin: auto;" >
+        Organizaciones
+        <i nz-icon nzType="down"></i>
+      </button>
+
+      <nz-dropdown-menu #organizaciones="nzDropdownMenu">
+        <ul nz-menu>
+          <li *ngFor="let org of organizationList" nz-menu-item>
+            {{org}}
+          </li>
+        </ul>
+      </nz-dropdown-menu>
+    </div>
+
+  
     <app-usermenu *ngIf="isLoggedIn()" style="margin: auto;"></app-usermenu>
 
     <app-submenu *ngIf="isLoggedIn()" [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>

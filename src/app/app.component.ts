@@ -19,6 +19,8 @@ export class AppComponent implements OnInit {
 
   clientHeight: number;
 
+  organizationList = ["Organization 1", "Organization 2", "Organization 3"]; //Lista de pruebas BORRAR
+
   @ViewChild("backTop", { static: true }) backTop: ElementRef;
 
   constructor(
@@ -60,4 +62,11 @@ export class AppComponent implements OnInit {
   isLoggedIn(): boolean {
     return this.authService.userLogged ? true : false;
   }
+
+  userIsSuperAdmin(): boolean {
+    if(this.isLoggedIn()) {
+      return true;
+    }
+  }
+    
 }
