@@ -31,6 +31,10 @@ export class OrganizationsService  {
     return Organization.query<Organization>();
   }
 
+  getOrganizationNames(): Promise<string[]> {
+    return this.getOrganizations().then(organizations => organizations.map(org => org.name));
+  }
+
   getEcoesByOrganization(): Promise<ECOE[]> {
     return ECOE.query<ECOE>({
       where: {organization: this._currentOrganization}

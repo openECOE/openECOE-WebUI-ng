@@ -7,9 +7,9 @@
       <img alt="logo" src="../assets/logo.png">
     </div>
 
-    <div *ngIf="userIsSuperAdmin()">
+    <div *ngIf="userIsSuperAdmin()" style="display: inline-block;">
       <button nz-button nz-dropdown [nzDropdownMenu]="organizaciones" style="margin: auto;" >
-        Organizaciones
+        {{currentOrganization}}
         <i nz-icon nzType="down"></i>
       </button>
 
