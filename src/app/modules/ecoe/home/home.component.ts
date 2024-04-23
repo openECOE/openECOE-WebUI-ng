@@ -1,16 +1,17 @@
 import { Component, OnInit } from "@angular/core";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, switchMap } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
 import { NzModalService } from "ng-zorro-antd";
 import { TranslateService } from "@ngx-translate/core";
-import { UserLogged } from "@app/models";
+import { Organization, UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
 
 import { Router } from "@angular/router";
-import { Observable, Observer } from "rxjs";
+import { Observable, Observer, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
+import { OrganizationsService } from "@app/services/organizations-service/organizations.service";
 
 @Component({
   selector: "app-home",
@@ -23,7 +24,7 @@ export class HomeComponent implements OnInit {
   ecoeForm: FormControl;
   ecoesDelist: ECOE[];
   ecoe: ECOE;
-  organization: any;
+  organization: Organization;
 
   user: UserLogged;
   Listed: any;
@@ -38,7 +39,8 @@ export class HomeComponent implements OnInit {
     private modalSrv: NzModalService,
     private translate: TranslateService,
     private fb: FormBuilder,
-    private shared: SharedService
+    private shared: SharedService,
+    private organizationsService: OrganizationsService
   ) {
     this.validateForm = this.fb.group({
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
@@ -52,15 +54,19 @@ export class HomeComponent implements OnInit {
     this.loadEcoes();
   }
 
+  loadEcoes(): void {
+    this.organizationsService.currentOrganizationChange
+      .pipe(
+        switchMap(() => this.organizationsService.getEcoesByOrganization())
+      )
+      .subscribe((ecoes) => {
+        this.ecoesList = ecoes;
+      });
+  }
+
   closeDrawer() {
     this.showCreateEcoe = false;
     this.ecoeForm.reset();
-  }
-
-  async loadEcoes() {
-    ECOE.query<ECOE>().then((_ecoes) => {
-      this.ecoesList = _ecoes;
-    });
   }
 
   showListed() {
