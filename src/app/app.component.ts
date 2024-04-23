@@ -4,6 +4,9 @@ import { filter } from "rxjs/operators";
 import { NavigationEnd, Router } from "@angular/router";
 import { SharedService } from "./services/shared/shared.service";
 import { AuthenticationService } from "./services/authentication/authentication.service";
+import { UserService } from "./services/user/user.service";
+import { OrganizationsService } from "./services/organizations-service/organizations.service";
+import { string } from "yaml/dist/schema/common/string";
 
 @Component({
   selector: "app-root",
@@ -19,7 +22,8 @@ export class AppComponent implements OnInit {
 
   clientHeight: number;
 
-  organizationList = ["Organization 1", "Organization 2", "Organization 3"]; //Lista de pruebas BORRAR
+  organizationList = [];
+  currentOrganization: string;
 
   @ViewChild("backTop", { static: true }) backTop: ElementRef;
 
@@ -27,7 +31,9 @@ export class AppComponent implements OnInit {
     private translate: TranslateService,
     public router: Router,
     private sharedService: SharedService,
-    public authService: AuthenticationService
+    public authService: AuthenticationService,
+    public userService: UserService,
+    public organizationsService: OrganizationsService
   ) {
     this.initializeTranslate();
 
@@ -53,6 +59,24 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.clientHeight = window.innerHeight;
     this.year = new Date().getFullYear().toString();
+
+    this.userService.userDataChange.subscribe(
+      (user) => {
+        user.isSuper ? this.visible = true : this.visible = false;
+      })
+
+    this.organizationsService.getOrganizationNames().then(
+      (organization) => {
+        this.organizationList = organization;
+        
+      }
+    )
+
+    this.organizationsService.currentOrganizationChange.subscribe(
+      (org) => {
+        this.currentOrganization = org.name;
+      }
+    )
   }
 
   toCollapse(event) {
@@ -63,9 +87,9 @@ export class AppComponent implements OnInit {
     return this.authService.userLogged ? true : false;
   }
 
-  userIsSuperAdmin(): boolean {
+  userIsSuperAdmin(): Boolean {
     if(this.isLoggedIn()) {
-      return true;
+      return this.visible;
     }
   }
     
