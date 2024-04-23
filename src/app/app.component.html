@@ -8,15 +8,15 @@
     </div>
 
     <div *ngIf="userIsSuperAdmin()" style="display: inline-block;">
-      <button nz-button nz-dropdown [nzDropdownMenu]="organizaciones" style="margin: auto;" >
-        {{currentOrganization}}
+      <button nz-button nz-dropdown [nzDropdownMenu]="organizaciones" style="margin: auto;" nzTrigger="click">
+        {{currentOrganization.name}}
         <i nz-icon nzType="down"></i>
       </button>
 
       <nz-dropdown-menu #organizaciones="nzDropdownMenu">
         <ul nz-menu>
-          <li *ngFor="let org of organizationList" nz-menu-item>
-            {{org}}
+          <li *ngFor="let org of organizationList" nz-menu-item (click)="changeCurrentOrganization(org)">
+            {{org.name}}
           </li>
         </ul>
       </nz-dropdown-menu>

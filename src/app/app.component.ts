@@ -6,7 +6,7 @@ import { SharedService } from "./services/shared/shared.service";
 import { AuthenticationService } from "./services/authentication/authentication.service";
 import { UserService } from "./services/user/user.service";
 import { OrganizationsService } from "./services/organizations-service/organizations.service";
-import { string } from "yaml/dist/schema/common/string";
+import { Organization } from "./models";
 
 @Component({
   selector: "app-root",
@@ -22,8 +22,8 @@ export class AppComponent implements OnInit {
 
   clientHeight: number;
 
-  organizationList = [];
-  currentOrganization: string;
+  organizationList: Organization[];
+  currentOrganization: Organization;
 
   @ViewChild("backTop", { static: true }) backTop: ElementRef;
 
@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
         user.isSuper ? this.visible = true : this.visible = false;
       })
 
-    this.organizationsService.getOrganizationNames().then(
+    this.organizationsService.getOrganizations().then(
       (organization) => {
         this.organizationList = organization;
         
@@ -74,7 +74,7 @@ export class AppComponent implements OnInit {
 
     this.organizationsService.currentOrganizationChange.subscribe(
       (org) => {
-        this.currentOrganization = org.name;
+        this.currentOrganization = org;
       }
     )
   }
@@ -91,6 +91,10 @@ export class AppComponent implements OnInit {
     if(this.isLoggedIn()) {
       return this.visible;
     }
+  }
+
+  changeCurrentOrganization(selectedOrganization: Organization): void {
+    this.organizationsService.currentOrganization = selectedOrganization;
   }
     
 }
