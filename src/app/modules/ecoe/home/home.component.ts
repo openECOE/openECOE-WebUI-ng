@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { debounceTime, switchMap } from "rxjs/operators";
+import { debounceTime, switchMap, tap } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
 import { NzModalService } from "ng-zorro-antd";
@@ -57,6 +57,7 @@ export class HomeComponent implements OnInit {
   loadEcoes(): void {
     this.organizationsService.currentOrganizationChange
       .pipe(
+        tap((organization: Organization) => this.organization = organization),
         switchMap(() => this.organizationsService.getEcoesByOrganization())
       )
       .subscribe((ecoes) => {
