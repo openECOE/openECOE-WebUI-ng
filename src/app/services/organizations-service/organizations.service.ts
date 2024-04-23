@@ -17,23 +17,16 @@ export class OrganizationsService  {
   _init(): void {
     this.userService.userDataChange.subscribe(
       (user) => {
-        console.log('init')
         this._currentOrganization = user.user.organization;
         this.currentOrganizationChange.next(user.user.organization);
       })
   }
-  /*
-  get currentOrganization(): Subject<Organization> {
-    return this.currentOrganization;
-  }
-  */
-
-  /*
+  
   set currentOrganization(organization: Organization) {
+    this._currentOrganization = organization;
     this.currentOrganizationChange.next(organization);
   }
-  */
-
+  
   getOrganizations(): Promise<Organization[]> {
     return Organization.query<Organization>();
   }
@@ -43,9 +36,5 @@ export class OrganizationsService  {
       where: {organization: this._currentOrganization}
     });
   }
-
-
-
-  
 
 }
