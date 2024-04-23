@@ -17,7 +17,7 @@ export class OrganizationsService  {
   _init(): void {
     this.userService.userDataChange.subscribe(
       (user) => {
-        this._currentOrganization = user.user.organization;
+        this._currentOrganization = user?.user?.organization || null;
         this.currentOrganizationChange.next(user.user.organization);
       })
   }

@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   language: string = "es";
   year: string = "";
   isCollapsed: Boolean = false;
-  visible: Boolean = false;
+  visible: boolean = false;
 
   clientHeight: number;
 
@@ -62,7 +62,7 @@ export class AppComponent implements OnInit {
 
     this.userService.userDataChange.subscribe(
       (user) => {
-        this.visible = user.isSuper;
+        this.visible = user?.isSuper;
       })
 
     this.organizationsService.getOrganizations().then(
@@ -87,7 +87,7 @@ export class AppComponent implements OnInit {
     return this.authService.userLogged ? true : false;
   }
 
-  userIsSuperAdmin(): Boolean {
+  userIsSuperAdmin(): boolean {
     if(this.isLoggedIn()) {
       return this.visible;
     }
