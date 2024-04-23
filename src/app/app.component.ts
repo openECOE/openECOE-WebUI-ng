@@ -62,7 +62,7 @@ export class AppComponent implements OnInit {
 
     this.userService.userDataChange.subscribe(
       (user) => {
-        user.isSuper ? this.visible = true : this.visible = false;
+        this.visible = user.isSuper;
       })
 
     this.organizationsService.getOrganizations().then(
