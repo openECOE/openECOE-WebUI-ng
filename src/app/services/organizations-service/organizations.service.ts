@@ -21,7 +21,6 @@ export class OrganizationsService  {
           this._currentOrganization = user?.user?.organization || null;
           this.currentOrganizationChange.next(this._currentOrganization);
         }
-      })
   }
   
   set currentOrganization(organization: Organization) {
