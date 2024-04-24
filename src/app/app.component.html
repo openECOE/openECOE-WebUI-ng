@@ -8,21 +8,9 @@
     </div>
 
     <div *ngIf="userIsSuperAdmin()" style="display: inline-block;">
-      <button nz-button nz-dropdown [nzDropdownMenu]="organizaciones" style="margin: auto;" nzTrigger="click">
-        {{currentOrganization.name}}
-        <i nz-icon nzType="down"></i>
-      </button>
-
-      <nz-dropdown-menu #organizaciones="nzDropdownMenu">
-        <ul nz-menu>
-          <li *ngFor="let org of organizationList" nz-menu-item (click)="changeCurrentOrganization(org)">
-            {{org.name}}
-          </li>
-        </ul>
-      </nz-dropdown-menu>
+      <app-change-organization></app-change-organization>
     </div>
 
-  
     <app-usermenu *ngIf="isLoggedIn()" style="margin: auto;"></app-usermenu>
 
     <app-submenu *ngIf="isLoggedIn()" [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>

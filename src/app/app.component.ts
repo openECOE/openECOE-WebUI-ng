@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   language: string = "es";
   year: string = "";
   isCollapsed: Boolean = false;
-  visible: Boolean = false;
+  visible: boolean = false;
 
   clientHeight: number;
 
@@ -60,23 +60,8 @@ export class AppComponent implements OnInit {
     this.clientHeight = window.innerHeight;
     this.year = new Date().getFullYear().toString();
 
-    this.userService.userDataChange.subscribe(
-      (user) => {
-        this.visible = user.isSuper;
-      })
-
-    this.organizationsService.getOrganizations().then(
-      (organization) => {
-        this.organizationList = organization;
-        
-      }
-    )
-
-    this.organizationsService.currentOrganizationChange.subscribe(
-      (org) => {
-        this.currentOrganization = org;
-      }
-    )
+    this.userService.userDataChange
+      .subscribe(user => this.visible = user?.isSuper || false)
   }
 
   toCollapse(event) {
@@ -87,14 +72,7 @@ export class AppComponent implements OnInit {
     return this.authService.userLogged ? true : false;
   }
 
-  userIsSuperAdmin(): Boolean {
-    if(this.isLoggedIn()) {
-      return this.visible;
-    }
-  }
-
-  changeCurrentOrganization(selectedOrganization: Organization): void {
-    this.organizationsService.currentOrganization = selectedOrganization;
-  }
-    
+  userIsSuperAdmin(): boolean {
+    return this.isLoggedIn() ? this.visible : false;
+  }    
 }
