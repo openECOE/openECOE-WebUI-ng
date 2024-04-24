@@ -1,6 +1,6 @@
 <nz-content class="long-div">
 
-  <nz-card [nzLoading]="loading" [nzTitle]="HeaderRef">
+  <nz-card [nzLoading]="loading"  class="questions">
 
     <nz-alert  nz-col nzXs="24" [nzLg]="{span: 12, offset: 6}" [nzXXl]="{span: 8, offset: 8}" *ngIf="station?.parentStation && currentStudent.index == 0"
       nzType="warning"
@@ -46,62 +46,63 @@
     </ng-container>
   </nz-card>
 
-  <ng-template #HeaderRef>
-    <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32, xl: 32, xxl: 32 }">
-      <div nz-col nzSpan="12" nzXs="24" nzLg="12">
-        <h2 (click)="onBack()">
-          <a><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
-          <a *ngIf="station"> {{station.name}} </a>
-        </h2>
-        <app-chrono [round]="round" [station]="station" [idEcoe]="ecoeId">
-        </app-chrono>
-      </div>
-      <div nz-col nzSpan="12" nzXs="24" nzLg="12">
-        <nz-skeleton [nzLoading]="loading"
-                     [nzParagraph]="false"
-                     [nzActive]="true">
-          <h2 uppercase text-right>
-            <ng-container *ngIf="currentStudent.student.surnames else noStudent">
-              {{(currentStudent?.student.surnames + ', ' + currentStudent?.student.name)}}
-            </ng-container>
+  <nz-card class="top-fixed">
+    <ng-container >
+      <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32, xl: 32, xxl: 32 }">
+        <div nz-col nzSpan="12" nzXs="24" nzLg="12">
+          <h2 (click)="onBack()">
+            <a><i nz-icon nzType="arrow-left" nzTheme="outline"></i></a>
+            <a *ngIf="station"> {{station.name}} </a>
           </h2>
-
-          <ng-template #noStudent>
-            {{('NO_STUDENT' | translate)}}
-          </ng-template>
-        </nz-skeleton>
-
-        <div nz-row nzJustify="end">
-          <div nz-col nzSpan="6" text-center>{{'DAY-SHIFT' | translate}}</div>
-          <div nz-col nzSpan="6" text-center>{{'ROUND' | translate}}</div>
-          <div nz-col nzSpan="12" text-center *ngIf="students?.length > 0">{{'NUMB' | translate}}</div>
+          <app-chrono [round]="round" [station]="station" [idEcoe]="ecoeId">
+          </app-chrono>
         </div>
-        <nz-divider style="margin: 10px 0"></nz-divider>
-        <div nz-row>
-          <div nz-col nzSpan="6" text-center uppercase><h3>{{shift?.shiftCode}}</h3></div>
-          <div nz-col nzSpan="6" text-center><h3>{{round?.roundCode}}</h3></div>
-          <div nz-col nzSpan="12">
-            <div nz-row *ngIf="students?.length > 0">
-              <div nz-col nzSpan="8">
-                <button nzDanger (click)="previousStudent()" width-100 nzBlock nzSize="large" nz-button><i
-                  nz-icon nzType="left" nzTheme="outline"></i></button>
-              </div>
-              <div nz-col nzSpan="8">
-                <h3 text-center>{{currentStudent?.student.plannerOrder}}</h3>
-              </div>
-              <div nz-col nzSpan="8">
-                <button nzType="primary" (click)="nextStudent()" width-100 nzBlock nzSize="large" nz-button>
-                  <i nz-icon nzType="right" nzTheme="outline"></i>
-                </button>
-              </div>
-            </div>
+        <div nz-col nzSpan="12" nzXs="24" nzLg="12">
+          <nz-skeleton [nzLoading]="loading"
+                      [nzParagraph]="false"
+                      [nzActive]="true">
+            <h2 uppercase text-right>
+              <ng-container *ngIf="currentStudent.student.surnames else noStudent">
+                {{(currentStudent?.student.surnames + ', ' + currentStudent?.student.name)}}
+              </ng-container>
+            </h2>
 
+            <ng-template #noStudent>
+              {{('NO_STUDENT' | translate)}}
+            </ng-template>
+          </nz-skeleton>
+
+          <div nz-row nzJustify="end">
+            <div nz-col nzSpan="6" text-center>{{'DAY-SHIFT' | translate}}</div>
+            <div nz-col nzSpan="6" text-center>{{'ROUND' | translate}}</div>
+            <div nz-col nzSpan="12" text-center *ngIf="students?.length > 0">{{'NUMB' | translate}}</div>
+          </div>
+          <nz-divider style="margin: 10px 0"></nz-divider>
+          <div nz-row>
+            <div nz-col nzSpan="6" text-center uppercase><h3>{{shift?.shiftCode}}</h3></div>
+            <div nz-col nzSpan="6" text-center><h3>{{round?.roundCode}}</h3></div>
+            <div nz-col nzSpan="12">
+              <div nz-row *ngIf="students?.length > 0">
+                <div nz-col nzSpan="8">
+                  <button nzDanger (click)="previousStudent()" width-100 nzBlock nzSize="large" nz-button><i
+                    nz-icon nzType="left" nzTheme="outline"></i></button>
+                </div>
+                <div nz-col nzSpan="8">
+                  <h3 text-center>{{currentStudent?.student.plannerOrder}}</h3>
+                </div>
+                <div nz-col nzSpan="8">
+                  <button nzType="primary" (click)="nextStudent()" width-100 nzBlock nzSize="large" nz-button>
+                    <i nz-icon nzType="right" nzTheme="outline"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </ng-template>
-
+    </ng-container>
+  </nz-card>
   <button
     *ngIf="students.length > 0 && students.length !== (currentStudent.index + 1)"
     (click)="nextStudent()"
