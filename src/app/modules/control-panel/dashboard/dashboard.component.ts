@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Organization, User, UserLogged} from '@app/models';
+import { OrganizationsService } from '@app/services/organizations-service/organizations.service';
 import { UserService } from '@app/services/user/user.service';
 
 @Component({
@@ -16,13 +17,16 @@ export class DashboardComponent implements OnInit {
 
   loading: boolean = false;
 
-  constructor(private userService: UserService) {
+  constructor(
+    private userService: UserService,
+    private organizationsService: OrganizationsService
+  ) {
   }
 
   ngOnInit() {
     this.userData = this.userService.userData;
     this.loadUsers();
-    //this.loadOrganizations();
+    this.loadOrganizations();
   }
 
   loadUsers() {
@@ -34,13 +38,10 @@ export class DashboardComponent implements OnInit {
       .finally(() => this.loading = false);
   }
 
-  //TODO: Implement loadOrganizations method
-  // loadOrganizations() {
-  //   this.loading = true;
-  //   Organization.query({
-  //     where: {organization: this.userData.user.organization}
-  //   }, {paginate: true})
-  //     .then((page) => this.organizationsPage = page)
-  //     .finally(() => this.loading = false);
-  // }
+  loadOrganizations() {
+    this.loading = true;
+    Organization.query({}, {paginate: true})
+      .then((page) => this.organizationsPage = page)
+      .finally(() => this.loading = false);
+  }
 }
