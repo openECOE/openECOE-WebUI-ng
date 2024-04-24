@@ -4,9 +4,13 @@ import { filter } from "rxjs/operators";
 import { NavigationEnd, Router } from "@angular/router";
 import { SharedService } from "./services/shared/shared.service";
 import { AuthenticationService } from "./services/authentication/authentication.service";
+import { UserService } from "./services/user/user.service";
+import { OrganizationsService } from "./services/organizations-service/organizations.service";
+import { Organization } from "./models";
 import { ServerStatusService } from "./services/server-status/server-status.service";
 import { ActionMessagesService } from "./services/action-messages/action-messages.service";
 import {NzMessageRef } from 'ng-zorro-antd';
+
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
@@ -17,9 +21,12 @@ export class AppComponent implements OnInit {
   language: string = "es";
   year: string = "";
   isCollapsed: Boolean = false;
-  visible: Boolean = false;
+  visible: boolean = false;
 
   clientHeight: number;
+
+  organizationList: Organization[];
+  currentOrganization: Organization;
 
   @ViewChild("backTop", { static: true }) backTop: ElementRef;
 
@@ -28,6 +35,8 @@ export class AppComponent implements OnInit {
     public router: Router,
     private sharedService: SharedService,
     public authService: AuthenticationService,
+    public userService: UserService,
+    public organizationsService: OrganizationsService
     private serverStatusService: ServerStatusService,
     private actionMessageService: ActionMessagesService,
   ) {
@@ -55,6 +64,9 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.clientHeight = window.innerHeight;
     this.year = new Date().getFullYear().toString();
+    
+    this.userService.userDataChange
+      .subscribe(user => this.visible = user?.isSuper || false)
     this.checkServerStatus();
   }
 
@@ -65,6 +77,10 @@ export class AppComponent implements OnInit {
   isLoggedIn(): boolean {
     return this.authService.userLogged ? true : false;
   }
+
+  userIsSuperAdmin(): boolean {
+    return this.isLoggedIn() ? this.visible : false;
+  }    
 
   checkServerStatus(): void {
     let previousStatus = true;

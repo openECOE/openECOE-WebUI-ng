@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
 import { ActionButtonsComponent } from './action-buttons/action-buttons.component';
-import {NzAlertModule, NzBreadCrumbModule, NzButtonModule, NzCardModule, NzDividerModule, NzDrawerModule, NzEmptyModule, NzFormModule, NzGridModule, NzIconModule, NzInputModule, NzInputNumberModule, NzLayoutModule, NzListModule, NzMenuModule, NzModalModule, NzPageHeaderModule, NzPopconfirmModule, NzProgressModule, NzRadioGroupComponent, NzRadioModule, NzRateModule, NzSelectModule, NzSkeletonModule, NzStatisticModule, NzStepsModule, NzSwitchModule, NzTableModule, NzTagModule, NzToolTipModule, NzUploadModule} from 'ng-zorro-antd';
+import {NzAlertModule, NzBreadCrumbModule, NzButtonModule, NzCardModule, NzDividerModule, NzDrawerModule, NzEmptyModule, NzFormModule, NzGridModule, NzIconModule, NzInputModule, NzInputNumberModule, NzLayoutModule, NzListModule, NzMenuModule, NzModalModule, NzPageHeaderModule, NzPopconfirmModule, NzProgressModule, NzRadioGroupComponent, NzRadioModule, NzRateModule, NzSelectModule, NzSkeletonModule, NzStatisticModule, NzStepsModule, NzSwitchModule, NzTableModule, NzTagModule, NzToolTipModule, NzUploadModule, NzDropDownModule } from 'ng-zorro-antd';
 import {TranslateModule} from '@ngx-translate/core';
 import { MenuComponent } from './menu/menu.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -20,6 +20,7 @@ import {PipesModule} from '@pipes/pipes.module';
 import { ProgressBarComponent } from './chrono/progress-bar/progress-bar.component';
 import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.component';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { ChangeOrganizationComponent } from './change-organization/change-organization/change-organization.component';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -35,7 +36,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     OptionsListComponent,
     ChronoComponent,
     ProgressBarComponent,
-    ChronoHeaderComponent
+    ChronoHeaderComponent,
+    ChangeOrganizationComponent
   ],
   imports: [
     CommonModule,
@@ -76,7 +78,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     NzMenuModule,
     NzInputNumberModule,
     NzSpaceModule,
-    NzRadioModule
+    NzRadioModule,
+    NzDropDownModule
   ],
   exports: [
     UploadAndParseComponent,
@@ -85,7 +88,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     QblockQuestionFormComponent,
     QuestionsListComponent,
     QuestionFormComponent,
-    ChronoComponent
+    ChronoComponent,
+    ChangeOrganizationComponent
   ]
 })
 export class ComponentsModule {}
