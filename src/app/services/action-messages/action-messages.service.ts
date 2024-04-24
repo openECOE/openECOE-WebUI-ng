@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {NzMessageService} from 'ng-zorro-antd';
+import {NzMessageDataOptions, NzMessageRef, NzMessageService} from 'ng-zorro-antd';
 
 /**
  * Service with the NzMessageService methods.
@@ -17,8 +17,8 @@ export class ActionMessagesService {
    *
    * @param message Message to show on the alert
    */
-  createSuccessMsg(message: string) {
-    this.nzMessageService.success(message);
+  createSuccessMsg(message: string, options?: NzMessageDataOptions): NzMessageRef {
+    return this.nzMessageService.success(message, options);
   }
 
   /**
@@ -26,7 +26,12 @@ export class ActionMessagesService {
    *
    * @param message Message to show on the alert
    */
-  createErrorMsg(message: string) {
-    this.nzMessageService.error(message);
+  createErrorMsg(message: string, options?: NzMessageDataOptions): NzMessageRef {
+    return this.nzMessageService.error(message, options);
   }
+
+  removeMessage(messageId: string): void {
+    this.nzMessageService.remove(messageId);
+  }
+
 }
