@@ -36,8 +36,8 @@ import {
   NzToolTipModule,
   NzBackTopModule,
   NzNotificationModule,
-  NzDropDownModule
-  NzMessageModule,
+  NzDropDownModule,
+  NzMessageModule
 } from "ng-zorro-antd";
 import { registerLocaleData } from "@angular/common";
 import localeEs from "@angular/common/locales/es";

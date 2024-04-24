@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
     private sharedService: SharedService,
     public authService: AuthenticationService,
     public userService: UserService,
-    public organizationsService: OrganizationsService
+    public organizationsService: OrganizationsService,
     private serverStatusService: ServerStatusService,
     private actionMessageService: ActionMessagesService,
   ) {
