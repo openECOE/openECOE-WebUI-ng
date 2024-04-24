@@ -296,5 +296,7 @@
   "USERS_IMPORTED": "Usuarios importados correctamente",
   "ERROR_IMPORT_USERS": "Error importando usuarios",
   "ERRORS.ERROR_IN_QUESTION_SCHEMA": "Error en QuestionType",
-  "ECOE_CREATED": "{{name}} creada correctamente"
+  "ECOE_CREATED": "{{name}} creada correctamente",
+  "LOST_BACKEND_CONNECTION": "Se ha perdido la conexión con el servidor",
+  "RECOVERED_BACKEND_CONNECTION": "Se ha recuperado la conexión con el servidor"
 }
