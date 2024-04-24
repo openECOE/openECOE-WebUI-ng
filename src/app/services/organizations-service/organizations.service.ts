@@ -17,9 +17,10 @@ export class OrganizationsService  {
   _init(): void {
     this.userService.userDataChange.subscribe(
       (user) => {
-        this._currentOrganization = user?.user?.organization || null;
-        this.currentOrganizationChange.next(user.user.organization);
-      })
+        if (user) {
+          this._currentOrganization = user?.user?.organization || null;
+          this.currentOrganizationChange.next(this._currentOrganization);
+        }
   }
   
   set currentOrganization(organization: Organization) {

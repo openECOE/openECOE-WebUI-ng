@@ -60,23 +60,8 @@ export class AppComponent implements OnInit {
     this.clientHeight = window.innerHeight;
     this.year = new Date().getFullYear().toString();
 
-    this.userService.userDataChange.subscribe(
-      (user) => {
-        this.visible = user?.isSuper;
-      })
-
-    this.organizationsService.getOrganizations().then(
-      (organization) => {
-        this.organizationList = organization;
-        
-      }
-    )
-
-    this.organizationsService.currentOrganizationChange.subscribe(
-      (org) => {
-        this.currentOrganization = org;
-      }
-    )
+    this.userService.userDataChange
+      .subscribe(user => this.visible = user?.isSuper || false)
   }
 
   toCollapse(event) {
@@ -88,13 +73,6 @@ export class AppComponent implements OnInit {
   }
 
   userIsSuperAdmin(): boolean {
-    if(this.isLoggedIn()) {
-      return this.visible;
-    }
-  }
-
-  changeCurrentOrganization(selectedOrganization: Organization): void {
-    this.organizationsService.currentOrganization = selectedOrganization;
-  }
-    
+    return this.isLoggedIn() ? this.visible : false;
+  }    
 }

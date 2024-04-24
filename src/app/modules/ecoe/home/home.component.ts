@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { debounceTime, switchMap, tap } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
@@ -9,7 +9,7 @@ import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
 
 import { Router } from "@angular/router";
-import { Observable, Observer, defer, from } from "rxjs";
+import { Observable, Observer, Subscription, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
 import { OrganizationsService } from "@app/services/organizations-service/organizations.service";
 
@@ -18,7 +18,7 @@ import { OrganizationsService } from "@app/services/organizations-service/organi
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.less"],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   showCreateEcoe: boolean;
   ecoesList: ECOE[];
   ecoeForm: FormControl;
@@ -31,6 +31,7 @@ export class HomeComponent implements OnInit {
   Delisted: any;
 
   validateForm!: FormGroup;
+  organizationChange$: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -46,6 +47,9 @@ export class HomeComponent implements OnInit {
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
     });
   }
+  ngOnDestroy(): void {
+    this.organizationChange$.unsubscribe();
+  }
 
   ngOnInit() {
     this.Listed = true;
@@ -55,7 +59,7 @@ export class HomeComponent implements OnInit {
   }
 
   loadEcoes(): void {
-    this.organizationsService.currentOrganizationChange
+    this.organizationChange$ = this.organizationsService.currentOrganizationChange
       .pipe(
         tap((organization: Organization) => this.organization = organization),
         switchMap(() => this.organizationsService.getEcoesByOrganization())

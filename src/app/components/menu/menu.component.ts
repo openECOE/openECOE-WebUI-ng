@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
-  selector: 'app-menu',
+  selector: 'app-right-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.less']
 })
