@@ -174,7 +174,6 @@ export class UsersAdminComponent implements OnInit {
         perPage: this.perPage,
       })
       .then((page) => {
-        console.log('page', page);
         this.loadPage(page)
   })
       .catch((err) => console.log(err))
@@ -198,8 +197,6 @@ export class UsersAdminComponent implements OnInit {
   async loadPage(page: any) {
     this.usersPage = page;
     this.totalItems = this.usersPage.total;
-    console.log('totalItems:', this.totalItems);
-    console.log('TIPO:', typeof this.usersPage.items);
     const _users: Array<UserItem> = [...this.usersPage.items];
     
     for (const user of _users) {

@@ -43,6 +43,21 @@
       </th>
       <th>{{"ID"}}</th>
       <th>{{"NAME" | translate}}</th>
+      <th nzWidth="250px">
+        <nz-button-group>
+          <button nz-button [nzType]="'primary'" class="margin-left"
+                  [nz-tooltip] [nzTooltipTitle]="'ADD_ORGANIZATION' | translate"
+                  (click)="showModal()">
+            <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
+          </button>
+          <app-upload-and-parse [parserFile]="organizationParser" (parserResult)="importOrganizations($event)"></app-upload-and-parse>
+          <button nz-button nzType="danger" class="margin-left"
+                  [nz-tooltip] [nzTooltipTitle]="'DELETE_SELECTED' | translate"
+                  (click)="delSelected()">
+            <i nz-icon nzType="delete" icon-16></i>
+          </button>
+        </nz-button-group>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -65,12 +80,37 @@
           </ng-container>
         </td>
 
-        <!-- <td text-right>
-          <app-action-buttons [showDeleteButton]="!(organization.id === item.id)">
-          </app-action-buttons>
-        </td> -->
+        <td text-right>
+          <app-action-buttons
+                            (startEdit)="showModalEdit(item)"
+                            (delete)="delOrganization(item)">
+        </app-action-buttons>
+        </td>
       </tr>
     </ng-template>
   </tbody>
 </nz-table>
 
+<!--
+  MODAL DE ADD_USER
+-->
+<nz-modal *ngIf="validateForm"
+  [(nzVisible)]="showAddOrganization || showEditOrganization"
+  [nzTitle]="showAddOrganization?('ADD_ORGANIZATION' | translate) : ('EDIT_ORGANIZATION' | translate: {name: organizationOriginal?.name})"
+  [nzOkText]="'ACCEPT' | translate"
+  [nzCancelText]="'CANCEL' | translate"
+  (nzOnOk)="submitFormOrganization(validateForm)"
+  (nzOnCancel)="closeModal()">
+
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item *ngIf="showAddOrganization">
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
+        <nz-input-group nzCompact>
+          <input type="text" nz-input
+                 formControlName="organizationName"
+                 placeholder="{{'NAME' | translate}}">
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
