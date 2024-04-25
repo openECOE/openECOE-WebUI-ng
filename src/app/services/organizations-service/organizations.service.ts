@@ -32,6 +32,19 @@ export class OrganizationsService  {
     return Organization.query<Organization>();
   }
 
+  getOrganizationsPage(queryParams) {
+    return Organization.query(queryParams, { paginate: true })
+      .then((page: any) => {
+        page.items.map((item: Organization) => {
+          id: item.id; 
+          name: item.name;
+        });
+        return page;
+      })
+      .catch((err) => err);
+  }
+  
+  
   getEcoesByOrganization(): Promise<ECOE[]> {
     return ECOE.query<ECOE>({
       where: {organization: this._currentOrganization}

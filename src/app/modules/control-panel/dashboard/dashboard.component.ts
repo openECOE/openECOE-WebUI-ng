@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Organization, User, UserLogged} from '@app/models';
-import { OrganizationsService } from '@app/services/organizations-service/organizations.service';
 import { UserService } from '@app/services/user/user.service';
 
 @Component({
@@ -19,7 +18,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private organizationsService: OrganizationsService
   ) {
   }
 

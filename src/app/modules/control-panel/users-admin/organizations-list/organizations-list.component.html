@@ -5,4 +5,72 @@
   </nz-breadcrumb>
 </nz-page-header>
 
-<p>organizations-list works!</p>
+<nz-drawer
+  [nzClosable]="true"
+  [nzVisible]="importErrors.length > 0"
+  nzPlacement="right"
+  [nzTitle]="'IMPORT_ERRORS'"
+  (nzOnClose)="cleanImportErrors()"
+  [nzWidth]="540"
+>
+  <nz-alert *ngFor="let error of importErrors, let idx=index"
+            nzType="error"
+            nzCloseable
+            [nzMessage]="error.reason.statusText"
+            [nzDescription]="error.reason.message"
+            nzShowIcon
+  >
+  </nz-alert>
+</nz-drawer>
+
+<nz-table #table
+          [nzPageIndex]="page"
+          [nzPageSize]="perPage"
+          (nzPageIndexChange)="pageChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)"
+          [nzLoading]="loading"
+          [nzTotal]="totalItems"
+          [nzData]="organizations"
+          [nzFrontPagination]="false"
+          nzShowSizeChanger
+          nzShowPagination>
+  <thead>
+    <tr>
+      <th>
+        <a (click)="loadOrganizations()">
+          <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
+        </a>
+      </th>
+      <th>{{"ID"}}</th>
+      <th>{{"NAME" | translate}}</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <ng-template ngFor let-item  let-idx="index" [ngForOf]="table.data">
+      <tr>
+        <td  
+        [(nzChecked)]="item.checked">
+        </td>
+  
+        <td>
+          <ng-container>
+            {{item.id}}
+          </ng-container>
+        </td>
+
+        <td>
+          <ng-container>
+            {{item.name}}
+          </ng-container>
+        </td>
+
+        <!-- <td text-right>
+          <app-action-buttons [showDeleteButton]="!(organization.id === item.id)">
+          </app-action-buttons>
+        </td> -->
+      </tr>
+    </ng-template>
+  </tbody>
+</nz-table>
+
