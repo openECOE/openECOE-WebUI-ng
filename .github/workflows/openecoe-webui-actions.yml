@@ -11,12 +11,14 @@ on:
     branches:
       - "master"
       - "develop"
+      - "uat"
     # Publish semver tags as releases.
     tags:
       - 'v*'
   pull_request:
     branches:
       - "master"
+      - "uat"
 
 permissions:
   contents: read
@@ -53,7 +55,7 @@ jobs:
     #  run: yarn test
 
   docker:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -100,7 +102,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -167,10 +169,9 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: |
             openecoe/one-for-all:${{ steps.set_tag.outputs.tag }}
-            openecoe/one-for-all:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
