@@ -302,7 +302,7 @@
   "ORGANIZATIONS": "Organizaciones",
   "ADD_ORGANIZATION": "Añadir organización",
   "EDIT_ORGANIZATION": "Editar organización {{name}}",
-  "ORHANIZATION_CREATED": "Organización {{name}} creada",
+  "ORGANIZATION_CREATED": "Organización {{name}} creada",
   "ORGANIZATION_UPDATED": "Organización {{name}} actualizada",
   "NO_ORGANIZATIONS_SELECTED": "No ha seleccionado ninguna organización",
   "DELETE_ORGANIZATION": "Eliminar Organizaciones Seleccionadas",
