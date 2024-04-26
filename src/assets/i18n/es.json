@@ -304,11 +304,8 @@
   "EDIT_ORGANIZATION": "Editar organización {{name}}",
   "ORGANIZATION_CREATED": "Organización {{name}} creada",
   "ORGANIZATION_UPDATED": "Organización {{name}} actualizada",
+  "ORGANIZATION_DELETED": "Organización {{name}} eliminada",
   "NO_ORGANIZATIONS_SELECTED": "No ha seleccionado ninguna organización",
   "DELETE_ORGANIZATION": "Eliminar Organizaciones Seleccionadas",
-  "DELETE_ORGANIZATION_CONFIRM": "Por favor confirme que desea eliminar las organizaciones seleccionadas",
-  "ORGANIZATION_DELETED": "Organización {{name}} eliminada",
-  "ORGANIZATIONS_DELETED": "Organizaciones eliminadas",
-  "ORGANIZATIONS_IMPORTED": "Organizaciones importadas correctamente",
-  "ERROR_IMPORT_ORGANIZATIONS": "Error importando organizaciones"
+  "DELETE_ORGANIZATION_CONFIRM": "Por favor escriba el nombre de la organización para confirmar que desea eliminar la organizacion seleccionada"
 }

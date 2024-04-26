@@ -10,10 +10,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 
 
-interface OrganizationItem extends Organization {
-  checked: boolean;
-}
-
 @Component({
   selector: 'app-organizations-list',
   templateUrl: './organizations-list.component.html',
@@ -25,7 +21,7 @@ export class OrganizationsListComponent implements OnInit {
   @Input() showDeleteButton: boolean = true;
   @Output() delete: EventEmitter<void> = new EventEmitter<void>();
 
-  organizations: Array<OrganizationItem> = [];
+  organizations: Array<Organization> = [];
   organizationsPage: any;
   editCache: CacheItem[] = [];
 
@@ -110,11 +106,7 @@ export class OrganizationsListComponent implements OnInit {
   async loadPage(page: any) {
     this.organizationsPage = page;
     this.totalItems = this.organizationsPage.total;
-    const _organizations: Array<OrganizationItem> = [...this.organizationsPage.items];
-    
-    for (const organization of _organizations) {
-      organization.checked = false;
-    }
+    const _organizations: Array<Organization> = [...this.organizationsPage.items];
     
     this.updateEditCache(page.items, this.editCache);
     this.organizations = _organizations;
@@ -209,7 +201,8 @@ export class OrganizationsListComponent implements OnInit {
     } else {
       this.modalService.confirm({
         nzTitle: this.translate.instant("DELETE_ORGANIZATION"),
-        nzContent: this.translate.instant("DELETE_ORGANIZATION_CONFIRM"),
+        nzContent: `<p>${this.translate.instant("DELETE_ORGANIZATION_CONFIRM")}</p>
+          <input nz-input placeholder="Nombre" [(ngModel)]="confirmDeleteText" ></input>`,
         nzOkText: this.translate.instant("YES"),
         nzOkType: "danger",
         nzOnOk: () => {
@@ -220,42 +213,6 @@ export class OrganizationsListComponent implements OnInit {
       return;
     }
   }  
-
-  importOrganizations(parserResult: Array<any>) {
-    this.importErrors = [];
-    const respPromises = [];
-
-    for (const value of parserResult) {
-      //Check all values are present
-      if (!value.name) {
-        continue; //skip this organization        
-      }
-
-      const promise = this.addOrganization(
-        value.name.toString(),
-        true
-      )
-        .then((resp) => {
-          console.log("Organization import", resp.email, resp);
-          return resp;
-        })
-        .catch((reason) => {
-          console.warn("Organization import error", value, reason);
-          this.importErrors.push({
-            value: value,
-            reason: reason,
-          });
-          return reason;
-        });
-
-      respPromises.push(promise);
-    };
-
-    Promise.all(respPromises)
-    .finally(() => {
-      this.loadOrganizations()
-    });
-  }
 
   cleanImportErrors() {
     this.importErrors = [];
@@ -324,7 +281,7 @@ export class OrganizationsListComponent implements OnInit {
 }
 
 
-export interface CacheItem extends OrganizationItem {
+export interface CacheItem extends Organization {
   data: any;
   editItem: boolean;
   newItem: boolean;
