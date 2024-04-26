@@ -119,7 +119,7 @@ jobs:
         run: |
           repo_owner="openECOE"
           repo_name="docker"
-          event_type="trigger-workflow"
+          event_type="build-one-for-all"
           project=${{ env.PROJECT }}"
           branch=${{ env.BRANCH }}"
 
