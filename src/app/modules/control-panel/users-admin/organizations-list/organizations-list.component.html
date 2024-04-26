@@ -79,7 +79,7 @@
   (nzOnCancel)="closeModal()">
 
   <form nz-form [formGroup]="validateForm">
-    <nz-form-item *ngIf="showAddOrganization">
+    <nz-form-item>
       <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
           <input type="text" nz-input
                  formControlName="name"
