@@ -96,7 +96,7 @@
 <nz-modal *ngIf="showMessageDelete"
   [(nzVisible)]="showMessageDelete" 
   [nzTitle]="'DELETE_ORGANIZATION' | translate:{ name: organizationDelete.name }"
-  [nzOkText]="'YES' | translate"
+  [nzOkText]="'DELETE' | translate"
   [nzOkType]="'danger'"
   [nzOkDisabled]="confirmDeleteText !== organizationDelete.name"
   (nzOnOk)="delOrganization(organizationDelete)"
