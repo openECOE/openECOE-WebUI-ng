@@ -9,7 +9,6 @@ import { SharedService } from '@app/services/shared/shared.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 
-
 @Component({
   selector: 'app-organizations-list',
   templateUrl: './organizations-list.component.html',
@@ -38,7 +37,6 @@ export class OrganizationsListComponent implements OnInit {
   showAddOrganization: boolean = false;
   showMessageDelete: boolean = false;
   showEditOrganization: boolean = false;
-  importErrors: { value: any; reason: any }[] = [];
 
   idx: any;
   item: any;
@@ -214,10 +212,6 @@ export class OrganizationsListComponent implements OnInit {
     }
   }  
 
-  cleanImportErrors() {
-    this.importErrors = [];
-  }
-
   showModal() {
     this.showAddOrganization = true;
   }
@@ -276,10 +270,7 @@ export class OrganizationsListComponent implements OnInit {
     this.router.navigate(["/control-panel"]).finally();
   }
 
-
-
 }
-
 
 export interface CacheItem extends Organization {
   data: any;

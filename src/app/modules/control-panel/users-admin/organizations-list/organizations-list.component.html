@@ -5,24 +5,6 @@
   </nz-breadcrumb>
 </nz-page-header>
 
-<nz-drawer
-  [nzClosable]="true"
-  [nzVisible]="importErrors.length > 0"
-  nzPlacement="right"
-  [nzTitle]="'IMPORT_ERRORS'"
-  (nzOnClose)="cleanImportErrors()"
-  [nzWidth]="540"
->
-  <nz-alert *ngFor="let error of importErrors, let idx=index"
-            nzType="error"
-            nzCloseable
-            [nzMessage]="error.reason.statusText"
-            [nzDescription]="error.reason.message"
-            nzShowIcon
-  >
-  </nz-alert>
-</nz-drawer>
-
 <nz-table #table
           [nzPageIndex]="page"
           [nzPageSize]="perPage"
@@ -48,6 +30,7 @@
                 [nz-tooltip] [nzTooltipTitle]="'ADD_ORGANIZATION' | translate"
                 (click)="showModal()">
           <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
+          Añadir
         </button>
       </th>
     </tr>
@@ -56,6 +39,10 @@
 
     <ng-template ngFor let-item  let-idx="index" [ngForOf]="table.data">
       <tr>
+
+        <td>
+          <ng-container></ng-container>
+        </td>
   
         <td>
           <ng-container>
