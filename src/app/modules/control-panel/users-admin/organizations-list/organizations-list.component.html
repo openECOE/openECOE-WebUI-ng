@@ -100,7 +100,7 @@
   [nzOkType]="'danger'"
   [nzOkDisabled]="confirmDeleteText !== organizationDelete.name"
   (nzOnOk)="delOrganization(organizationDelete)"
-  [nzCancelText]="'NO' | translate"
+  [nzCancelText]="'CANCEL' | translate"
   (nzOnCancel)="closeModal()">
 
   <form nz-form [formGroup]="validateForm">

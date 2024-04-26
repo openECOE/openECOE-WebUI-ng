@@ -372,12 +372,12 @@ export class UsersAdminComponent implements OnInit {
       this.modalService.confirm({
         nzTitle: this.translate.instant("DELETE_USER"),
         nzContent: this.translate.instant("DELETE_USER_CONFIRM"),
-        nzOkText: this.translate.instant("YES"),
+        nzOkText: this.translate.instant("DELETE"),
         nzOkType: "danger",
         nzOnOk: () => {
           this.delUsers(_delUsers);
         },
-        nzCancelText: this.translate.instant("NO"),
+        nzCancelText: this.translate.instant("CANCEL"),
       });
       return;
     }
