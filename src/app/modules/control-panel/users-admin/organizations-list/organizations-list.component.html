@@ -59,7 +59,7 @@
         <td text-right>
           <app-action-buttons
                             (startEdit)="showModalEdit(item)"
-                            (delete)="delOrganization(item)">
+                            (delete)="showModalDelete(item)">
         </app-action-buttons>
         </td>
       </tr>
@@ -81,11 +81,36 @@
   <form nz-form [formGroup]="validateForm">
     <nz-form-item *ngIf="showAddOrganization">
       <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
-        <nz-input-group nzCompact>
           <input type="text" nz-input
                  formControlName="name"
                  placeholder="{{'NAME' | translate}}">
-        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<!--
+  MODAL DE DELETE_ORGANIZATION
+-->
+
+<nz-modal *ngIf="showMessageDelete"
+  [(nzVisible)]="showMessageDelete" 
+  [nzTitle]="'DELETE_ORGANIZATION' | translate:{ name: organizationDelete.name }"
+  [nzOkText]="'YES' | translate"
+  [nzOkType]="'danger'"
+  [nzOkDisabled]="confirmDeleteText !== organizationDelete.name"
+  (nzOnOk)="delOrganization(organizationDelete)"
+  [nzCancelText]="'NO' | translate"
+  (nzOnCancel)="closeModal()">
+
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item *ngIf="showMessageDelete">
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
+          <p>{{ 'DELETE_ORGANIZATION_CONFIRM' | translate }}</p>
+          <input type="text" nz-input  
+                 formControlName="name"
+                 name="confirmDeleteText"
+                 placeholder="{{'NAME' | translate}}">
       </nz-form-control>
     </nz-form-item>
   </form>

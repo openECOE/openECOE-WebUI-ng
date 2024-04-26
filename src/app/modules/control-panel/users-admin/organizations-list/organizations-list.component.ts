@@ -32,6 +32,7 @@ export class OrganizationsListComponent implements OnInit {
   // FORMULARIO EDITAR
   organizationEditar: Organization;
   organizationOriginal: Organization;
+  organizationDelete: Organization;
 
   validateForm: FormGroup;
   showAddOrganization: boolean = false;
@@ -40,6 +41,8 @@ export class OrganizationsListComponent implements OnInit {
 
   idx: any;
   item: any;
+
+  confirmDeleteText: string = '';
 
   organizationParser: ParserFile = {
     "filename": "organizations.csv",
@@ -63,6 +66,10 @@ export class OrganizationsListComponent implements OnInit {
     this.getOrganizationForm();
 
     this.loadOrganizations();
+
+    this.validateForm.get('name').valueChanges.subscribe(value => {
+      this.confirmDeleteText = value;
+    });
 
     this.loading = false;
   }
@@ -160,6 +167,41 @@ export class OrganizationsListComponent implements OnInit {
     }
   }
 
+  async updateOrganization(organization: Organization, value: any) {
+    const updateData = {
+      name: value.name,
+    };
+
+    await organization.update(updateData);
+
+    this.message.success(
+      this.translate.instant("ORGANIZATION_UPDATED", { name: organization.name })
+    );
+  }
+
+  async saveOrganization(item: any) {
+    this.loading = true;
+    const orgcache = this.editCache.find((f) => f.data.id === item.id);
+    if (!orgcache.data.email) {
+      this.loading = false;
+      orgcache.editItem = false;
+      return;
+    }
+
+    const body = {
+      name: orgcache.data.name || "-",
+    };
+
+    const request = item.update(body);
+
+    request
+      .then(() => {
+        this.loadOrganizations();
+        orgcache.editItem = false;
+      })
+      .finally(() => (this.loading = false));
+  }
+
   async delOrganization(organization: Organization, batch: boolean = false) {
     try {
       await organization.destroy();
@@ -174,65 +216,36 @@ export class OrganizationsListComponent implements OnInit {
     } catch (error) {
       this.message.error(this.translate.instant("ERROR_DELETE_USER"));
     }
+
+    this.showMessageDelete = false;
   }
-
-  delOrganizations(organizations: Array<Organization>) {
-    const _delPromises = [];
-
-    for (const organization of organizations) {
-      _delPromises.push(this.delOrganization(organization, true));
-    }
-
-    Promise.all(_delPromises)
-    .then(() => {
-      this.message.success(this.translate.instant("ORGANIZATIONS_DELETED"));
-    })
-    .finally(() => this.loadOrganizations());
-  }
-
-  delSelected() {
-    const _delOrganizations = this.organizations.filter((u) => u.checked);
-    
-    if (_delOrganizations.length === 0) {
-      this.message.warning(this.translate.instant("NO_ORGANIZATIONS_SELECTED"));
-      return;
-    } else {
-      this.modalService.confirm({
-        nzTitle: this.translate.instant("DELETE_ORGANIZATION"),
-        nzContent: `<p>${this.translate.instant("DELETE_ORGANIZATION_CONFIRM")}</p>
-          <input nz-input placeholder="Nombre" [(ngModel)]="confirmDeleteText" ></input>`,
-        nzOkText: this.translate.instant("YES"),
-        nzOkType: "danger",
-        nzOnOk: () => {
-          this.delOrganizations(_delOrganizations);
-        },
-        nzCancelText: this.translate.instant("NO"),
-      });
-      return;
-    }
-  }  
 
   showModal() {
     this.showAddOrganization = true;
   }
 
-  showModalDelete() {
+  showModalDelete(modalDelteOrganization: Organization) {
+    this.organizationDelete = modalDelteOrganization;
+
     this.showMessageDelete = true;
   }
-
+  
   closeModal() {
     this.shared.cleanForm(this.validateForm);
     this.showAddOrganization = false;
     this.showEditOrganization = false;
+    this.showMessageDelete = false;
   }
 
-  async showModalEdit(modalEditUser: Organization) {
-    this.organizationOriginal = modalEditUser;
+  async showModalEdit(modalEditOrganization: Organization) {
+    this.organizationOriginal = modalEditOrganization;
 
-    this.validateForm.controls["name"].setValue(modalEditUser.name);
+    this.validateForm.controls["name"].setValue(modalEditOrganization.name);
 
     this.showEditOrganization = true;
   }
+
+
   async submitFormOrganization(form: FormGroup) {
     this.shared.doFormDirty(form);
     if (form.pending) {
@@ -253,15 +266,13 @@ export class OrganizationsListComponent implements OnInit {
         await this.addOrganization(
           value.name
         );
-      } 
+      } else if (this.showEditOrganization) {
+        await this.updateOrganization(this.organizationOriginal, value);
+      }
 
       this.loadOrganizations();
     } catch (error) {
       console.error(error);
-      this.message.create(
-        "error",
-        "Error al guardar la información del usuario"
-      );
     }
     this.closeModal();
   }
