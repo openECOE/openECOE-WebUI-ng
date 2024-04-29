@@ -10,6 +10,7 @@ import {
   HttpClient,
   HttpClientModule,
 } from "@angular/common/http";
+
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NZ_I18N, es_ES } from 'ng-zorro-antd/i18n';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -61,6 +62,7 @@ import { NzProgressModule } from "ng-zorro-antd/progress";
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import { GradesComponent } from "./modules/ecoe-results/grades/grades.component";
 import { EvaluationItemsComponent } from './modules/ecoe-results/evaluation-items/evaluation-items.component';
+import { ComponentsModule } from "./components/components.module";
 
 registerLocaleData(localeEs, "es", localeEsExtra);
 
@@ -87,6 +89,7 @@ export function createTranslateLoader(http: HttpClient) {
     HttpClientModule,
     NzButtonModule,
     NzProgressModule,
+    NzMessageModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -122,6 +125,8 @@ export function createTranslateLoader(http: HttpClient) {
     NzNotificationModule,
     RouterModule,
     NzSpinModule,
+    NzDropDownModule,
+    ComponentsModule
   ],
   providers: [
     {

@@ -1,3 +1,10 @@
+@screen-xxsmall: 395px;
+@screen-xsmall: 495px;
+@screen-small: 993px;
+@screen-medium: 1100px;
+@screen-large: 1300px;
+@screen-xlarge: 1500px;
+
 .wrapword {
   white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
   white-space: -pre-wrap;      /* Opera 4-6 */
@@ -25,4 +32,42 @@
 
 app-question {
   width: 100%;
+}
+
+.top-fixed {
+  position: fixed;
+  top: 8%;
+  width: 86%;
+  z-index: 100;
+
+  @media (min-width: @screen-xsmall) and (max-width: @screen-small) {
+    top: 7%;
+  }
+}
+
+.questions{
+  @media (min-width: @screen-xlarge) {
+    margin-top: 13%;
+  }
+
+  @media (min-width: @screen-large) and (max-width: @screen-xlarge) {
+    margin-top: 15%;
+  }
+
+  @media (min-width: @screen-medium) and (max-width: @screen-large) {
+    margin-top: 18%;
+  }
+
+  @media (min-width: @screen-small) and (max-width: @screen-medium) {
+    margin-top: 20%;
+  }
+
+  @media (min-width: @screen-xsmall) and (max-width: @screen-small) {
+    margin-top: 50%;
+  }
+
+  @media (min-width: @screen-xxsmall) and (max-width: @screen-xsmall) {
+    margin-top: 90%;
+  }
+  
 }

@@ -105,7 +105,7 @@ export const MaxPointsRangeError = new Error('max points should be positive in R
 export class QuestionRange extends QuestionBase {
   constructor() {
     super('range');
-    this.range = 0;
+    this.range = 10;
   }
 
   range: number;

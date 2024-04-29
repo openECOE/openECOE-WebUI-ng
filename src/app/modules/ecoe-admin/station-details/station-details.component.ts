@@ -40,17 +40,17 @@ export class StationDetailsComponent implements OnInit {
     "fields": ["order", "description", "reference", "points", "area", "questionType", "range", "option1", "points1", "option2", "points2", "option3", "points3", "option4", "points4", "option5", "points5", "option6", "points6", "option7", "points7", "option8", "points8", "option9", "points9", "option10", "points10"],
     "data": [
       ["", "example 1st block name or description"],
-      ["1", "question description 1", "reference name 1", "1", "1", "checkbox"],
-      ["2", "question description 2", "reference name 2", "3", "1", "checkbox"],
-      ["3", "question description 3", "reference name 3", "4", "1", "checkbox"],
+      ["1", "question description 1", "reference name 1", "1", "1", "simple"],
+      ["2", "question description 2", "reference name 2", "3", "1", "simple"],
+      ["3", "question description 3", "reference name 3", "4", "1", "simple"],
       ["", "example 2nd block name or description"],
-      ["4", "question description 4", "reference name 4", "4", "1", "checkbox"],
-      ["5", "question description 5", "reference name 5", "3", "1", "checkbox"],
-      ["6", "question description 6", "reference name 6", "3", "1", "checkbox"],
-      ["7", "question description 7", "reference name 7", "5", "1", "radio","","Si","5","No","-10"],
-      ["8", "question description 8", "reference name 8", "-10", "1", "checkbox","","No hace exploración","-10"],
-      ["9", "question description 9", "reference name 9", "6", "1", "range", "5"],
-      ["10", "question description 10", "reference name 10", "6", "1", "range"],
+      ["4", "question description 4", "reference name 4", "4", "1", "simple"],
+      ["5", "question description 5", "reference name 5", "3", "1", "simple"],
+      ["6", "question description 6", "reference name 6", "3", "1", "simple"],
+      ["7", "question description 7", "reference name 7", "5", "1", "multiple","","Si","5","No","-10"],
+      ["8", "question description 8", "reference name 8", "-10", "1", "simple","","No hace exploración","-10"],
+      ["9", "question description 9", "reference name 9", "6", "1", "rango", "5"],
+      ["10", "question description 10", "reference name 10", "6", "1", "rango"],
     ]
   };
 
@@ -76,12 +76,31 @@ export class StationDetailsComponent implements OnInit {
   }
 
   importQblocksWithQuestions(items: any[], station: Station) {
+    items = this.convertQuestionTypes(items);
+
     this.questionService.importQblockWithQuestions(items, station)
       .then(() => this.getQblocks(station))
       .catch( err => console.log(err))
       .finally(() => this.loading = false);
   }
 
+  convertQuestionTypes(items: any[]): any[] {
+    const spanishToEnglishQuestionType = {
+      'simple': 'checkbox',
+      'multiple': 'radio',
+      'rango': 'range'
+    };
+
+    return items.map(item => {
+      const spanishQuestionType = item['questionType'];
+      const englishQuestionType = spanishToEnglishQuestionType[spanishQuestionType];
+      if (englishQuestionType) {
+        item['questionType'] = englishQuestionType;
+      }
+      return item;
+    });
+  }
+  
   onBack() {
     this.router.navigate(['/ecoe/' + this.ecoeId + '/admin/stations']).finally();
   }

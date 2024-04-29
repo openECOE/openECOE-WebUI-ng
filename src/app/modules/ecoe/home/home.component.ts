@@ -1,34 +1,36 @@
-import { Component, OnInit } from "@angular/core";
-import { debounceTime } from "rxjs/operators";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { debounceTime, switchMap, tap } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { TranslateService } from "@ngx-translate/core";
-import { UserLogged } from "@app/models";
+import { Organization, UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
 import { Router } from "@angular/router";
-import { Observable, Observer } from "rxjs";
+import { Observable, Observer, Subscription, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
+import { OrganizationsService } from "@app/services/organizations-service/organizations.service";
 
 @Component({
   selector: "app-home",
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.less"],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   showCreateEcoe: boolean;
   ecoesList: ECOE[];
   ecoeForm: FormControl;
   ecoesDelist: ECOE[];
   ecoe: ECOE;
-  organization: any;
+  organization: Organization;
 
   user: UserLogged;
   Listed: any;
   Delisted: any;
 
   validateForm!: FormGroup;
+  organizationChange$: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,11 +39,15 @@ export class HomeComponent implements OnInit {
     private modalSrv: NzModalService,
     private translate: TranslateService,
     private fb: FormBuilder,
-    private shared: SharedService
+    private shared: SharedService,
+    private organizationsService: OrganizationsService
   ) {
     this.validateForm = this.fb.group({
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
     });
+  }
+  ngOnDestroy(): void {
+    this.organizationChange$.unsubscribe();
   }
 
   ngOnInit() {
@@ -51,15 +57,20 @@ export class HomeComponent implements OnInit {
     this.loadEcoes();
   }
 
+  loadEcoes(): void {
+    this.organizationChange$ = this.organizationsService.currentOrganizationChange
+      .pipe(
+        tap((organization: Organization) => this.organization = organization),
+        switchMap(() => this.organizationsService.getEcoesByOrganization())
+      )
+      .subscribe((ecoes) => {
+        this.ecoesList = ecoes;
+      });
+  }
+
   closeDrawer() {
     this.showCreateEcoe = false;
     this.ecoeForm.reset();
-  }
-
-  async loadEcoes() {
-    ECOE.query<ECOE>().then((_ecoes) => {
-      this.ecoesList = _ecoes;
-    });
   }
 
   showListed() {

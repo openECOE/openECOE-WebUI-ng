@@ -51,6 +51,7 @@ import {PipesModule} from '@pipes/pipes.module';
 import { ProgressBarComponent } from './chrono/progress-bar/progress-bar.component';
 import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.component';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { ChangeOrganizationComponent } from './change-organization/change-organization/change-organization.component';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -66,7 +67,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     OptionsListComponent,
     ChronoComponent,
     ProgressBarComponent,
-    ChronoHeaderComponent
+    ChronoHeaderComponent,
+    ChangeOrganizationComponent
   ],
   imports: [
     CommonModule,
@@ -107,7 +109,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     NzMenuModule,
     NzInputNumberModule,
     NzSpaceModule,
-    NzRadioModule
+    NzRadioModule,
+    NzDropDownModule
   ],
   exports: [
     UploadAndParseComponent,
@@ -116,7 +119,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     QblockQuestionFormComponent,
     QuestionsListComponent,
     QuestionFormComponent,
-    ChronoComponent
+    ChronoComponent,
+    ChangeOrganizationComponent
   ]
 })
 export class ComponentsModule {}
