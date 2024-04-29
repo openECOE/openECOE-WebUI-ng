@@ -106,7 +106,6 @@ export class EvaluateComponent implements OnInit {
 
   async getAnswers(student: Student, station: Station): Promise<Array<Answer>> {
       if (student.id && station.id) {
-        // student.getAllAnswers({cache: false, skip: ['question']}, {cache: false, skip: ['question']})
         return this.queryAnswers(student, station)
       } else {
         return null;

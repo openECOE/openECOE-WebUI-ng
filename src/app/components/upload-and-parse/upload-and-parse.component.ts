@@ -77,7 +77,6 @@ export class UploadAndParseComponent implements OnInit {
 
     //Download file with generated CSV data and filename from parserFile.filename
     const BOMprefix = "\uFEFF";
-    // const encodedCsv = encodeURIComponent(BOMprefix + csv);
     const blob = new Blob([BOMprefix + csv], { type: "text/csv;charset=" + document.characterSet });
     let url = window.URL.createObjectURL(blob);
 

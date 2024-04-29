@@ -4,10 +4,11 @@ import {Location} from '@angular/common';
 import {Area, ECOE, Round, Schedule, Shift, Stage, Station, Student} from '@models/index';
 import {Router, ActivatedRoute} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
-import {NzMessageService, NzModalService} from 'ng-zorro-antd';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {ChronoService} from '@services/chrono/chrono.service';
-import {Item, Pagination} from '@openecoe/potion-client';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ChronoService } from '@services/chrono/chrono.service';
+import { Item, Pagination } from '@openecoe/potion-client';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 interface ISummaryItems {
   total: number;

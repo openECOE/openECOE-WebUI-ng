@@ -48,7 +48,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -94,7 +93,18 @@
                 }
               ]
             },
-            "default": "production"
+            "default": {
+              "0": "p",
+              "1": "r",
+              "2": "o",
+              "3": "d",
+              "4": "u",
+              "5": "c",
+              "6": "t",
+              "7": "i",
+              "8": "o",
+              "9": "n"
+            }
           }
         },
         "serve": {

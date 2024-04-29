@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Area, ECOE } from "../../../models";
 import { ApiService } from "@app/services/api/api.service";
-import { NzTableSortFn, NzTableSortOrder } from "ng-zorro-antd";
+import { NzTableSortFn, NzTableSortOrder } from "ng-zorro-antd/table";
 import { zip } from "rxjs";
 
 class Puntuacion {

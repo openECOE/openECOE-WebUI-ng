@@ -2,12 +2,11 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { debounceTime, switchMap, tap } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
-import { NzModalService } from "ng-zorro-antd";
+import { NzModalService } from "ng-zorro-antd/modal";
 import { TranslateService } from "@ngx-translate/core";
 import { Organization, UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
-
 import { Router } from "@angular/router";
 import { Observable, Observer, Subscription, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";

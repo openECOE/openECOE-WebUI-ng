@@ -1,6 +1,6 @@
 import { Input, OnInit, Directive } from '@angular/core';
 import {Answer, QuestionBase} from '@app/models';
-import {NzMessageService} from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
 
 @Directive()

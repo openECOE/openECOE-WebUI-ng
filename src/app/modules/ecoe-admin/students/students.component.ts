@@ -7,7 +7,7 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from '../../../models';
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 
 /**
@@ -60,8 +60,8 @@ export class StudentsComponent implements OnInit {
 
   studentsParser: ParserFile = {
     "filename": "students.csv",
-    "fields": ["dni", "name", "surname1", "surname2"],
-    "data": ["12345678A", "Name", "Surname1", "Surname2"]
+    "fields": ["dni", "name", "surnames"],
+    "data": ["12345678A", "Name", "Surname1 Surname2"]
   };
 
   constructor(private apiService: ApiService,
@@ -357,7 +357,7 @@ export class StudentsComponent implements OnInit {
 
     for (const item of items) {
       console.log(item);
-      if (item.dni && item.name && item.surname1 && item.surname2) {
+      if (item.dni && item.name && item.surnames) {
 
         let studentPlanner: Planner = null;
         let studentPlannerOrder: number = null;
@@ -375,7 +375,7 @@ export class StudentsComponent implements OnInit {
         }
 
         savePromises.push(
-          this.newStudent(item.dni, item.name, item.surname1.concat(' ', item.surname2), studentPlannerOrder, studentPlanner)
+          this.newStudent(item.dni, item.name, item.surnames, studentPlannerOrder, studentPlanner)
             .then(result => {
               this.logPromisesOK.push(result);
               return result;
@@ -408,10 +408,12 @@ export class StudentsComponent implements OnInit {
    * @param parserResult values that was readed from file.
    */
   importStudents(parserResult: any) {
-    const fileData: any[] = parserResult as Array<any>;
-    const students = fileData.filter(item => item['name'] !== null);
+    const students: any[] = parserResult as Array<any>;
+    if (!students[students.length - 1]['name']) {
+      students.pop();
+    }
 
-    this.saveStudents(students)
+    this.saveStudents(parserResult as Array<any>)
       .then(() => {
         this.loadStudents();
       })
