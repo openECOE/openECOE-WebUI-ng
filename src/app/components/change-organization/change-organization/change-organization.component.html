@@ -1,0 +1,12 @@
+<button nz-button nz-dropdown [nzDropdownMenu]="organizationsMenu" style="margin: auto;" nzTrigger="click">
+    {{currentOrganization?.name}}
+    <i nz-icon nzType="down"></i>
+</button>
+
+<nz-dropdown-menu #organizationsMenu="nzDropdownMenu">
+    <ul nz-menu>
+        <li *ngFor="let organization of organizations" nz-menu-item (click)="changeCurrentOrganization(organization)">
+            {{organization.name}}
+        </li>
+    </ul>
+</nz-dropdown-menu>

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
-import { map } from "rxjs/operators";
+import { catchError, map, tap } from "rxjs/operators";
 import { Role, User, Option } from "@app/models";
 
 /**
@@ -147,7 +147,6 @@ export class ApiService {
       observe: "body",
       responseType: "arraybuffer",
     };
-    // ,headers:{['Content-Disposition']:'attachment; filename=resultados_ecoe_1.csv' }
     return this.http
       .get(url, { observe: "response", responseType: "arraybuffer" })
       .pipe(
@@ -204,5 +203,14 @@ export class ApiService {
    */
   getIdFromRef(ref: string): number {
     return +ref.substr(ref.lastIndexOf("/") + 1);
+  }
+
+  getServerStatus(): Observable<string> {
+    const url = `${environment.BACK_ROUTE}backend/status/`;
+
+    return this.http.get(url, { responseType: 'text' as const})
+      .pipe(
+        catchError(() => of('ko'))
+      );
   }
 }

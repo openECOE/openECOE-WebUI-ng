@@ -46,9 +46,6 @@ export class MessagesInterceptor implements HttpInterceptor {
           if (request.url.endsWith('/auth/tokens')) {
             this.actionMessagesService.createErrorMsg(this.translate.instant('LOG_IN_ERROR'));
           } else if (requestMethod) {
-            // if (err.status === 409) {
-            //    CONFLICT
-            // }
             this.actionMessagesService.createErrorMsg(
               this.translate.instant('ITEM_ACTION_ERROR', {
                 action: this.translate.instant(requestMethod.actionErr)

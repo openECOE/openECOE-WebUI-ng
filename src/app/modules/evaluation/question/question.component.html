@@ -4,7 +4,7 @@
 <!--  [nzActive]="true"-->
 <!--&gt;-->
 <div nz-row nzGutter="16" nzAlign="middle" nzJustify="center">
-  <div nz-col nzFlex="1 1 375px" [innerHTML]="question['schema']['description']"></div>
+  <div nz-col nzFlex="1 1 375px" [innerHTML]="question['order'] + '. ' + question['schema']['description']"></div>
   <div nz-col nzFlex="0 1 150px">
     <b>{{question['schema']['reference']}}</b>
   </div>

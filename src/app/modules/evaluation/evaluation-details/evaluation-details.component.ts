@@ -49,7 +49,6 @@ export class EvaluationDetailsComponent implements OnInit {
       this.getData(this.ecoeId).then(() => {
           this.getShiftDays(this.shifts);
           this.getSelectedShift();
-          // this.onChangeECOEDay(this.ecoeDays[this.selectedIndexShift]);
           this.getSelectedRound();
           this.setupCurrentStep();
           this.isSpinning = false;
@@ -201,16 +200,6 @@ export class EvaluationDetailsComponent implements OnInit {
       }
 
       if (!this.selectedStation) {this.selectedStation = this.checkForNextStep(this.stations); }
-
-
-      // const _stations = stations.filter(async (_station) => {
-      //  const _eval = await _station.can.evaluate()
-      //  return _eval;
-      // })
-
-      // this.stations = _stations;
-
-      
     }).catch(err => {
       console.error('[EvaluationDetailsComponent]','getStations()',err);
       return err;
