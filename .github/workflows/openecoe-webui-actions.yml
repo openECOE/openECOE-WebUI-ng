@@ -112,7 +112,7 @@ jobs:
     # needs: docker
     runs-on: ubuntu-latest
     env:
-      PROJECT: api
+      PROJECT: webui
       BRANCH: ${{ github.ref_name }}
     steps:
       - name: Dispatch one-for-all build
