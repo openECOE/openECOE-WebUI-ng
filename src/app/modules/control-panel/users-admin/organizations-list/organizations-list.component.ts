@@ -7,7 +7,8 @@ import { ApiService } from '@app/services/api/api.service';
 import { OrganizationsService } from '@app/services/organizations-service/organizations.service';
 import { SharedService } from '@app/services/shared/shared.service';
 import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService, NzModalService } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-organizations-list',

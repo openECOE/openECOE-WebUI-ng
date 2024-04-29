@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {NzMessageDataOptions, NzMessageRef, NzMessageService} from 'ng-zorro-antd';
+import {NzMessageDataOptions, NzMessageRef, NzMessageService} from 'ng-zorro-antd/message';
 
 /**
  * Service with the NzMessageService methods.
