@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { catchError, map, tap } from "rxjs/operators";
 import { Role, User, Option } from "@app/models";
+import { ApiPermissions } from "@app/models";
 
 /**
  * Service with the HTTP requests to the backend.
@@ -65,6 +66,20 @@ export class ApiService {
 
   deleteUserRole(role: Role) {
     return role.destroy();
+  }
+
+  addPermision(user: User, name: string, idObject: number | string, object: string): Promise<ApiPermissions> {
+
+    // TODO: asegurar que name y object son strings permitidos
+
+    const permission = new ApiPermissions({
+      user,
+      name,
+      idObject,
+      object
+    });
+
+    return permission.save();
   }
 
   /**
