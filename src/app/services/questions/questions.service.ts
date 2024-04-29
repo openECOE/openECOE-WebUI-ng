@@ -189,39 +189,6 @@ export class QuestionsService {
   }
 
   private async addOptions(questionItem: RowQuestion, idQuestion: number) {
-    // const _schema = new QuestionSchema(questionItem.questionType);
-    //
-    // if (_schema instanceof QuestionBase) {
-    //   _schema.reference = questionItem.reference;
-    //   _schema.description = item[this.HEADER.reference];
-    // }
-    // if (_schema instanceof QuestionRange) {
-    //   _schema.range = item[this.OPTIONS].length;
-    //   _schema.max_points = item[this.HEADER.points];
-    // } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
-    //   // _schema.max_points = item[this.HEADER.points];
-    //   const _options = item[this.OPTIONS];
-    //
-    //   for (const { index, value } of _options.map((opt, idx) => ({ idx, opt }))) {
-    //     const _questionOption = new QuestionOption();
-    //
-    //     _questionOption.id_option = index;
-    //     _questionOption.points = value.points;
-    //     _questionOption.label = value.label;
-    //     _questionOption.order = value.order ? value.order : index;
-    //
-    //     _schema.options.push(_questionOption);
-    //   }
-
-
-      // const body = {
-      //   label: ((item[this.OPTION + (idx + 1)])) ? (item[this.OPTION + (idx + 1)]).toString() : item['label'],
-      //   order: (item[this.HEADER.order]) ? item[this.HEADER.order] : idx,
-      //   points: (item[this.POINTS + (idx + 1)]) ? (item[this.POINTS + (idx + 1)]) : item[this.POINTS],
-      //   question: idQuestion
-      // };
-
-
     const savePromises = [];
     const options = questionItem[this.OPTIONS];
     if (options && options.length === 0) {

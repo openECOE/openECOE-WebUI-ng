@@ -141,7 +141,6 @@ export class Student extends Item {
 
   getAnswers? = Route.GET("/answers");
   getAllAnswers? = Route.GET<Array<Answer>>("/answers/all");
-  // getAnswersStation ? = Route.GET('/answers/station/');
   getAnswersStation? = (station: Number) =>
     Route.GET("/answers/station/" + station.toString());
 

@@ -34,10 +34,6 @@ export class AppComponent implements OnInit {
       .subscribe((event: NavigationEnd) => {
         this.sharedService.setPageChanged(event.url);
       });
-
-    // if (this.authService.userLogged) {
-    //   this.authService.loadUserData();
-    // }
   }
 
   /**

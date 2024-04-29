@@ -7,7 +7,6 @@ import { TranslateService } from "@ngx-translate/core";
 import { UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
-
 import { Router } from "@angular/router";
 import { Observable, Observer } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";

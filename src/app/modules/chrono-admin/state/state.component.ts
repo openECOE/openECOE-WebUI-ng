@@ -139,7 +139,4 @@ export class StateComponent implements OnInit {
       this.ecoe = value;
     });
   }
-
-
-
 }

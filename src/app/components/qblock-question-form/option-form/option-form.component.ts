@@ -11,7 +11,6 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
 
   @Input() questionOrder: number;
   @Input() type: 'radio' | 'checkbox'  | 'range';
-  // @Input() optionsCache: RowOption[] = [];
   @Input() schema: QuestionSchema;
 
   @Output() returnData:   EventEmitter<any> = new EventEmitter();
@@ -281,23 +280,5 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
 
   parseOptions(options: RowOption[]) {    
     return options;
-
-    // if (this.type !== this.questionTypeOptions[2]) {
-    //   return options;
-    // }
-    // const auxOptions: RowOption[] = [];
-    // let order;
-    // let points;
-    // for (let i = 0; i < rateCount; i++) {
-    //   order = i + 1;
-    //   points = parseInt(options[length - 1].points.toString(), 10);
-
-    //   auxOptions.push( new RowOption(
-    //     order,
-    //     '',
-    //     (points / rateCount) * order)
-    //   );
-    // }
-    // return auxOptions;
   }
 }
