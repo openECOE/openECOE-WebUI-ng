@@ -1,1 +1,33 @@
+<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'EVALUATORS' | translate">
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ecoe_name}}</a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"EVALUATORS" | translate}}</nz-tag></nz-breadcrumb-item>
+    </nz-breadcrumb>
+</nz-page-header>
+  
+
 <app-upload-and-parse [parserFile]="evaluatorsParser" (parserResult)="importEvaluators($event)"></app-upload-and-parse>
+
+<ul>
+  <li *ngFor=""></li>
+</ul>
+
+<nz-content>
+  <ng-container >
+    <nz-drawer
+    [nzClosable]="true"
+    [nzVisible]="logPromisesERROR.length > 0"
+    nzPlacement="right"
+    [nzTitle]="'IMPORT_ERRORS' | translate"
+    (nzOnClose)="clearImportErrors()"
+    [nzWidth]="540">
+    <nz-alert *ngFor="let error of logPromisesERROR"
+              nzType="error"
+              nzCloseable
+              [nzMessage]="error.reason.statusText"
+              [nzDescription]="error.reason.message"
+              nzShowIcon>
+    </nz-alert>
+  </nz-drawer>
+  </ng-container>
+</nz-content>
