@@ -18,7 +18,7 @@ import { OrganizationsService } from "@app/services/organizations-service/organi
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.less"],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
   showCreateEcoe: boolean;
   ecoesList: ECOE[];
   ecoeForm: FormControl;
@@ -31,7 +31,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   Delisted: any;
 
   validateForm!: FormGroup;
-  organizationChange$: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -47,9 +46,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
     });
   }
-  ngOnDestroy(): void {
-    this.organizationChange$.unsubscribe();
-  }
 
   ngOnInit() {
     this.Listed = true;
@@ -59,7 +55,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadEcoes(): void {
-    this.organizationChange$ = this.organizationsService.currentOrganizationChange
+    this.organizationsService.getEcoesByOrganization().then((ecoes) => {
+      this.ecoesList = ecoes;
+    })
+    
+    this.organizationsService.currentOrganizationChange
       .pipe(
         tap((organization: Organization) => this.organization = organization),
         switchMap(() => this.organizationsService.getEcoesByOrganization())
