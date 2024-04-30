@@ -5,14 +5,96 @@
     </nz-breadcrumb>
 </nz-page-header>
   
-
-<app-upload-and-parse [parserFile]="evaluatorsParser" (parserResult)="importEvaluators($event)"></app-upload-and-parse>
-
-<ul>
-  <li *ngFor=""></li>
-</ul>
-
 <nz-content>
+  <nz-table #table
+            [nzData]="evaluators"
+            [(nzPageIndex)]="page"
+            [(nzPageSize)]="perPage"
+            (nzPageIndexChange)="loadEvaluators()"
+            (nzPageSizeChange)="loadEvaluators()"
+            [nzLoading]="loading"
+            [nzFrontPagination]="false"
+            [nzTotal]="totalItems"
+            [nzShowTotal]="tmpTotalItems"
+            nzSize="small"
+            nzShowSizeChanger
+            nzShowPagination>
+      <ng-template #tmpTotalItems>
+      {{totalItems}}
+      </ng-template>
+
+      <thead>
+      <tr>
+        <th>
+          <a (click)="loadEvaluators()">
+            <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
+          </a>
+        </th>
+        <th>{{"EMAIL" | translate}}</th>
+        <th>{{"NAME" | translate}}</th>
+        <th>{{"SURNAMES" | translate}}</th>
+        <th>{{"STATIONS" | translate}}</th>
+        <th>{{"ROUNDS" | translate}}</th>
+        <th nzAlign="right" nzRight>
+          <app-upload-and-parse [parserFile]="evaluatorsParser" (parserResult)="importEvaluators($event)"></app-upload-and-parse>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+        <ng-template ngFor let-item [ngForOf]="table.data">
+          <tr>
+            <td></td>
+            <td>
+              <ng-container>
+                {{item.user.email}}
+              </ng-container>
+            </td>
+    
+            <td>
+              <ng-container>
+                {{item.user.name}}{{item?.nameOrder}}
+              </ng-container>
+            </td>
+    
+            <td>
+              <ng-container>
+                {{item.user.surname}}
+              </ng-container>
+            </td>
+
+            <td>
+              <ng-container>
+                <nz-tag *ngFor="let station of item.stations" [nzColor]="'blue'">
+                  {{station}}
+                </nz-tag>
+              </ng-container>
+            </td>
+
+            <td>
+              <ng-container>
+                <nz-tag *ngFor="let round of item.rounds" [nzColor]="'red'">
+                  {{round}}
+                </nz-tag>
+              </ng-container>
+            </td>
+
+            <td></td>
+          </tr>
+        </ng-template>
+        </tbody>
+      </nz-table>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   <ng-container >
     <nz-drawer
     [nzClosable]="true"
