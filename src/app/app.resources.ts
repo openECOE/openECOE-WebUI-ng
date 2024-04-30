@@ -17,6 +17,7 @@ import {
   Answer,
   Role,
   Job,
+  ApiPermissions,
 } from "./models";
 
 export const resources: PotionResources = {
@@ -37,4 +38,5 @@ export const resources: PotionResources = {
   "/users": User,
   "/roles": Role,
   "/jobs": Job,
+  "/permissions": ApiPermissions,
 };

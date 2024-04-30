@@ -1,7 +1,7 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Location} from '@angular/common';
-import {Area, ECOE, Round, Schedule, Shift, Stage, Station, Student} from '@models/index';
+import {Area, ECOE, Round, Schedule, Shift, Stage, Station, Student, ApiPermissions, Permission} from '@models/index';
 import {Router, ActivatedRoute} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -33,6 +33,7 @@ export class EcoeInfoComponent implements OnInit {
   stages: ISummaryItems = {total: 0, show: false, loading: true};
   rounds: ISummaryItems = {total: 0, show: false, loading: true};
   shifts: ISummaryItems = {total: 0, show: false, loading: true};
+  evaluators: ISummaryItems = {total: 0, show: false, loading: true};
 
   show_areas: Boolean = true;
 
@@ -119,8 +120,35 @@ export class EcoeInfoComponent implements OnInit {
         this.shifts.loading = false;
         this.shifts.show = this.show_planner;
       });
+      
+      this.getEvaluators().then((cont) => {
+        this.evaluators.total = cont;
+        this.evaluators.loading = false;
+        this.evaluators.show = this.show_evaluators;
+      })
 
     });
+  }
+
+  async getEvaluators() {
+    let permissions = await ApiPermissions.query<ApiPermissions>({
+      where: {
+        name: "evaluate",
+        object: "stations",
+      }
+    })
+
+    let permissionsOfThisEcoe = [];
+    for (const permission of permissions) {
+      let station = await Station.fetch<Station>(permission.idObject);
+      console.log(station.ecoe.id + ' ' + this.ecoeId);
+      if(station.ecoe.id == this.ecoeId) {
+        permissionsOfThisEcoe.push(permission);
+      }
+    }
+
+    let uniqueUsers = [...new Set(permissionsOfThisEcoe.map(p => p.user))];
+    return uniqueUsers.length;
   }
 
   /**
@@ -238,6 +266,10 @@ export class EcoeInfoComponent implements OnInit {
     return this.stages.total > 0 || this.rounds.total > 0 || this.shifts.total > 0;
   };
   
+  get show_evaluators(): boolean {
+    return this.stages.total > 0 || this.evaluators.total > 0;
+  }
+
   async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
     const _pag: Pagination<Item> = await (itemClass as unknown as Item).query({
       where: {ecoe: this.ecoe},
