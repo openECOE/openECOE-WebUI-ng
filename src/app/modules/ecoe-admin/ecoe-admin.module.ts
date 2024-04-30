@@ -48,6 +48,7 @@ import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { EvaluatorsComponent } from './evaluators/evaluators.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     PlannerComponent,
     PlannerSelectorComponent,
     AppStudentSelectorComponent,
+    EvaluatorsComponent,
   ],
   imports: [
     CommonModule,

@@ -10,7 +10,7 @@ import { Schedule, Stage } from "./schedule";
 import { Organization } from "./organization";
 import { QuestionOld, Block, Question } from "@models/question";
 import { User } from "@models/user";
-import { Answer } from ".";
+import { Answer, ApiPermissions } from ".";
 
 export class Permission extends potionItem {
   "create": boolean;
@@ -58,6 +58,7 @@ export class ECOE extends Item {
   rounds = Route.GET<Round | Round[] | Pagination<Round>>("/rounds");
   shifts = Route.GET<Shift | Shift[] | Pagination<Shift>>("/shifts");
   stages = Route.GET<Stage | Pagination<Stage>>("/stages");
+  evaluators = Route.GET<ApiPermissions | Pagination<ApiPermissions>>("/evaluators");
 
   id: number;
   name: string;
