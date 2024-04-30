@@ -9,7 +9,7 @@ import { OrganizationsService } from "./services/organizations-service/organizat
 import { Organization } from "./models";
 import { ServerStatusService } from "./services/server-status/server-status.service";
 import { ActionMessagesService } from "./services/action-messages/action-messages.service";
-import {NzMessageRef } from 'ng-zorro-antd';
+import { NzMessageRef } from "ng-zorro-antd/message";
 
 @Component({
   selector: "app-root",
@@ -47,10 +47,6 @@ export class AppComponent implements OnInit {
       .subscribe((event: NavigationEnd) => {
         this.sharedService.setPageChanged(event.url);
       });
-
-    // if (this.authService.userLogged) {
-    //   this.authService.loadUserData();
-    // }
   }
 
   /**

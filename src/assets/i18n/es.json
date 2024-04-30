@@ -289,7 +289,7 @@
   "USER_UPDATED": "Usuario {{email}} actualizado",
   "NO_USERS_SELECTED": "No ha seleccionado ningún usuario",
   "DELETE_USER": "Eliminar Usuarios Seleccionados",
-  "DELETE_USER_CONFIRM": "Por confirme que desea eliminar a los usuarios seleccionados",
+  "DELETE_USER_CONFIRM": "Por favor confirme que desea eliminar a los usuarios seleccionados",
   "YES": "Sí",
   "NO": "No",
   "USER_DELETED": "Usuario {{email}} eliminado",
@@ -303,5 +303,14 @@
   "IMPORTED_STATION_NOT_FOUND": "Estación {{stationName}} no encontrada",
   "USER_NOT_FOUND": "Usuario {{username}} no encontrado",
   "ROUND_NOT_FOUND": "Ronda {{round}} no encontrada",
-  "PERMISSION_ALREADY_EXISTS": "El usuario {{username}} ya tiene permisos sobre {{station}}"
+  "PERMISSION_ALREADY_EXISTS": "El usuario {{username}} ya tiene permisos sobre {{station}}",
+  "ORGANIZATIONS": "Organizaciones",
+  "ADD_ORGANIZATION": "Añadir organización",
+  "EDIT_ORGANIZATION": "Editar organización {{name}}",
+  "ORGANIZATION_CREATED": "Organización {{name}} creada",
+  "ORGANIZATION_UPDATED": "Organización {{name}} actualizada",
+  "ORGANIZATION_DELETED": "Organización {{name}} eliminada",
+  "DELETE_ORGANIZATION": "Eliminar Organización {{name}}",
+  "DELETE_ORGANIZATION_CONFIRM": "Por favor, escriba el nombre de la organización para confirmar que desea eliminarla junto con todos sus datos.",
+  "ERROR_CREATE_ORGANIZATION": "Error al crear la organización"
 }

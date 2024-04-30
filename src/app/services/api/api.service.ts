@@ -162,7 +162,6 @@ export class ApiService {
       observe: "body",
       responseType: "arraybuffer",
     };
-    // ,headers:{['Content-Disposition']:'attachment; filename=resultados_ecoe_1.csv' }
     return this.http
       .get(url, { observe: "response", responseType: "arraybuffer" })
       .pipe(

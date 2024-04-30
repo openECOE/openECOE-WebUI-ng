@@ -1,1 +1,117 @@
-<p>organizations-list works!</p>
+<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'ORGANIZATIONS' | translate">
+  <nz-breadcrumb nz-page-header-breadcrumb>
+    <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/control-panel']">{{ 'CONTROL_PANEL' | translate }}</a></nz-breadcrumb-item>
+    <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"ORGANIZATIONS" | translate}}</nz-tag></nz-breadcrumb-item>
+  </nz-breadcrumb>
+</nz-page-header>
+
+<nz-table #table
+          [nzPageIndex]="page"
+          [nzPageSize]="perPage"
+          (nzPageIndexChange)="pageChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)"
+          [nzLoading]="loading"
+          [nzTotal]="totalItems"
+          [nzData]="organizations"
+          [nzFrontPagination]="false"
+          nzShowSizeChanger
+          nzShowPagination>
+  <thead>
+    <tr>
+      <th>
+        <a (click)="loadOrganizations()">
+          <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
+        </a>
+      </th>
+      <th>{{"ID"}}</th>
+      <th>{{"NAME" | translate}}</th>
+      <th nzWidth="120px">
+        <button nz-button [nzType]="'primary'" class="margin-left"
+                [nz-tooltip] [nzTooltipTitle]="'ADD_ORGANIZATION' | translate"
+                (click)="showModal()">
+          <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
+          Añadir
+        </button>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <ng-template ngFor let-item  let-idx="index" [ngForOf]="table.data">
+      <tr>
+
+        <td>
+          <ng-container></ng-container>
+        </td>
+  
+        <td>
+          <ng-container>
+            {{item.id}}
+          </ng-container>
+        </td>
+
+        <td>
+          <ng-container>
+            {{item.name}}
+          </ng-container>
+        </td>
+
+        <td text-right>
+          <app-action-buttons
+                            (startEdit)="showModalEdit(item)"
+                            (delete)="showModalDelete(item)">
+        </app-action-buttons>
+        </td>
+      </tr>
+    </ng-template>
+  </tbody>
+</nz-table>
+
+<!--
+  MODAL DE ADD_ORGANIZATION
+-->
+<nz-modal *ngIf="validateForm"
+  [(nzVisible)]="showAddOrganization || showEditOrganization"
+  [nzTitle]="showAddOrganization?('ADD_ORGANIZATION' | translate) : ('EDIT_ORGANIZATION' | translate: {name: organizationOriginal?.name})"
+  [nzOkText]="'ACCEPT' | translate"
+  [nzCancelText]="'CANCEL' | translate"
+  (nzOnOk)="submitFormOrganization(validateForm)"
+  (nzOnCancel)="closeModal()">
+
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
+          <input type="text" nz-input
+                 formControlName="name"
+                 placeholder="{{'NAME' | translate}}">
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<!--
+  MODAL DE DELETE_ORGANIZATION
+-->
+
+<nz-modal *ngIf="showMessageDelete"
+  [(nzVisible)]="showMessageDelete" 
+  [nzTitle]="'DELETE_ORGANIZATION' | translate:{ name: organizationDelete.name }"
+  [nzOkText]="'DELETE' | translate"
+  [nzOkType]="'danger'"
+  [nzOkDisabled]="confirmDeleteText !== organizationDelete.name"
+  (nzOnOk)="delOrganization(organizationDelete)"
+  [nzCancelText]="'CANCEL' | translate"
+  (nzOnCancel)="closeModal()">
+
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item *ngIf="showMessageDelete">
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="'NAME_REQUIRED' | translate">
+          <p>{{ 'DELETE_ORGANIZATION_CONFIRM' | translate }}</p>
+          <input type="text" nz-input  
+                 formControlName="name"
+                 name="confirmDeleteText"
+                 placeholder="{{'NAME' | translate}}">
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>

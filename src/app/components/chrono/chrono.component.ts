@@ -2,7 +2,8 @@ import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, Si
 import {ChronoService} from '../../services/chrono/chrono.service';
 import {Round, Station} from '../../models';
 import * as moment from 'moment';
-import { NzMessageService, NzNotificationDataOptions, NzNotificationService } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzNotificationDataOptions, NzNotificationService } from 'ng-zorro-antd/notification';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({

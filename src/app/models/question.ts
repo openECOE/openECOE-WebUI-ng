@@ -27,18 +27,9 @@ export class QuestionBase {
 
 export class QuestionOption {
   id_option: number;
-  // private _points: number;
   label: string;
   order: number;
   points: number;
-
-  // get points() {
-  //   return this._points
-  // }
-
-  // set points(v) {
-  //   this._points = Number(v)
-  // }
 }
 
 export class QuestionRadio extends QuestionBase {
@@ -145,18 +136,6 @@ export class Question extends Item {
 
   answers = Route.GET<Answer>('/answers');
 
-  // fetch(id: number | string, options?: ItemFetchOptions): Promise<this> {
-  //   return new Promise<this>((resolve, reject) => {
-  //     super.fetch(id).then(value => {
-  //       const qparse = JSON.parse(value.question_schema);
-  //       if (qparse.type === 'radio') {
-  //         value.question = Object.assign(new QuestionRadio(), value.question_schema);
-  //       }
-  //       resolve(value);
-  //     }).catch(reason => reject(reason));
-  //   });
-  // }
-
   set questionSchema(schema: string) {
     this.question_schema = schema;
     const _schema = JSON.parse(schema);
@@ -218,7 +197,7 @@ export class Answer extends Item {
   student: Student;
   question: Question;
   points: number;
-
+  
   answerSchema: string;
 
   private _answer_schema: AnswerSchema;
@@ -412,7 +391,6 @@ export class QuestionOld extends Question {
   get questionSchema() {
     this.schema['reference'] = this.reference;
     this.schema['description'] = this.description;
-    // this.schema['type'] = this.questionType;
 
     if (this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox) {
       const _options = [];
@@ -430,7 +408,6 @@ export class QuestionOld extends Question {
       this.max_points = this.schema.max_points;
     } else if (this.schema instanceof QuestionRange) {
       this.schema.range = this.options.length;
-      // tslint:disable-next-line:max-line-length
       this.max_points = this.schema.max_points = Math.max(...this.options.filter(option => option.points > 0).map(option => option.points), 0);
     }
 
@@ -464,7 +441,7 @@ export class RowOption {
   order: any | number;
   label: any[] | string;
   points: any[] | number;
-  ratecount?: any[] | number;
+  rateCount?: any[] | number;
   id?: number;
 
   constructor(order, label, points) {

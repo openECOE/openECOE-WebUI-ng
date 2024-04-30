@@ -74,7 +74,6 @@ export class SubmenuComponent implements OnInit {
           submenus.ECOE = submenus.ECOE.filter((s) => s.show);
 
           this.submenu2build = submenus[this.submenuSelected];
-          // this.submenu2build = submenus[this.submenuSelected];
         }
       });
   }

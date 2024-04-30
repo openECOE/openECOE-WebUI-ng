@@ -10,35 +10,34 @@ import {
   HttpClient,
   HttpClientModule,
 } from "@angular/common/http";
-import {
-  NzButtonModule,
-  NZ_I18N,
-  es_ES,
-  NzAlertModule,
-  NzBreadCrumbModule,
-  NzCardModule,
-  NzDrawerModule,
-  NzEmptyModule,
-  NzFormModule,
-  NzGridModule,
-  NzIconModule,
-  NzInputModule,
-  NzLayoutModule,
-  NzListModule,
-  NzModalModule,
-  NzPageHeaderModule,
-  NzRateModule,
-  NzSelectModule,
-  NzSkeletonModule,
-  NzStatisticModule,
-  NzTableModule,
-  NzTagModule,
-  NzToolTipModule,
-  NzBackTopModule,
-  NzNotificationModule,
-  NzDropDownModule,
-  NzMessageModule
-} from "ng-zorro-antd";
+
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NZ_I18N, es_ES } from 'ng-zorro-antd/i18n';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzListModule } from 'ng-zorro-antd/list';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
+import { NzRateModule } from 'ng-zorro-antd/rate';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzStatisticModule } from 'ng-zorro-antd/statistic';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzBackTopModule } from 'ng-zorro-antd/back-top';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
+import { NzMessageModule } from "ng-zorro-antd/message";
+import { NzDropDownModule } from "ng-zorro-antd/dropdown";
+
 import { registerLocaleData } from "@angular/common";
 import localeEs from "@angular/common/locales/es";
 import localeEsExtra from "@angular/common/locales/extra/es";
@@ -141,11 +140,6 @@ export function createTranslateLoader(http: HttpClient) {
       useClass: AuthInterceptor,
       multi: true,
     },
-    /*{
-      provide: HTTP_INTERCEPTORS,
-      useClass: MessagesInterceptor,
-      multi: true
-    },*/
     {
       provide: POTION_CONFIG,
       useValue: {
