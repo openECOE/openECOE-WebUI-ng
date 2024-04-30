@@ -300,5 +300,8 @@
   "ECOE_CREATED": "{{name}} creada correctamente",
   "LOST_BACKEND_CONNECTION": "Se ha perdido la conexión con el servidor",
   "RECOVERED_BACKEND_CONNECTION": "Se ha recuperado la conexión con el servidor",
-  "IMPORTED_STATION_NOT_FOUND": "Estación {{stationName}} no encontrada"
+  "IMPORTED_STATION_NOT_FOUND": "Estación {{stationName}} no encontrada",
+  "USER_NOT_FOUND": "Usuario {{username}} no encontrado",
+  "ROUND_NOT_FOUND": "Ronda {{round}} no encontrada",
+  "PERMISSION_ALREADY_EXISTS": "El usuario {{username}} ya tiene permisos sobre {{station}}"
 }

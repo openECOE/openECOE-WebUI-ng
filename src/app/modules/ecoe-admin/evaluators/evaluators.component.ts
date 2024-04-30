@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
@@ -21,11 +22,11 @@ export class EvaluatorsComponent implements OnInit {
 
   evaluatorsParser: ParserFile = {
     "filename": "evaluators.csv",
-    "fields": ["email", "station", "round"],
+    "fields": ["email", "station"],
     "data": [
-      ["email1@dominio.com", "E001", "A,B,C"],
-      ["email2@dominio.com", "E002", "A"],
-      ["email2@dominio.com", "E003", "A"],
+      ["email1@dominio.com", "E001"],
+      ["email2@dominio.com", "E002"],
+      ["email2@dominio.com", "E003"],
     ]
   }
 
@@ -70,11 +71,10 @@ export class EvaluatorsComponent implements OnInit {
 
     for (const item of items) {
       console.log(item);
-      if(item.email && item.station && item.round) {
+      if(item.email && item.station) {
         const promise = this.addPermission(
           item.email.toString(),
           item.station.toString(),
-          item.round.toString()
         )
           .then((result) => {
             this.logPromisesOK.push(result)
@@ -82,6 +82,9 @@ export class EvaluatorsComponent implements OnInit {
             return result;
           })
           .catch((reason) => {
+            if(reason instanceof HttpErrorResponse)  {
+              reason = new Error(this.translate.instant('PERMISSION_ALREADY_EXISTS', {username: item.email, station: item.station}))
+            }
             this.logPromisesERROR.push({
               value: item,
               reason
@@ -106,10 +109,12 @@ export class EvaluatorsComponent implements OnInit {
       .catch(err => new Promise((resolve,reject) => reject(err)));
   }
 
-  // TODO: accept an string | string[] for the rounds
-  async addPermission(email: string, stationName: string, roundCode: string) {
+  async addPermission(email: string, stationName: string) {
     let user = await User.first<User>({where: {email}});
-    
+    if(!user) {
+      return Promise.reject(new Error(this.translate.instant('USER_NOT_FOUND', {username: email})))
+    }
+
     let station = await Station.first<Station>({
         where: {
           ecoe: this.ecoe,
@@ -120,16 +125,7 @@ export class EvaluatorsComponent implements OnInit {
       return Promise.reject(new Error(this.translate.instant('IMPORTED_STATION_NOT_FOUND', {stationName})));
     }
 
-    // TODO: get an array of rounds
-    let round = await Round.first<Round>({
-      where: {
-        ecoe: this.ecoe,
-        round_code: roundCode,
-      }
-    });
-
     try {
-      // TODO: loop for each round
       return this.apiService.addPermision(user, 'evaluate', station.id, 'stations');
     } catch (error) {
       throw error;
