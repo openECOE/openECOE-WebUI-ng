@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 import { ApiPermissions, ECOE, Round, Station, User } from '@app/models';
 import { ApiService } from '@app/services/api/api.service';
 import { TranslateService } from '@ngx-translate/core';
-import { promise } from 'protractor';
 
 @Component({
   selector: 'app-evaluators',
@@ -12,11 +11,13 @@ import { promise } from 'protractor';
   styleUrls: ['./evaluators.component.less']
 })
 export class EvaluatorsComponent implements OnInit {
-
+  ecoeId: number;
+  ecoe_name: string;
   ecoe: ECOE;
 
   logPromisesERROR = [];
   logPromisesOK = [];
+  successFulPermissions = [];
 
   evaluatorsParser: ParserFile = {
     "filename": "evaluators.csv",
@@ -31,13 +32,15 @@ export class EvaluatorsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private translate: TranslateService,
+    private router: Router,
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      let ecoeId = +params.ecoeId;
-      ECOE.fetch<ECOE>(ecoeId, { cache: false}).then((ecoe) => {
+      this.ecoeId = +params.ecoeId;
+      ECOE.fetch<ECOE>(this.ecoeId, { cache: false}).then((ecoe) => {
         this.ecoe = ecoe;
+        this.ecoe_name = this.ecoe.name;
       })
     });
   }
@@ -48,7 +51,11 @@ export class EvaluatorsComponent implements OnInit {
 
     this.saveEvaluators(evaluators)
       .then(() => console.log('success'))
-      .catch((err) => console.error('save error: ', err));
+      .catch((err) => {
+        console.error('save error: ', err)
+        // TODO: borrar el permiso de lectura también
+        this.successFulPermissions.forEach((perm: ApiPermissions) => perm.destroy());
+      });
   }
 
   saveEvaluators(items: any[]): Promise<any> {
@@ -70,12 +77,11 @@ export class EvaluatorsComponent implements OnInit {
           item.round.toString()
         )
           .then((result) => {
-            console.log("Added permission");
             this.logPromisesOK.push(result)
+            this.successFulPermissions.push(result);
             return result;
           })
           .catch((reason) => {
-            console.warn("Add permission error");
             this.logPromisesERROR.push({
               value: item,
               reason
@@ -103,12 +109,17 @@ export class EvaluatorsComponent implements OnInit {
   // TODO: accept an string | string[] for the rounds
   async addPermission(email: string, stationName: string, roundCode: string) {
     let user = await User.first<User>({where: {email}});
+    
     let station = await Station.first<Station>({
         where: {
           ecoe: this.ecoe,
           name: stationName,
         }
       });
+    if(!station) {
+      return Promise.reject(new Error(this.translate.instant('IMPORTED_STATION_NOT_FOUND', {stationName})));
+    }
+
     // TODO: get an array of rounds
     let round = await Round.first<Round>({
       where: {
@@ -121,9 +132,15 @@ export class EvaluatorsComponent implements OnInit {
       // TODO: loop for each round
       return this.apiService.addPermision(user, 'evaluate', station.id, 'stations');
     } catch (error) {
-      console.log(error);
-      //this.message.error(this.translate.instant(""));
       throw error;
     }
+  }
+
+  onBack() {
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
+  }
+
+  clearImportErrors() {
+    this.logPromisesERROR = [];
   }
 }
