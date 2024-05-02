@@ -34,7 +34,6 @@
         <th>{{"NAME" | translate}}</th>
         <th>{{"SURNAMES" | translate}}</th>
         <th>{{"STATIONS" | translate}}</th>
-        <!-- <th>{{"ROUNDS" | translate}}</th> -->
         <th nzAlign="right" nzRight>
           <app-upload-and-parse [parserFile]="evaluatorsParser" (parserResult)="importEvaluators($event)"></app-upload-and-parse>
         </th>
@@ -69,14 +68,6 @@
                 </nz-tag>
               </ng-container>                           
             </td>
-
-            <!-- <td>
-              <ng-container>
-                <nz-tag *ngFor="let round of item.rounds" [nzColor]="'red'">
-                  {{round}}
-                </nz-tag>
-              </ng-container>
-            </td> -->
 
             <td></td>
           </tr>
