@@ -95,36 +95,73 @@ export class EvaluatorsComponent implements OnInit {
    * Load evaluators by the passed ECOE.
    * Then calls [updateEditCache]{@link #updateEditCache} function.
    */
-  loadEvaluators() {
-    this.loading = true;
 
-    const sortDict = {};
-    // tslint:disable-next-line:forin
-    for (const key in this.mapOfSort) {
-      const value = this.mapOfSort[key];
-      if (value !== null) {
-        sortDict[key] = value !== 'ascend';
-        if (key === 'name') {
-          sortDict['name'] = value !== 'ascend';
-          sortDict['name_order'] = value !== 'ascend';
+  async loadEvaluators() {
+    this.loading = true;
+  
+    try {
+      const sortDict = {};
+      // tslint:disable-next-line:forin
+      for (const key in this.mapOfSort) {
+        const value = this.mapOfSort[key];
+        if (value !== null) {
+          sortDict[key] = value !== 'ascend';
+          if (key === 'name') {
+            sortDict['name'] = value !== 'ascend';
+            sortDict['name_order'] = value !== 'ascend';
+          }
         }
       }
-    }
-
-    ApiPermissions.query<ApiPermissions, Pagination<ApiPermissions>>({
-        where: {id_object: this.ecoeId, object: 'ecoes'},
+  
+      const pagEvaluators = await ApiPermissions.query<ApiPermissions, Pagination<ApiPermissions>>({
+        where: {
+          name: "evaluate",
+          object: "stations",
+        },
         sort: sortDict,
         perPage: this.perPage,
         page: this.page
-      },
-      {paginate: true}
-    ).then(pagEvaluators => {
+      }, { paginate: true });
+  
       this.editCache = {};
       this.evaluators = pagEvaluators['items'];
       this.totalItems = pagEvaluators['total'];
-      console.log(this.evaluators);
+
+      for (const evaluator of this.evaluators) {
+        evaluator.stations = await this.getStations(evaluator);
+      }
+
       this.updateEditCache();
-    }).finally(() => this.loading = false);
+    } catch (error) {
+      console.error('Error al cargar los evaluadores:', error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async getStations(apiPermissions: ApiPermissions): Promise<string[]> {
+    if (apiPermissions.object === 'stations') {
+      try {
+        let stations = await Station.query<Station>({
+          where: {
+            ecoe: this.ecoe,
+            order: apiPermissions.idObject,
+          }
+        });
+
+        if (stations.length > 0) {
+          return stations.map(station => station.name);
+        } else {
+          console.error('No se encontraron estaciones.');
+          return [];
+        }
+      } catch (error) {
+        console.error('Error al obtener las estaciones:', error);
+        return [];
+      }
+    } else {
+      return [];
+    }
   }
 
   /**
