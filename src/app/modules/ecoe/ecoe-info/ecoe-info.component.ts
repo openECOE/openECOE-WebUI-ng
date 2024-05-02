@@ -124,7 +124,6 @@ export class EcoeInfoComponent implements OnInit {
       this.getEvaluators().then((cont) => {
         this.evaluators.total = cont;
         this.evaluators.loading = false;
-        this.evaluators.show = this.show_evaluators;
       })
 
     });
@@ -266,10 +265,6 @@ export class EcoeInfoComponent implements OnInit {
     return this.stages.total > 0 || this.rounds.total > 0 || this.shifts.total > 0;
   };
   
-  get show_evaluators(): boolean {
-    return this.stages.total > 0 || this.evaluators.total > 0;
-  }
-
   async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
     const _pag: Pagination<Item> = await (itemClass as unknown as Item).query({
       where: {ecoe: this.ecoe},
