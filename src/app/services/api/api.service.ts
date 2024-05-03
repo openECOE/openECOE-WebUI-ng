@@ -221,7 +221,7 @@ export class ApiService {
   }
 
   getServerStatus(): Observable<string> {
-    const url = `${environment.BACK_ROUTE}backend/status/`;
+    const url = `${environment.API_ROUTE}/status/`;
 
     return this.http.get(url, { responseType: 'text' as const})
       .pipe(
