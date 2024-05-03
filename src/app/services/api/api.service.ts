@@ -3,7 +3,7 @@ import { Observable, of } from "rxjs";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { catchError, map, tap } from "rxjs/operators";
-import { Role, User, Option } from "@app/models";
+import { Role, User, Option, ECOE, Station } from "@app/models";
 import { ApiPermissions } from "@app/models";
 
 /**
@@ -227,5 +227,44 @@ export class ApiService {
       .pipe(
         catchError(() => of('ko'))
       );
+  }
+
+  async getEvaluators(ecoe: ECOE): Promise<User[]> {
+    let permissions = await ApiPermissions.query<ApiPermissions>({
+      where: {
+        name: "evaluate",
+        object: "stations",
+      }
+    });
+
+    let permissionsOfThisEcoe = [];
+    for (const permission of permissions) {
+      let station = await Station.fetch<Station>(permission.idObject);
+      if(station.ecoe.id == ecoe.id) {
+        permissionsOfThisEcoe.push(permission);
+      }
+    }
+
+    return [...new Set(permissionsOfThisEcoe.map(p => p.user))];
+  }
+
+  async getStationsByEvaluator(user: User, ecoe: ECOE): Promise<Station[]> {
+    let permissions = await ApiPermissions.query<ApiPermissions>({
+      where: {
+        name: "evaluate",
+        object: "stations",
+        user: user,
+      }
+    });
+
+    let stations: Station[] = [];
+    for(const permission of permissions) {
+      let station = await Station.fetch<Station>(permission.idObject);
+      if(station.ecoe.id == ecoe.id) {
+        stations.push(station);
+      }
+    }
+
+    return stations;
   }
 }
