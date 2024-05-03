@@ -62,8 +62,8 @@
             </td>
 
             <td>
-              <ng-container *ngFor="let item of evaluators">
-                <nz-tag *ngFor="let station of item.stations" [nzColor]="'blue'">
+              <ng-container *ngFor="let station of item.stations">
+                <nz-tag [nzColor]="'blue'">
                   {{ station }}
                 </nz-tag>
               </ng-container>                           

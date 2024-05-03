@@ -124,13 +124,26 @@ export class EvaluatorsComponent implements OnInit {
       }, { paginate: true });
   
       this.editCache = {};
-      this.evaluators = pagEvaluators['items'];
-      this.totalItems = pagEvaluators['total'];
-
-      for (const evaluator of this.evaluators) {
-        evaluator.stations = await this.getStations(evaluator);
+  
+      const groupedPermissions = this.groupPermissionsByUserId(pagEvaluators['items']);
+  
+      // Obtener estaciones para cada grupo de permisos
+      const uniqueEvaluators: ApiPermissions[] = [];
+      for (const userId of Object.keys(groupedPermissions)) {
+        const permissionsForUser = groupedPermissions[userId];
+        const uniquePermissions = this.getUniquePermissions(permissionsForUser);
+        
+        // Obtener estaciones para cada grupo de permisos y agregarlas a los evaluadores únicos
+        for (const permission of uniquePermissions) {
+          permission.stations = await this.getStations(permissionsForUser);
+        }
+  
+        uniqueEvaluators.push(...uniquePermissions);
       }
-
+  
+      this.evaluators = uniqueEvaluators;
+      this.totalItems = pagEvaluators['total'];
+  
       this.updateEditCache();
     } catch (error) {
       console.error('Error al cargar los evaluadores:', error);
@@ -138,28 +151,59 @@ export class EvaluatorsComponent implements OnInit {
       this.loading = false;
     }
   }
-
-  async getStations(apiPermissions: ApiPermissions): Promise<string[]> {
-    if (apiPermissions.object === 'stations') {
-      try {
-        let stations = await Station.query<Station>({
-          where: {
-            ecoe: this.ecoe,
-            order: apiPermissions.idObject,
-          }
-        });
-
-        if (stations.length > 0) {
-          return stations.map(station => station.name);
-        } else {
-          console.error('No se encontraron estaciones.');
-          return [];
-        }
-      } catch (error) {
-        console.error('Error al obtener las estaciones:', error);
-        return [];
+  
+  groupPermissionsByUserId(permissions: ApiPermissions[]): { [userId: number]: ApiPermissions[] } {
+    const groupedPermissions: { [userId: number]: ApiPermissions[] } = {};
+  
+    for (const permission of permissions) {
+      const userId = permission.user.id;
+      if (!groupedPermissions[userId]) {
+        groupedPermissions[userId] = [];
       }
-    } else {
+      groupedPermissions[userId].push(permission);
+    }
+  
+    return groupedPermissions;
+  }
+  
+  getUniquePermissions(permissions: ApiPermissions[]): ApiPermissions[] {
+    const uniquePermissions: ApiPermissions[] = [];
+    const uniqueNames = new Set<string>();
+  
+    for (const permission of permissions) {
+      if (!uniqueNames.has(permission.name)) {
+        uniqueNames.add(permission.name);
+        uniquePermissions.push(permission);
+      }
+    }
+  
+    return uniquePermissions;
+  }
+
+  async getStations(apiPermissionsArray: ApiPermissions[]): Promise<string[]> {
+    try {
+      let evaluatorStations: string[] = [];
+
+      for (const apiPermissions of apiPermissionsArray) {
+        if (apiPermissions.object === 'stations') {
+          let stations = await Station.query<Station>({
+            where: {
+              ecoe: this.ecoe,
+              order: apiPermissions.idObject,
+            }
+          });
+  
+          // Agregar los nombres de las estaciones al array de estaciones
+          stations.forEach(station => {
+            evaluatorStations.push(station.name);
+          });
+        }
+      }
+  
+      // Devolver la lista de estaciones
+      return evaluatorStations;
+    } catch (error) {
+      console.error('Error al obtener las estaciones:', error);
       return [];
     }
   }
