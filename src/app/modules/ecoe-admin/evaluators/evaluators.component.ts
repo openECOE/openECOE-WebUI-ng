@@ -181,11 +181,11 @@ export class EvaluatorsComponent implements OnInit {
     this.saveEvaluators(evaluators)
       .then(() => console.log('success'))
       .catch((err) => {
-        this.successFulPermissions.forEach((perm: ApiPermissions) => this.deletePermissions(perm));
+        this.logPromisesOK.forEach((perm: ApiPermissions) => this.deletePermissions(perm));
       });
   }
 
-  saveEvaluators(items: any[]): Promise<any> {
+  async saveEvaluators(items: any[]): Promise<any> {
     const savePromises = [];
     this.logPromisesERROR = [];
     this.logPromisesOK = [];
@@ -196,29 +196,23 @@ export class EvaluatorsComponent implements OnInit {
     };
 
     for (const item of items) {
-      console.log(item);
       if(item.email && item.station) {
-        const promise = this.addPermission(
-          item.email.toString(),
-          item.station.toString(),
-        )
-          .then((result) => {
-            this.logPromisesOK.push(result)
-            this.successFulPermissions.push(result);
-            return result;
-          })
-          .catch((reason) => {
-            if(reason instanceof HttpErrorResponse)  {
-              reason = new Error(this.translate.instant('PERMISSION_ALREADY_EXISTS', {username: item.email, station: item.station}))
-            }
-            this.logPromisesERROR.push({
-              value: item,
-              reason
-            });
-            return reason;
+        let promise;
+        try {
+          promise = await this.addPermission(item.email.toString(), item.station.toString());
+          this.logPromisesOK.push(promise);
+          
+        } catch (reason) {
+          if(reason instanceof HttpErrorResponse)  {
+            reason = new Error(this.translate.instant('PERMISSION_ALREADY_EXISTS', {username: item.email, station: item.station}))
+          }
+          this.logPromisesERROR.push({
+            value: item,
+            reason
           });
-
-        savePromises.push(promise);
+          
+          savePromises.push(promise);
+        }
       }
       else {
         this.logPromisesERROR.push({
