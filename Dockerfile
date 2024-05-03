@@ -6,7 +6,7 @@ COPY package.json package.json
 COPY yarn.lock yarn.lock
 
 RUN yarn install
-RUN yarn global add @angular/cli@9
+RUN yarn global add @angular/cli@11
 
 COPY . /app
 
