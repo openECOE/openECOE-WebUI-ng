@@ -7,8 +7,14 @@ import { Answer, ApiPermissions, ECOE, Round, Station, User } from '@app/models'
 import { ApiService } from '@app/services/api/api.service';
 import { SharedService } from '@app/services/shared/shared.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Item, Pagination, Route } from '@openecoe/potion-client';
+import { Pagination } from '@openecoe/potion-client';
 import { NzMessageService } from 'ng-zorro-antd/message';
+
+interface Evaluator {
+  id: number;
+  user: User;
+  stations: Station[];
+}
 
 @Component({
   selector: 'app-evaluators',
@@ -16,7 +22,10 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrls: ['./evaluators.component.less']
 })
 export class EvaluatorsComponent implements OnInit {
-  evaluators: ApiPermissions[] = [];
+  // evaluators: ApiPermissions[] = [];
+  asdasd = 'asdasd';
+  evaluators: Evaluator[] = [];
+  pagEvaluators: Pagination<User>;
   ecoeId: number;
   ecoe: ECOE;
   ecoe_name: string;
@@ -84,9 +93,9 @@ export class EvaluatorsComponent implements OnInit {
       ECOE.fetch<ECOE>(this.ecoeId, { cache: false}).then((ecoe) => {
         this.ecoe = ecoe;
         this.ecoe_name = this.ecoe.name;
+        this.loadEvaluators();
       })
 
-      this.loadEvaluators();
       //this.InitEvaluatorRow();
     });
   }
@@ -97,6 +106,7 @@ export class EvaluatorsComponent implements OnInit {
    */
 
   async loadEvaluators() {
+    this.evaluators = [];
     this.loading = true;
   
     try {
@@ -112,38 +122,17 @@ export class EvaluatorsComponent implements OnInit {
           }
         }
       }
-  
-      const pagEvaluators = await ApiPermissions.query<ApiPermissions, Pagination<ApiPermissions>>({
-        where: {
-          name: "evaluate",
-          object: "stations",
-        },
-        sort: sortDict,
-        perPage: this.perPage,
-        page: this.page
-      }, { paginate: true });
-  
+      
       this.editCache = {};
-  
-      const groupedPermissions = this.groupPermissionsByUserId(pagEvaluators['items']);
-  
-      // Obtener estaciones para cada grupo de permisos
-      const uniqueEvaluators: ApiPermissions[] = [];
-      for (const userId of Object.keys(groupedPermissions)) {
-        const permissionsForUser = groupedPermissions[userId];
-        const uniquePermissions = this.getUniquePermissions(permissionsForUser);
-        
-        // Obtener estaciones para cada grupo de permisos y agregarlas a los evaluadores únicos
-        for (const permission of uniquePermissions) {
-          permission.stations = await this.getStations(permissionsForUser);
-        }
-  
-        uniqueEvaluators.push(...uniquePermissions);
+      
+     const usersWithEvalautePermission = await this.apiService.getEvaluators(this.ecoe);
+     usersWithEvalautePermission.forEach((evaluator) => this.evaluators.push({id: evaluator.id, stations: null, user: evaluator}));
+
+      for (const evaluator of this.evaluators) {
+        evaluator.stations = await this.apiService.getStationsByEvaluator(evaluator.user, this.ecoe);
       }
-  
-      this.evaluators = uniqueEvaluators;
-      this.totalItems = pagEvaluators['total'];
-  
+
+      this.totalItems = this.evaluators.length;  
       this.updateEditCache();
     } catch (error) {
       console.error('Error al cargar los evaluadores:', error);
@@ -152,62 +141,6 @@ export class EvaluatorsComponent implements OnInit {
     }
   }
   
-  groupPermissionsByUserId(permissions: ApiPermissions[]): { [userId: number]: ApiPermissions[] } {
-    const groupedPermissions: { [userId: number]: ApiPermissions[] } = {};
-  
-    for (const permission of permissions) {
-      const userId = permission.user.id;
-      if (!groupedPermissions[userId]) {
-        groupedPermissions[userId] = [];
-      }
-      groupedPermissions[userId].push(permission);
-    }
-  
-    return groupedPermissions;
-  }
-  
-  getUniquePermissions(permissions: ApiPermissions[]): ApiPermissions[] {
-    const uniquePermissions: ApiPermissions[] = [];
-    const uniqueNames = new Set<string>();
-  
-    for (const permission of permissions) {
-      if (!uniqueNames.has(permission.name)) {
-        uniqueNames.add(permission.name);
-        uniquePermissions.push(permission);
-      }
-    }
-  
-    return uniquePermissions;
-  }
-
-  async getStations(apiPermissionsArray: ApiPermissions[]): Promise<string[]> {
-    try {
-      let evaluatorStations: string[] = [];
-
-      for (const apiPermissions of apiPermissionsArray) {
-        if (apiPermissions.object === 'stations') {
-          let stations = await Station.query<Station>({
-            where: {
-              ecoe: this.ecoe,
-              order: apiPermissions.idObject,
-            }
-          });
-  
-          // Agregar los nombres de las estaciones al array de estaciones
-          stations.forEach(station => {
-            evaluatorStations.push(station.name);
-          });
-        }
-      }
-  
-      // Devolver la lista de estaciones
-      return evaluatorStations;
-    } catch (error) {
-      console.error('Error al obtener las estaciones:', error);
-      return [];
-    }
-  }
-
   /**
    * Creates or updates the resource passed.
    * Then updates the variables to avoid calling the backend again.

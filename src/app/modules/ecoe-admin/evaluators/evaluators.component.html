@@ -6,23 +6,12 @@
 </nz-page-header>
   
 <nz-content>
-  <nz-table #table
-            [nzData]="evaluators"
-            [(nzPageIndex)]="page"
-            [(nzPageSize)]="perPage"
-            (nzPageIndexChange)="loadEvaluators()"
-            (nzPageSizeChange)="loadEvaluators()"
+  <nz-table 
+      #nzTable 
+      [nzData]="evaluators"
             [nzLoading]="loading"
-            [nzFrontPagination]="false"
-            [nzTotal]="totalItems"
-            [nzShowTotal]="tmpTotalItems"
             nzSize="small"
-            nzShowSizeChanger
-            nzShowPagination>
-      <ng-template #tmpTotalItems>
-      {{totalItems}}
-      </ng-template>
-
+          >
       <thead>
       <tr>
         <th>
@@ -40,52 +29,23 @@
       </tr>
       </thead>
       <tbody>
-        <ng-template ngFor let-item [ngForOf]="table.data">
-          <tr>
-            <td></td>
-            <td>
-              <ng-container>
-                {{item.user.email}}
-              </ng-container>
-            </td>
-    
-            <td>
-              <ng-container>
-                {{item.user.name}}{{item?.nameOrder}}
-              </ng-container>
-            </td>
-    
-            <td>
-              <ng-container>
-                {{item.user.surname}}
-              </ng-container>
-            </td>
-
-            <td>
-              <ng-container *ngFor="let station of item.stations">
-                <nz-tag [nzColor]="'blue'">
-                  {{ station }}
-                </nz-tag>
-              </ng-container>                           
-            </td>
-
-            <td></td>
-          </tr>
-        </ng-template>
-        </tbody>
+        <!-- TODO: Usar nzTable.data -->
+        <tr *ngFor="let item of evaluators">
+          <td></td>
+          <td>{{item.user.email}}</td>
+          <td>{{item.user.name}}</td>
+          <td>{{item.user.surname}}</td>
+          <td>
+            <ng-container>
+              <nz-tag *ngFor="let station of item.stations" [nzColor]="'blue'">
+                {{station.name}}
+              </nz-tag>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
       </nz-table>
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   <ng-container >
     <nz-drawer
     [nzClosable]="true"
