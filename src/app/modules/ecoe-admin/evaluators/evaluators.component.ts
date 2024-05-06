@@ -262,13 +262,11 @@ export class EvaluatorsComponent implements OnInit {
     this.saveEvaluators(evaluators)
       .then(() => console.log('success'))
       .catch((err) => {
-        console.error('save error: ', err)
-        // TODO: borrar el permiso de lectura también
-        this.successFulPermissions.forEach((perm: ApiPermissions) => perm.destroy());
+        this.logPromisesOK.forEach((perm: ApiPermissions) => this.deletePermissions(perm));
       });
   }
 
-  saveEvaluators(items: any[]): Promise<any> {
+  async saveEvaluators(items: any[]): Promise<any> {
     const savePromises = [];
     this.logPromisesERROR = [];
     this.logPromisesOK = [];
@@ -279,29 +277,23 @@ export class EvaluatorsComponent implements OnInit {
     };
 
     for (const item of items) {
-      console.log(item);
       if(item.email && item.station) {
-        const promise = this.addPermission(
-          item.email.toString(),
-          item.station.toString(),
-        )
-          .then((result) => {
-            this.logPromisesOK.push(result)
-            this.successFulPermissions.push(result);
-            return result;
-          })
-          .catch((reason) => {
-            if(reason instanceof HttpErrorResponse)  {
-              reason = new Error(this.translate.instant('PERMISSION_ALREADY_EXISTS', {username: item.email, station: item.station}))
-            }
-            this.logPromisesERROR.push({
-              value: item,
-              reason
-            });
-            return reason;
+        let promise;
+        try {
+          promise = await this.addPermission(item.email.toString(), item.station.toString());
+          this.logPromisesOK.push(promise);
+          
+        } catch (reason) {
+          if(reason instanceof HttpErrorResponse)  {
+            reason = new Error(this.translate.instant('PERMISSION_ALREADY_EXISTS', {username: item.email, station: item.station}))
+          }
+          this.logPromisesERROR.push({
+            value: item,
+            reason
           });
-
-        savePromises.push(promise);
+          
+          savePromises.push(promise);
+        }
       }
       else {
         this.logPromisesERROR.push({
@@ -356,34 +348,17 @@ export class EvaluatorsComponent implements OnInit {
   clearImportErrors() {
     this.logPromisesERROR = [];
   }
-}
 
-export class Evaluator extends Item {
-  email: string;
-  name: string;
-  surnames: string;
+  async deletePermissions(permission: ApiPermissions) {    
+    let readPermission = await ApiPermissions.first<ApiPermissions>({
+      where: {
+        idObject: this.ecoe.id,
+        object: 'ecoes',
+        name: "read",
+        user: permission.user,
+      }});
 
-  ecoe: ECOE | number;
-  station: Station | Item;
-  round: Round | Item;
-  name_order?: number;
-
-  public set nameOrder(v: number) {
-    this.name_order = v;
-  }
-
-  public get nameOrder(): number {
-    return this.name_order;
-  }
-
-  addAnswer? = Route.POST("/answers");
-
-  getAnswers? = Route.GET("/answers");
-  getAllAnswers? = Route.GET<Array<Answer>>("/answers/all");
-  getAnswersStation? = (station: Number) =>
-    Route.GET("/answers/station/" + station.toString());
-
-  save(): Promise<this> {
-    return super.save();
+    if(readPermission) { readPermission.destroy()}
+    permission.destroy();
   }
 }
