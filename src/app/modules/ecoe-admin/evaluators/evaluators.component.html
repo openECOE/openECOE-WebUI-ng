@@ -9,9 +9,8 @@
   <nz-table 
       #nzTable 
       [nzData]="evaluators"
-            [nzLoading]="loading"
-            nzSize="small"
-          >
+      [nzLoading]="loading"
+      nzSize="small">
       <thead>
       <tr>
         <th>
@@ -24,7 +23,15 @@
         <th>{{"SURNAMES" | translate}}</th>
         <th>{{"STATIONS" | translate}}</th>
         <th nzAlign="right" nzRight>
-          <app-upload-and-parse [parserFile]="evaluatorsParser" (parserResult)="importEvaluators($event)"></app-upload-and-parse>
+          <nz-button-group>
+            <button nz-button [nzType]="'primary'" class="margin-left"
+                    [nz-tooltip] [nzTooltipTitle]="'ADD_EVALUATOR' | translate"
+                    (click)="showModal()">
+              <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
+            </button>
+            <app-upload-and-parse [parserFile]="evaluatorsParser" (parserResult)="importEvaluators($event)"></app-upload-and-parse>
+
+          </nz-button-group>
         </th>
       </tr>
       </thead>
@@ -42,11 +49,65 @@
               </nz-tag>
             </ng-container>
           </td>
+          <td></td>
         </tr>
       </tbody>
-      </nz-table>
+  </nz-table>
 
-  <ng-container >
+  <!--
+    MODAL DE ADD_EVALUATOR
+  -->
+  <nz-modal *ngIf="validateForm"
+    [(nzVisible)]="showAddEvaluator ||showEditEvaluator"
+    [nzTitle]="showAddEvaluator?('ADD_EVALUATOR' | translate) : ('EDIT_USER' | translate: {name: evaluatorOriginal?.user.name})"
+    [nzOkText]="'ACCEPT' | translate"
+    [nzCancelText]="'CANCEL' | translate"
+    (nzOnOk)="submitFormEvaluator(validateForm)"
+    (nzOnCancel)="closeModal()">
+
+    <form nz-form [formGroup]="validateForm">
+      <nz-form-item *ngIf="showAddEvaluator">
+        <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="emailErrorTpl">
+          <nz-input-group [nzPrefixIcon]="'mail'">
+            <input type="email" nz-input
+                   formControlName="email"
+                   [placeholder]="'EMAIL' | translate">
+          </nz-input-group>
+          <ng-template #emailErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('email')">{{'EMAIL_NOT_VALID' | translate}}</ng-container>
+            <ng-container *ngIf="control.hasError('duplicated')">{{'EMAIL_EXISTS' | translate}}</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <nz-input-group>
+          <nz-form-label >Estaciones</nz-form-label>
+            <nz-select
+            style="width: 100%"
+            nzSize="small"
+            [nzMaxTagCount]="5"
+            nzMode="multiple"
+            [nzPlaceHolder]="'SELECT_STATIONS' | translate"
+            [nzAllowClear]="true"
+            nzAllowClear
+            formControlName="stations"
+          >
+            <nz-option *ngFor="let station of listStations"
+                        [nzLabel]="station.name | translate"
+                        [nzValue]="station"
+            >
+            </nz-option>
+          </nz-select>
+      
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-modal>
+
+  <ng-container>
     <nz-drawer
     [nzClosable]="true"
     [nzVisible]="logPromisesERROR.length > 0"
