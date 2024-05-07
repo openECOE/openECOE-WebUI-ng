@@ -37,6 +37,18 @@ export class EvaluatorsComponent implements OnInit {
   page: number = 1;
   perPage: number = 20;
   totalItems: number = 0;
+  loading: boolean = false;
+
+  // FORMULARIO EDITAR
+  evaluatorEditar: ApiPermissions;
+  evaluatorOriginal: ApiPermissions;
+
+  validateForm: FormGroup;
+  showAddEvaluator: boolean;
+  showMessageDelete: boolean = false;
+  showEditEvaluator: boolean = false;
+
+  listStations: Station[] = [];
 
   evaluatorRow = {
     email: ['', Validators.required],
@@ -50,8 +62,6 @@ export class EvaluatorsComponent implements OnInit {
   logPromisesERROR = [];
   logPromisesOK = [];
   successFulPermissions = [];
-
-  loading: boolean = false;
 
   indeterminate = false;
 
@@ -87,16 +97,36 @@ export class EvaluatorsComponent implements OnInit {
       this.evaluatorControl = <FormArray>this.evaluatorForm.controls.evaluatorRow;
     }
 
-  ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      this.ecoeId = +params.ecoeId;
-      ECOE.fetch<ECOE>(this.ecoeId, { cache: false}).then((ecoe) => {
-        this.ecoe = ecoe;
-        this.ecoe_name = this.ecoe.name;
-        this.loadEvaluators();
-      })
+    async ngOnInit() {
+      this.route.params.subscribe(async (params) => {
+        this.ecoeId = +params.ecoeId;
+        this.loading = true;
+  
+        try {
+          this.ecoe = await ECOE.fetch<ECOE>(this.ecoeId, { cache: false });
+          this.ecoe_name = this.ecoe.name;
+          this.listStations = await this.getStations();
+          
+          await this.loadEvaluators(); 
+          this.getPermissionForm();
+          //this.InitEvaluatorRow();
+        } catch (error) {
+          console.error('Error al obtener la ECOE:', error);
+        } finally {
+          this.loading = false;
+        }
+      });
+  }
+  
+  async getStations(): Promise<Station[]> {
+    return Station.query<Station>({where: {ecoe: this.ecoe}});
+  }
 
-      //this.InitEvaluatorRow();
+  async getPermissionForm() {
+    // TODO: Validate if email exists
+    this.validateForm = this.fb.group({
+      email: [null,[Validators.required]],
+      stations: [null]
     });
   }
 
@@ -199,6 +229,22 @@ export class EvaluatorsComponent implements OnInit {
       });
   }
 
+  async updatePermission(permission: ApiPermissions, value: any) {
+    const updateData = {
+      user: value.user,
+      name: value.name,
+      idObject: value.idObject,
+      object: value.object
+    };
+
+    await permission.update(updateData);
+    //await this.updateUserStations(permission.user, value.roles);
+
+    this.message.success(
+      this.translate.instant("USER_UPDATED", { email: permission.user.email })
+    );
+  }
+
   async saveEvaluators(items: any[]): Promise<any> {
     const savePromises = [];
     this.logPromisesERROR = [];
@@ -244,6 +290,7 @@ export class EvaluatorsComponent implements OnInit {
   }
 
   async addPermission(email: string, stationName: string) {
+    console.log('addPermission', email, stationName);
     let user = await User.first<User>({where: {email}});
     if(!user) {
       return Promise.reject(new Error(this.translate.instant('USER_NOT_FOUND', {username: email})))
@@ -266,22 +313,6 @@ export class EvaluatorsComponent implements OnInit {
     }
   }
 
-  sort(sortName: string, value: string): void {
-    for (const key in this.mapOfSort) {
-      this.mapOfSort[key] = key === sortName ? value : null;
-    }
-
-    this.loadEvaluators();
-  }
-
-  onBack() {
-    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
-  }
-
-  clearImportErrors() {
-    this.logPromisesERROR = [];
-  }
-
   async deletePermissions(permission: ApiPermissions) {    
     let readPermission = await ApiPermissions.first<ApiPermissions>({
       where: {
@@ -294,4 +325,76 @@ export class EvaluatorsComponent implements OnInit {
     if(readPermission) { readPermission.destroy()}
     permission.destroy();
   }
+
+  sort(sortName: string, value: string): void {
+    for (const key in this.mapOfSort) {
+      this.mapOfSort[key] = key === sortName ? value : null;
+    }
+
+    this.loadEvaluators();
+  }
+
+  async submitFormEvaluator(form: FormGroup) {
+    this.shared.doFormDirty(form);
+    if (form.pending) {
+        const sub = form.statusChanges.subscribe(() => {
+            if (form.valid) {
+                const selectedStations: Station[] = form.value.stations;
+                selectedStations.forEach(async (station: Station) => {
+                    await this.submitForm({ email: form.value.email, station: station.name });
+                });
+            }
+            sub.unsubscribe();
+        });
+    } else if (form.valid) {
+        const selectedStations: Station[] = form.value.stations;
+        selectedStations.forEach(async (station: Station) => {
+            await this.submitForm({ email: form.value.email, station: station.name });
+        });
+    }
+  }
+
+  async submitForm(value: any) {
+    try {
+      if (this.showAddEvaluator) {
+        await this.addPermission(
+          value.email,
+          value.station
+        );
+      } else if (this.showEditEvaluator) {
+        await this.updatePermission(this.evaluatorOriginal, value);
+      }
+
+      this.loadEvaluators();
+    } catch (error) {
+      console.error(error);
+      this.message.create(
+        "error",
+        "Error al guardar la información del evaluador"
+      );
+    }
+    this.closeModal();
+  }
+
+  onBack() {
+    this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
+  }
+
+  clearImportErrors() {
+    this.logPromisesERROR = [];
+  }
+  showModal() {
+    this.showAddEvaluator = true;
+  }
+
+  showModalDelete() {
+    this.showMessageDelete = true;
+  }
+
+  closeModal() {
+    this.shared.cleanForm(this.validateForm);
+    this.showAddEvaluator = false;
+    this.showEditEvaluator = false;
+  }
+
 }
