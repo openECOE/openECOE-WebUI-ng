@@ -315,5 +315,7 @@
   "ERROR_CREATE_ORGANIZATION": "Error al crear la organización",
   "ADD_EVALUATOR": "Añadir evaluador",
   "SELECT_USER": "Seleccionar usuario",
-  "SELECT_STATIONS": "Seleccionar estación/es"
+  "SELECT_STATIONS": "Seleccionar estación/es",
+  "EVALUATOR_DELETED": "Evaluador {{email}} eliminado",
+  "ERROR_DELETE_EVALUATOR": "Error eliminando el evaluador"
 }
