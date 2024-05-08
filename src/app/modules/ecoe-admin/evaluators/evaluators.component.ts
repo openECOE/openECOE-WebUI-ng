@@ -9,6 +9,7 @@ import { SharedService } from '@app/services/shared/shared.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Pagination } from '@openecoe/potion-client';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { filter, startWith, take } from 'rxjs/operators';
 
 interface Evaluator {
   id: number;
@@ -34,14 +35,11 @@ export class EvaluatorsComponent implements OnInit {
 
   addEvaluatorDraw: boolean = false;
 
-  page: number = 1;
-  perPage: number = 20;
   totalItems: number = 0;
   loading: boolean = false;
 
   // FORMULARIO EDITAR
-  evaluatorEditar: ApiPermissions;
-  evaluatorOriginal: ApiPermissions;
+  evaluatorOriginal: Evaluator;
 
   validateForm: FormGroup;
   showAddEvaluator: boolean;
@@ -49,12 +47,6 @@ export class EvaluatorsComponent implements OnInit {
   showEditEvaluator: boolean = false;
 
   listStations: Station[] = [];
-
-  evaluatorRow = {
-    email: ['', Validators.required],
-    stations: ['', Validators.required],
-    round: ['', Validators.required]
-  };
 
   evaluatorForm: FormGroup;
   evaluatorControl: FormArray;
@@ -97,24 +89,23 @@ export class EvaluatorsComponent implements OnInit {
       this.evaluatorControl = <FormArray>this.evaluatorForm.controls.evaluatorRow;
     }
 
-    async ngOnInit() {
-      this.route.params.subscribe(async (params) => {
+    ngOnInit() {
+      this.route.params.subscribe((params) => {
         this.ecoeId = +params.ecoeId;
         this.loading = true;
-  
-        try {
-          this.ecoe = await ECOE.fetch<ECOE>(this.ecoeId, { cache: false });
-          this.ecoe_name = this.ecoe.name;
-          this.listStations = await this.getStations();
-          
-          await this.loadEvaluators(); 
-          this.getPermissionForm();
-          //this.InitEvaluatorRow();
-        } catch (error) {
-          console.error('Error al obtener la ECOE:', error);
-        } finally {
-          this.loading = false;
-        }
+
+        ECOE.fetch<ECOE>(this.ecoeId, { cache: false })
+          .then((ecoe) => {
+            this.ecoe = ecoe;
+            this.ecoe_name = ecoe.name;
+            return this.getStations();
+          })
+          .then((stations) => {
+            this.listStations = stations;
+            this.loadEvaluators();
+            this.loading = false;
+            this.getPermissionForm();
+          });
       });
   }
   
@@ -126,7 +117,7 @@ export class EvaluatorsComponent implements OnInit {
     // TODO: Validate if email exists
     this.validateForm = this.fb.group({
       email: [null,[Validators.required]],
-      stations: [null]
+      stations: [null, [Validators.required]]
     });
   }
 
@@ -139,31 +130,14 @@ export class EvaluatorsComponent implements OnInit {
     this.evaluators = [];
     this.loading = true;
   
-    try {
-      const sortDict = {};
-      // tslint:disable-next-line:forin
-      for (const key in this.mapOfSort) {
-        const value = this.mapOfSort[key];
-        if (value !== null) {
-          sortDict[key] = value !== 'ascend';
-          if (key === 'name') {
-            sortDict['name'] = value !== 'ascend';
-            sortDict['name_order'] = value !== 'ascend';
-          }
-        }
-      }
-      
-      this.editCache = {};
-      
+    try {      
      const usersWithEvalautePermission = await this.apiService.getEvaluators(this.ecoe);
      usersWithEvalautePermission.forEach((evaluator) => this.evaluators.push({id: evaluator.id, stations: null, user: evaluator}));
 
       for (const evaluator of this.evaluators) {
         evaluator.stations = await this.apiService.getStationsByEvaluator(evaluator.user, this.ecoe);
       }
-
       this.totalItems = this.evaluators.length;  
-      this.updateEditCache();
     } catch (error) {
       console.error('Error al cargar los evaluadores:', error);
     } finally {
@@ -171,60 +145,14 @@ export class EvaluatorsComponent implements OnInit {
     }
   }
   
-  /**
-   * Creates or updates the resource passed.
-   * Then updates the variables to avoid calling the backend again.
-   *
-   * @param item determines if the resource is already saved
-   */
-  updateItem(item: any): void {
-    if (!this.editCache[item.id].email || !this.editCache[item.id].name || !this.editCache[item.id].surnames) {
-      return;
-    }
-
-    const body = {
-      email: this.editCache[item.id].email,
-      name: this.editCache[item.id].name,
-      surnames: this.editCache[item.id].surnames,
-    };
-
-    const request = item.update(body);
-
-    request.then(response => {
-      this.evaluators = this.evaluators.map(x => (x.id === item.id) ? response : x);
-      this.editCache[response.id].edit = false;
-    });
-  }
-
-  /**
-   * Updates editCache variable with the same values of the resources array and adds a 'edit' key.
-   */
-  updateEditCache(): void {
-    this.evaluators.forEach(item => {
-      this.editCache[item.id] = {
-        edit: this.editCache[item.id] ? this.editCache[item.id].edit : false,
-        ...item
-      };
-    });
-  }
-
-  /**
-   * Deletes the editCache key assigned to the resource id passed and filters out the item from the resources array.
-   *
-   * @param evaluatorId Id of the resource passed
-   */
-  updateArrayEvaluators(evaluatorId: number | string | null) {
-    delete this.editCache[evaluatorId];
-    this.evaluators = this.evaluators.filter(x => x.id !== evaluatorId);
-  }
-
   importEvaluators(parserResult: any): void {
     const fileData: any[] = parserResult as Array<any>
     const evaluators = fileData.filter(item => item["email"] !== null);
 
     this.saveEvaluators(evaluators)
-      .then(() => console.log('success'))
+      .then(() => this.loadEvaluators())
       .catch((err) => {
+        // TODO: comprobar esto
         this.logPromisesOK.forEach((perm: ApiPermissions) => this.deletePermissions(perm));
       });
   }
@@ -297,6 +225,7 @@ export class EvaluatorsComponent implements OnInit {
         const permission = await this.apiService.getPermissionForStation(evaluator.user, station);
         if (permission) {
           await this.deletePermissions(permission);
+          console.log('Permiso borrado');
         }
       }
       
@@ -305,16 +234,18 @@ export class EvaluatorsComponent implements OnInit {
           this.translate.instant("EVALUATOR_DELETED", { email: evaluator.user.email })
         );
       }
-  
+
+      console.log("Recargar evaluadores");
       this.loadEvaluators();
     } catch (error) {
       this.message.error(this.translate.instant("ERROR_DELETE_EVALUATOR"));
     }
+
+    
   }
   
 
   async addPermission(email: string, stationName: string) {
-    console.log('addPermission', email, stationName);
     let user = await User.first<User>({where: {email}});
     if(!user) {
       return Promise.reject(new Error(this.translate.instant('USER_NOT_FOUND', {username: email})))
@@ -347,57 +278,49 @@ export class EvaluatorsComponent implements OnInit {
       }});
 
     if(readPermission) { readPermission.destroy()}
-    permission.destroy();
+    return permission.destroy();
   }
 
-  sort(sortName: string, value: string): void {
-    for (const key in this.mapOfSort) {
-      this.mapOfSort[key] = key === sortName ? value : null;
-    }
-
-    this.loadEvaluators();
-  }
-
-  async submitFormEvaluator(form: FormGroup) {
+  submitFormEvaluator(form: FormGroup) {
     this.shared.doFormDirty(form);
-    if (form.pending) {
-        const sub = form.statusChanges.subscribe(() => {
-            if (form.valid) {
-                const selectedStations: Station[] = form.value.stations;
-                selectedStations.forEach(async (station: Station) => {
-                    await this.submitForm({ email: form.value.email, station: station.name });
-                });
-            }
-            sub.unsubscribe();
-        });
-    } else if (form.valid) {
-        const selectedStations: Station[] = form.value.stations;
-        selectedStations.forEach(async (station: Station) => {
-            await this.submitForm({ email: form.value.email, station: station.name });
-        });
+
+    (async () => {
+    if(this.showAddEvaluator) {
+      return this.createEvaluator(form.value.email, form.value.stations);
+    } 
+      return this.editPermissions(form.value.stations);
+    
+  })().then(() => {
+    this.loadEvaluators()
+    this.closeModal()
+  })
+  }
+
+  async createEvaluator(email: string, stations: Station[]) {
+    for (const station of stations) {
+      await this.addPermission(email, station.name)
     }
   }
 
-  async submitForm(value: any) {
-    try {
-      if (this.showAddEvaluator) {
-        await this.addPermission(
-          value.email,
-          value.station
-        );
-      } else if (this.showEditEvaluator) {
-        await this.updatePermission(this.evaluatorOriginal, value);
-      }
+  async editPermissions(newStations: Station[]) {
+    let user = await User.first<User>({where: {email: this.evaluatorOriginal.user.email}});
+    if(!user) {
+      return Promise.reject(new Error(this.translate.instant('USER_NOT_FOUND', {username: this.evaluatorOriginal.user.email})))
+    }    
+    const previousStations = await this.apiService.getStationsByEvaluator(user, this.ecoe);
 
-      this.loadEvaluators();
-    } catch (error) {
-      console.error(error);
-      this.message.create(
-        "error",
-        "Error al guardar la información del evaluador"
-      );
+    let difference = previousStations.filter(station => !newStations.includes(station))
+      .concat(newStations.filter(station => !previousStations.includes(station)));
+    console.log(difference);
+
+    for (const station of difference) {
+      let permission = await this.apiService.getPermissionForStation(user, station);
+      if(permission) {
+        await permission.destroy();
+      }  else {
+        await this.addPermission(user.email, station.name);
+      }
     }
-    this.closeModal();
   }
 
   onBack() {
@@ -415,10 +338,8 @@ export class EvaluatorsComponent implements OnInit {
     this.showMessageDelete = true;
   }
 
-  async showModalEdit(modalEditEvaluator: ApiPermissions) {
+  showModalEdit(modalEditEvaluator: Evaluator) {
     this.evaluatorOriginal = modalEditEvaluator;
-
-    this.validateForm.controls["email"].setValue(modalEditEvaluator.user.email);
     this.validateForm.controls["stations"].setValue(modalEditEvaluator.stations);
 
     this.showEditEvaluator = true;
