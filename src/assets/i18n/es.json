@@ -317,5 +317,6 @@
   "SELECT_USER": "Seleccionar usuario",
   "SELECT_STATIONS": "Seleccionar estación/es",
   "EVALUATOR_DELETED": "Evaluador {{email}} eliminado",
-  "ERROR_DELETE_EVALUATOR": "Error eliminando el evaluador"
+  "ERROR_DELETE_EVALUATOR": "Error eliminando el evaluador",
+  "EDIT_EVALUATOR": "Editar evaluador {{email}}"
 }

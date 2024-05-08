@@ -64,12 +64,12 @@
   -->
   <nz-modal *ngIf="validateForm"
     [(nzVisible)]="showAddEvaluator ||showEditEvaluator"
-    [nzTitle]="showAddEvaluator?('ADD_EVALUATOR' | translate) : ('EDIT_USER' | translate: {name: evaluatorOriginal?.user.name})"
+    [nzTitle]="showAddEvaluator?('ADD_EVALUATOR' | translate) : ('EDIT_EVALUATOR' | translate: {email: evaluatorOriginal?.user.email})"
     [nzOkText]="'ACCEPT' | translate"
     [nzCancelText]="'CANCEL' | translate"
     (nzOnOk)="submitFormEvaluator(validateForm)"
     (nzOnCancel)="closeModal()">
-
+    
     <form nz-form [formGroup]="validateForm">
       <nz-form-item *ngIf="showAddEvaluator">
         <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="emailErrorTpl">
