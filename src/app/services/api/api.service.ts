@@ -82,6 +82,23 @@ export class ApiService {
     return permission.save();
   }
 
+  async getPermissionForStation(user: User, station: Station): Promise<ApiPermissions | null> {
+    try {
+      const permission = await ApiPermissions.first<ApiPermissions>({
+        where: {
+          user: user,
+          object: "stations",
+          idObject: station.id
+        }
+      });
+      return permission;
+    } catch (error) {
+      console.error("Error al obtener el permiso para la estación:", error);
+      return null;
+    }
+  }
+  
+
   /**
    * Makes a HTTP GET request to the backend and gets a list of items.
    *

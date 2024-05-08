@@ -49,7 +49,11 @@
               </nz-tag>
             </ng-container>
           </td>
-          <td></td>
+          <td text-right>
+            <app-action-buttons (startEdit)="showModalEdit(item)"
+                                (delete)="delEvaluator(item)">
+            </app-action-buttons>
+          </td>
         </tr>
       </tbody>
   </nz-table>

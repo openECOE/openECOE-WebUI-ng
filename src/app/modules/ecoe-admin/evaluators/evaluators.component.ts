@@ -289,6 +289,30 @@ export class EvaluatorsComponent implements OnInit {
       .catch(err => new Promise((resolve,reject) => reject(err)));
   }
 
+  async delEvaluator(evaluator: Evaluator, batch: boolean = false) {
+    try {
+      const stations = evaluator.stations;
+      
+      for (const station of stations) {
+        const permission = await this.apiService.getPermissionForStation(evaluator.user, station);
+        if (permission) {
+          await this.deletePermissions(permission);
+        }
+      }
+      
+      if (!batch) {
+        this.message.success(
+          this.translate.instant("EVALUATOR_DELETED", { email: evaluator.user.email })
+        );
+      }
+  
+      this.loadEvaluators();
+    } catch (error) {
+      this.message.error(this.translate.instant("ERROR_DELETE_EVALUATOR"));
+    }
+  }
+  
+
   async addPermission(email: string, stationName: string) {
     console.log('addPermission', email, stationName);
     let user = await User.first<User>({where: {email}});
@@ -389,6 +413,15 @@ export class EvaluatorsComponent implements OnInit {
 
   showModalDelete() {
     this.showMessageDelete = true;
+  }
+
+  async showModalEdit(modalEditEvaluator: ApiPermissions) {
+    this.evaluatorOriginal = modalEditEvaluator;
+
+    this.validateForm.controls["email"].setValue(modalEditEvaluator.user.email);
+    this.validateForm.controls["stations"].setValue(modalEditEvaluator.stations);
+
+    this.showEditEvaluator = true;
   }
 
   closeModal() {
