@@ -47,7 +47,8 @@ export class EvaluatorsComponent implements OnInit {
   showEditEvaluator: boolean = false;
 
   listStations: Station[] = [];
-
+  listUsers: User[] = [];
+  
   evaluatorForm: FormGroup;
   evaluatorControl: FormArray;
 
@@ -98,19 +99,33 @@ export class EvaluatorsComponent implements OnInit {
           .then((ecoe) => {
             this.ecoe = ecoe;
             this.ecoe_name = ecoe.name;
-            return this.getStations();
+            return Promise.all([this.getStations(), this.getUsers()]);
           })
-          .then((stations) => {
+          .then(([stations, users]) => {
             this.listStations = stations;
+            this.listUsers = users;
             this.loadEvaluators();
             this.loading = false;
             this.getPermissionForm();
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            this.loading = false;
           });
       });
   }
   
   async getStations(): Promise<Station[]> {
     return Station.query<Station>({where: {ecoe: this.ecoe}});
+  }
+
+  async getUsers(): Promise<User[]> {
+    const evaluators = await this.apiService.getEvaluators(this.ecoe);
+    const allUsers = await User.query<User>();
+
+    const nonEvaluators = allUsers.filter(user => !evaluators.some(evaluator => evaluator.id === user.id));
+
+    return nonEvaluators;
   }
 
   async getPermissionForm() {

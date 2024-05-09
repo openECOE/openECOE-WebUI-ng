@@ -78,27 +78,35 @@
     
     <form nz-form [formGroup]="validateForm">
       <nz-form-item *ngIf="showAddEvaluator">
-        <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="emailErrorTpl">
-          <nz-input-group [nzPrefixIcon]="'mail'">
-            <input type="email" nz-input
-                   formControlName="email"
-                   [placeholder]="'EMAIL' | translate">
+        <nz-form-control [nzSpan]="24" nzHasFeedback>
+          <nz-input-group>
+            <nz-form-label >Correo electrónico</nz-form-label>
+            <nz-select 
+              style="width: 100%"
+              nzSize="medium"
+              formControlName="email"
+              nzShowSearch nzAllowClear 
+              [nzPlaceHolder]="'EMAIL' | translate"
+            >
+
+              <nz-option *ngFor="let user of listUsers"
+                          [nzLabel]="user.email | translate"
+                          [nzValue]="user"
+            >
+              </nz-option>
+            </nz-select>
           </nz-input-group>
-          <ng-template #emailErrorTpl let-control>
-            <ng-container *ngIf="control.hasError('email')">{{'EMAIL_NOT_VALID' | translate}}</ng-container>
-            <ng-container *ngIf="control.hasError('duplicated')">{{'EMAIL_EXISTS' | translate}}</ng-container>
-          </ng-template>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
         <nz-form-control>
           <nz-input-group>
-          <nz-form-label >Estaciones</nz-form-label>
+            <nz-form-label >Estación/es</nz-form-label>
             <nz-select
             style="width: 100%"
-            nzSize="small"
-            [nzMaxTagCount]="5"
+            nzSize="medium"
+            [nzMaxTagCount]="4"
             nzMode="multiple"
             [nzPlaceHolder]="'SELECT_STATIONS' | translate"
             [nzAllowClear]="true"
@@ -111,7 +119,6 @@
             >
             </nz-option>
           </nz-select>
-      
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
