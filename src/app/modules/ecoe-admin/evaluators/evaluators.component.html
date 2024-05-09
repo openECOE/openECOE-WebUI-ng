@@ -11,6 +11,7 @@
       [nzData]="evaluators"
       [nzLoading]="loading"
       nzSize="small"
+      nzTemplateMode
       >
       <thead>
       <tr>
@@ -37,27 +38,32 @@
       </tr>
       </thead>
       <tbody>
-        <!-- TODO: Usar nzTable.data -->
-        <tr *ngFor="let item of evaluators">
-          <td></td>
-          <td>{{item.user.email}}</td>
-          <td>{{item.user.name}}</td>
-          <td>{{item.user.surname}}</td>
-          <td>
-            <ng-container>
-              <nz-tag *ngFor="let station of item.stations" [nzColor]="'blue'">
-                {{station.name}}
-              </nz-tag>
-            </ng-container>
-          </td>
-          <td text-right>
-            <app-action-buttons (startEdit)="showModalEdit(item)"
-                                (delete)="delEvaluator(item)">
-            </app-action-buttons>
-          </td>
-        </tr>
-      </tbody>
+        <ng-container *ngIf="evaluators.length > 0; else noData">
+          <tr *ngFor="let item of evaluators">
+            <td></td>
+            <td>{{item.user.email}}</td>
+            <td>{{item.user.name}}</td>
+            <td>{{item.user.surname}}</td>
+            <td>
+              <ng-container>
+                <nz-tag *ngFor="let station of item.stations" [nzColor]="'blue'">
+                  {{station.name}}
+                </nz-tag>
+              </ng-container>
+            </td>
+            <td text-right>
+              <app-action-buttons (startEdit)="showModalEdit(item)"
+                                  (delete)="delEvaluator(item)">
+              </app-action-buttons>
+            </td>
+          </tr>
+        </ng-container>
+        </tbody>
   </nz-table>
+  
+    <ng-template #noData>
+      <nz-empty nzNotFoundImage="simple"></nz-empty>
+    </ng-template>
 
   <!--
     MODAL DE ADD_EVALUATOR
