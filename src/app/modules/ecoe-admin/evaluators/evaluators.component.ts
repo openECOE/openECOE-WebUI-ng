@@ -166,7 +166,6 @@ export class EvaluatorsComponent implements OnInit {
     };
 
     await permission.update(updateData);
-    //await this.updateUserStations(permission.user, value.roles);
 
     this.message.success(
       this.translate.instant("USER_UPDATED", { email: permission.user.email })
@@ -240,11 +239,8 @@ export class EvaluatorsComponent implements OnInit {
     } catch (error) {
       this.message.error(this.translate.instant("ERROR_DELETE_EVALUATOR"));
     }
-
-    
   }
   
-
   async addPermission(email: string, stationName: string) {
     let user = await User.first<User>({where: {email}});
     if(!user) {
