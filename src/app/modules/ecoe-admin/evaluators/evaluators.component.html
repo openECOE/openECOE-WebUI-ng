@@ -91,7 +91,7 @@
 
               <nz-option *ngFor="let user of listUsers"
                           [nzLabel]="user.email | translate"
-                          [nzValue]="user"
+                          [nzValue]="user.email"
             >
               </nz-option>
             </nz-select>
