@@ -9,7 +9,6 @@ import { SharedService } from '@app/services/shared/shared.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Pagination } from '@openecoe/potion-client';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { filter, startWith, take } from 'rxjs/operators';
 
 interface Evaluator {
   id: number;
@@ -57,12 +56,6 @@ export class EvaluatorsComponent implements OnInit {
   successFulPermissions = [];
 
   indeterminate = false;
-
-  mapOfSort: { [key: string]: any } = {
-    email: null,
-    station: null,
-    round: null,
-  };
 
   evaluatorsParser: ParserFile = {
     "filename": "evaluators.csv",
