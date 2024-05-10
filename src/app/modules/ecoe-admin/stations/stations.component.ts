@@ -115,7 +115,8 @@ export class StationsComponent implements OnInit {
     }
     // deleting current station in parent stations list.
     if (excludeStation) {
-      this.selectOptions = this.selectOptions.filter(item => item.id !== excludeStation.id);
+      //this.selectOptions = this.selectOptions.filter(item => item.id !== excludeStation.id);
+      this.selectOptions = this.selectOptions.filter(item => item.order < excludeStation.order);
     }
   }
 
@@ -219,7 +220,15 @@ export class StationsComponent implements OnInit {
       return;
     }
 
+    console.log(cacheItem);
+    console.log(cacheItem.parentStation);
+    console.log(cacheItem.parentStation.order);
+    if(cacheItem.order <= cacheItem.parentStation.order) {
+      return;
+    }
+
     const body = {
+      order: cacheItem.order,
       name: cacheItem.name,
       ecoe: this.ecoeId,
       parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
@@ -229,7 +238,8 @@ export class StationsComponent implements OnInit {
 
     request.then(response => {
       this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
-      this.editCache[cacheItem.id].edit = false;      
+      this.editCache[cacheItem.id].edit = false;   
+      this.loadStations().finally();   
     });
   }
 
