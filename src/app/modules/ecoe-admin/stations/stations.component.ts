@@ -113,9 +113,8 @@ export class StationsComponent implements OnInit {
         this.selectOptions.push(new Station({name: row.name}));
       }
     }
-    // deleting current station in parent stations list.
+
     if (excludeStation) {
-      //this.selectOptions = this.selectOptions.filter(item => item.id !== excludeStation.id);
       this.selectOptions = this.selectOptions.filter(item => item.order < excludeStation.order);
     }
   }
@@ -220,9 +219,6 @@ export class StationsComponent implements OnInit {
       return;
     }
 
-    console.log(cacheItem);
-    console.log(cacheItem.parentStation);
-    console.log(cacheItem.parentStation.order);
     if(cacheItem.order <= cacheItem.parentStation.order) {
       return;
     }
