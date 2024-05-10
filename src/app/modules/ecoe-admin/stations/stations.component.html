@@ -58,7 +58,7 @@
           </ng-container>
 
           <ng-container *ngIf="editCache[item.id].edit">
-            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
+            <nz-input-number [nzMin]="1" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
           </ng-container>
         </td>
 
@@ -92,9 +92,7 @@
               nzFilterOption="true"
               (nzOnSearch)="searchInSelect($event, editCache[item.id].item)"
             >
-              <!--<ng-container *ngFor="let pageOptions of selectOptions">-->
                 <nz-option *ngFor="let station of selectOptions"  [nzLabel]="station.name" [nzValue]="station"> </nz-option>
-              <!--</ng-container>-->
             </nz-select>
           </ng-container>
         </td>

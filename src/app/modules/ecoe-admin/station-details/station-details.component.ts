@@ -251,6 +251,7 @@ export class StationDetailsComponent implements OnInit {
     request.then(response => {
       this.qblocks = this.qblocks.map(x => (x.id === cacheItem.id) ? response : x);
       this.editCache[cacheItem.id].edit = false;
+      this.getQblocks(this.station);
     });
     request.catch( err => console.error(err));
   }
