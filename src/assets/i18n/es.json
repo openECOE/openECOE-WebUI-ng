@@ -296,5 +296,6 @@
   "USERS_IMPORTED": "Usuarios importados correctamente",
   "ERROR_IMPORT_USERS": "Error importando usuarios",
   "ERRORS.ERROR_IN_QUESTION_SCHEMA": "Error en QuestionType",
-  "ECOE_CREATED": "{{name}} creada correctamente"
+  "ECOE_CREATED": "{{name}} creada correctamente",
+  "EDIT_STATION_ERROR": "El orden de la estación padre debe ser menor que la de la subestación"
 }
