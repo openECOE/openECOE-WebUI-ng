@@ -217,7 +217,6 @@ export class StationsComponent implements OnInit {
    * @param cacheItem Resource selected
    */
   updateItem(cacheItem: any): void {
-    try{
       if (!cacheItem.name) {
         return;
       }
@@ -235,11 +234,10 @@ export class StationsComponent implements OnInit {
         this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
         this.editCache[cacheItem.id].edit = false;   
         this.loadStations().finally();   
+      })
+      .catch((err) => {
+        this.message.create('error', this.translate.instant('EDIT_STATION_ERROR'));
       });
-    }catch(err){
-      console.error(err);
-      this.message.create('error', 'Error updating station');
-    }
   }
 
   /**
