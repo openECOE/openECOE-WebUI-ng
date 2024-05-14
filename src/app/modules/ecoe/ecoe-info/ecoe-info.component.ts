@@ -1,7 +1,7 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Location} from '@angular/common';
-import {Area, ECOE, Round, Schedule, Shift, Stage, Station, Student, ApiPermissions, Permission} from '@models/index';
+import {Area, ECOE, Round, Schedule, Shift, Stage, Station, Student, ApiPermissions, Permission, User} from '@models/index';
 import {Router, ActivatedRoute} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -9,6 +9,7 @@ import { ChronoService } from '@services/chrono/chrono.service';
 import { Item, Pagination } from '@openecoe/potion-client';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { ApiService } from '@app/services/api/api.service';
 
 interface ISummaryItems {
   total: number;
@@ -60,7 +61,8 @@ export class EcoeInfoComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private chronoService: ChronoService,
-    private modalSrv: NzModalService) {
+    private modalSrv: NzModalService,
+    private apiService: ApiService) {
   }
 
   ngOnInit() {
@@ -121,34 +123,14 @@ export class EcoeInfoComponent implements OnInit {
         this.shifts.show = this.show_planner;
       });
       
-      this.getEvaluators().then((cont) => {
-        this.evaluators.total = cont;
+      this.apiService.getEvaluators(this.ecoe).then((evaluators: User[]) => {
+        this.evaluators.total = evaluators.length;
         this.evaluators.loading = false;
-        this.evaluators.show = this.show_evaluators;
-      })
+      });
+
+  
 
     });
-  }
-
-  async getEvaluators() {
-    let permissions = await ApiPermissions.query<ApiPermissions>({
-      where: {
-        name: "evaluate",
-        object: "stations",
-      }
-    })
-
-    let permissionsOfThisEcoe = [];
-    for (const permission of permissions) {
-      let station = await Station.fetch<Station>(permission.idObject);
-      console.log(station.ecoe.id + ' ' + this.ecoeId);
-      if(station.ecoe.id == this.ecoeId) {
-        permissionsOfThisEcoe.push(permission);
-      }
-    }
-
-    let uniqueUsers = [...new Set(permissionsOfThisEcoe.map(p => p.user))];
-    return uniqueUsers.length;
   }
 
   /**
@@ -266,10 +248,6 @@ export class EcoeInfoComponent implements OnInit {
     return this.stages.total > 0 || this.rounds.total > 0 || this.shifts.total > 0;
   };
   
-  get show_evaluators(): boolean {
-    return this.stages.total > 0 || this.evaluators.total > 0;
-  }
-
   async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
     const _pag: Pagination<Item> = await (itemClass as unknown as Item).query({
       where: {ecoe: this.ecoe},

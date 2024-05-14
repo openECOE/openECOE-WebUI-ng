@@ -312,5 +312,11 @@
   "ORGANIZATION_DELETED": "Organización {{name}} eliminada",
   "DELETE_ORGANIZATION": "Eliminar Organización {{name}}",
   "DELETE_ORGANIZATION_CONFIRM": "Por favor, escriba el nombre de la organización para confirmar que desea eliminarla junto con todos sus datos.",
-  "ERROR_CREATE_ORGANIZATION": "Error al crear la organización"
+  "ERROR_CREATE_ORGANIZATION": "Error al crear la organización",
+  "ADD_EVALUATOR": "Añadir evaluador",
+  "SELECT_USER": "Seleccionar usuario",
+  "SELECT_STATIONS": "Seleccionar estación/es",
+  "EVALUATOR_DELETED": "Evaluador {{email}} eliminado",
+  "ERROR_DELETE_EVALUATOR": "Error eliminando el evaluador",
+  "EDIT_EVALUATOR": "Editar evaluador {{email}}"
 }

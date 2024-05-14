@@ -3,7 +3,7 @@ import { Observable, of } from "rxjs";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { catchError, map, tap } from "rxjs/operators";
-import { Role, User, Option } from "@app/models";
+import { Role, User, Option, ECOE, Station } from "@app/models";
 import { ApiPermissions } from "@app/models";
 
 /**
@@ -81,6 +81,23 @@ export class ApiService {
 
     return permission.save();
   }
+
+  async getPermissionForStation(user: User, station: Station): Promise<ApiPermissions | null> {
+    try {
+      const permission = await ApiPermissions.first<ApiPermissions>({
+        where: {
+          user: user,
+          object: "stations",
+          idObject: station.id
+        }
+      });
+      return permission;
+    } catch (error) {
+      console.error("Error al obtener el permiso para la estación:", error);
+      return null;
+    }
+  }
+  
 
   /**
    * Makes a HTTP GET request to the backend and gets a list of items.
@@ -221,11 +238,50 @@ export class ApiService {
   }
 
   getServerStatus(): Observable<string> {
-    const url = `${environment.BACK_ROUTE}backend/status/`;
+    const url = `${environment.API_ROUTE}/status/`;
 
     return this.http.get(url, { responseType: 'text' as const})
       .pipe(
         catchError(() => of('ko'))
       );
+  }
+
+  async getEvaluators(ecoe: ECOE): Promise<User[]> {
+    let permissions = await ApiPermissions.query<ApiPermissions>({
+      where: {
+        name: "evaluate",
+        object: "stations",
+      }
+    });
+
+    let permissionsOfThisEcoe = [];
+    for (const permission of permissions) {
+      let station = await Station.fetch<Station>(permission.idObject);
+      if(station.ecoe.id == ecoe.id) {
+        permissionsOfThisEcoe.push(permission);
+      }
+    }
+
+    return [...new Set(permissionsOfThisEcoe.map(p => p.user))];
+  }
+
+  async getStationsByEvaluator(user: User, ecoe: ECOE): Promise<Station[]> {
+    let permissions = await ApiPermissions.query<ApiPermissions>({
+      where: {
+        name: "evaluate",
+        object: "stations",
+        user: user,
+      }
+    });
+
+    let stations: Station[] = [];
+    for(const permission of permissions) {
+      let station = await Station.fetch<Station>(permission.idObject);
+      if(station.ecoe.id == ecoe.id) {
+        stations.push(station);
+      }
+    }
+
+    return stations;
   }
 }

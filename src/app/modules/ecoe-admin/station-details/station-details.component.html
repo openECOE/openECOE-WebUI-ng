@@ -55,7 +55,7 @@
           </ng-container>
 
           <ng-container *ngIf="editCache[item.id].edit">
-            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
+            <nz-input-number [nzMin]="1" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
           </ng-container>
         </td>
 

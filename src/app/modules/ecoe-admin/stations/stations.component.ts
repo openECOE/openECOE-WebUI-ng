@@ -220,6 +220,7 @@ export class StationsComponent implements OnInit {
     }
 
     const body = {
+      order: cacheItem.order,
       name: cacheItem.name,
       ecoe: this.ecoeId,
       parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
@@ -230,6 +231,7 @@ export class StationsComponent implements OnInit {
     request.then(response => {
       this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
       this.editCache[cacheItem.id].edit = false;      
+      this.loadStations().finally();
     });
   }
 
