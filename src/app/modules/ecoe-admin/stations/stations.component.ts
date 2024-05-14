@@ -5,6 +5,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID, Pagination} from '@openecoe/potion-client';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 /**
  * Component with stations and qblocks by station.
@@ -56,7 +57,8 @@ export class StationsComponent implements OnInit {
               private router: Router,
               private translate: TranslateService,
               public shared: SharedService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private message: NzMessageService) {
 
     this.stationForm = this.fb.group({
       stationRow: this.fb.array([])
@@ -113,9 +115,9 @@ export class StationsComponent implements OnInit {
         this.selectOptions.push(new Station({name: row.name}));
       }
     }
-    // deleting current station in parent stations list.
+
     if (excludeStation) {
-      this.selectOptions = this.selectOptions.filter(item => item.id !== excludeStation.id);
+      this.selectOptions = this.selectOptions.filter(item => item.order < excludeStation.order);
     }
   }
 
@@ -216,23 +218,26 @@ export class StationsComponent implements OnInit {
    */
   updateItem(cacheItem: any): void {
     if (!cacheItem.name) {
-      return;
-    }
+        return;
+      }
 
-    const body = {
-      order: cacheItem.order,
-      name: cacheItem.name,
-      ecoe: this.ecoeId,
-      parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
-    };
+      const body = {
+        order: cacheItem.order,
+        name: cacheItem.name,
+        ecoe: this.ecoeId,
+        parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
+      };
 
-    const request = cacheItem.update(body);
+      const request = cacheItem.update(body);
 
-    request.then(response => {
-      this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
-      this.editCache[cacheItem.id].edit = false;      
-      this.loadStations().finally();
-    });
+      request.then(response => {
+        this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
+        this.editCache[cacheItem.id].edit = false;   
+        this.loadStations().finally();   
+      })
+      .catch((err) => {
+        this.message.create('error', this.translate.instant('EDIT_STATION_ERROR'));
+      });
   }
 
   /**
