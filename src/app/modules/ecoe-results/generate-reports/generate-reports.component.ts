@@ -6,6 +6,7 @@ import { stringify } from "querystring";
 import { ApiService } from "@app/services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { flatMap } from "rxjs/operators";
+import { JoditAngularComponent } from 'jodit-angular';
 
 @Component({
   selector: "app-generate-reports",
@@ -34,7 +35,14 @@ export class GenerateReportsComponent implements OnInit {
   signature_faculty: any;
   ecoeId: number;
   ecoe_name: any;
-
+  config: any = {
+    "minHeight": 600,
+    "lineHeight": '1.0',
+    "buttons": "undo,redo,|,font,fontsize,|,bold,italic,underline,eraser,|,superscript,subscript,|,indent,outdent,left,center,right,justify,|,ul,table,selectall,hr,|,link,image,print,|,source,preview,fullsize",
+    "uploader": {
+      "insertImageAsBase64URI": true
+    }
+  };
   constructor(
     private api: ApiService,
     private router: Router,
