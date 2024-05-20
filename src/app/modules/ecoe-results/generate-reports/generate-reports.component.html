@@ -218,5 +218,15 @@
     <br />
     <button nz-button nzType="primary" (click)="submitData()">Generar</button>
   </div> -->
+  <nz-upload
+    [nzHeaders]="{ authorization: 'authorization-text' }"
+    (nzChange)="onFileSelected($event)"
+  >
+    <button nz-button style="margin-bottom: 20px;">
+      <span nz-icon nzType="upload"></span>
+      Subir Word
+    </button>
+  </nz-upload>
+  <!-- <button (click)="downloadAsDocx()" style="margin-bottom: 20px;"nz-button nzType="primary"><span nz-icon nzType="file-word"></span>Descargar Word</button> -->
 </nz-content>
-<jodit-editor [config]="config"></jodit-editor>
+<jodit-editor [config]="config" [(ngModel)]="editorContent"></jodit-editor>

@@ -7,6 +7,8 @@ import { ApiService } from "@app/services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { flatMap } from "rxjs/operators";
 import { JoditAngularComponent } from 'jodit-angular';
+import * as mammoth from 'mammoth';
+import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 
 @Component({
   selector: "app-generate-reports",
@@ -35,6 +37,7 @@ export class GenerateReportsComponent implements OnInit {
   signature_faculty: any;
   ecoeId: number;
   ecoe_name: any;
+  editorContent: string = '';
   config: any = {
     "minHeight": 600,
     "buttons": "undo,redo,|,font,fontsize,|,bold,italic,underline,eraser,|,superscript,subscript,|,indent,outdent,left,center,right,justify,|,ul,table,selectall,hr,|,link,image,print,|,source,preview,fullsize",
@@ -74,6 +77,33 @@ export class GenerateReportsComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.ecoeId = params.ecoeId;
     });
+  }
+
+  onFileSelected(event: NzUploadChangeParam) {
+    const file = event.file.originFileObj as File;
+    if (file) {
+      this.convertDocxToHtml(file);
+    }
+  }
+
+  convertDocxToHtml(file: File) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const arrayBuffer = event.target?.result as ArrayBuffer;
+      mammoth.convertToHtml({ arrayBuffer })
+        .then((result) => {
+          const htmlContent = result.value;
+
+          const styles = result.messages.filter(msg => msg.type === 'warning' || msg.type === 'error').map(msg => msg.message).join('\n');
+          const styledHtmlContent = `<html><head><style>${styles}</style></head><body>${htmlContent}</body></html>`;
+          
+          this.editorContent = htmlContent;
+        })
+        .catch((err) => {
+          console.error('Error al convertir el archivo .docx a HTML:', err);
+        });
+    };
+    reader.readAsArrayBuffer(file);
   }
 
   validateForm!: FormGroup;
