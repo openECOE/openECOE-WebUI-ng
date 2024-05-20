@@ -34,7 +34,10 @@
     <tbody cdkDropList (cdkDropListDropped)="drop($event)">
       <ng-template ngFor let-item [ngForOf]="questionsList">
         <tr cdkDrag>
-          <td nzAlign="right">{{item.order || "-"}}</td>
+          <td nzAlign="right">
+            <i nz-icon nzType="swap" nzTheme="outline" style="transform: rotate(90deg);"></i>
+            {{item.order || "-"}}
+          </td>
 
           <td>{{item.schema.description}}</td>
 
