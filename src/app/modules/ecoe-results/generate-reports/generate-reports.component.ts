@@ -37,11 +37,32 @@ export class GenerateReportsComponent implements OnInit {
   ecoe_name: any;
   config: any = {
     "minHeight": 600,
-    "lineHeight": '1.0',
     "buttons": "undo,redo,|,font,fontsize,|,bold,italic,underline,eraser,|,superscript,subscript,|,indent,outdent,left,center,right,justify,|,ul,table,selectall,hr,|,link,image,print,|,source,preview,fullsize",
     "uploader": {
       "insertImageAsBase64URI": true
+    },
+    iframe: true,
+    iframeStyle: `
+      body { margin: 24px 40px; padding: 10px; line-height: 1.0; }
+      table { border: 1px solid #000; border-collapse: collapse; }
+      table th, table td { border: 1px solid #000; padding: 5px; }
+    `,
+    controls: {
+      font: {
+        list: {
+          '': 'Default',
+          'Arial,sans-serif': 'Arial',
+          'Calibri': 'Calibri',
+          "'Times New Roman',Times,serif": 'Times New Roman',
+          'Helvetica,sans-serif': 'Helvetica',
+          'Roboto Medium,Arial,sans-serif': 'Roboto',
+          'Georgia,serif': 'Georgia',
+          'Verdana,Geneva,sans-serif': 'Verdana',
+          'Tahoma,Geneva,sans-serif': 'Tahoma'
+        }
+      }
     }
+    
   };
   constructor(
     private api: ApiService,
