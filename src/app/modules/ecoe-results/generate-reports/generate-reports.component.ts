@@ -317,14 +317,11 @@ export class GenerateReportsComponent implements OnInit {
       signatures: this.fillSignList(),
     };
     const FdataList = this.FData;
-    //FdataList.push(this.listOfControl);
     var cadenaJSON = JSON.stringify(FData);
-    //llamada a la api para enviar este objeto (post)
     let arearesults = this.api
       .postResource("ecoes/" + this.ecoeId + "/results-report", null, {
         cadenaJSON,
       })
-      //Para poder hacer la redireccion  desde el observable se tiene que implementar un pipe con un flatmap dentro
       .pipe(
         flatMap(() =>
           this.router.navigate(["ecoe/" + this.ecoeId + "/results"])
@@ -334,10 +331,9 @@ export class GenerateReportsComponent implements OnInit {
   }
 
   fillSignList() {
-    var signList: Array<listSign> = []; //revisar tipo / castear a listSign siendo objeto
+    var signList: Array<listSign> = [];
     for (let i = 0; i < this.listOfControl.length; i++) {
       var sign_Element = document.getElementById(String(i));
-      //castear a HTMLInputElement para que TS pille el valor
       SData = {
         text: (<HTMLInputElement>document.getElementById("st." + i)).value,
 
