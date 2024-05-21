@@ -31,7 +31,6 @@
     "core-js": "^2.6.5",
     "docx": "7.8.2",
     "file-saver": "2.0.5",
-    "html-to-docx": "^1.8.0",
     "jodit": "3.7.2",
     "jodit-angular": "1.11.3",
     "mammoth": "^1.7.2",

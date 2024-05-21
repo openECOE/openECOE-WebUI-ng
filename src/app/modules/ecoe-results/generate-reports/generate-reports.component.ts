@@ -9,7 +9,7 @@ import { flatMap } from "rxjs/operators";
 import { JoditAngularComponent } from 'jodit-angular';
 import * as mammoth from 'mammoth';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
-import { Packer, Document, Paragraph, TextRun, Table, TableRow, TableCell, Media, Drawing } from "docx";
+import { Packer, Document, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, Media, Drawing, ImageRun} from "docx";
 import * as docx from "docx";
 import { saveAs } from "file-saver";
 
@@ -164,6 +164,13 @@ export class GenerateReportsComponent implements OnInit {
               alignment: this.getAlignment(el),
             }));
         }
+        
+        if (el.tagName === "P") {
+          if (el.querySelector("img")) {
+            const childElements = this.parseHtmlToDocx(el);
+            docxElements.push(...childElements);
+          }
+        }
       }
     });
   
@@ -201,16 +208,16 @@ export class GenerateReportsComponent implements OnInit {
     return new TextRun(textOptions);
   }
   
-  private getAlignment(element: HTMLElement): any {
+  private getAlignment(element: HTMLElement): AlignmentType | undefined {
     switch (element.style.textAlign) {
       case "center":
-        return "center";
+        return AlignmentType.CENTER;
       case "right":
-        return "right";
+        return AlignmentType.RIGHT;
       case "justify":
-        return docx.AlignmentType.JUSTIFIED;
+        return AlignmentType.JUSTIFIED;
       default:
-        return "left";
+        return AlignmentType.LEFT;
     }
   }
 
@@ -228,15 +235,29 @@ export class GenerateReportsComponent implements OnInit {
     return new Table({ rows });
   }
   
+  private base64ToUint8Array(base64: string): Uint8Array {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  }
+
   private createImage(element: HTMLElement): Paragraph {
     const imageUrl = element.getAttribute("src");
-    if (imageUrl) {
+    if (imageUrl && imageUrl.startsWith("data:image")) {
+      const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
+      const imageBuffer = this.base64ToUint8Array(base64Data);
       return new Paragraph({
         children: [
-          new TextRun({
-            text: `![Image](${imageUrl})`,
-            bold: true,
-            break: 1
+          new ImageRun({
+            data: imageBuffer,
+            transformation: {
+              width: 150,
+              height: 175
+            }
           })
         ]
       });
