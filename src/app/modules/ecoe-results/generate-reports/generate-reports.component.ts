@@ -9,6 +9,9 @@ import { flatMap } from "rxjs/operators";
 import { JoditAngularComponent } from 'jodit-angular';
 import * as mammoth from 'mammoth';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
+import { Packer, Document, Paragraph, TextRun, Table, TableRow, TableCell, Media, Drawing } from "docx";
+import * as docx from "docx";
+import { saveAs } from "file-saver";
 
 @Component({
   selector: "app-generate-reports",
@@ -104,6 +107,151 @@ export class GenerateReportsComponent implements OnInit {
         });
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  public downloadAsDocx(): void {
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(this.editorContent, 'text/html');
+    const children = this.parseHtmlToDocx(htmlDoc.body);
+
+    const doc = new Document({
+      sections: [{
+        properties: {},
+        children: children,
+      }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+      saveAs(blob, "document.docx");
+      console.log("Documento creado y descargado exitosamente");
+    }).catch((err) => {
+      console.error('Error creating document:', err);
+    });
+  }
+
+  private parseHtmlToDocx(element: HTMLElement): any[] {
+    const docxElements = [];
+  
+    element.childNodes.forEach(node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        docxElements.push(new Paragraph({ children: [new TextRun(node.textContent || "")] }));
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+  
+        switch (el.tagName) {
+          case "P":
+            docxElements.push(this.createParagraph(el));
+            break;
+          case "B":
+          case "STRONG":
+          case "I":
+          case "EM":
+          case "U":
+            docxElements.push(new Paragraph({
+              children: [this.createTextRun(el)],
+              alignment: this.getAlignment(el),
+            }));
+            break;
+          case "TABLE":
+            docxElements.push(this.createTable(el));
+            break;
+          case "IMG":
+            docxElements.push(this.createImage(el));
+            break;
+          default:
+            docxElements.push(new Paragraph({
+              children: [new TextRun(el.innerText)],
+              alignment: this.getAlignment(el),
+            }));
+        }
+      }
+    });
+  
+    return docxElements;
+  }
+  
+  private createParagraph(element: HTMLElement): Paragraph {
+    const textRuns = Array.from(element.childNodes).map(child => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        return new TextRun(child.textContent || "");
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        const el = child as HTMLElement;
+        return this.createTextRun(el);
+      }
+      return new TextRun("");
+    });
+  
+    return new Paragraph({ children: textRuns, alignment: this.getAlignment(element) });
+  }
+
+  private getFontFamily(element: HTMLElement): string | undefined {
+    return element.style.fontFamily ? element.style.fontFamily.replace(/['"]/g, '') : undefined;
+  }
+
+  private createTextRun(element: HTMLElement): TextRun {
+    const fontFamily = this.getFontFamily(element);
+    const textOptions: any = {
+      text: element.innerText,
+      bold: element.tagName === "B" || element.tagName === "STRONG",
+      italics: element.tagName === "I" || element.tagName === "EM",
+      underline: element.tagName === "U" ? {} : undefined,
+      font: fontFamily,
+    };
+  
+    return new TextRun(textOptions);
+  }
+  
+  private getAlignment(element: HTMLElement): any {
+    switch (element.style.textAlign) {
+      case "center":
+        return "center";
+      case "right":
+        return "right";
+      case "justify":
+        return docx.AlignmentType.JUSTIFIED;
+      default:
+        return "left";
+    }
+  }
+
+  private createTable(element: HTMLElement): Table {
+    const rows = Array.from(element.getElementsByTagName("tr")).map(row => {
+      const cells = Array.from(row.getElementsByTagName("td")).map(cell => {
+        return new TableCell({
+          children: [this.createParagraph(cell)]
+        });
+      });
+
+      return new TableRow({ children: cells });
+    });
+
+    return new Table({ rows });
+  }
+
+  base64ToImage(base64Data: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = base64Data;
+    });
+  }
+  
+
+  private createImage(element: HTMLElement): Paragraph {
+    const imageUrl = element.getAttribute("src");
+    if (imageUrl) {
+      return new Paragraph({
+        children: [
+          new TextRun({
+            text: `![Image](${imageUrl})`,
+            bold: true,
+            break: 1
+          })
+        ]
+      });
+    }
+    return new Paragraph("");
   }
 
   validateForm!: FormGroup;
