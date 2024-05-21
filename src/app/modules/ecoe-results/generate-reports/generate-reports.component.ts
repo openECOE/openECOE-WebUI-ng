@@ -246,17 +246,28 @@ export class GenerateReportsComponent implements OnInit {
   }
 
   private createImage(element: HTMLElement): Paragraph {
+    const style = element.style;
     const imageUrl = element.getAttribute("src");
     if (imageUrl && imageUrl.startsWith("data:image")) {
       const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
       const imageBuffer = this.base64ToUint8Array(base64Data);
+
+      const width = style.getPropertyValue("width") || "150px";
+      const height = style.getPropertyValue("height") || "175px";
+
+      console.log("width:", width);
+      console.log("height:", height);
+
+      const widthValue = parseInt(width.replace("px", ""));
+      const heightValue = parseInt(height.replace("px", ""));
+
       return new Paragraph({
         children: [
           new ImageRun({
             data: imageBuffer,
             transformation: {
-              width: 150,
-              height: 175
+              width: widthValue,
+              height: heightValue
             }
           })
         ]
