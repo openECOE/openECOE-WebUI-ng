@@ -227,17 +227,7 @@ export class GenerateReportsComponent implements OnInit {
 
     return new Table({ rows });
   }
-
-  base64ToImage(base64Data: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = base64Data;
-    });
-  }
   
-
   private createImage(element: HTMLElement): Paragraph {
     const imageUrl = element.getAttribute("src");
     if (imageUrl) {
