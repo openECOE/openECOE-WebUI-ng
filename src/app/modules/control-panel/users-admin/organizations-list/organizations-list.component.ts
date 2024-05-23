@@ -277,11 +277,6 @@ export class OrganizationsListComponent implements OnInit {
     }
     this.closeModal();
   }
-
-  onBack() {
-    this.router.navigate(["/control-panel"]).finally();
-  }
-
 }
 
 export interface CacheItem extends Organization {

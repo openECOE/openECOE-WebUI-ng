@@ -507,10 +507,6 @@ export class UsersAdminComponent implements OnInit {
     this.closeModal();
   }
 
-  onBack() {
-    this.router.navigate(["/control-panel"]).finally();
-  }
-
   onCheckedChange(idx: number) {
     if (this.listRoles[idx].name === this.SUPER_ADMIN) {
       for (const idxRol in this.listRoles) {
