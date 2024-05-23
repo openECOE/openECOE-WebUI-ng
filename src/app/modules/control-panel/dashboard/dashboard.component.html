@@ -1,39 +1,21 @@
-<nz-content>
-  <nz-card style="width: 300px;margin-top: 16px">
-    <nz-skeleton [nzActive]="true" [nzLoading]="loading" [nzAvatar]="{ size: 'large' }">
-      <nz-card-meta
-        [nzAvatar]="avatarTemplateUser"
-        [nzTitle]="'USERS' | translate"
-        [nzDescription]="cardContentUser"
-      ></nz-card-meta>
-    </nz-skeleton>
-  </nz-card>
-
-  <ng-template #avatarTemplateUser>
-    <i nz-icon nzType="user"></i>
-  </ng-template>
-
-  <ng-template #cardContentUser>
-    <nz-statistic [nzValue]="usersPage['total']" [nzSuffix]="'USERS' | translate"></nz-statistic>
-    <a [routerLink]="['users']"><span><i nz-icon nzType="setting" nzTheme="outline"></i> {{ 'SHOW' | translate }}</span></a>
-  </ng-template>
-
-  <nz-card style="width: 300px;margin-top: 16px">
-    <nz-skeleton [nzActive]="true" [nzLoading]="loading" [nzAvatar]="{ size: 'large' }">
-      <nz-card-meta
-        [nzAvatar]="avatarTemplateOrg"
-        [nzTitle]="'ORGANIZATIONS' | translate"
-        [nzDescription]="cardContentOrg"
-      ></nz-card-meta>
-    </nz-skeleton>
-  </nz-card>
-
-  <ng-template #avatarTemplateOrg>
-    <i nz-icon nzType="team"></i>
-  </ng-template>
-
-  <ng-template #cardContentOrg>
-    <nz-statistic [nzValue]="organizationsPage['total']" [nzSuffix]="'ORGANIZATIONS' | translate"></nz-statistic>
-    <a [routerLink]="['organizations']"><span><i nz-icon nzType="setting" nzTheme="outline"></i> {{ 'SHOW' | translate }}</span></a> 
-  </ng-template>
-</nz-content>
+<nz-layout class="layout">
+  <nz-sider>
+    <ul nz-menu nzTheme="dark" nzMode="inline">
+      <li nz-menu-item [routerLink]="['users']" routerLinkActive="ant-menu-item-selected">
+        <i nz-icon nzType="user"></i>
+        <span>{{ 'USERS' | translate }}</span>
+      </li>
+      <li nz-menu-item [routerLink]="['organizations']" routerLinkActive="ant-menu-item-selected">
+        <i nz-icon nzType="team"></i>
+        <span>{{ 'ORGANIZATIONS' | translate }}</span>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout class="right-layout">
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
