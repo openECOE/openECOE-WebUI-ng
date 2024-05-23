@@ -6,7 +6,7 @@ import {QuestionsService} from '@services/questions/questions.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import {TranslateService} from '@ngx-translate/core';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
-
+import { CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-station-details',
@@ -321,6 +321,25 @@ export class StationDetailsComponent implements OnInit {
         .catch(err => console.error('ERROR: ', err))
         .finally(() => this.closeDrawer('question'));
     }
+  }
+
+  onDragStart(items: any) {
+    items.forEach((item) => item.expand = false);
+  }
+  
+  onDropBlock(event: CdkDragDrop<string[]>) {
+    this.qblocks[event.previousIndex].update({order: event.currentIndex + 1})
+    .then(() => {
+      this.refreshTable();
+    });
+  }
+
+  onDropQuestion() {
+    this.sendRefreshQuestions();
+  }
+
+  getConnectedList(): string[] {
+    return this.qblocks.map(x => `${x.id}`);
   }
 }
 
