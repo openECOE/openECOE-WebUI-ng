@@ -283,12 +283,13 @@ export class StationDetailsComponent implements OnInit {
   onItemClicked(item: any) {
     item['clicked'] = (item['clicked'] !== true);
     item.expand = !item.expand;
-    this.selectedQblock.block = item;
+    //this.selectedQblock.block = item;
   }
 
-  onNewQuestion(order: number) {
+  onNewQuestion(event: {order: number, block: Block}) {
     this.drawerQUestionVisible = true;
-    this.selectedQblock.lastOrder = order;
+    this.selectedQblock.block = event.block
+    this.selectedQblock.lastOrder = event.order;
   }
 
   onEditQuestion($event) {
