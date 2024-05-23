@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Organization, User, UserLogged} from '@app/models';
 import { UserService } from '@app/services/user/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,6 +19,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private router: Router
   ) {
   }
 
@@ -44,7 +46,7 @@ export class DashboardComponent implements OnInit {
   }
 
   goBack() {
-    window.history.back();
+    this.router.navigate(['/ecoe']);
   }
   
 }
