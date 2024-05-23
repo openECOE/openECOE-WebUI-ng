@@ -187,10 +187,8 @@ export class StationDetailsComponent implements OnInit {
     this.modalService.confirm({
       nzTitle: this.translate.instant('CONFIRM_ALSO_DELETE_QUESTIONS'),
       nzOnOk: () => {
-        this.deleteQuestionsByQblock(qblock.id)
-          .then(() => qblock.destroy()
-              .then(() => this.getQblocks(this.station))
-          );
+        qblock.destroy()
+          .then(() => this.refreshTable());
       }},
       'confirm');
   }
@@ -300,6 +298,11 @@ export class StationDetailsComponent implements OnInit {
     this.questionToEdit.push($event);
   }
 
+  refreshTable(): void {
+    this.getQblocks(this.station);
+    this.sendRefreshQuestions();
+  }
+  
   sendRefreshQuestions() {
     this.refreshQuestions = true;
     setTimeout(() => this.refreshQuestions = false, 1000 );
