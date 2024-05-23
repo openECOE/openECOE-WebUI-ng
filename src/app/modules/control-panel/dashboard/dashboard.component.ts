@@ -42,4 +42,9 @@ export class DashboardComponent implements OnInit {
       .then((page) => this.organizationsPage = page)
       .finally(() => this.loading = false);
   }
+
+  goBack() {
+    window.history.back();
+  }
+  
 }

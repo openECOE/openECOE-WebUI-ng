@@ -32,6 +32,10 @@ nz-footer {
   text-align: center;
 }
 
+.back-color {
+  color: rgb(40, 172, 196);
+}
+
 ul[nz-menu] {
   width: 100%;
   border-right: 0;
@@ -41,18 +45,29 @@ ul[nz-menu] {
 
 li[nz-menu-item] {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.822);
   transition: color 0.3s, background-color 0.3s;
   cursor: pointer;
   margin-top: 10px;
-  justify-content: left;
 }
 
 li[nz-menu-item] i {
   margin-right: 12px;
+}
+
+li[nz-menu-item] span {
+  margin-right: 8px; /* Ajusta la separación entre el texto y el statistic */
+}
+
+li[nz-menu-item] nz-statistic {
+  background-color: #188fff25;
+  border-radius: 4px;;
+  padding: 2px 4px;
+  margin-left: auto; /* Alinear al extremo derecho */
 }
 
 li[nz-menu-item]:hover {
@@ -64,3 +79,5 @@ li[nz-menu-item].ant-menu-item-selected {
   color: #1890ff;
   background-color: rgba(24, 144, 255, 0.1);
 }
+
+
