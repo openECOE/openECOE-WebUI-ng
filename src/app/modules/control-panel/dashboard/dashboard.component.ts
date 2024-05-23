@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
     this.userData = this.userService.userData;
     this.loadUsers();
     this.loadOrganizations();
+    this.router.navigate(['control-panel/users']);
   }
 
   loadUsers() {
