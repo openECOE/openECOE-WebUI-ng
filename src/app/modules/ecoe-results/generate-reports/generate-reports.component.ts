@@ -43,6 +43,7 @@ export class GenerateReportsComponent implements OnInit {
   editorContent: string = '';
   config: any = {
     "minHeight": 600,
+    "maxWidth": 900,
     "buttons": "undo,redo,|,font,fontsize,|,bold,italic,underline,eraser,|,superscript,subscript,|,indent,outdent,left,center,right,justify,|,ul,table,selectall,hr,|,link,image,print,|,source,preview,fullsize",
     "uploader": {
       "insertImageAsBase64URI": true
@@ -52,6 +53,7 @@ export class GenerateReportsComponent implements OnInit {
       body { margin: 24px 40px; padding: 10px; line-height: 1.0; }
       table { border: 1px solid #000; border-collapse: collapse; }
       table th, table td { border: 1px solid #000; padding: 5px; }
+      table p { margin: 0; }
     `,
     controls: {
       font: {
