@@ -89,7 +89,7 @@ export class GenerateReportsComponent implements OnInit {
             editor.selection.insertHTML(escapedValue);
           }
         },        
-        tooltip: 'Insertar palabra'
+        tooltip: 'Insertar variable'
       }
     }
   };
