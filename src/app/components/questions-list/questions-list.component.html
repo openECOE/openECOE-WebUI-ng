@@ -31,7 +31,9 @@
       </tr>
     </thead>
 <!-- TODO: Incluir simbolo + para desplegar -->
-    <tbody cdkDropList [id]="preview ? null : qblock?.id.toString()" (cdkDropListDropped)="drop($event)" [cdkDropListConnectedTo]="preview ? null : connectedList">
+    <tbody cdkDropList [id]="preview ? null : qblock?.id.toString()" 
+      (cdkDropListDropped)="drop($event)" [cdkDropListConnectedTo]="preview ? null : connectedList"
+      [cdkDropListData]="questionsList">
       <ng-template ngFor let-item [ngForOf]="questionsList">
         <tr cdkDrag [cdkDragData]="item" (cdkDragStarted)="onDragStart()">
           <td nzAlign="right">{{item.order || "-"}}</td>

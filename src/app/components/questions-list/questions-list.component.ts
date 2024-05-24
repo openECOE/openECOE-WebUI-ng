@@ -154,33 +154,35 @@ export class QuestionsListComponent implements OnInit, OnChanges {
     this.answerQuestion.emit($event);
   }
 
-  async getNewOrder(blockToMove: Block, index: number): Promise<number> {   
-    const questions = await Question.query({
-      where: { block: blockToMove },
+  async getNewOrder(event: CdkDragDrop<string[]>): Promise<Number> {
+    const blocks = await Block.query({
+      where: { station: this.qblock.station },
       sort: { order: false },
-    });
+    }) as Block[];
 
-    if (!questions.length) {
-      let previousBlock;
+    let newOrder = 1;
 
-      try {
-        previousBlock = await Block.fetch<Block>((blockToMove.id - 1).toString());
-      } catch (e) {
-        previousBlock = null;
+    for(const block of blocks) {
+      const questions = await Question.query({
+        where: { block: block },
+        sort: { order: false },
+      }) as Question[];
+      
+      if(!questions.length && block.id === Number(event.container.id)) {
+        return newOrder;
       }
-
-      if (previousBlock) {
-        const previousBlockQuestions = await Question.query({
-          where: { block: previousBlock },
-          sort: { order: false },
-        });
-        return previousBlockQuestions.slice(-1)[0].order + index;
-      } else {
-        return 1;
+      else {
+        for(let index = 0; index < questions.length; index++) {
+          if(block.id === Number(event.container.id) && index === event.currentIndex) {
+            if(Number(event.container.id) > Number(event.previousContainer.id)) {
+              return newOrder - 1;
+            }
+            return newOrder;
+          }
+          newOrder++;
+        }
       }
     }
-    
-    return questions[0].order + index;
   }
 
   dropItemInPreview(previousIndex: number, currentIndex: number): void {
@@ -190,7 +192,7 @@ export class QuestionsListComponent implements OnInit, OnChanges {
 
   async dropItem(event: CdkDragDrop<string[]>) {
     const newBlock = await Block.fetch<Block>(event.container.id.toString());
-    const newOrder = await this.getNewOrder(newBlock, event.currentIndex);
+    const newOrder = await this.getNewOrder(event);
     if (newOrder !== event.item.data.order || newBlock !== event.item.data.block) {
       try {
         await event.item.data.update({ order: newOrder, block: newBlock });
