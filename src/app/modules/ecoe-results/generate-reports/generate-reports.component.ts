@@ -42,11 +42,11 @@ export class GenerateReportsComponent implements OnInit {
   ecoe_name: any;
   editorContent: string = '';
   config: any = {
-    "minHeight": 600,
-    "maxWidth": 900,
-    "buttons": "undo,redo,|,font,fontsize,|,bold,italic,underline,eraser,|,superscript,subscript,|,indent,outdent,left,center,right,justify,|,ul,table,selectall,hr,|,link,image,print,|,source,preview,fullsize",
-    "uploader": {
-      "insertImageAsBase64URI": true
+    minHeight: 600,
+    maxWidth: 900,
+    buttons: "undo,redo,|,font,fontsize,|,bold,italic,underline,eraser,|,superscript,subscript,|,indent,outdent,left,center,right,justify,|,ul,table,selectall,hr,|,link,image,print,|,varsList,source,preview,fullsize",
+    uploader: {
+      insertImageAsBase64URI: true
     },
     iframe: true,
     iframeStyle: `
@@ -68,10 +68,32 @@ export class GenerateReportsComponent implements OnInit {
           'Verdana,Geneva,sans-serif': 'Verdana',
           'Tahoma,Geneva,sans-serif': 'Tahoma'
         }
+      },
+      varsList: {
+        icon: 'source',
+        list: {
+          var1: '<<full_name>>',
+          var2: '<<dni>>',
+          var3: '<<ref_ecoe>>',
+          var4: '<<a_punt>>',
+          var5: '<<a_med>>',
+          var6: '<<a_perc>>',
+          var7: '<<a_poss>>',
+          var8: '<<t_punt>>',
+          var9: '<<t_med>>'
+        },
+        exec: (editor, current, control) => {
+          const selectedValue = control.control.text;
+          if (selectedValue) {
+            const escapedValue = selectedValue.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            editor.selection.insertHTML(escapedValue);
+          }
+        },        
+        tooltip: 'Insertar palabra'
       }
     }
-    
   };
+  
   constructor(
     private api: ApiService,
     private router: Router,
