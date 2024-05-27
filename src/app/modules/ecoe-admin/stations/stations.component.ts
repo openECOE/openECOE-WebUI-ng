@@ -220,20 +220,20 @@ export class StationsComponent implements OnInit {
       if (!cacheItem.name) {
         return;
       }
-  
+
       const body = {
         order: cacheItem.order,
         name: cacheItem.name,
         ecoe: this.ecoeId,
         parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
       };
-  
+
       const request = cacheItem.update(body);
-  
+
       request.then(response => {
         this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
-        this.editCache[cacheItem.id].edit = false;   
-        this.loadStations().finally();   
+        this.editCache[cacheItem.id].edit = false;
+        this.loadStations().finally();
       })
       .catch((err) => {
         this.message.create('error', this.translate.instant('EDIT_STATION_ERROR'));

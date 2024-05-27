@@ -7,6 +7,7 @@ import { StationDetailsComponent } from "./station-details/station-details.compo
 import { ScheduleComponent } from "./schedule/schedule.component";
 import { StudentsComponent } from "./students/students.component";
 import { PlannerComponent } from "./planner/planner.component";
+import { EvaluatorsComponent } from "./evaluators/evaluators.component";
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
       { path: "schedule", component: ScheduleComponent },
       { path: "students", component: StudentsComponent },
       { path: "planner", component: PlannerComponent },
+      { path: "evaluators", component: EvaluatorsComponent}
     ],
   },
 ];

@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Answer, AnswerSchema, Question, QuestionBase, Station, Student} from '@app/models';
 import { TranslateService } from '@ngx-translate/core';
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-question',

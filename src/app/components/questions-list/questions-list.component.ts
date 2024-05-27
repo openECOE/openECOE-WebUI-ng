@@ -154,7 +154,6 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   }
 
   drop(event: CdkDragDrop<string[]>): void {
-    // this.reOrder(event.previousIndex, event.currentIndex);
     moveItemInArray(this.questionsList, event.previousIndex, event.currentIndex);
     this.questionsList.forEach((item, index) => {
       const _newOrder = index + 1 + ((this.page - 1) * this.perPage);

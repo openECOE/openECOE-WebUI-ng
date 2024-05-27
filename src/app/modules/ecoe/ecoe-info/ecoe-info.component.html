@@ -190,6 +190,27 @@
           </button>
         </ng-template>
       </div>
+
+      <div nz-col [nzMd]="8" class="gutter-box">
+        <nz-card nzTitle="{{ 'EVALUATORS' | translate }}" [nzExtra]="linkEvaluadores">
+          <nz-spin [nzSpinning]="evaluators.loading">
+            <nz-alert
+              nzType="info"
+              nzMessage="{{ evaluators.total }} {{ 'EVALUATORS' | translate }}"
+            ></nz-alert>
+          </nz-spin>
+        </nz-card>
+        <ng-template #linkEvaluadores>
+          <button
+            nz-button
+            nzType="primary"
+            [routerLink]="['evaluators']"
+          >
+            <i nz-icon nzType="edit" nzTheme="outline"></i>
+            {{ "SETUP" | translate }}
+          </button>
+        </ng-template>
+      </div>
     </div>
 
     <ng-container>

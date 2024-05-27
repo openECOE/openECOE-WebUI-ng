@@ -2,7 +2,39 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UploadAndParseComponent } from './upload-and-parse/upload-and-parse.component';
 import { ActionButtonsComponent } from './action-buttons/action-buttons.component';
-import {NzAlertModule, NzBreadCrumbModule, NzButtonModule, NzCardModule, NzDividerModule, NzDrawerModule, NzEmptyModule, NzFormModule, NzGridModule, NzIconModule, NzInputModule, NzInputNumberModule, NzLayoutModule, NzListModule, NzMenuModule, NzModalModule, NzPageHeaderModule, NzPopconfirmModule, NzProgressModule, NzRadioGroupComponent, NzRadioModule, NzRateModule, NzSelectModule, NzSkeletonModule, NzStatisticModule, NzStepsModule, NzSwitchModule, NzTableModule, NzTagModule, NzToolTipModule, NzUploadModule} from 'ng-zorro-antd';
+
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzListModule } from 'ng-zorro-antd/list';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { NzRadioGroupComponent, NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzRateModule } from 'ng-zorro-antd/rate';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzStatisticModule } from 'ng-zorro-antd/statistic';
+import { NzStepsModule } from 'ng-zorro-antd/steps';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+
 import {TranslateModule} from '@ngx-translate/core';
 import { MenuComponent } from './menu/menu.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -20,6 +52,7 @@ import {PipesModule} from '@pipes/pipes.module';
 import { ProgressBarComponent } from './chrono/progress-bar/progress-bar.component';
 import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.component';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { ChangeOrganizationComponent } from './change-organization/change-organization/change-organization.component';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -35,7 +68,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     OptionsListComponent,
     ChronoComponent,
     ProgressBarComponent,
-    ChronoHeaderComponent
+    ChronoHeaderComponent,
+    ChangeOrganizationComponent
   ],
   imports: [
     CommonModule,
@@ -76,7 +110,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     NzMenuModule,
     NzInputNumberModule,
     NzSpaceModule,
-    NzRadioModule
+    NzRadioModule,
+    NzDropDownModule
   ],
   exports: [
     UploadAndParseComponent,
@@ -85,7 +120,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
     QblockQuestionFormComponent,
     QuestionsListComponent,
     QuestionFormComponent,
-    ChronoComponent
+    ChronoComponent,
+    ChangeOrganizationComponent
   ]
 })
 export class ComponentsModule {}

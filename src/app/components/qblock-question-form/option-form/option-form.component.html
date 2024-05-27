@@ -15,7 +15,7 @@
                     <input nz-input [placeholder]="('DESCRIPTION_PLACEHOLDER' | translate)" formControlName="label"/>
                   </nz-form-control>
                   <nz-form-control *ngIf="type === 'range'">
-                    <nz-input-number formControlName="ratecount"
+                    <nz-input-number formControlName="rateCount"
                       [nzPlaceHolder]="'RANGE_PLACEHOLDER' | translate"
                       [nzMin]="5" [nzMax]="10"></nz-input-number>
                   </nz-form-control>
@@ -30,10 +30,35 @@
                 </nz-space-item>
               </nz-space>
             </nz-form-item>
+            <!-- <ng-template [nzXs]="24" [nzSm]="20" [nzOffset]="i == 0 ? 0 : 4" [ngTemplateOutlet]="questionWithOption" [ngTemplateOutletContext]="{idx: i}"></ng-template> -->
+            <!-- <div nz-col nzOffset="1" [nzSpan]="type !== this.questionTypeOptions[2] ? 10 : 6">
+              <nz-form-control [nzErrorTip]="'DESCRIPTION_INPUT_REQUIRED' | translate">
+                <ng-container *ngIf="type !== this.questionTypeOptions[2]">
+                  <input nz-input [placeholder]="('DESCRIPTION_PLACEHOLDER' | translate)" formControlName="label"/>
+                </ng-container>
+
+                <ng-container *ngIf="type === this.questionTypeOptions[2]">
+                  <div nz-row nzJustify="end">
+                    <div nz-col nzOffset="1" nzSpan="23" text-center >
+                      <nz-input-number (ngModelChange)="increaseRateCount($event, control.value['rateCount'])" [(ngModel)]="nRateCount.current"  [nzMin]="5" [nzMax]="10"></nz-input-number>
+                    </div>
+                  </div>
+                </ng-container>
+              </nz-form-control>
+            </div>
+            <div nz-col  nzSpan="3">
+              <nz-form-control [nzErrorTip]="'POINTS_INPUT_REQUIRED' | translate">
+                <nz-input-number (ngModelChange)="getTotalPoints()" [nzPlaceHolder]="'POINTS_PLACEHOLDER' | translate" formControlName="points"></nz-input-number>
+              </nz-form-control>
+            </div>
+
+            <div nz-col nzSpan="1" *ngIf="i > 0">
+              <button nzSize="small" nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
+            </div> -->
           </div>
         </ng-container>
       </ng-container>
-      <nz-form-item *ngIf="type !== 'range'">
+      <nz-form-item>
         <nz-form-control>
           <button nz-button nzType="dashed" class="add-button" (click)="addOptionRow(type)">
             <i nz-icon nzType="plus"></i>
@@ -43,18 +68,47 @@
       </nz-form-item>
     </form>
   </div>
+  <!-- <div *ngIf="type === questionTypeOptions[0] || type ===  questionTypeOptions[1]" nzGutter="8" nz-row nzType="flex" nzJustify="center">
+    <div nz-col>
+      <nz-form-control>
+        <button nz-button   nzType="dashed" (click)="addOptionRow(type)">
+          <i nz-icon nzType="plus"></i> {{'ADD_OPTION' | translate}}
+        </button>
+      </nz-form-control>
+    </div>
+  </div> -->
 </div>
 
-<ng-template #questionWithOption let-idx="idx">
 
+<!-- <form nz-form [formGroup]="optionForm" (ngSubmit)="submitForm()">
+  <div *ngFor="let control of optionForm.get('optionRow')['controls']; let i = index">
+    <div nz-row nzGutter="8" nzType="flex" nzAlign="top" nzJustify="start" [formGroupName]="i+''">
+      <nz-form-item formArrayName="optionRow" >
+          <nz-form-label [nzXs]="24" [nzSm]="4" *ngIf="i == 0" [nzFor]="control.controlInstance">{{'OPTIONS' | translate}}</nz-form-label>
+          <ng-template [nzXs]="24" [nzSm]="20" [nzOffset]="i == 0 ? 0 : 4" [ngTemplateOutlet]="questionWithOption" [ngTemplateOutletContext]="{idx: i}"></ng-template>        
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
+          <button nz-button nzType="dashed" class="add-button" (click)="addOptionRow(type)">
+            <i nz-icon nzType="plus"></i>
+            {{'ADD_OPTION' | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form> -->
+
+<ng-template #questionWithOption let-idx="idx">
+  
       <nz-form-control [nzErrorTip]="'DESCRIPTION_INPUT_REQUIRED' | translate">
         <input nz-input [placeholder]="('DESCRIPTION_PLACEHOLDER' | translate)" formControlName="label"/>
       </nz-form-control>
-
+  
       <ng-template [ngTemplateOutlet]="points"></ng-template>
-
+  
       <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="deleteRow(idx)"></i>
-
+  
 </ng-template>
 
 <ng-template #points>
