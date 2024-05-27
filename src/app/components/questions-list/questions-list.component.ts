@@ -17,10 +17,12 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   @Input() preview: boolean = false;
   @Input() refreshQuestions: boolean = false;
   @Input() answers: Option[] = [];
+  @Input() connectedList: string[] = [];
 
-  @Output() newQuestion: EventEmitter<number> = new EventEmitter<number>();
+  @Output() newQuestion: EventEmitter<{order: number, block: Block}> = new EventEmitter<{order: number, block: Block}>();
   @Output() editQuestion: EventEmitter<Question> = new EventEmitter<Question>();
   @Output() answerQuestion: EventEmitter<any> = new EventEmitter<any>();
+  @Output() onDrop: EventEmitter<any> = new EventEmitter<any>();
 
   questionsPage: Pagination<Question>;
   editCache: Array<any> = [];
@@ -141,8 +143,7 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   addQuestion() {
     const pos = this.questionsList.length > 0 ? this.questionsList.length - 1 : 0;
     const order = this.questionsList[pos] ? this.questionsList[pos].order : 0;
-    console.log(pos, order);
-    this.newQuestion.emit(order);
+    this.newQuestion.emit({order, block: this.qblock});
   }
 
   getQuestionTypeLabel(questionType: string) {
@@ -153,24 +154,67 @@ export class QuestionsListComponent implements OnInit, OnChanges {
     this.answerQuestion.emit($event);
   }
 
-  drop(event: CdkDragDrop<string[]>): void {
-    moveItemInArray(this.questionsList, event.previousIndex, event.currentIndex);
-    this.questionsList.forEach((item, index) => {
-      const _newOrder = index + 1 + ((this.page - 1) * this.perPage);
-      const _oldOrder = item.order;
-      if (_newOrder !== _oldOrder ) {
-        item.order = _newOrder;
-        item.save();
+  async getNewOrder(event: CdkDragDrop<string[]>): Promise<Number> {
+    const blocks = await Block.query({
+      where: { station: this.qblock.station },
+      sort: { order: false },
+    }) as Block[];
+
+    let totalQuestions = 0;
+
+    for(const block of blocks) {
+      const questions = await Question.query({
+        where: { block: block },
+        sort: { order: false },
+      }) as Question[];
+      
+      if(block.id === Number(event.container.id)) {
+        if(block.id === blocks[0].id) {
+          return event.currentIndex + 1;
+        }
+        if(!(questions.length)) {
+          if(Number(event.container.id) > Number(event.previousContainer.id)) {
+            return totalQuestions;
+          }
+          return totalQuestions + 1;
+        }
+
+        console.log(totalQuestions + event.currentIndex);
+        return totalQuestions;
       }
-    });
+
+      totalQuestions += questions.length;
+    }
   }
 
-  reOrder(prevIdx: number, currIdx: number) {
-    this.questionsList.forEach((item, index) => {
-      this.questionsList[index].order = index > currIdx ? item.order + 1 : item.order - 1;
-    });
-    this.questionsList[prevIdx].order = currIdx + 1;
-    this.questionsList.sort((a, b) => a.order > b.order ? 1 : -1);
+  dropItemInPreview(previousIndex: number, currentIndex: number): void {
+    moveItemInArray(this.questionsList, previousIndex, currentIndex);
+    this.questionsList.forEach((item,index) => { item.order = index + 1});
+  }
+
+  async dropItem(event: CdkDragDrop<string[]>) {
+    const newBlock = await Block.fetch<Block>(event.container.id.toString());
+    const newOrder = await this.getNewOrder(event);
+    if (newOrder !== event.item.data.order || newBlock !== event.item.data.block) {
+      try {
+        await event.item.data.update({ order: newOrder, block: newBlock });
+      } catch(e) {
+        console.log(e);
+      }
+      this.onDrop.emit();  
+    }
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if(this.preview) {
+      this.dropItemInPreview(event.previousIndex, event.currentIndex);
+    } else {
+      this.dropItem(event);
+    }
+  }
+
+  onDragStart() {
+    this.editCache.forEach((item) => item.expand = false);
   }
 
 }
