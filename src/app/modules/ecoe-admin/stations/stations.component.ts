@@ -217,18 +217,18 @@ export class StationsComponent implements OnInit {
    * @param cacheItem Resource selected
    */
   updateItem(cacheItem: any): void {
-    if (!cacheItem.name) {
-      return;
-    }
+      if (!cacheItem.name) {
+        return;
+      }
 
-    const body = {
-      order: cacheItem.order,
-      name: cacheItem.name,
-      ecoe: this.ecoeId,
-      parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
-    };
+      const body = {
+        order: cacheItem.order,
+        name: cacheItem.name,
+        ecoe: this.ecoeId,
+        parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
+      };
 
-    const request = cacheItem.update(body);
+      const request = cacheItem.update(body);
 
     request.then(response => {
       this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
