@@ -41,6 +41,30 @@ export class GenerateReportsComponent implements OnInit {
   ecoeId: number;
   ecoe_name: any;
   editorContent: string = '';
+  
+  varsList = {
+    full_name: '<<full_name>>',
+    dni: '<<dni>>',
+    ref_ecoe: '<<ref_ecoe>>',
+    a_punt: '<<a_punt>>',
+    a_med: '<<a_med>>',
+    a_perc: '<<a_perc>>',
+    a_poss: '<<a_poss>>',
+    t_punt: '<<t_punt>>',
+    t_med: '<<t_med>>'
+  };
+  varsNameList = {
+    full_name: 'Full Name',
+    dni: 'DNI',
+    ref_ecoe: 'Ref Ecoe',
+    a_punt: 'A Punt',
+    a_med: 'A Med',
+    a_perc: 'A Perc',
+    a_poss: 'A Poss',
+    t_punt: 'T Punt',
+    t_med: 'T Med'
+  };
+
   config: any = {
     minHeight: 600,
     maxWidth: 900,
@@ -71,26 +95,26 @@ export class GenerateReportsComponent implements OnInit {
       },
       varsList: {
         icon: 'source',
-        list: {
-          var1: '<<full_name>>',
-          var2: '<<dni>>',
-          var3: '<<ref_ecoe>>',
-          var4: '<<a_punt>>',
-          var5: '<<a_med>>',
-          var6: '<<a_perc>>',
-          var7: '<<a_poss>>',
-          var8: '<<t_punt>>',
-          var9: '<<t_med>>'
-        },
+        list: this.varsNameList,
         exec: (editor, current, control) => {
-          const selectedValue = control.control.text;
-          if (selectedValue) {
-            const escapedValue = selectedValue.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            editor.selection.insertHTML(escapedValue);
+          const selectedText = control.control.text;
+          const variableKey = Object.keys(this.varsNameList).find(key => this.varsNameList[key] === selectedText);
+          
+          if (variableKey) {
+              const varContent = this.varsList[variableKey];
+              if (varContent) {
+                  const escapedValue = varContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                  editor.selection.insertHTML(escapedValue);
+              } else {
+                  console.error(`La etiqueta ${selectedText} no está definida.`);
+              }
+          } else {
+              console.error(`No se encontró ninguna clave para el texto seleccionado: ${selectedText}`);
           }
-        },        
-        tooltip: 'Insertar variable'
-      }
+      },
+        tooltip: 'Insertar etiqueta'
+    }
+    
     }
   };
   
