@@ -179,8 +179,11 @@ export class QuestionsListComponent implements OnInit, OnChanges {
           return totalQuestions + 1;
         }
 
-        console.log(totalQuestions + event.currentIndex);
-        return totalQuestions;
+        if(event.currentIndex == questions.length) {
+          return totalQuestions + event.currentIndex;
+        }
+
+        return totalQuestions + event.currentIndex + 1;
       }
 
       totalQuestions += questions.length;
