@@ -140,9 +140,15 @@ export class GenerateReportsComponent implements OnInit {
             this.varsList[element.name + '_punt'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_punt_' + element.code}>>`;
             this.varsList[element.name + '_med'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_med_' + element.code}>>`;
             this.varsList[element.name + '_pos'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_pos_' + element.code}>>`;
-            this.varsNameList[element.name + '_punt'] = element.name + ' (Puntuación)';
-            this.varsNameList[element.name + '_med'] = element.name + ' (Mediana)';
-            this.varsNameList[element.name + '_pos'] = element.name + ' (Posición)';
+            if (element.name.length > 25) {
+              this.varsNameList[element.name + '_punt'] = element.name.substring(0, 25) + '...(Puntuación)';
+              this.varsNameList[element.name + '_med'] = element.name.substring(0, 25) + '...(Mediana)';
+              this.varsNameList[element.name + '_pos'] = element.name.substring(0, 25) + '...(Posición)';
+            } else {
+              this.varsNameList[element.name + '_punt'] = element.name + ' (Puntuación)';
+              this.varsNameList[element.name + '_med'] = element.name + ' (Mediana)';
+              this.varsNameList[element.name + '_pos'] = element.name + ' (Posición)';
+            }
         });
     });
   }
