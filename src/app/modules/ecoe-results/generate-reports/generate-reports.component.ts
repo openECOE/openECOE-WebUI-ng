@@ -6,12 +6,14 @@ import { stringify } from "querystring";
 import { ApiService } from "@app/services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { flatMap } from "rxjs/operators";
-import { JoditAngularComponent } from 'jodit-angular';
 import * as mammoth from 'mammoth';
 import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { Packer, Document, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, Media, Drawing, ImageRun} from "docx";
 import * as docx from "docx";
 import { saveAs } from "file-saver";
+import { ECOE } from "@app/models";
+import { from } from "rxjs";
+import { dirname } from "path";
 
 @Component({
   selector: "app-generate-reports",
@@ -38,6 +40,7 @@ export class GenerateReportsComponent implements OnInit {
   signature_person: any;
   signer_status: any;
   signature_faculty: any;
+  ecoe: ECOE;
   ecoeId: number;
   ecoe_name: any;
   editorContent: string = '';
@@ -45,24 +48,14 @@ export class GenerateReportsComponent implements OnInit {
   varsList = {
     full_name: '<<full_name>>',
     dni: '<<dni>>',
-    ref_ecoe: '<<ref_ecoe>>',
-    a_punt: '<<a_punt>>',
-    a_med: '<<a_med>>',
-    a_perc: '<<a_perc>>',
-    a_poss: '<<a_poss>>',
-    t_punt: '<<t_punt>>',
-    t_med: '<<t_med>>'
+    date: '<<date>>',
+    ref_ecoe: '<<ref_ecoe>>'
   };
   varsNameList = {
-    full_name: 'Full Name',
+    full_name: 'Nombre completo',
     dni: 'DNI',
-    ref_ecoe: 'Ref Ecoe',
-    a_punt: 'A Punt',
-    a_med: 'A Med',
-    a_perc: 'A Perc',
-    a_poss: 'A Poss',
-    t_punt: 'T Punt',
-    t_med: 'T Med'
+    date: 'Fecha',
+    ref_ecoe: 'Referencia ECOE'
   };
 
   config: any = {
@@ -127,6 +120,30 @@ export class GenerateReportsComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.ecoeId = params.ecoeId;
+      
+      ECOE.fetch<ECOE>(this.ecoeId, { cache: false })
+        .then((ecoe) => {
+          this.ecoe = ecoe;
+          this.ecoe_name = ecoe.name;
+          this.setAreaNames(this.ecoe);
+        })
+    });
+    
+  }
+
+  setAreaNames(ecoe: ECOE) {
+    const areasObservable = from(this.api.getAreasByEcoe(ecoe));
+
+    areasObservable.subscribe((data) => {
+        data.sort((a, b) => a.code.localeCompare(b.code));
+        data.forEach((element) => {
+            this.varsList[element.name + '_punt'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_punt_' + element.code}>>`;
+            this.varsList[element.name + '_med'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_med_' + element.code}>>`;
+            this.varsList[element.name + '_pos'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_pos_' + element.code}>>`;
+            this.varsNameList[element.name + '_punt'] = element.name + ' (Puntuación)';
+            this.varsNameList[element.name + '_med'] = element.name + ' (Mediana)';
+            this.varsNameList[element.name + '_pos'] = element.name + ' (Posición)';
+        });
     });
   }
 

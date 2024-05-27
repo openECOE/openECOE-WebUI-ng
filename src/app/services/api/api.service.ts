@@ -3,7 +3,7 @@ import { Observable, of } from "rxjs";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { catchError, map, tap } from "rxjs/operators";
-import { Role, User, Option, ECOE, Station } from "@app/models";
+import { Role, User, Option, ECOE, Station, Area } from "@app/models";
 import { ApiPermissions } from "@app/models";
 
 /**
@@ -283,5 +283,15 @@ export class ApiService {
     }
 
     return stations;
+  }
+
+  async getAreasByEcoe(ecoe: ECOE): Promise<Area[]> {
+    let areas = await Area.query<Area>({
+      where: {
+        ecoe: ecoe.id
+      }
+    });
+
+    return areas;
   }
 }
