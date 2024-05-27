@@ -160,7 +160,7 @@ export class QuestionsListComponent implements OnInit, OnChanges {
       sort: { order: false },
     }) as Block[];
 
-    let newOrder = 1;
+    let totalQuestions = 0;
 
     for(const block of blocks) {
       const questions = await Question.query({
@@ -168,20 +168,22 @@ export class QuestionsListComponent implements OnInit, OnChanges {
         sort: { order: false },
       }) as Question[];
       
-      if(!questions.length && block.id === Number(event.container.id)) {
-        return newOrder;
-      }
-      else {
-        for(let index = 0; index < questions.length; index++) {
-          if(block.id === Number(event.container.id) && index === event.currentIndex) {
-            if(Number(event.container.id) > Number(event.previousContainer.id)) {
-              return newOrder - 1;
-            }
-            return newOrder;
-          }
-          newOrder++;
+      if(block.id === Number(event.container.id)) {
+        if(block.id === blocks[0].id) {
+          return event.currentIndex + 1;
         }
+        if(!(questions.length)) {
+          if(Number(event.container.id) > Number(event.previousContainer.id)) {
+            return totalQuestions;
+          }
+          return totalQuestions + 1;
+        }
+
+        console.log(totalQuestions + event.currentIndex);
+        return totalQuestions;
       }
+
+      totalQuestions += questions.length;
     }
   }
 
