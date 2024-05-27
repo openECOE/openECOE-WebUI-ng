@@ -15,9 +15,17 @@
         </nz-form-item>
         <nz-form-item>
           <nz-form-control [nzErrorTip]="'INPUT_PASSWORD' | translate">
-            <nz-input-group [nzPrefix]="prefixLock">
-              <input type="password" nz-input [formControlName]="'password'" [placeholder]="'PASSWORD' | translate">
+            <nz-input-group [nzPrefix]="prefixLock" [nzSuffix]="suffixTemplate">
+              <input [type]="passwordVisible ? 'text' : 'password'" nz-input [formControlName]="'password'" [placeholder]="'PASSWORD' | translate">
             </nz-input-group>
+            <ng-template #suffixTemplate>
+              <span
+                nz-icon
+                class="eye-icon"
+                [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+                (click)="passwordVisible = !passwordVisible"
+              ></span>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>

@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit {
   validateForm: FormGroup;
   returnUrl: string;
   error_login: Boolean = false;
+  passwordVisible: Boolean = false;
 
   constructor(private formBuilder: FormBuilder,
               private authService: AuthenticationService,

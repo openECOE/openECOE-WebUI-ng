@@ -170,7 +170,7 @@ export class Question extends Item {
 
   update(data?: any, options?: ItemUpdateOptions): Promise<this> {
     data.question_schema = JSON.stringify(data.schema);
-    data.max_points = data.schema.max_points;
+    data.max_points = data?.schema?.max_points || undefined;
     delete data.schema;
     return super.update(data, options);
   }
