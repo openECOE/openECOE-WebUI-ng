@@ -92,11 +92,10 @@ export class EvaluatorsComponent implements OnInit {
           .then((ecoe) => {
             this.ecoe = ecoe;
             this.ecoe_name = ecoe.name;
-            return Promise.all([this.getStations(), this.getUsers()]);
+            return this.getStations()
           })
-          .then(([stations, users]) => {
+          .then(stations => {
             this.listStations = stations;
-            this.listUsers = users;
             this.loadEvaluators();
             this.loading = false;
             this.getPermissionForm();
@@ -335,6 +334,9 @@ export class EvaluatorsComponent implements OnInit {
     this.logPromisesERROR = [];
   }
   showModal() {
+    this.getUsers().then((users: User[]) => {
+      this.listUsers = users;
+    });
     this.showAddEvaluator = true;
   }
 
