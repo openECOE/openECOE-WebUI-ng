@@ -109,7 +109,7 @@ export class EvaluatorsComponent implements OnInit {
   }
   
   async getStations(): Promise<Station[]> {
-    return Station.query<Station>({where: {ecoe: this.ecoe}});
+    return Station.query<Station>({where: {ecoe: this.ecoe}, sort: {order: false}});
   }
 
   async getUsers(): Promise<User[]> {
