@@ -134,7 +134,7 @@ export class QuestionsListComponent implements OnInit, OnChanges {
       });
     } else {
       this.modalService.confirm({
-        nzTitle: this.translate.instant("CONFIRM_ALSLO_DELETE_BLOCKS_AND_QUESTION"),
+        nzTitle: this.translate.instant("CONFIRM_DELETE_ANSWERS"),
         nzOnOk: () => {
           this. questionService.deleteQuestion(question)
           .then(() => {

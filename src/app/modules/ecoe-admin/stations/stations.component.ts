@@ -192,7 +192,7 @@ export class StationsComponent implements OnInit {
    */
   deleteItem(station: Station) {
     this.modalService.confirm({
-      nzTitle: this.translate.instant("CONFIRM_ALSLO_DELETE_BLOCKS_AND_QUESTION"),
+      nzTitle: this.translate.instant("CONFIRM_ALSO_DELETE_BLOCKS_AND_QUESTION"),
       nzOnOk: () => {
         station.destroy()
         .then(() => {
