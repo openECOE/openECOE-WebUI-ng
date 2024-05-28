@@ -1,9 +1,11 @@
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Option, Block, Question} from '../../models';
+import {Option, Block, Question, Answer} from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {ActivatedRoute} from '@angular/router';
 import {QuestionsService} from '@services/questions/questions.service';
+import { TranslateService } from '@ngx-translate/core';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-questions-list',
@@ -41,7 +43,10 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   ];
 
   constructor(private route: ActivatedRoute,
-              private questionService: QuestionsService) {
+              private questionService: QuestionsService,
+              private translate: TranslateService,
+              private modalService: NzModalService
+            ) {
   }
 
   ngOnInit() {
@@ -117,13 +122,29 @@ export class QuestionsListComponent implements OnInit, OnChanges {
    *
    * @param question to remove
    */
-  deleteQuestion(question: Question) {
+  async deleteQuestion(question: Question) {
     const id = question.id;
-    this.questionService.deleteQuestion(question)
+    const answers = await Answer.query({where: {question}}) as Answer[];
+
+    if(!answers.length) {
+      this. questionService.deleteQuestion(question)
       .then(() => {
         this.updateArrayQuestions(id);
         this.loadQuestions(this.qblock.id, this.page, this.perPage);
       });
+    } else {
+      this.modalService.confirm({
+        nzTitle: this.translate.instant("CONFIRM_ALSLO_DELETE_BLOCKS_AND_QUESTION"),
+        nzOnOk: () => {
+          this. questionService.deleteQuestion(question)
+          .then(() => {
+            this.updateArrayQuestions(id);
+            this.loadQuestions(this.qblock.id, this.page, this.perPage);
+          });
+        }
+      },
+      'confirm');
+    }
   }
 
   /**
