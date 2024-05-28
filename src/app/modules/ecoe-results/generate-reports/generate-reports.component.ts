@@ -193,7 +193,7 @@ export class GenerateReportsComponent implements OnInit {
     });
 
     Packer.toBlob(doc).then(blob => {
-      saveAs(blob, "document.docx");
+      saveAs(blob, "plantillaECOE.docx");
       console.log("Documento creado y descargado exitosamente");
     }).catch((err) => {
       console.error('Error creating document:', err);
