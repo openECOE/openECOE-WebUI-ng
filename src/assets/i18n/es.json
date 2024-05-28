@@ -321,5 +321,5 @@
   "ERROR_DELETE_EVALUATOR": "Error eliminando el evaluador",
   "EDIT_EVALUATOR": "Editar evaluador {{email}}",
   "DOWNLOAD_WORD": "Descargar Word",
-  "UPLOAD_WORD": "Subir Word"
+  "UPLOAD_WORD": "Importar Word"
 }
