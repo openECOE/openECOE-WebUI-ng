@@ -218,20 +218,28 @@
     <br />
     <button nz-button nzType="primary" (click)="submitData()">Generar</button>
   </div> -->
-  <nz-button-group>
-    <button (click)="downloadAsDocx()" style="margin-bottom: 20px;"nz-button nzType="primary" nzSize="large"><span nz-icon nzType="download"></span>
-    {{ "DOWNLOAD_WORD" | translate }}
-    </button>
-
-    <nz-upload
-      [nzHeaders]="{ authorization: 'authorization-text' }"
-      (nzChange)="onFileSelected($event)"
-    >
-      <button nz-button style="margin-bottom: 20px; margin-left: 20px;" nzSize="large">
-        <span nz-icon nzType="upload"></span>
-        {{ "UPLOAD_WORD" | translate }}
-      </button>
-    </nz-upload>
-  </nz-button-group>
 </nz-content>
-<jodit-editor [config]="config" [(ngModel)]="editorContent"></jodit-editor>
+<nz-button-group style="display: flex; justify-content: end; width: 100%; margin-bottom: 20px;">
+  <button (click)="downloadAsDocx()" nz-button nzType="primary" nzSize="large"><span nz-icon nzType="download"></span>
+  {{ "DOWNLOAD_WORD" | translate }}
+  </button>
+
+  <nz-upload
+    [nzHeaders]="{ authorization: 'authorization-text' }"
+    (nzChange)="onFileSelected($event)"
+  >
+    <button nz-button style="margin-left: 20px;" nzSize="large">
+      <span nz-icon nzType="upload"></span>
+      {{ "UPLOAD_WORD" | translate }}
+    </button>
+  </nz-upload>
+</nz-button-group>
+
+<div class="jodit-center">
+  <jodit-editor [config]="config" [(ngModel)]="editorContent" style="justify-content: center;"></jodit-editor>
+</div>
+<div style="display: flex; justify-content: center; width: 100%; margin-top: 10px;">
+  <button  nz-button nzType="primary" nzSize="large" style="width: 140px;">
+    {{ "GENERATE" | translate }}
+  </button>
+</div>
