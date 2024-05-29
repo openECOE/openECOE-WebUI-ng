@@ -1,25 +1,45 @@
 <nz-layout class="layout">
-  <nz-sider>
-    <ul nz-menu nzTheme="dark" nzMode="inline">
+  <nz-sider nzWidth="250px" nzTheme="light">
+    <ul nz-menu nzMode="inline">
       <li nz-menu-item (click)="goBack()">
         <i class="back-color" nz-icon nzType="arrow-left"></i>
         <span class="back-color">{{'BACK_ECOE' | translate }} </span>
       </li>
       <li nz-menu-item [routerLink]="['users']" routerLinkActive="ant-menu-item-selected">
-        <i nz-icon nzType="user"></i>
-        <span>{{ 'USERS' | translate }}</span>
-        <nz-statistic 
-          [nzValue]="initialLoading ? '...' : usersPage['total'] || 0" 
-          [nzValueStyle]="{ color: '#1890ff' }">
-        </nz-statistic>
+        <table style="width: 200px">
+          <tr>
+            <td style="width: 165px">
+              <i nz-icon nzType="user"></i>
+              <span>{{ 'USERS' | translate }}</span>
+            </td>
+            <td>
+              <nz-badge
+              nzStandalone
+              [nzCount]="initialLoading ? '...' : usersPage['total'] || 0"
+              [nzStyle]="{ backgroundColor: '#188fff25', color: '#1890ff', fontSize: '16px', borderRadius: '4px', boxShadow: '0 0 0 1px #157fe225 inset' }"
+            ></nz-badge>
+            </td>
+          </tr>
+        </table>
+
+
       </li>
       <li nz-menu-item [routerLink]="['organizations']" routerLinkActive="ant-menu-item-selected">
-        <i nz-icon nzType="team"></i>
-        <span>{{ 'ORGANIZATIONS' | translate }}</span>
-        <nz-statistic 
-          [nzValue]="initialLoading ? '...' : organizationsPage['total'] || 0" 
-          [nzValueStyle]="{ color: '#1890ff' }">
-        </nz-statistic>
+        <table style="width: 200px">
+          <tr>
+            <td style="width: 165px">
+              <i nz-icon nzType="bank"></i>
+              <span>{{ 'ORGANIZATIONS' | translate }}</span>
+            </td>
+            <td>
+              <nz-badge
+                    nzStandalone
+                    [nzCount]="initialLoading ? '...' : organizationsPage['total'] || 0"
+                    [nzStyle]="{ backgroundColor: '#188fff25', color: '#1890ff', fontSize: '16px', borderRadius: '4px', boxShadow: '0 0 0 1px #157fe225 inset' }"
+              ></nz-badge>
+            </td>
+          </tr>
+        </table>
       </li>
     </ul>
   </nz-sider>
