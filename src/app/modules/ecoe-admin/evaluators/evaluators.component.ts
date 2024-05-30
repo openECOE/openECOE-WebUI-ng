@@ -113,7 +113,10 @@ export class EvaluatorsComponent implements OnInit {
 
   async getUsers(): Promise<User[]> {
     const evaluators = await this.apiService.getEvaluators(this.ecoe);
-    const allUsers = await User.query<User>();
+    const allUsers = await User.query<User>({
+      where: {organization: this.ecoe.organization}, 
+      sort: {email: false}, 
+      perPage: 100});
 
     const nonEvaluators = allUsers.filter(user => !evaluators.some(evaluator => evaluator.id === user.id));
 
@@ -127,11 +130,6 @@ export class EvaluatorsComponent implements OnInit {
       stations: [null, [Validators.required]]
     });
   }
-
-  /**
-   * Load evaluators by the passed ECOE.
-   * Then calls [updateEditCache]{@link #updateEditCache} function.
-   */
 
   async loadEvaluators() {
     this.evaluators = [];
@@ -159,24 +157,8 @@ export class EvaluatorsComponent implements OnInit {
     this.saveEvaluators(evaluators)
       .then(() => this.loadEvaluators())
       .catch((err) => {
-        // TODO: comprobar esto
         this.logPromisesOK.forEach((perm: ApiPermissions) => this.deletePermissions(perm));
       });
-  }
-
-  async updatePermission(permission: ApiPermissions, value: any) {
-    const updateData = {
-      user: value.user,
-      name: value.name,
-      idObject: value.idObject,
-      object: value.object
-    };
-
-    await permission.update(updateData);
-
-    this.message.success(
-      this.translate.instant("USER_UPDATED", { email: permission.user.email })
-    );
   }
 
   async saveEvaluators(items: any[]): Promise<any> {
@@ -231,7 +213,6 @@ export class EvaluatorsComponent implements OnInit {
         const permission = await this.apiService.getPermissionForStation(evaluator.user, station);
         if (permission) {
           await this.deletePermissions(permission);
-          console.log('Permiso borrado');
         }
       }
       
@@ -241,7 +222,6 @@ export class EvaluatorsComponent implements OnInit {
         );
       }
 
-      console.log("Recargar evaluadores");
       this.loadEvaluators();
     } catch (error) {
       this.message.error(this.translate.instant("ERROR_DELETE_EVALUATOR"));
@@ -260,15 +240,12 @@ export class EvaluatorsComponent implements OnInit {
           name: stationName,
         }
       });
+
     if(!station) {
       return Promise.reject(new Error(this.translate.instant('IMPORTED_STATION_NOT_FOUND', {stationName})));
     }
 
-    try {
       return this.apiService.addPermision(user, 'evaluate', station.id, 'stations');
-    } catch (error) {
-      throw error;
-    }
   }
 
   async deletePermissions(permission: ApiPermissions) {    
@@ -288,20 +265,23 @@ export class EvaluatorsComponent implements OnInit {
     this.shared.doFormDirty(form);
 
     (async () => {
-    if(this.showAddEvaluator) {
-      return this.createEvaluator(form.value.email, form.value.stations);
-    } 
-      return this.editPermissions(form.value.stations);
-    
-  })().then(() => {
-    this.loadEvaluators()
-    this.closeModal()
-  })
+      if(this.showAddEvaluator) {
+        return this.createEvaluator(form.value.email, form.value.stations);
+      } 
+        return this.editPermissions(form.value.stations);
+    })().then(() => {
+      this.loadEvaluators()
+      this.closeModal()
+    });
   }
 
   async createEvaluator(email: string, stations: Station[]) {
     for (const station of stations) {
-      await this.addPermission(email, station.name)
+      try {
+        await this.addPermission(email, station.name)
+      } catch (error) {
+        console.log('error:' + error)
+      }0
     }
   }
 
@@ -314,7 +294,6 @@ export class EvaluatorsComponent implements OnInit {
 
     let difference = previousStations.filter(station => !newStations.includes(station))
       .concat(newStations.filter(station => !previousStations.includes(station)));
-    console.log(difference);
 
     for (const station of difference) {
       let permission = await this.apiService.getPermissionForStation(user, station);
