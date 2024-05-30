@@ -1,10 +1,3 @@
-<nz-page-header class="margin-top margin-bottom" [nzTitle]="'ORGANIZATIONS' | translate">
-  <nz-breadcrumb nz-page-header-breadcrumb>
-    <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/control-panel']">{{ 'CONTROL_PANEL' | translate }}</a></nz-breadcrumb-item>
-    <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"ORGANIZATIONS" | translate}}</nz-tag></nz-breadcrumb-item>
-  </nz-breadcrumb>
-</nz-page-header>
-
 <nz-table #table
           [nzPageIndex]="page"
           [nzPageSize]="perPage"
@@ -18,19 +11,19 @@
           nzShowPagination>
   <thead>
     <tr>
-      <th>
+      <th nzWidth="80px">
         <a (click)="loadOrganizations()">
           <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
-      <th>{{"ID"}}</th>
+      <th nzWidth="100px">{{"ID"}}</th>
       <th>{{"NAME" | translate}}</th>
       <th nzWidth="120px">
         <button nz-button [nzType]="'primary'" class="margin-left"
                 [nz-tooltip] [nzTooltipTitle]="'ADD_ORGANIZATION' | translate"
                 (click)="showModal()">
           <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
-          Añadir
+          {{ 'ADD' | translate}}
         </button>
       </th>
     </tr>
@@ -71,7 +64,7 @@
   MODAL DE ADD_ORGANIZATION
 -->
 <nz-modal *ngIf="validateForm"
-  [(nzVisible)]="showAddOrganization || showEditOrganization"
+  [nzVisible]="showAddOrganization || showEditOrganization"
   [nzTitle]="showAddOrganization?('ADD_ORGANIZATION' | translate) : ('EDIT_ORGANIZATION' | translate: {name: organizationOriginal?.name})"
   [nzOkText]="'ACCEPT' | translate"
   [nzCancelText]="'CANCEL' | translate"
