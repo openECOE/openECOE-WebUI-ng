@@ -9,7 +9,7 @@
         <i nz-icon nzType="user" nzTheme="outline"></i>
         <span>{{'PERSONAL_DATA' | translate }} </span>
       </li>
-      <li nz-menu-item [routerLink]="['users']" routerLinkActive="ant-menu-item-selected">
+      <li nz-menu-item [routerLink]="['users']" routerLinkActive="ant-menu-item-selected" *ngIf="userData?.isAdmin || userData?.isSuper">
         <table style="width: 200px">
           <tr>
             <td style="width: 165px">
@@ -26,7 +26,7 @@
           </tr>
         </table>
       </li>
-      <li nz-menu-item [routerLink]="['organizations']" routerLinkActive="ant-menu-item-selected">
+      <li nz-menu-item [routerLink]="['organizations']" routerLinkActive="ant-menu-item-selected" *ngIf="userData?.isSuper">
         <table style="width: 200px">
           <tr>
             <td style="width: 165px">
