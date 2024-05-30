@@ -236,7 +236,8 @@ export class StationsComponent implements OnInit {
       this.loadStations().finally();   
     })
     .catch((err) => {
-      this.message.create('error', this.translate.instant('EDIT_STATION_ERROR'));
+      console.log(err.error);
+      this.message.create('error', err.error.message);
     });
   }
 
