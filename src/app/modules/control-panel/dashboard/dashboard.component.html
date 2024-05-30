@@ -5,11 +5,15 @@
         <i class="back-color" nz-icon nzType="arrow-left"></i>
         <span class="back-color">{{'BACK_ECOE' | translate }} </span>
       </li>
+      <li nz-menu-item [routerLink]="['personal-data']" routerLinkActive="ant-menu-item-selected">
+        <i nz-icon nzType="user" nzTheme="outline"></i>
+        <span>{{'PERSONAL_DATA' | translate }} </span>
+      </li>
       <li nz-menu-item [routerLink]="['users']" routerLinkActive="ant-menu-item-selected">
         <table style="width: 200px">
           <tr>
             <td style="width: 165px">
-              <i nz-icon nzType="user"></i>
+              <i nz-icon nzType="team"></i>
               <span>{{ 'USERS' | translate }}</span>
             </td>
             <td>
@@ -21,8 +25,6 @@
             </td>
           </tr>
         </table>
-
-
       </li>
       <li nz-menu-item [routerLink]="['organizations']" routerLinkActive="ant-menu-item-selected">
         <table style="width: 200px">

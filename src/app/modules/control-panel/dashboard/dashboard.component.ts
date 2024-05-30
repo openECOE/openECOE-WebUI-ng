@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.router.navigate(['control-panel/users']);
+    this.router.navigate(['control-panel/personal-data']);
   }
 
   ngOnDestroy() {
