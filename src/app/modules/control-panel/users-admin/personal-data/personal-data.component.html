@@ -1,0 +1,13 @@
+<nz-card nzTitle="Perfil del Usuario" nzBordered>
+  <div class="card-content">
+    <div class="user-info">
+      <p nz-typography><b>{{ 'NAME' | translate }}:</b> {{ userData.user.name }}</p>
+      <p nz-typography><b>{{ 'EMAIL' | translate }}:</b> {{ userData.user.email }}</p>
+      <p nz-typography><b>{{ 'PASSWORD' | translate }}:</b> {{ userData.user.password }}</p>
+    </div>
+    <button nz-button nzType="primary" (click)="editUser()">
+      <span nz-icon nzType="edit" nzTheme="outline"></span>
+    </button>
+  </div>
+</nz-card>
+
