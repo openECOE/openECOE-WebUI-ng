@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserLogged } from '@app/models';
 import { SharedService } from '@app/services/shared/shared.service';
 import { UserService } from '@app/services/user/user.service';
@@ -10,27 +10,19 @@ import { UserService } from '@app/services/user/user.service';
   styleUrls: ['./personal-data.component.less']
 })
 export class PersonalDataComponent implements OnInit {
-  constructor(
-    private formBuilder: FormBuilder,
-    private userService: UserService,
-    public shared: SharedService,
-    private fb: FormBuilder
-  ) { }
-
   userData: UserLogged;
-  newPassword: string;
   validateForm: FormGroup;
   showEditPassword: boolean = false;
-  confirmDeleteText: string = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    public shared: SharedService
+  ) { }
 
   ngOnInit(): void {
     this.getPasswordForm();
-
     this.getUserData();
-    
-    this.validateForm.get('newPassword').valueChanges.subscribe(value => {
-      this.confirmDeleteText = value;
-    });
   }
 
   getUserData(): void {
@@ -40,11 +32,26 @@ export class PersonalDataComponent implements OnInit {
     console.log(this.userData);
   }
 
-  async getPasswordForm() {
+  getPasswordForm() {
     this.validateForm = this.fb.group({
-      newPassword: [null,[Validators.required]],
+      newPassword: [null, [Validators.required, Validators.minLength(8)]],
+      newPasswordRepeat: [
+        null,
+        [Validators.required, this.confirmationValidator]
+      ]
     });
   }
+
+  //Validator to ckeck if password and confirm password are the same
+  confirmationValidator = (control: FormControl): { [s: string]: boolean } => {
+    if (
+      control.value &&
+      control.value !== this.validateForm.controls.newPassword.value
+    ) {
+      return { confirm: true, error: true };
+    }
+    return {};
+  };
 
   showModalEdit() {
     this.showEditPassword = true;
@@ -55,7 +62,7 @@ export class PersonalDataComponent implements OnInit {
     this.showEditPassword = false;
   }
 
-  async submitFormOrganization(form: FormGroup) {
+  async submitFormPassword(form: FormGroup) {
     this.shared.doFormDirty(form);
     if (form.pending) {
       const sub = form.statusChanges.subscribe(() => {
@@ -74,7 +81,6 @@ export class PersonalDataComponent implements OnInit {
       if (this.showEditPassword) {
         await this.updatePassword(this.userData, value);
       }
-      //this.getUserData();
     } catch (error) {
       console.error(error);
     }
@@ -85,6 +91,7 @@ export class PersonalDataComponent implements OnInit {
     const updateData = {
       password: value.newPassword,
     };
+    
     await userData.user.update(updateData);
   }
 }

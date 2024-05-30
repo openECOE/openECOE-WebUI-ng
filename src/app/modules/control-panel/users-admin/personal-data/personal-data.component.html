@@ -20,21 +20,47 @@
   [nzTitle]="'CHANGE_PASSWORD' | translate"
   [nzOkText]="'ACCEPT' | translate"
   [nzCancelText]="'CANCEL' | translate"
-  (nzOnOk)="submitFormOrganization(validateForm)"
+  [nzOkDisabled]="!validateForm.valid"
+  (nzOnOk)="submitFormPassword(validateForm)"
   (nzOnCancel)="closeModal()">
 
   <form nz-form [formGroup]="validateForm">
+
     <nz-form-item>
-      <nz-form-control [nzSpan]="24" [nzErrorTip]="'PASSWORD_REQUIRED' | translate">
-          <input type="text" nz-input
-                 formControlName="newPassword"
-                 placeholder="{{'NEW_PASSWORD' | translate}}">
+      <nz-form-label [nzSpan]="24">{{ 'NEW_PASSWORD' | translate }}</nz-form-label>
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="errorPasswordTpl">  
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input type="password" nz-input
+                formControlName="newPassword"
+                [placeholder]="'NEW_PASSWORD' | translate">
+        </nz-input-group>
+
+        <ng-template #errorPasswordTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">{{'PASSWORD_REQUIRED' | translate}}</ng-container>
+          <ng-container *ngIf="control.hasError('minlength')">
+            {{'PASSWORD_MIN_LENGTH' | translate : {min: control.getError('minlength').requiredLength} }}
+          </ng-container>
+        </ng-template>
       </nz-form-control>
-      <nz-form-control [nzSpan]="24" [nzErrorTip]="'PASSWORD_REQUIRED' | translate">
-        <input type="text" nz-input
-               formControlName="newPasswordRepeat"
-               placeholder="{{'REPEAT_PASSWORD' | translate}}">
-    </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="24">{{ 'REPEAT_PASSWORD' | translate }}</nz-form-label>
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="errorPasswordCheckTpl">
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input type="password" nz-input
+                formControlName="newPasswordRepeat"
+                [placeholder]="'REPEAT_PASSWORD' | translate">
+        </nz-input-group>
+
+        <ng-template #errorPasswordCheckTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">{{'PLEASE_CONFIRM_PASSWORD' | translate}}</ng-container>
+          <ng-container *ngIf="control.hasError('confirm')">
+            {{'PASSWORD_CONFIRM_ERROR' | translate}}
+          </ng-container>
+        </ng-template>
+      </nz-form-control>
     </nz-form-item>
   </form>
 </nz-modal>
+
