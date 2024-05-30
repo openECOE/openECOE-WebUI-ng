@@ -320,6 +320,6 @@
   "EVALUATOR_DELETED": "Evaluador {{email}} eliminado",
   "ERROR_DELETE_EVALUATOR": "Error eliminando el evaluador",
   "EDIT_EVALUATOR": "Editar evaluador {{email}}",
-  "BACK_ECOE": "Volver a la ECOE",
+  "BACK_ECOE": "Menú principal",
   "PERSONAL_DATA": "Datos personales"
 }
