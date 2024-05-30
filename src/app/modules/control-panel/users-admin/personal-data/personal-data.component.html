@@ -25,6 +25,17 @@
   (nzOnCancel)="closeModal()">
 
   <form nz-form [formGroup]="validateForm">
+    <!-- TODO: Añadir campo de contraseña antigua -->
+    <!-- <nz-form-item>
+      <nz-form-label [nzSpan]="24">Contraseña antigua</nz-form-label>
+      <nz-form-control [nzSpan]="24">  
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input type="password" nz-input
+                formControlName="oldPassword"
+                placeholder="Contraseña antigua">
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item> -->
 
     <nz-form-item>
       <nz-form-label [nzSpan]="24">{{ 'NEW_PASSWORD' | translate }}</nz-form-label>
