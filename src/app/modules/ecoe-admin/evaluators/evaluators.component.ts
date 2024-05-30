@@ -277,11 +277,7 @@ export class EvaluatorsComponent implements OnInit {
 
   async createEvaluator(email: string, stations: Station[]) {
     for (const station of stations) {
-      try {
         await this.addPermission(email, station.name)
-      } catch (error) {
-        console.log('error:' + error)
-      }0
     }
   }
 
