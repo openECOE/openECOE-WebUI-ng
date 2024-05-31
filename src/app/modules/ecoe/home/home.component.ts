@@ -50,22 +50,14 @@ export class HomeComponent implements OnInit {
     this.Listed = true;
     this.Delisted = false;
     this.ecoeForm = this.formBuilder.control("", Validators.required);
-    this.loadEcoes();
+    this.userService.userDataChange.subscribe((user) => {
+      this.user = user;
+      this.loadEcoes();
+    });
   }
 
-  loadEcoes(): void {
-    this.organizationsService.getEcoesByOrganization().then((ecoes) => {
-      this.ecoesList = ecoes;
-    })
-    
-    this.organizationsService.currentOrganizationChange
-      .pipe(
-        tap((organization: Organization) => this.organization = organization),
-        switchMap(() => this.organizationsService.getEcoesByOrganization())
-      )
-      .subscribe((ecoes) => {
-        this.ecoesList = ecoes;
-      });
+  async loadEcoes(): Promise<void> {
+    this.ecoesList = await ECOE.query({where: {organization: this.user.user.organization}}) as ECOE[];
   }
 
   closeDrawer() {
