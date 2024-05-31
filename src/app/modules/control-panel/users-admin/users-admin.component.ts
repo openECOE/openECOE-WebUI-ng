@@ -84,21 +84,15 @@ export class UsersAdminComponent implements OnInit {
 
   async ngOnInit() {
     this.listRoles = await this.getRoles();
-
+    
     this.userService.userDataChange.subscribe((user) => {
       this.user = user;
       this.activeUser = this.user.user;
       this.loadUsers();
+      this.getUserForm();
+      this.loadUsers();
+      this.loading = false;
     });
-
-    this.getUserForm();
-
-    this.user = this.userService.userData;
-    this.activeUser = this.user.user;
-
-    this.loadUsers();
-
-    this.loading = false;
   }
 
   async getUserForm() {
