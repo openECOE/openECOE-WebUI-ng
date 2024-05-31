@@ -55,7 +55,10 @@ export class HomeComponent implements OnInit {
   }
 
   async loadEcoes(): Promise<void> {
-    this.ecoesList = await ECOE.query({where: {organization: this.user.user.organization}}) as ECOE[];
+    this.ecoesList = await ECOE.query({
+      where: {organization: this.user.user.organization},
+      sort: {$uri: false}
+    }) as ECOE[];
   }
 
   closeDrawer() {
