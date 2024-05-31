@@ -1,9 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Organization } from '@app/models';
-import { OrganizationsService } from '@app/services/organizations-service/organizations.service';
 import { UserService } from '@app/services/user/user.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-change-organization',
@@ -15,8 +13,7 @@ export class ChangeOrganizationComponent implements OnInit {
   organizations: Organization[];
 
   constructor(
-    private userService: UserService,
-    private router: Router
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {

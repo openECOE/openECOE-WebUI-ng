@@ -10,7 +10,6 @@ import { UserService } from "@app/services/user/user.service";
 import { Router } from "@angular/router";
 import { Observable, Observer, Subscription, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
-import { OrganizationsService } from "@app/services/organizations-service/organizations.service";
 
 @Component({
   selector: "app-home",
@@ -38,8 +37,7 @@ export class HomeComponent implements OnInit {
     private modalSrv: NzModalService,
     private translate: TranslateService,
     private fb: FormBuilder,
-    private shared: SharedService,
-    private organizationsService: OrganizationsService
+    private shared: SharedService
   ) {
     this.validateForm = this.fb.group({
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
