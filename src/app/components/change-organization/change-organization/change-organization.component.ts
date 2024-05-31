@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Organization } from '@app/models';
 import { OrganizationsService } from '@app/services/organizations-service/organizations.service';
+import { UserService } from '@app/services/user/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -8,35 +10,41 @@ import { Subscription } from 'rxjs';
   templateUrl: './change-organization.component.html',
   styleUrls: ['./change-organization.component.less']
 })
-export class ChangeOrganizationComponent implements OnInit, OnDestroy {
+export class ChangeOrganizationComponent implements OnInit {
   currentOrganization: Organization;
   organizations: Organization[];
 
-  organizations$: Subscription;
-
   constructor(
-    private organizationsService: OrganizationsService
+    private userService: UserService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.organizationsService
-      .getOrganizations()
-      .then(organization => this.organizations = organization);
-      
-    Organization.first()
-      .then((org: Organization) => this.currentOrganization = org);
+    this.getOrganizations();
+    this.currentOrganization = this.userService.userData.user.organization;
 
-    this.organizations$ = this.organizationsService 
-      .currentOrganizationChange
-      .subscribe(organization => this.currentOrganization = organization);
+    this.userService.userDataChange.subscribe((user) => {
+      this.currentOrganization = user.user.organization;
+    });
   }
 
-  ngOnDestroy(): void {
-    this.organizations$.unsubscribe();
+  async getOrganizations(): Promise<void> {
+    this.organizations = await Organization.query();
   }
 
-  changeCurrentOrganization(selectedOrganization: Organization): void {
-    this.organizationsService.currentOrganization = selectedOrganization;
-  }
+  async changeCurrentOrganization(selectedOrganization: Organization): Promise<void> {
+    const data = {
+      organization: selectedOrganization
+    }
 
+    try {
+      await this.userService.userData.user.update(data); 
+    } catch (err) {
+      console.log("Error while changing organization: " + err);
+    }
+
+    //this.currentOrganization = this.userService.userData.user.organization;
+    await this.userService.loadUserData();
+    window.location.reload();
+  }
 }
