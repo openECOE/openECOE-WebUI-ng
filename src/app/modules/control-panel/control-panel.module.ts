@@ -32,7 +32,12 @@ import { PersonalDataComponent } from './users-admin/personal-data/personal-data
 
 
 @NgModule({
-  declarations: [DashboardComponent, UsersAdminComponent, OrganizationsListComponent, PersonalDataComponent],
+  declarations: [
+    DashboardComponent, 
+    UsersAdminComponent, 
+    OrganizationsListComponent, 
+    PersonalDataComponent
+  ],
   imports: [
     CommonModule,
     ControlPanelRoutingModule,
