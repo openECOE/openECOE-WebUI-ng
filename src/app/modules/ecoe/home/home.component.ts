@@ -48,10 +48,18 @@ export class HomeComponent implements OnInit {
     this.Listed = true;
     this.Delisted = false;
     this.ecoeForm = this.formBuilder.control("", Validators.required);
-    this.userService.userDataChange.subscribe((user) => {
-      this.user = user;
+
+    if (this.userService.userData) {
+      // Cuando le das a la flecha para atrás
+      // se seguiran viendo las ecoes
+      this.user = this.userService.userData;
       this.loadEcoes();
-    });
+    } else {
+      this.userService.userDataChange.subscribe((user) => {
+        this.user = user;
+        this.loadEcoes();
+      });
+    }
   }
 
   async loadEcoes(): Promise<void> {
