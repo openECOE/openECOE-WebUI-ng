@@ -14,7 +14,8 @@ export class ChangeOrganizationComponent implements OnInit {
   isSuperAdmin: boolean = false;
 
   constructor(
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -43,6 +44,7 @@ export class ChangeOrganizationComponent implements OnInit {
 
     //this.currentOrganization = this.userService.userData.user.organization;
     await this.userService.loadUserData();
+    await this.router.navigate(['/ecoe']);
     window.location.reload();
   }
 }

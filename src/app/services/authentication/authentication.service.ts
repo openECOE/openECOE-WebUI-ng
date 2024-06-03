@@ -79,7 +79,7 @@ export class AuthenticationService {
 
   logout(route: string = '/login') {
     this.userToken = null;
-    this.router.navigate([route]);
+    this.router.navigate([route]).then(window.location.reload);
   }
 
   get userLogged(): any {
