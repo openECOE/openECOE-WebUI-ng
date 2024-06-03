@@ -324,5 +324,6 @@
   "ERROR_DELETE_EVALUATOR": "Error eliminando el evaluador",
   "EDIT_EVALUATOR": "Editar evaluador {{email}}",
   "BACK_ECOE": "Menú principal",
-  "PERSONAL_DATA": "Datos personales"
+  "PERSONAL_DATA": "Datos personales",
+  "EDIT_PERSONAL_DATA_ERROR": "Error al editar los datos personales"
 }
