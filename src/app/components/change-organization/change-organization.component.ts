@@ -11,6 +11,7 @@ import { UserService } from '@app/services/user/user.service';
 export class ChangeOrganizationComponent implements OnInit {
   currentOrganization: Organization;
   organizations: Organization[];
+  isSuperAdmin: boolean = false;
 
   constructor(
     private userService: UserService
@@ -18,9 +19,9 @@ export class ChangeOrganizationComponent implements OnInit {
 
   ngOnInit(): void {
     this.getOrganizations();
-    this.currentOrganization = this.userService.userData.user.organization;
 
     this.userService.userDataChange.subscribe((user) => {
+      this.isSuperAdmin = user.isSuper;
       this.currentOrganization = user.user.organization;
     });
   }
