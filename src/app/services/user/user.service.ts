@@ -63,10 +63,4 @@ export class UserService {
       throw error;
     }
   }
-
-  async ensureUserDataReady(): Promise<void> {
-    if (!this._userData) {
-      this.userData = await this.loadUserData();
-    }
-  }
 }
