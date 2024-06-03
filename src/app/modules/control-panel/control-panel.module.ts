@@ -27,10 +27,17 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { PersonalDataComponent } from './users-admin/personal-data/personal-data.component';
 
 
 @NgModule({
-  declarations: [DashboardComponent, UsersAdminComponent, OrganizationsListComponent],
+  declarations: [
+    DashboardComponent, 
+    UsersAdminComponent, 
+    OrganizationsListComponent, 
+    PersonalDataComponent
+  ],
   imports: [
     CommonModule,
     ControlPanelRoutingModule,
@@ -56,7 +63,8 @@ import { NzMessageModule } from 'ng-zorro-antd/message';
     NzToolTipModule,
     NzPageHeaderModule,
     NzLayoutModule,
-    NzMessageModule
+    NzMessageModule,
+    NzBadgeModule
   ],
   exports: [DashboardComponent, UsersAdminComponent]
 })

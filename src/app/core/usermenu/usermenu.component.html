@@ -5,7 +5,7 @@
 </a>
 <nz-dropdown-menu #menu="nzDropdownMenu" >
   <ul nz-menu>
-    <li nz-menu-item (click)="goTo('/control-panel')" *ngIf="userData?.isAdmin">
+    <li nz-menu-item (click)="goTo('/control-panel')">
       {{"SETTINGS" | translate}}
     </li>
     <li nz-menu-item (click)="logout()">
