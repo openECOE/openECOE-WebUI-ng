@@ -1,20 +1,19 @@
 <nz-layout class="layout">
   <nz-header>
-    <div class="logo" style="vertical-align: middle;float: left;">
-      <a (click)="isCollapsed = !isCollapsed" style="margin-right: 13px;font-size: 30px;">
+    <div class="logo" style="display: flex; gap: 10px">
+      <a (click)="isCollapsed = !isCollapsed" style="font-size: 30px;">
         <i nz-icon [nzType]="isCollapsed ? 'menu-fold' : 'menu-unfold'"></i>
       </a>
       <img alt="logo" src="../assets/logo.png">
+      <app-change-organization *ngIf="isLoggedIn()"></app-change-organization>
     </div>
 
-    <div *ngIf="userIsSuperAdmin()" style="display: inline-block;">
-      <app-change-organization></app-change-organization>
+    
+    <div style="display: flex;" *ngIf="isLoggedIn()">
+      <app-submenu [submenuSelected]="'ECOE'"></app-submenu>
+      <app-usermenu></app-usermenu>
     </div>
-
-    <app-usermenu *ngIf="isLoggedIn()" style="margin: auto;"></app-usermenu>
-
-    <app-submenu *ngIf="isLoggedIn()" [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>
-
+    
 
   </nz-header>
 

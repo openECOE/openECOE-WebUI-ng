@@ -20,12 +20,10 @@ export class AppComponent implements OnInit {
   language: string = "es";
   year: string = "";
   isCollapsed: Boolean = false;
-  visible: boolean = false;
 
   clientHeight: number;
 
-  organizationList: Organization[];
-  currentOrganization: Organization;
+  organizationName: string;
 
   @ViewChild("backTop", { static: true }) backTop: ElementRef;
 
@@ -60,9 +58,6 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.clientHeight = window.innerHeight;
     this.year = new Date().getFullYear().toString();
-    
-    this.userService.userDataChange
-      .subscribe(user => this.visible = user?.isSuper || false)
     this.checkServerStatus();
   }
 
@@ -74,10 +69,7 @@ export class AppComponent implements OnInit {
     return this.authService.userLogged ? true : false;
   }
 
-  userIsSuperAdmin(): boolean {
-    return this.isLoggedIn() ? this.visible : false;
-  }    
-
+  
   checkServerStatus(): void {
     let previousStatus = true;
     let errorMessageRef: NzMessageRef;
