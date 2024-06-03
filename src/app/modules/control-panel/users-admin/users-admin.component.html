@@ -1,10 +1,3 @@
-<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'USERS' | translate">
-  <nz-breadcrumb nz-page-header-breadcrumb>
-    <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/control-panel']">{{ 'CONTROL_PANEL' | translate }}</a></nz-breadcrumb-item>
-    <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"USERS" | translate}}</nz-tag></nz-breadcrumb-item>
-  </nz-breadcrumb>
-</nz-page-header>
-
 <nz-drawer
   [nzClosable]="true"
   [nzVisible]="importErrors.length > 0"
@@ -140,7 +133,7 @@
   MODAL DE ADD_USER
 -->
 <nz-modal *ngIf="validateForm"
-  [(nzVisible)]="showAddUser || showEditUser"
+  [nzVisible]="showAddUser || showEditUser"
   [nzTitle]="showAddUser?('ADD_USER' | translate) : ('EDIT_USER' | translate: {email: usuarioOriginal?.email})"
   [nzOkText]="'ACCEPT' | translate"
   [nzCancelText]="'CANCEL' | translate"

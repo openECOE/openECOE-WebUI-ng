@@ -38,6 +38,9 @@
   "PASSWORD": "Contraseña",
   "PASSWORD_NOT_VALID": "¡No es una contraseña válida!",
   "PASSWORD_REQUIRED": "Por favor indique una contraseña",
+  "CHANGE_PASSWORD": "Cambiar contraseña",
+  "NEW_PASSWORD": "Nueva contraseña",
+  "REPEAT_PASSWORD": "Repetir contraseña",
   "NAME_REQUIRED": "Por favor indique el nombre",
   "SURNAME_REQUIRED": "Por favor indique el/los apellido/s",
   "ROUND": "Rueda",
@@ -319,5 +322,8 @@
   "SELECT_STATIONS": "Seleccionar estación/es",
   "EVALUATOR_DELETED": "Evaluador {{email}} eliminado",
   "ERROR_DELETE_EVALUATOR": "Error eliminando el evaluador",
-  "EDIT_EVALUATOR": "Editar evaluador {{email}}"
+  "EDIT_EVALUATOR": "Editar evaluador {{email}}",
+  "BACK_ECOE": "Menú principal",
+  "PERSONAL_DATA": "Datos personales",
+  "EDIT_PERSONAL_DATA_ERROR": "Error al editar los datos personales"
 }
