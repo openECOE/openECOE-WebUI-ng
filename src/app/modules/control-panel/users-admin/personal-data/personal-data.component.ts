@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { UserLogged } from '@app/models';
+import { User, UserLogged } from '@app/models';
 import { SharedService } from '@app/services/shared/shared.service';
 import { UserService } from '@app/services/user/user.service';
+import { TranslateService } from '@ngx-translate/core';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-personal-data',
@@ -13,11 +15,17 @@ export class PersonalDataComponent implements OnInit {
   userData: UserLogged;
   validateForm: FormGroup;
   showEditPassword: boolean = false;
+  editUserName: boolean = false;
+  editUserSurname: boolean = false;
+  editedName: string;
+  editedSurname: string;
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    public shared: SharedService
+    public shared: SharedService,
+    private message: NzMessageService,
+    private translate: TranslateService,
   ) { }
 
   ngOnInit(): void {
@@ -25,13 +33,72 @@ export class PersonalDataComponent implements OnInit {
     this.getUserData();
   }
 
+  startEdit(user: User, option: number): void {
+    switch (option) {
+      case 1:
+        this.editUserName = true;
+        break;
+      case 2:
+        this.editUserSurname = true;
+        break;
+    }
+  } 
+  
+  updateItem(item: any, option:number): void {
+    if (!this.editedName || !this.editedSurname) {
+      return;
+    }
+    switch (option) {
+      case 1:
+        const bodyName = {
+          name: this.editedName,
+        };
+      
+        const requestName = item.user.update(bodyName);
+    
+        requestName.then(response => {
+          this.userData.user = response;
+          this.editUserName = false;
+        }).catch((err) => {
+          this.message.create('error', this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
+        });
+        break;
+      case 2:
+        const bodySurname = {
+          surname: this.editedSurname,
+        };
+      
+        const requestSurname = item.user.update(bodySurname);
+    
+        requestSurname.then(response => {
+          this.userData.user = response;
+          this.editUserSurname = false;
+        }).catch((err) => {
+          this.message.create('error', this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
+        });
+        break;
+    }
+  }
+  
+  cancelEdit(option: number): void {
+    switch (option) {
+      case 1:
+        this.editUserName = false;
+        break;
+      case 2:
+        this.editUserSurname = false;
+        break;
+    }
+  }
+
   getUserData(): void {
     this.userService.loadUserData().then(() => {
       this.userData = this.userService.userData;
+      this.editedName = this.userData.user.name;
+      this.editedSurname = this.userData.user.surname;
     });
-    console.log(this.userData);
   }
-
+  
   getPasswordForm() {
     this.validateForm = this.fb.group({
       newPassword: [null, [Validators.required, Validators.minLength(8)]],

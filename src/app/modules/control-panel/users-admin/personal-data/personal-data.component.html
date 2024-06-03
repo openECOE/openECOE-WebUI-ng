@@ -2,8 +2,43 @@
   <div class="card-content">
     <div class="user-info">
       <p nz-typography><b>{{ 'EMAIL' | translate }}:</b> {{ userData.user.email }}</p>
-      <p nz-typography><b>{{ 'NAME' | translate }}:</b> {{ userData.user.name }}</p>
-      <p nz-typography><b>{{ 'SURNAMES' | translate }}:</b> {{ userData.user.surname }}</p>
+      <p nz-typography>
+        <b>{{ 'NAME' | translate }}:</b> 
+        
+        <ng-container *ngIf="!editUserName" >
+          {{ userData.user.name }}
+        </ng-container>
+        
+        <ng-container *ngIf="editUserName">
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editedName">
+        </ng-container>
+
+        <app-action-buttons [showDeleteButton]="false"
+                            [isEditing]="editUserName" 
+                            (startEdit)="startEdit(userData.user, 1)"
+                            (save)="updateItem(userData, 1)"
+                            (cancelEdit)="cancelEdit(1)">
+        </app-action-buttons>
+      </p>
+      <p nz-typography>
+        <b>{{ 'SURNAMES' | translate }}:</b> 
+        
+        <ng-container *ngIf="!editUserSurname" >
+          {{ userData.user.surname }}
+        </ng-container>
+        
+        <ng-container *ngIf="editUserSurname">
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editedSurname">
+
+        </ng-container>
+
+        <app-action-buttons [showDeleteButton]="false"
+                            [isEditing]="editUserSurname" 
+                            (startEdit)="startEdit(userData.user, 2)"
+                            (save)="updateItem(userData, 2)"
+                            (cancelEdit)="cancelEdit(2)">
+        </app-action-buttons>
+      </p>
     </div>
     <button nz-button nzType="primary" (click)="showModalEdit()">
       <span nz-icon nzType="edit" nzTheme="outline"></span>
