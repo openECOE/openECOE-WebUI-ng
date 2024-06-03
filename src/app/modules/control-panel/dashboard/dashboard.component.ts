@@ -45,8 +45,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.userService.userData = userData;
       });
     }
-
-    this.router.navigate(['control-panel/personal-data']);
   }
 
   ngOnDestroy() {
