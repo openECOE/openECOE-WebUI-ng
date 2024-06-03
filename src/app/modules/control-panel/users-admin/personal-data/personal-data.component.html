@@ -1,8 +1,8 @@
 <nz-card nzTitle="{{ 'PERSONAL_DATA' | translate }}" nzBordered>
   <div class="card-content">
     <div class="user-info">
-      <p nz-typography><b>{{ 'EMAIL' | translate }}:</b> {{ userData.user.email }}</p>
-      <p nz-typography>
+      <p><b>{{ 'EMAIL' | translate }}:</b> {{ userData.user.email }}</p>
+      <p>
         <b>{{ 'NAME' | translate }}:</b> 
         
         <ng-container *ngIf="!editUserName" >
@@ -20,7 +20,7 @@
                             (cancelEdit)="cancelEdit(1)">
         </app-action-buttons>
       </p>
-      <p nz-typography>
+      <p>
         <b>{{ 'SURNAMES' | translate }}:</b> 
         
         <ng-container *ngIf="!editUserSurname" >
