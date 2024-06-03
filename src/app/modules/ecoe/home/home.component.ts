@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { debounceTime, switchMap, tap } from "rxjs/operators";
+import { debounceTime, switchMap, takeUntil, tap } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
 import { NzModalService } from "ng-zorro-antd/modal";
@@ -8,16 +8,15 @@ import { Organization, UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
 import { Router } from "@angular/router";
-import { Observable, Observer, Subscription, defer, from } from "rxjs";
+import { Observable, Observer, ReplaySubject, Subscription, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
-import { OrganizationsService } from "@app/services/organizations-service/organizations.service";
 
 @Component({
   selector: "app-home",
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.less"],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   showCreateEcoe: boolean;
   ecoesList: ECOE[];
   ecoeForm: FormControl;
@@ -31,6 +30,8 @@ export class HomeComponent implements OnInit {
 
   validateForm!: FormGroup;
 
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   constructor(
     private formBuilder: FormBuilder,
     public userService: UserService,
@@ -38,34 +39,41 @@ export class HomeComponent implements OnInit {
     private modalSrv: NzModalService,
     private translate: TranslateService,
     private fb: FormBuilder,
-    private shared: SharedService,
-    private organizationsService: OrganizationsService
+    private shared: SharedService
   ) {
     this.validateForm = this.fb.group({
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
     });
   }
+  ngOnDestroy(): void {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
+  }
+
 
   ngOnInit() {
     this.Listed = true;
     this.Delisted = false;
     this.ecoeForm = this.formBuilder.control("", Validators.required);
-    this.loadEcoes();
+
+    if (this.userService.userData) {
+      // Cuando le das a la flecha para atrás
+      // se seguiran viendo las ecoes
+      this.user = this.userService.userData;
+      this.loadEcoes();
+    } else {
+      this.userService.userDataChange.pipe(takeUntil(this.destroyed$)).subscribe((user) => {
+        this.user = user;
+        this.loadEcoes();
+      });
+    }
   }
 
-  loadEcoes(): void {
-    this.organizationsService.getEcoesByOrganization().then((ecoes) => {
-      this.ecoesList = ecoes;
-    })
-    
-    this.organizationsService.currentOrganizationChange
-      .pipe(
-        tap((organization: Organization) => this.organization = organization),
-        switchMap(() => this.organizationsService.getEcoesByOrganization())
-      )
-      .subscribe((ecoes) => {
-        this.ecoesList = ecoes;
-      });
+  async loadEcoes(): Promise<void> {
+    this.ecoesList = await ECOE.query({
+      where: {organization: this.user.user.organization},
+      sort: {$uri: false}
+    }) as ECOE[];
   }
 
   closeDrawer() {
@@ -98,7 +106,9 @@ export class HomeComponent implements OnInit {
       restore: "restore",
     };
     const resource = "ecoes/archive/" + id + "/restore";
-    this.apiService.createResource(resource, body).subscribe((result) => {
+    this.apiService.createResource(resource, body).
+      pipe(takeUntil(this.destroyed$))
+      .subscribe((result) => {
       if (result) {
         ECOE.dearchive();
         window.location.reload();
