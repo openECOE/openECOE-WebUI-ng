@@ -187,45 +187,13 @@ export class StationDetailsComponent implements OnInit {
     this.modalService.confirm({
       nzTitle: this.translate.instant('CONFIRM_ALSO_DELETE_QUESTIONS'),
       nzOnOk: () => {
+        this.qblocks = this.qblocks.filter(block => block.id !== qblock.id);
         qblock.destroy()
           .then(() => this.refreshTable());
       }},
       'confirm');
   }
 
-  deleteQuestionsByQblock(qblockId: number) {
-    const savePromises = [];
-    this.logPromisesERROR = [];
-    this.logPromisesOK = [];
-
-    this.questionService.loadQuestions(qblockId, false)
-      // @ts-ignore
-      .then( (result: Question[]) => {
-        console.log(result);
-        for (const question of result) {
-          const promise = this.questionService.deleteQuestion(question)
-            .catch(err => {
-              console.error(err);
-              this.logPromisesERROR.push(err);
-              return err;
-            })
-            .then((response) => {
-              this.logPromisesOK.push(response);
-              return response;
-            });
-          savePromises.push(promise);
-        }
-      })
-      .catch((err) => {
-        savePromises.push(err);
-        this.logPromisesERROR.push(err);
-      });
-    return Promise.all(savePromises)
-      .then(() =>
-        new Promise((resolve, reject) =>
-          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)))
-      .catch(err => new Promise(((resolve, reject) => reject(err))));
-  }
 
   /**
    * Creates or updates the resource passed.
