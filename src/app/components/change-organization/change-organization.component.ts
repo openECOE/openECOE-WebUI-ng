@@ -2,13 +2,15 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Organization } from '@app/models';
 import { UserService } from '@app/services/user/user.service';
+import { ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-change-organization',
   templateUrl: './change-organization.component.html',
   styleUrls: ['./change-organization.component.less']
 })
-export class ChangeOrganizationComponent implements OnInit {
+export class ChangeOrganizationComponent implements OnInit, OnDestroy {
   currentOrganization: Organization;
   organizations: Organization[];
   isSuperAdmin: boolean = false;
@@ -18,12 +20,23 @@ export class ChangeOrganizationComponent implements OnInit {
     private router: Router
   ) { }
 
+  ngOnDestroy(): void {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
+  }
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   ngOnInit(): void {
     this.getOrganizations();
 
-    this.userService.userDataChange.subscribe((user) => {
-      this.isSuperAdmin = user.isSuper;
-      this.currentOrganization = user.user.organization;
+    this.userService.userDataChange
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((user) => {
+        if(user) {
+          this.isSuperAdmin = user.isSuper;
+          this.currentOrganization = user.user.organization;
+        }
     });
   }
 

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { debounceTime, switchMap, tap } from "rxjs/operators";
+import { debounceTime, switchMap, takeUntil, tap } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
 import { NzModalService } from "ng-zorro-antd/modal";
@@ -8,7 +8,7 @@ import { Organization, UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
 import { Router } from "@angular/router";
-import { Observable, Observer, Subscription, defer, from } from "rxjs";
+import { Observable, Observer, ReplaySubject, Subscription, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
 
 @Component({
@@ -16,7 +16,7 @@ import { SharedService } from "@app/services/shared/shared.service";
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.less"],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   showCreateEcoe: boolean;
   ecoesList: ECOE[];
   ecoeForm: FormControl;
@@ -29,6 +29,8 @@ export class HomeComponent implements OnInit {
   Delisted: any;
 
   validateForm!: FormGroup;
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -43,6 +45,11 @@ export class HomeComponent implements OnInit {
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
     });
   }
+  ngOnDestroy(): void {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
+  }
+
 
   ngOnInit() {
     this.Listed = true;
@@ -55,7 +62,7 @@ export class HomeComponent implements OnInit {
       this.user = this.userService.userData;
       this.loadEcoes();
     } else {
-      this.userService.userDataChange.subscribe((user) => {
+      this.userService.userDataChange.pipe(takeUntil(this.destroyed$)).subscribe((user) => {
         this.user = user;
         this.loadEcoes();
       });
@@ -99,7 +106,9 @@ export class HomeComponent implements OnInit {
       restore: "restore",
     };
     const resource = "ecoes/archive/" + id + "/restore";
-    this.apiService.createResource(resource, body).subscribe((result) => {
+    this.apiService.createResource(resource, body).
+      pipe(takeUntil(this.destroyed$))
+      .subscribe((result) => {
       if (result) {
         ECOE.dearchive();
         window.location.reload();
