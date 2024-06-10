@@ -3,7 +3,7 @@
     class="margin-bottom"
     (nzBack)="onBack()"
     nzBackIcon
-    [nzTitle]="'RESULTS' | translate"
+    [nzTitle]="'GENERATE_RESULTS' | translate"
   >
     <nz-breadcrumb nz-page-header-breadcrumb>
       <nz-breadcrumb-item
@@ -15,7 +15,7 @@
       >
       <nz-breadcrumb-item
         ><nz-tag class="secondary-tag">{{
-          "RESULTS" | translate
+          "GENERATE_RESULTS" | translate
         }}</nz-tag></nz-breadcrumb-item
       >
     </nz-breadcrumb>
@@ -26,7 +26,7 @@
     {{ "SAVE_TEMPLATE" | translate }}
   </button>
 
-  <button (click)="saveTemplate()" nz-button nzType="primary" nzSize="large" style="margin-left: 20px;"><span nz-icon nzType="plus-circle"></span>
+  <button (click)="generateResult()" nz-button nzType="primary" nzSize="large" style="margin-left: 20px;"><span nz-icon nzType="plus-circle"></span>
     {{ "GENERATE" | translate }}
   </button>
 </nz-button-group>

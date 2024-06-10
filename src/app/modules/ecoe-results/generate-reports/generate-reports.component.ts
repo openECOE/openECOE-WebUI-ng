@@ -2,7 +2,7 @@ import { Component, OnInit, EventEmitter, Output } from "@angular/core";
 import { ApiService } from "@app/services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import * as mammoth from 'mammoth';
-import { Packer, Document, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, Media, Drawing, ImageRun} from "docx";
+import { Packer, Document, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, ImageRun} from "docx";
 import { saveAs } from "file-saver";
 import { ECOE } from "@app/models";
 import { from } from "rxjs";
@@ -362,5 +362,9 @@ export class GenerateReportsComponent implements OnInit {
 
   createMessage(type: string): void {
     this.message.create(type, this.translate.instant('TEMPLATE_SAVED'));
+  }
+
+  generateResult(){
+    this.router.navigate(["/ecoe/" + this.ecoeId + "/results"]).finally();
   }
 }
