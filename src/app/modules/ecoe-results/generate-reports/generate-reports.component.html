@@ -22,26 +22,15 @@
   </nz-page-header>
 </nz-content>
 <nz-button-group style="display: flex; justify-content: end; width: 100%; margin-bottom: 20px;">
-  <button (click)="downloadAsDocx()" nz-button nzType="primary" nzSize="large"><span nz-icon nzType="download"></span>
-  {{ "DOWNLOAD_WORD" | translate }}
+  <button (click)="saveTemplate()" nz-button nzSize="large"><span nz-icon nzType="save"></span>
+    {{ "SAVE_TEMPLATE" | translate }}
   </button>
 
-  <nz-upload
-    [nzHeaders]="{ authorization: 'authorization-text' }"
-    (nzChange)="onFileSelected($event)"
-  >
-    <button nz-button style="margin-left: 20px;" nzSize="large">
-      <span nz-icon nzType="upload"></span>
-      {{ "UPLOAD_WORD" | translate }}
-    </button>
-  </nz-upload>
+  <button (click)="saveTemplate()" nz-button nzType="primary" nzSize="large" style="margin-left: 20px;"><span nz-icon nzType="plus-circle"></span>
+    {{ "GENERATE" | translate }}
+  </button>
 </nz-button-group>
 
 <div class="jodit-center">
   <jodit-editor [config]="config" [(ngModel)]="editorContent" style="justify-content: center;"></jodit-editor>
-</div>
-<div style="display: flex; justify-content: center; width: 100%; margin-top: 10px;">
-  <button (click)="saveTemplate()" nz-button nzType="primary" nzSize="large">
-    {{ "SAVE_TEMPLATE" | translate }}
-  </button>
 </div>
