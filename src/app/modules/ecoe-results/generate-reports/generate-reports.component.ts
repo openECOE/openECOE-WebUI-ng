@@ -11,9 +11,10 @@ import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { Packer, Document, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, Media, Drawing, ImageRun} from "docx";
 import * as docx from "docx";
 import { saveAs } from "file-saver";
-import { ECOE } from "@app/models";
+import { ECOE, Template } from "@app/models";
 import { from } from "rxjs";
 import { dirname } from "path";
+import { TemplateService } from "@app/services/report-template/template.service";
 
 @Component({
   selector: "app-generate-reports",
@@ -21,25 +22,6 @@ import { dirname } from "path";
   styleUrls: ["./generate-reports.component.less"],
 })
 export class GenerateReportsComponent implements OnInit {
-  @Output() form_data = new EventEmitter();
-
-  dataSet: Dummy[] = [
-    {
-      area: "Area1",
-      data1: "Dato 1",
-      data2: "Dato 2",
-    },
-    {
-      area: "Area1",
-      data1: "Dato 1",
-      data2: "Dato 2",
-    },
-  ];
-  FData: any;
-  text: any;
-  signature_person: any;
-  signer_status: any;
-  signature_faculty: any;
   ecoe: ECOE;
   ecoeId: number;
   ecoe_name: any;
@@ -114,7 +96,8 @@ export class GenerateReportsComponent implements OnInit {
   constructor(
     private api: ApiService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private template: TemplateService
   ) {}
 
   ngOnInit(): void {
@@ -126,9 +109,16 @@ export class GenerateReportsComponent implements OnInit {
           this.ecoe = ecoe;
           this.ecoe_name = ecoe.name;
           this.setAreaNames(this.ecoe);
+          this.setTemplate(this.ecoe);
         })
     });
-    
+  }
+
+  async setTemplate(ecoe:ECOE) {
+    const template = await this.template.getTemplate(ecoe);
+    if (template) {
+      this.editorContent = template.html;
+    }
   }
 
   setAreaNames(ecoe: ECOE) {
@@ -346,110 +336,16 @@ export class GenerateReportsComponent implements OnInit {
     }
     return new Paragraph("");
   }
-
-  validateForm!: FormGroup;
-  listOfControl: Array<{ id: number; controlInstance: string }> = [];
-
-  addField(e?: MouseEvent): void {
-    if (e) {
-      e.preventDefault();
-    }
-    const id =
-      this.listOfControl.length > 0
-        ? this.listOfControl[this.listOfControl.length - 1].id + 1
-        : 0;
-
-    const control = {
-      id,
-      controlInstance: `signature${id}`,
-    };
-    const index = this.listOfControl.push(control);
-    console.log(this.listOfControl[this.listOfControl.length - 1]);
-    this.validateForm.addControl(
-      this.listOfControl[index - 1].controlInstance,
-      new FormControl(null, Validators.required)
-    );
-  }
-
-  removeField(i: { id: number; controlInstance: string }, e: MouseEvent): void {
-    e.preventDefault();
-    if (this.listOfControl.length > 0) {
-      const index = this.listOfControl.indexOf(i);
-      this.listOfControl.splice(index, 1);
-      console.log(this.listOfControl);
-      this.validateForm.removeControl(i.controlInstance);
-    }
-  }
-
+  
   onBack() {
     this.router.navigate(["/ecoe/" + this.ecoeId + "/results"]).finally();
   }
-  submitData() {
-    FData = {
-      ecoe: (<HTMLInputElement>document.getElementById("ECOE_type")).value,
-      faculty: (<HTMLInputElement>document.getElementById("faculty")).value,
-      university: (<HTMLInputElement>document.getElementById("uni")).value,
-      date: (<HTMLInputElement>document.getElementById("ECOE_date")).value,
-      explanation_ECOE: (<HTMLInputElement>(
-        document.getElementById("ECOE_explanation")
-      )).value,
-      explanation_results: (<HTMLInputElement>(
-        document.getElementById("results_explanation")
-      )).value,
-      signatures: this.fillSignList(),
-    };
-    const FdataList = this.FData;
-    var cadenaJSON = JSON.stringify(FData);
-    let arearesults = this.api
-      .postResource("ecoes/" + this.ecoeId + "/results-report", null, {
-        cadenaJSON,
-      })
-      .pipe(
-        flatMap(() =>
-          this.router.navigate(["ecoe/" + this.ecoeId + "/results"])
-        )
-      );
-    arearesults.subscribe();
-  }
 
-  fillSignList() {
-    var signList: Array<listSign> = [];
-    for (let i = 0; i < this.listOfControl.length; i++) {
-      var sign_Element = document.getElementById(String(i));
-      SData = {
-        text: (<HTMLInputElement>document.getElementById("st." + i)).value,
-
-        profesor: (<HTMLInputElement>document.getElementById("sp." + i)).value,
-
-        job: (<HTMLInputElement>document.getElementById("ss." + i)).value,
-
-        faculty: (<HTMLInputElement>document.getElementById("sf." + i)).value,
-      };
-      signList.push(SData);
-    }
-    return signList;
+  public saveTemplate(): void {
+    const htmlString = this.editorContent;
+    from(this.template.createTemplate(this.ecoe, htmlString)).subscribe((template) => {
+      console.log("Plantilla guardada exitosamente:", template);
+      this.router.navigate(["/ecoe/" + this.ecoeId + "/results"]);
+    });
   }
 }
-interface Dummy {
-  area: string;
-  data1: string;
-  data2: string;
-}
-interface listSign {
-  text: string;
-  profesor: string;
-  job: string;
-  faculty: string;
-}
-interface formData {
-  ecoe: string;
-  faculty: string;
-  university: string;
-  date: string;
-  explanation_ECOE: string;
-  explanation_results: string;
-  signatures: Array<listSign>;
-}
-
-let FData: formData;
-let SData: listSign;

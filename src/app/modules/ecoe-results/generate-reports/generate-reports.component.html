@@ -20,7 +20,6 @@
       >
     </nz-breadcrumb>
   </nz-page-header>
-  <!-- <div class="blueprint">
     <div nz-row>
       <div nz-col nzSpan="6">
         <img
@@ -239,7 +238,7 @@
   <jodit-editor [config]="config" [(ngModel)]="editorContent" style="justify-content: center;"></jodit-editor>
 </div>
 <div style="display: flex; justify-content: center; width: 100%; margin-top: 10px;">
-  <button  nz-button nzType="primary" nzSize="large" style="width: 140px;">
+  <button (click)="saveTemplate()" nz-button nzType="primary" nzSize="large" style="width: 140px;">
     {{ "GENERATE" | translate }}
   </button>
 </div>
