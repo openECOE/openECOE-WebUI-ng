@@ -7,6 +7,8 @@ import { saveAs } from "file-saver";
 import { ECOE } from "@app/models";
 import { from } from "rxjs";
 import { TemplateService } from "@app/services/report-template/template.service";
+import { NzMessageService } from 'ng-zorro-antd/message';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: "app-generate-reports",
@@ -111,7 +113,9 @@ export class GenerateReportsComponent implements OnInit {
     private api: ApiService,
     private router: Router,
     private route: ActivatedRoute,
-    private template: TemplateService
+    private template: TemplateService,
+    private message: NzMessageService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -348,10 +352,15 @@ export class GenerateReportsComponent implements OnInit {
     this.router.navigate(["/ecoe/" + this.ecoeId + "/results"]).finally();
   }
 
-  public saveTemplate(): void {
+  saveTemplate(): void {
     const htmlString = this.editorContent;
-    from(this.template.createTemplate(this.ecoe, htmlString)).subscribe((template) => {
-      this.router.navigate(["/ecoe/" + this.ecoeId + "/results"]);
+    from(this.template.createTemplate(this.ecoe, htmlString)).subscribe(() => {
+      console.log('Plantilla guardada exitosamente');
+      this.createMessage('success');
     });
+  }
+
+  createMessage(type: string): void {
+    this.message.create(type, this.translate.instant('TEMPLATE_SAVED'));
   }
 }

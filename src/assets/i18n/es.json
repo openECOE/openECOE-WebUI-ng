@@ -322,5 +322,6 @@
   "EDIT_EVALUATOR": "Editar evaluador {{email}}",
   "DOWNLOAD_WORD": "Descargar Word",
   "UPLOAD_WORD": "Importar Word",
-  "SAVE_TEMPLATE": "Guardar plantilla"
+  "SAVE_TEMPLATE": "Guardar plantilla",
+  "TEMPLATE_SAVED": "Plantilla guardada correctamente"
 }
