@@ -1,17 +1,10 @@
-import { THIS_EXPR } from "@angular/compiler/src/output/output_ast";
 import { Component, OnInit, EventEmitter, Output } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
-//import { NzFormModule } from "ng-zorro-antd";
-import { stringify } from "querystring";
 import { ApiService } from "@app/services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { flatMap } from "rxjs/operators";
 import * as mammoth from 'mammoth';
-import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 import { Packer, Document, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, Media, Drawing, ImageRun} from "docx";
-import * as docx from "docx";
 import { saveAs } from "file-saver";
-import { ECOE, Template } from "@app/models";
+import { ECOE } from "@app/models";
 import { from } from "rxjs";
 import { TemplateService } from "@app/services/report-template/template.service";
 
