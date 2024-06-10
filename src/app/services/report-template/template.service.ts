@@ -15,7 +15,6 @@ export class TemplateService {
   async createTemplate(ecoe: ECOE, htmlString: string): Promise<Template> {
     const existingTemplate = await this.getTemplate(ecoe);
     if (existingTemplate) {
-      console.log("Template existente", existingTemplate);
       await this.deleteTemplate(existingTemplate);
     }
     const url = `${environment.API_ROUTE}/${this.apiUrl}/templates`;
@@ -42,9 +41,7 @@ export class TemplateService {
   }
 
   async deleteTemplate(template: Template): Promise<void> {
-    console.log("Template a borrar", template);
     const url = `${environment.API_ROUTE}/${this.apiUrl}/templates/${template.id}`;
-    console.log("URL de borrar", url);
     await this.http.delete(url).toPromise();
   }
 }
