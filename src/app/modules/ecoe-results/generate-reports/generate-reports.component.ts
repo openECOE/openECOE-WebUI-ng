@@ -9,6 +9,7 @@ import { from } from "rxjs";
 import { TemplateService } from "@app/services/report-template/template.service";
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: "app-generate-reports",
@@ -20,19 +21,9 @@ export class GenerateReportsComponent implements OnInit {
   ecoeId: number;
   ecoe_name: any;
   editorContent: string = '';
-  
-  varsList = {
-    full_name: '<<full_name>>',
-    dni: '<<dni>>',
-    date: '<<date>>',
-    ref_ecoe: '<<ref_ecoe>>'
-  };
-  varsNameList = {
-    full_name: 'Nombre completo',
-    dni: 'DNI',
-    date: 'Fecha',
-    ref_ecoe: 'Referencia ECOE'
-  };
+
+  varsList = {};
+  varsNameList = {};
 
   config: any = {
     minHeight: 600,
@@ -115,7 +106,8 @@ export class GenerateReportsComponent implements OnInit {
     private route: ActivatedRoute,
     private template: TemplateService,
     private message: NzMessageService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -126,7 +118,7 @@ export class GenerateReportsComponent implements OnInit {
         .then((ecoe) => {
           this.ecoe = ecoe;
           this.ecoe_name = ecoe.name;
-          this.setAreaNames(this.ecoe);
+          this.getVariables();
           this.setTemplate(this.ecoe);
         })
     });
@@ -139,26 +131,32 @@ export class GenerateReportsComponent implements OnInit {
     }
   }
 
-  setAreaNames(ecoe: ECOE) {
-    const areasObservable = from(this.api.getAreasByEcoe(ecoe));
-
-    areasObservable.subscribe((data) => {
-        data.sort((a, b) => a.code.localeCompare(b.code));
-        data.forEach((element) => {
-            this.varsList[element.name + '_punt'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_punt_' + element.code}>>`;
-            this.varsList[element.name + '_med'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_med_' + element.code}>>`;
-            this.varsList[element.name + '_pos'] = `<<${element.name.substring(0, 3).toLocaleLowerCase() + '_pos_' + element.code}>>`;
-            if (element.name.length > 25) {
-              this.varsNameList[element.name + '_punt'] = element.name.substring(0, 25) + '...(Puntuación)';
-              this.varsNameList[element.name + '_med'] = element.name.substring(0, 25) + '...(Mediana)';
-              this.varsNameList[element.name + '_pos'] = element.name.substring(0, 25) + '...(Posición)';
-            } else {
-              this.varsNameList[element.name + '_punt'] = element.name + ' (Puntuación)';
-              this.varsNameList[element.name + '_med'] = element.name + ' (Mediana)';
-              this.varsNameList[element.name + '_pos'] = element.name + ' (Posición)';
-            }
-        });
-    });
+  async getVariables() {
+    const response = await this.api.getResource(`ecoes/${this.ecoeId}/results/variables`).toPromise();
+    const variables = response.variables;
+    const descriptions = response.descriptions;
+  
+    // Función para procesar y agregar variables y descripciones a las listas
+    const processVariablesAndDescriptions = (vars: any, descs: any) => {
+      for (const [key, value] of Object.entries(vars)) {
+        this.varsList[key] = `<<${value}>>`;
+      }
+      for (const [key, value] of Object.entries(descs)) {
+        const description = value as string;
+        if (description.length > 40) {
+          this.varsNameList[key] = description.substring(0, 20) + '...' + description.substring(description.length - 13);
+        } else {
+          this.varsNameList[key] = description;
+        }
+      }
+    };
+  
+    // Crea la lista en el orden deseado
+    processVariablesAndDescriptions(variables.ecoe_variables, descriptions.ecoe_descriptions);
+    processVariablesAndDescriptions(variables.student_variables, descriptions.student_descriptions);
+    processVariablesAndDescriptions(variables.area_variables, descriptions.area_descriptions);
+    processVariablesAndDescriptions(variables.stations_variables, descriptions.stations_descriptions);
+    processVariablesAndDescriptions(variables.global_results_variables, descriptions.global_results_descriptions);
   }
 
   convertDocxToHtml(file: File) {
@@ -364,8 +362,23 @@ export class GenerateReportsComponent implements OnInit {
     this.message.create(type, this.translate.instant('TEMPLATE_SAVED'));
   }
 
-  generateResult(){
+  generateResult() {
     this.saveTemplate();
-    this.router.navigate(["/ecoe/" + this.ecoeId + "/results"]).finally();
+    this.generarReportes(this.ecoeId)
+      .then(() => {
+        this.router.navigate(["/ecoe/" + this.ecoeId + "/results"]).finally();
+      })
+      .catch(error => {
+        console.error('Error al generar los reportes:', error);
+      });
+  }
+
+  async generarReportes(ecoeId: number) {
+    try {
+      await this.api.postResource(`ecoes/${ecoeId}/results-report`).toPromise();
+    } catch (error) {
+      console.error('Error al generar los reportes:', error);
+      throw error;
+    }
   }
 }
