@@ -63,8 +63,7 @@ export class GenerateReportsComponent implements OnInit {
           if (variableKey) {
               const varContent = this.varsList[variableKey];
               if (varContent) {
-                  const escapedValue = varContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                  editor.selection.insertHTML(escapedValue);
+                  editor.selection.insertHTML(varContent);
               } else {
                   console.error(`La etiqueta ${selectedText} no está definida.`);
               }
@@ -124,13 +123,19 @@ export class GenerateReportsComponent implements OnInit {
     });
   }
 
-  async setTemplate(ecoe:ECOE) {
+  async setTemplate(ecoe: ECOE) {
     const template = await this.template.getTemplate(ecoe);
+    const excludeContent = "<html><head><meta charset=\"UTF-8\"><style>body { margin: 24px 40px; padding: 10px; line-height: 1.0; } table { border: 1px solid #000; border-collapse: collapse; } table th, table td { border: 1px solid #000; padding: 5px; } table p { margin: 0; }</style></head>";
+
     if (template) {
-      this.editorContent = template.html;
+      if (template.html.startsWith(excludeContent)) {
+        this.editorContent = template.html.substring(excludeContent.length);
+      } else {
+        this.editorContent = template.html;
+      }
     }
   }
-
+  
   async getVariables() {
     const response = await this.api.getResource(`ecoes/${this.ecoeId}/results/variables`).toPromise();
     const variables = response.variables;
@@ -139,7 +144,7 @@ export class GenerateReportsComponent implements OnInit {
     // Función para procesar y agregar variables y descripciones a las listas
     const processVariablesAndDescriptions = (vars: any, descs: any) => {
       for (const [key, value] of Object.entries(vars)) {
-        this.varsList[key] = `<<${value}>>`;
+        this.varsList[key] = `{{${value}}}`;
       }
       for (const [key, value] of Object.entries(descs)) {
         const description = value as string;
@@ -352,7 +357,9 @@ export class GenerateReportsComponent implements OnInit {
 
   saveTemplate(): void {
     const htmlString = this.editorContent;
-    from(this.template.createTemplate(this.ecoe, htmlString)).subscribe(() => {
+    const htmlContent = '<html><head><meta charset="UTF-8"><style>body { margin: 24px 40px; padding: 10px; line-height: 1.0; } table { border: 1px solid #000; border-collapse: collapse; } table th, table td { border: 1px solid #000; padding: 5px; } table p { margin: 0; }</style></head><body>' + htmlString + '</body></html>';
+  
+    from(this.template.createTemplate(this.ecoe, htmlContent)).subscribe(() => {
       console.log('Plantilla guardada exitosamente');
       this.createMessage('success');
     });
@@ -375,7 +382,7 @@ export class GenerateReportsComponent implements OnInit {
 
   async generarReportes(ecoeId: number) {
     try {
-      await this.api.postResource(`ecoes/${ecoeId}/results-report`).toPromise();
+      await this.api.postResource(`ecoes/${ecoeId}/results/report`).toPromise();
     } catch (error) {
       console.error('Error al generar los reportes:', error);
       throw error;
