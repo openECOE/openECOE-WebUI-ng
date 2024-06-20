@@ -20,6 +20,7 @@ export class StateComponent implements OnInit {
   errorAlert: string;
   doSpin: boolean = false;
   changing_state: Boolean = false;
+  ecoeStarted: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private translate: TranslateService,
@@ -58,16 +59,31 @@ export class StateComponent implements OnInit {
           setTimeout(() => this.errorAlert = null, 3000);
         }
       });
+      this.ecoeStarted = true;
   }
 
   pauseECOE(id: number) {
     this.chronoService.pauseECOE(id)
-      .subscribe(null, err => console.error(err));
+      .subscribe(
+        () => {
+          this.rounds.forEach(round => {
+            this.pauses[round.id] = true;
+          });
+        },
+        err => console.error(err)
+      );
   }
-
+  
   playECOE(id: number) {
     this.chronoService.playECOE(id)
-      .subscribe(null, err => console.error(err));
+      .subscribe(
+        () => {
+          this.rounds.forEach(round => {
+            this.pauses[round.id] = false;
+          });
+        },
+        err => console.error(err)
+      );
   }
 
   stopECOE(id: number) {
@@ -75,23 +91,27 @@ export class StateComponent implements OnInit {
       .subscribe(null, err => console.error(err));
 
     this.disabledBtnStart = true;
+    this.ecoeStarted = false;
 
     setTimeout(() => {
       this.disabledBtnStart = false;
       this.clearAlertError();
     }, 1000);
   }
+  pauses: { [key: number]: boolean } = {};
 
-  playRound(round: number) {
-    this.chronoService.playRound(round)
+  playRound(roundId: number) {
+    this.chronoService.playRound(roundId)
       .subscribe(null, err => console.error(err));
+    this.pauses[roundId] = false;
   }
-
+  
   pauseRound(roundId: number) {
     this.chronoService.pauseRound(roundId)
       .subscribe(null, err => console.error(err));
+    this.pauses[roundId] = true;
   }
-
+  
   clearAlertError() {
     this.errorAlert = null;
   }

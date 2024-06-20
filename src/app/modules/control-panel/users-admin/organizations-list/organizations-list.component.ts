@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 import { Organization } from '@app/models';
 import { ApiService } from '@app/services/api/api.service';
-import { OrganizationsService } from '@app/services/organizations-service/organizations.service';
 import { SharedService } from '@app/services/shared/shared.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -51,7 +50,6 @@ export class OrganizationsListComponent implements OnInit {
     "data": ["name"]
   };
   constructor(
-    private organizationsService: OrganizationsService,
     private apiService: ApiService,
     public shared: SharedService,
     private fb: FormBuilder,
@@ -83,10 +81,14 @@ export class OrganizationsListComponent implements OnInit {
 
   loadOrganizations() {
     this.loading = true;
-    this.organizationsService
-      .getOrganizationsPage({
-        page: this.page,
-        perPage: this.perPage,
+
+    Organization.query({page: this.page, perPage: this.perPage}, { paginate: true })
+      .then((page: any) => {
+        page.items.map((item: Organization) => {
+          id: item.id; 
+          name: item.name;
+        });
+        return page;
       })
       .then((organizations) => {
         this.loadPage(organizations);
@@ -277,11 +279,6 @@ export class OrganizationsListComponent implements OnInit {
     }
     this.closeModal();
   }
-
-  onBack() {
-    this.router.navigate(["/control-panel"]).finally();
-  }
-
 }
 
 export interface CacheItem extends Organization {

@@ -69,7 +69,7 @@
     MODAL DE ADD_EVALUATOR
   -->
   <nz-modal *ngIf="validateForm"
-    [(nzVisible)]="showAddEvaluator ||showEditEvaluator"
+    [nzVisible]="showAddEvaluator ||showEditEvaluator"
     [nzTitle]="showAddEvaluator?('ADD_EVALUATOR' | translate) : ('EDIT_EVALUATOR' | translate: {email: evaluatorOriginal?.user.email})"
     [nzOkText]="'ACCEPT' | translate"
     [nzCancelText]="'CANCEL' | translate"

@@ -31,11 +31,15 @@
       </tr>
     </thead>
 <!-- TODO: Incluir simbolo + para desplegar -->
-    <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+    <tbody cdkDropList [id]="preview ? null : qblock?.id.toString()" 
+      (cdkDropListDropped)="drop($event)" [cdkDropListConnectedTo]="preview ? null : connectedList"
+      [cdkDropListData]="questionsList">
       <ng-template ngFor let-item [ngForOf]="questionsList">
-        <tr cdkDrag>
-          <td nzAlign="right">{{item.order || "-"}}</td>
-
+        <tr cdkDrag [cdkDragData]="item" (cdkDragStarted)="onDragStart()">
+          <td nzAlign="right">
+            <i nz-icon nzType="swap" nzTheme="outline" style="transform: rotate(90deg);"></i>
+            {{item.order || "-"}}
+        </td>
           <td>{{item.schema.description}}</td>
 
           <td>{{item.schema.reference}}</td>

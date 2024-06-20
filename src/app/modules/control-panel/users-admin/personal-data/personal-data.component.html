@@ -1,0 +1,112 @@
+<nz-card nzTitle="{{ 'PERSONAL_DATA' | translate }}" nzBordered>
+  <div class="card-content">
+    <div class="user-info">
+      <p><b>{{ 'EMAIL' | translate }}:</b> {{ userData.user.email }}</p>
+      <p>
+        <b>{{ 'NAME' | translate }}:</b> 
+        
+        <ng-container *ngIf="!editUserName" >
+          {{ userData.user.name }}
+        </ng-container>
+        
+        <ng-container *ngIf="editUserName">
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editedName">
+        </ng-container>
+
+        <app-action-buttons [showDeleteButton]="false"
+                            [isEditing]="editUserName" 
+                            (startEdit)="startEdit(userData.user, 1)"
+                            (save)="updateItem(userData, 1)"
+                            (cancelEdit)="cancelEdit(1)">
+        </app-action-buttons>
+      </p>
+      <p>
+        <b>{{ 'SURNAMES' | translate }}:</b> 
+        
+        <ng-container *ngIf="!editUserSurname" >
+          {{ userData.user.surname }}
+        </ng-container>
+        
+        <ng-container *ngIf="editUserSurname">
+          <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editedSurname">
+
+        </ng-container>
+
+        <app-action-buttons [showDeleteButton]="false"
+                            [isEditing]="editUserSurname" 
+                            (startEdit)="startEdit(userData.user, 2)"
+                            (save)="updateItem(userData, 2)"
+                            (cancelEdit)="cancelEdit(2)">
+        </app-action-buttons>
+      </p>
+    </div>
+    <button nz-button nzType="primary" (click)="showModalEdit()">
+      <span nz-icon nzType="edit" nzTheme="outline"></span>
+      {{ 'CHANGE_PASSWORD' | translate }}
+    </button>
+  </div>
+</nz-card>
+
+<!--
+  MODAL DE EDIT PASSWORD
+-->
+<nz-modal *ngIf="validateForm"
+  [nzVisible]="showEditPassword"
+  [nzTitle]="'CHANGE_PASSWORD' | translate"
+  [nzOkText]="'ACCEPT' | translate"
+  [nzCancelText]="'CANCEL' | translate"
+  [nzOkDisabled]="!validateForm.valid"
+  (nzOnOk)="submitFormPassword(validateForm)"
+  (nzOnCancel)="closeModal()">
+
+  <form nz-form [formGroup]="validateForm">
+    <!-- TODO: Añadir campo de contraseña antigua -->
+    <!-- <nz-form-item>
+      <nz-form-label [nzSpan]="24">Contraseña antigua</nz-form-label>
+      <nz-form-control [nzSpan]="24">  
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input type="password" nz-input
+                formControlName="oldPassword"
+                placeholder="Contraseña antigua">
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item> -->
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="24">{{ 'NEW_PASSWORD' | translate }}</nz-form-label>
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="errorPasswordTpl">  
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input type="password" nz-input
+                formControlName="newPassword"
+                [placeholder]="'NEW_PASSWORD' | translate">
+        </nz-input-group>
+
+        <ng-template #errorPasswordTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">{{'PASSWORD_REQUIRED' | translate}}</ng-container>
+          <ng-container *ngIf="control.hasError('minlength')">
+            {{'PASSWORD_MIN_LENGTH' | translate : {min: control.getError('minlength').requiredLength} }}
+          </ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="24">{{ 'REPEAT_PASSWORD' | translate }}</nz-form-label>
+      <nz-form-control [nzSpan]="24" [nzErrorTip]="errorPasswordCheckTpl">
+        <nz-input-group [nzPrefixIcon]="'lock'" >
+          <input type="password" nz-input
+                formControlName="newPasswordRepeat"
+                [placeholder]="'REPEAT_PASSWORD' | translate">
+        </nz-input-group>
+
+        <ng-template #errorPasswordCheckTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">{{'PLEASE_CONFIRM_PASSWORD' | translate}}</ng-container>
+          <ng-container *ngIf="control.hasError('confirm')">
+            {{'PASSWORD_CONFIRM_ERROR' | translate}}
+          </ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+

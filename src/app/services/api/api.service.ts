@@ -250,9 +250,10 @@ export class ApiService {
     let permissions = await ApiPermissions.query<ApiPermissions>({
       where: {
         name: "evaluate",
-        object: "stations",
-      }
-    });
+        object: "stations"
+      },
+      perPage: 100
+    }, {paginate: true});
 
     let permissionsOfThisEcoe = [];
     for (const permission of permissions) {

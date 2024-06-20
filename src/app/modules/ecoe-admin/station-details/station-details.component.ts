@@ -6,7 +6,7 @@ import {QuestionsService} from '@services/questions/questions.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import {TranslateService} from '@ngx-translate/core';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
-
+import { CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-station-details',
@@ -187,47 +187,13 @@ export class StationDetailsComponent implements OnInit {
     this.modalService.confirm({
       nzTitle: this.translate.instant('CONFIRM_ALSO_DELETE_QUESTIONS'),
       nzOnOk: () => {
-        this.deleteQuestionsByQblock(qblock.id)
-          .then(() => qblock.destroy()
-              .then(() => this.getQblocks(this.station))
-          );
+        this.qblocks = this.qblocks.filter(block => block.id !== qblock.id);
+        qblock.destroy()
+          .then(() => this.refreshTable());
       }},
       'confirm');
   }
 
-  deleteQuestionsByQblock(qblockId: number) {
-    const savePromises = [];
-    this.logPromisesERROR = [];
-    this.logPromisesOK = [];
-
-    this.questionService.loadQuestions(qblockId, false)
-      // @ts-ignore
-      .then( (result: Question[]) => {
-        console.log(result);
-        for (const question of result) {
-          const promise = this.questionService.deleteQuestion(question)
-            .catch(err => {
-              console.error(err);
-              this.logPromisesERROR.push(err);
-              return err;
-            })
-            .then((response) => {
-              this.logPromisesOK.push(response);
-              return response;
-            });
-          savePromises.push(promise);
-        }
-      })
-      .catch((err) => {
-        savePromises.push(err);
-        this.logPromisesERROR.push(err);
-      });
-    return Promise.all(savePromises)
-      .then(() =>
-        new Promise((resolve, reject) =>
-          this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(this.logPromisesOK)))
-      .catch(err => new Promise(((resolve, reject) => reject(err))));
-  }
 
   /**
    * Creates or updates the resource passed.
@@ -285,12 +251,13 @@ export class StationDetailsComponent implements OnInit {
   onItemClicked(item: any) {
     item['clicked'] = (item['clicked'] !== true);
     item.expand = !item.expand;
-    this.selectedQblock.block = item;
+    //this.selectedQblock.block = item;
   }
 
-  onNewQuestion(order: number) {
+  onNewQuestion(event: {order: number, block: Block}) {
     this.drawerQUestionVisible = true;
-    this.selectedQblock.lastOrder = order;
+    this.selectedQblock.block = event.block
+    this.selectedQblock.lastOrder = event.order;
   }
 
   onEditQuestion($event) {
@@ -300,6 +267,11 @@ export class StationDetailsComponent implements OnInit {
     this.questionToEdit.push($event);
   }
 
+  refreshTable(): void {
+    this.getQblocks(this.station);
+    this.sendRefreshQuestions();
+  }
+  
   sendRefreshQuestions() {
     this.refreshQuestions = true;
     setTimeout(() => this.refreshQuestions = false, 1000 );
@@ -317,6 +289,25 @@ export class StationDetailsComponent implements OnInit {
         .catch(err => console.error('ERROR: ', err))
         .finally(() => this.closeDrawer('question'));
     }
+  }
+
+  onDragStart(items: any) {
+    items.forEach((item) => item.expand = false);
+  }
+  
+  onDropBlock(event: CdkDragDrop<string[]>) {
+    this.qblocks[event.previousIndex].update({order: event.currentIndex + 1})
+    .then(() => {
+      this.refreshTable();
+    });
+  }
+
+  onDropQuestion() {
+    this.sendRefreshQuestions();
+  }
+
+  getConnectedList(): string[] {
+    return this.qblocks.map(x => `${x.id}`);
   }
 }
 
