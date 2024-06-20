@@ -13,7 +13,7 @@
         [nzExtra]="linkInformes"
       >
         <button
-          [disabled]="!ecoe_job_reports.complete"
+          [disabled]="!areGeneratedReport"
           nz-button
           nzType="primary"
           (click)="downloadGenerated()"

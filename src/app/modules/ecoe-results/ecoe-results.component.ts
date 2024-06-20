@@ -15,7 +15,8 @@ interface ISummaryItems {
   styleUrls: ["./ecoe-results.component.less"],
 })
 export class EcoeResultsComponent implements OnInit {
-  areGenerated: any;
+  areGeneratedReport: boolean;
+  areGeneratedCSV: boolean;
   ecoeId: number;
   completion: number;
   completion_csv: number;
@@ -102,6 +103,7 @@ export class EcoeResultsComponent implements OnInit {
       return;
     });
   }
+  
   onBack() {
     this.router.navigate(["/ecoe"]).finally();
   }
@@ -118,7 +120,7 @@ export class EcoeResultsComponent implements OnInit {
         if (this.progress == 100.0) {
           clearInterval(completation);
           this.job_reports_file = this.ecoe_job_reports.uri;
-          this.areGenerated == true;
+          this.areGeneratedReport = true;
         }
       });
     }, 500);
@@ -174,7 +176,7 @@ export class EcoeResultsComponent implements OnInit {
         this.progress_csv = value.progress;
         if (this.progress_csv == 100.0) {
           this.job_csv_file = this.ecoe_csv.uri;
-          this.areGenerated == true;
+          this.areGeneratedCSV = true;
           this.btn_csv = true;
           this.btn_dwl_csv = true;
         }
