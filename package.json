@@ -29,15 +29,20 @@
     "@types/socket.io-client": "^1.4.32",
     "autolinker": "^1.8.3",
     "core-js": "^2.6.5",
+    "docx": "7.8.2",
+    "file-saver": "2.0.5",
+    "jodit": "3.7.2",
+    "jodit-angular": "1.11.3",
+    "mammoth": "^1.7.2",
     "moment": "^2.24.0",
     "ng-zorro-antd": "11.4.2",
     "ngx-papaparse": "5.1.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "~6.5.3",
+    "rxjs": "~6.6.3",
     "socket.io-client": "^2.3.1",
     "tslib": "^2.0.0",
     "yarn": "^1.22.19",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.11.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1102.19",
