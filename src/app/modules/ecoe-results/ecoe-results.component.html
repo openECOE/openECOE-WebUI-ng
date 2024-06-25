@@ -13,7 +13,7 @@
         [nzExtra]="linkInformes"
       >
         <button
-          [disabled]="!ecoe_job_reports.complete"
+          [disabled]="!areGeneratedReport"
           nz-button
           nzType="primary"
           (click)="downloadGenerated()"
@@ -32,7 +32,6 @@
           nz-button
           nzType="primary"
           [routerLink]="['generate-reports']"
-          onclick="checkGenerated"
         >
           <i nz-icon nzType="plus-circle" nzTheme="outline"></i>
           {{ "GENERATE" | translate }}

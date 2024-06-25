@@ -37,6 +37,7 @@ import { NzBackTopModule } from 'ng-zorro-antd/back-top';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzMessageModule } from "ng-zorro-antd/message";
 import { NzDropDownModule } from "ng-zorro-antd/dropdown";
+import { NzUploadModule } from 'ng-zorro-antd/upload';
 
 import { registerLocaleData } from "@angular/common";
 import localeEs from "@angular/common/locales/es";
@@ -65,6 +66,7 @@ import { NzSpinModule } from "ng-zorro-antd/spin";
 import { GradesComponent } from "./modules/ecoe-results/grades/grades.component";
 import { EvaluationItemsComponent } from './modules/ecoe-results/evaluation-items/evaluation-items.component';
 import { ComponentsModule } from "./components/components.module";
+import { JoditAngularModule } from 'jodit-angular';
 
 registerLocaleData(localeEs, "es", localeEsExtra);
 
@@ -128,7 +130,9 @@ export function createTranslateLoader(http: HttpClient) {
     RouterModule,
     NzSpinModule,
     NzDropDownModule,
-    ComponentsModule
+    NzUploadModule,
+    ComponentsModule,
+    JoditAngularModule
   ],
   providers: [
     {
