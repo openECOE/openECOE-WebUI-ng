@@ -21,6 +21,7 @@ export class StateComponent implements OnInit {
   doSpin: boolean = false;
   changing_state: Boolean = false;
   ecoeStarted: boolean = false;
+  paused: boolean;
 
   constructor(private route: ActivatedRoute,
               private translate: TranslateService,
@@ -72,6 +73,7 @@ export class StateComponent implements OnInit {
         },
         err => console.error(err)
       );
+      this.paused = true;
   }
   
   playECOE(id: number) {
@@ -84,6 +86,7 @@ export class StateComponent implements OnInit {
         },
         err => console.error(err)
       );
+      this.paused = false;
   }
 
   stopECOE(id: number) {
@@ -92,6 +95,7 @@ export class StateComponent implements OnInit {
 
     this.disabledBtnStart = true;
     this.ecoeStarted = false;
+    this.paused = false;
 
     setTimeout(() => {
       this.disabledBtnStart = false;
@@ -160,3 +164,5 @@ export class StateComponent implements OnInit {
     });
   }
 }
+
+  
