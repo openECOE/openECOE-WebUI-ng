@@ -1,7 +1,7 @@
 <nz-page-header class="margin-top"  (nzBack)="onBack()" nzBackIcon [nzTitle]="ecoe?.name">
   <nz-page-header-extra>
 
-    <a *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" nz-button class="warning" (click)="draftECOE()" [nzLoading]="changing_state">{{ 'ACTION_STATE_DRAFT' | translate }}</a>
+    <a *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" nz-button class="warning" (click)="draftECOE()" [nzLoading]="changing_state" [disabled]="ecoeStarted">{{ 'ACTION_STATE_DRAFT' | translate }}</a>
 
   </nz-page-header-extra>
 </nz-page-header>
@@ -22,45 +22,34 @@
 </nz-content>
 
 <nz-content padding *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" >
-
   <div nz-row nzJustify="space-between" nzGutter="8" nzAlign="top" class="border">
     <div nz-col margin-top nzSm="24" nzMd="14">
       <div padding background-white>
-        <button (click)="startECOE()" [disabled]="disabledBtnStart"
-                nzSize="large" nz-button nzBlock margin-top nzType="primary">
+        <button (click)="startECOE()" [disabled]="ecoeStarted" nzSize="large" nz-button nzBlock margin-top nzType="primary">
           <i nz-icon nzType="play-circle"></i>
-          {{'START' | translate}}
+          {{ 'START' | translate }}
         </button>
-        <nz-button-group nz-row margin-top>
+        <nz-button-group nz-row margin-top *ngIf="ecoeStarted">
           <div nz-col nzXs="24" nzSm="12">
-            <button (click)="pauseECOE(ecoeId)"
-                    nzSize="small" nzBlock nz-button>
-              <i nz-icon nzType="pause" nzTheme="outline"></i>
-              {{'PAUSE_ALL' | translate}}
+            <button (click)="paused ? playECOE(ecoeId) : pauseECOE(ecoeId)" nzBlock nz-button [nzType]="paused ? 'primary' : 'default'" [nzDanger]="paused ? 'false' : 'true'" [style]="paused ? ' ' : ' background: #faad14; border-color: #faad14; color: black;'">
+              <i nz-icon [nzType]="paused ? 'play-circle' : 'pause'" nzTheme="outline"></i>
+              {{ paused ? ('CONTINUE_ALL' | translate) : ('PAUSE_ALL' | translate) }}
             </button>
           </div>
           <div nz-col nzXs="24" nzSm="12">
-            <button (click)="playECOE(ecoeId)"
-                    nzSize="small" nzBlock nz-button>
-              <i nz-icon nzType="play-circle" nzTheme="outline"></i>
-              {{'CONTINUE_ALL' | translate}}
-            </button>
+            <a nz-button nzBlock nzType="danger" nz-popconfirm 
+               [nzPopconfirmTitle]="'STOP_CONFIRMATION' | translate"
+               (nzOnConfirm)="stopECOE(ecoeId)" [nzPopconfirmPlacement]="'top'"
+               [nzOkType]="'danger'" [nzOkText]="'STOP' | translate" [nzCancelText]="'CANCEL' | translate"
+               [nzIcon]="iconDeleteTpl">
+              <i nz-icon nzType="stop"></i>
+              {{ 'STOP' | translate }}
+            </a>
+            <ng-template #iconDeleteTpl>
+              <i nz-icon nzType="question-circle" class="error" nzTheme="outline"></i>
+            </ng-template>
           </div>
-        </nz-button-group>
-        <a nzSize="small" nz-button nzBlock nzType="danger" margin-top
-                nz-popconfirm 
-                [nzPopconfirmTitle]="'STOP_CONFIRMATION' | translate"
-                (nzOnConfirm)="stopECOE(ecoeId)"
-                [nzPopconfirmPlacement]="'top'"
-                [nzOkType]="'danger'"
-                [nzOkText]="'STOP' | translate" [nzCancelText]="'CANCEL' | translate"
-                [nzIcon]="iconDeleteTpl">
-          <i nz-icon nzType="stop"></i>
-          {{'STOP' | translate}}
-      </a>
-        <ng-template #iconDeleteTpl>
-          <i nz-icon nzType="question-circle" class="error" nzTheme="outline"></i>
-        </ng-template>
+        </nz-button-group>        
       </div>
     </div>
 
@@ -97,7 +86,7 @@
               <button (click)="playRound(round.id)" nz-button nzType="primary"><i nz-icon nzType="play-circle" nzTheme="outline"></i>{{'CONTINUE' | translate}}</button>
             </ng-container>
             <ng-template #pausedState>
-              <button (click)="pauseRound(round.id)" nz-button nzType="danger"><i nz-icon nzType="pause-circle" nzTheme="outline"></i>{{'PAUSE' | translate}}</button>
+              <button (click)="pauseRound(round.id)" nz-button nzType="primary" style=' background: #faad14; border-color: #faad14; color: black;'><i nz-icon nzType="pause-circle" nzTheme="outline"></i>{{'PAUSE' | translate}}</button>
             </ng-template>
           </nz-button-group>
         </app-chrono>
@@ -105,7 +94,3 @@
     </ng-container>    
   </div>  
 </nz-content>
-
-
-
-
