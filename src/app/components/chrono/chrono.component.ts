@@ -228,14 +228,12 @@ export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
   closeNotifSoundError() {
     this.notification.remove();
     this.testSound();
+    this.message.success(this.translate.instant('SOUND_ACTIVATED'))
   }
 
   async testSound() {
     return this.playAudio('beep_alarm.mp3', true)
-    .then((v) => {
-      this.message.success(this.translate.instant('SOUND_ACTIVATED'))
-      return v;
-    })
+    .then((v) => { return v; })
     .catch(error => {
       console.error(error);
       this.notifSoundError();
