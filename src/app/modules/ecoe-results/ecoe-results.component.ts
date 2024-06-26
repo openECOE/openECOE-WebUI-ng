@@ -158,7 +158,7 @@ export class EcoeResultsComponent implements OnInit {
     }, 500);
   }
   downloadCSV() {
-    this.api.getJobFile(this.job_id_csv, "CSV_" + this.ecoeName);
+    this.api.getJobFile(this.job_id_csv, "csv_" + 'ecoe_' + this.ecoeID);
   }
 
   get show_students(): boolean {
