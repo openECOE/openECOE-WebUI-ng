@@ -16,7 +16,12 @@
             [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
     <tr>
-      <th nzWidth="200px" nzLeft="0px"></th>
+      <th nzWidth="200px" nzLeft="0px">
+        <h3 *ngIf="totalStudents!=0">
+          <span nz-icon nzType="warning" nzTheme="outline" class="warning"></span>
+          {{ 'AUTO_ASSINGMENT_EXCESS_STUDENTS' | translate:{totalStudents: totalStudents} }}
+        </h3>
+      </th>
       <th nzWidth="200px" nzLeft="200px" text-center *ngFor="let _round of rounds">
         <div nz-col nzSpan="6">
           <h3>
@@ -90,7 +95,9 @@
 
   <button nz-button
           nzType="default"
+          nzSize="large"
           [nzBlock]="true"
+          style="margin-top: 10px;"
           (click)="autoCreatePlanners()"
           [nzLoading]="loading">
     <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
