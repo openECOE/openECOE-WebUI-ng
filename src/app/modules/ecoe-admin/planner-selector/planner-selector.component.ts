@@ -7,6 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {SharedService} from '../../../services/shared/shared.service';
 import {formatDate} from '@angular/common';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {PlannerService} from '@app/planner/planner.service';
 
 /**
  * Component to select and display information about a Planner
@@ -56,7 +57,8 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   loading: boolean = false;
 
   constructor(private modalService: NzModalService,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private plannerService: PlannerService) {
   }
 
   ngOnInit() {
@@ -146,6 +148,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
       .then(() => {
         this.planner = null;
         this.destroyModal();
+        this.plannerService.checkStudentCapacity();
       });
   }
 
@@ -233,7 +236,8 @@ export class AppStudentSelectorComponent implements OnInit {
 
   selectedStudents: Student[] = [];
 
-  constructor(public shared: SharedService) {
+  constructor(public shared: SharedService,
+              private plannerService: PlannerService) {
   }
 
   ngOnInit() {
@@ -265,7 +269,9 @@ export class AppStudentSelectorComponent implements OnInit {
       this.planner.students.push(updatedStudent);
       this.planner.students = this.plannerStudentsOrdered;
       this.searchListStudents = this.searchListStudents.filter(value => value.id !== student.id);
+      this.plannerService.checkStudentCapacity();
     });
+
   }
 
   rmStudent(student: Student) {
@@ -273,6 +279,7 @@ export class AppStudentSelectorComponent implements OnInit {
       this.planner.students = this.planner.students.filter(value => value.id !== student.id);
       this.searchListStudents.push(updatedStudent);
       this.reorderPlannerStudents(this.planner.students);
+      this.plannerService.checkStudentCapacity();
     });
   }
 

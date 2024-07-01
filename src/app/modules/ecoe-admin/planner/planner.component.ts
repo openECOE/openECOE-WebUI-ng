@@ -8,6 +8,7 @@ import {Planner, Round, Shift} from '../../../models';
 import {Item, Pagination} from '@openecoe/potion-client';
 import {ActionMessagesService} from '@app/services/action-messages/action-messages.service';
 import {TranslateService} from '@ngx-translate/core';
+import { PlannerService } from '@app/planner/planner.service';
 
 /**
  * Component with the relations of rounds and shifts to create plannersMatrix.
@@ -46,7 +47,8 @@ export class PlannerComponent implements OnInit {
               private formBuilder: FormBuilder,
               private router: Router,
               private message: ActionMessagesService,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private plannerService: PlannerService) {
 
     this.shiftForm = this.formBuilder.group({
       shift_code: [null, Validators.required],
@@ -61,13 +63,13 @@ export class PlannerComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.plannerService.registerCheckStudentCapacity(this.checkStudentCapacity.bind(this));
+
     this.route.params.subscribe(params => {
       this.loading = true;
-
       const excludeItems = [];
-
       this.ecoeId = +params.ecoeId;
-      ECOE.fetch(this.ecoeId, {skip: excludeItems})
+      ECOE.fetch(this.ecoeId, { skip: excludeItems })
         .then(value => {
           this.ecoe = value;
           this.ecoe_name = this.ecoe.name;
