@@ -39,6 +39,7 @@ export class PlannerComponent implements OnInit {
   loading: boolean = false;
 
   logPromisesERROR: any[] = [];
+  totalStudents: number;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -91,10 +92,9 @@ export class PlannerComponent implements OnInit {
 
   checkStudentCapacity() {
     this.getStudents().then(pageStudents => {
-      const totalStudents = pageStudents.total;
-      if (totalStudents !== 0) {
-        console.log('Total students', totalStudents);
-        this.message.createWarningMsg(this.translate.instant("AUTO_ASSINGMENT_EXCESS_STUDENTS", {totalStudents}));
+      this.totalStudents = pageStudents.total;
+      if (this.totalStudents !== 0) {
+        this.message.createWarningMsg(this.translate.instant("AUTO_ASSINGMENT_EXCESS_STUDENTS", {totalStudents : this.totalStudents}));
       }else{
         this.message.createSuccessMsg(this.translate.instant("AUTO_ASSINGMENT_SUCCESS"));
       }
@@ -158,6 +158,7 @@ export class PlannerComponent implements OnInit {
 
           Promise.all(promises)
             .then(() => {
+              this.checkStudentCapacity();
               round.destroy()
                 .then(() => resolve())
                 .catch(reason => reject(reason));
@@ -231,6 +232,7 @@ export class PlannerComponent implements OnInit {
 
           Promise.all(promises)
             .then(() => {
+              this.checkStudentCapacity();
               shift.destroy()
                 .then(value => resolve(value))
                 .catch(reason => reject(reason));
