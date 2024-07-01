@@ -9,7 +9,7 @@ export const environment = {
   DEBUG: true,
   API_ROUTE: "http://localhost:5000/backend",
   CHRONO_ROUTE: "http://localhost:5001/chrono",
-  BACK_ROUTE: "http://localhost:5000/",
+  BACK_ROUTE: "http://localhost:5001",
 };
 */
 
@@ -19,7 +19,7 @@ export const environment = {
   DEBUG: true,
   API_ROUTE: "http://localhost:8081/backend",
   CHRONO_ROUTE: "http://localhost:8081/chrono",
-  BACK_ROUTE: "http://localhost:8081/",
+  BACK_ROUTE: "http://localhost:8081",
 };
 
 
