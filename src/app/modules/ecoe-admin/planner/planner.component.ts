@@ -76,7 +76,10 @@ export class PlannerComponent implements OnInit {
           this.loadStations();
           this.loadRoundsShifts().then(() => {
             this.loading = false;
-            this.checkStudentCapacity();
+            this.checkStudentCapacity().then(() => {
+              this.warningMessage();
+              this.loading = false;
+            });
           });
         });
     });
@@ -92,15 +95,18 @@ export class PlannerComponent implements OnInit {
       });
   }
 
-  checkStudentCapacity() {
-    this.getStudents().then(pageStudents => {
+  checkStudentCapacity(): Promise<void> {
+    return this.getStudents().then(pageStudents => {
       this.totalStudents = pageStudents.total;
-      if (this.totalStudents !== 0) {
-        this.message.createWarningMsg(this.translate.instant("AUTO_ASSINGMENT_EXCESS_STUDENTS", {totalStudents : this.totalStudents}));
-      }else{
-        this.message.createSuccessMsg(this.translate.instant("AUTO_ASSINGMENT_SUCCESS"));
-      }
     });
+  }
+
+  warningMessage() {
+    if (this.totalStudents !== 0) {
+      this.message.createWarningMsg(this.translate.instant("AUTO_ASSINGMENT_EXCESS_STUDENTS", {totalStudents : this.totalStudents}));
+    }else{
+      this.message.createSuccessMsg(this.translate.instant("AUTO_ASSINGMENT_SUCCESS"));
+    }
   }
   
   /**
@@ -453,9 +459,14 @@ export class PlannerComponent implements OnInit {
       });
     }
   
-    await Promise.all(promises);
-    await this.loadRoundsShifts();
-    await this.checkStudentCapacity();
+    Promise.all(promises).then(() => {
+      this.loadRoundsShifts().then(() => {
+        this.checkStudentCapacity().then(() => {
+          this.warningMessage();
+          this.loading = false;
+        });
+      });
+    });
   
     this.loading = false;
   }
