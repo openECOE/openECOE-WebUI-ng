@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ECOE, Round} from '../../../models';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
@@ -12,7 +12,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
   styleUrls: ['./state.component.less'],
   providers: [ChronoService]
 })
-export class StateComponent implements OnInit {
+export class StateComponent implements OnInit, OnDestroy {
   ecoe: ECOE;
   ecoeId: number;
   rounds: Round[] = [];
@@ -23,6 +23,7 @@ export class StateComponent implements OnInit {
   ecoeStarted: boolean = false;
   paused: boolean;
   pauses: { [key: number]: boolean } = {};
+  checkInterval: any;
 
   constructor(private route: ActivatedRoute,
               private translate: TranslateService,
@@ -37,6 +38,26 @@ export class StateComponent implements OnInit {
       this.getECOE();
       this.getRounds();
       this.getChronoStatus();
+      this.startCheckStatusInterval();
+    });
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.checkInterval);
+  }
+
+  startCheckStatusInterval() {
+    this.checkInterval = setInterval(() => {
+      this.checkIfAllRoundsCreated();
+    }, 1000);
+  }
+
+  checkIfAllRoundsCreated() {
+    this.chronoService.getChronoStatus(this.ecoeId).subscribe((status: any) => {
+      const allCreated = Object.values(status).every((state: string) => state === "CREATED");
+      if (allCreated) {
+        this.ecoeStarted = false;
+      }
     });
   }
 
