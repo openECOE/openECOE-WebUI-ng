@@ -8,8 +8,10 @@ export const environment = {
   TESTING: false,
   DEBUG: true,
   API_ROUTE: "http://localhost:5000/backend",
-  CHRONO_ROUTE: "http://localhost:5001/chrono",
-  BACK_ROUTE: "http://localhost:5001",
+  CHRONO_ROUTE: "http://localhost:5001",
+  BACK_ROUTE: "http://localhost:5000",
+
+  //   private readonly URI_SOCKETIO = environment.CHRONO_ROUTE;
 };
 */
 
@@ -21,7 +23,6 @@ export const environment = {
   CHRONO_ROUTE: "http://localhost:8081/chrono",
   BACK_ROUTE: "http://localhost:8081",
 };
-
 
 /*
  * For easier debugging in development mode, you can import the following file
