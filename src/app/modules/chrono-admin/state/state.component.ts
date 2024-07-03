@@ -136,12 +136,19 @@ export class StateComponent implements OnInit {
     this.chronoService.playRound(roundId)
       .subscribe(null, err => console.error(err));
     this.pauses[roundId] = false;
+    if (this.rounds.every(round => !this.pauses[round.id])) {
+      this.paused = false;
+    }
   }
 
   pauseRound(roundId: number) {
     this.chronoService.pauseRound(roundId)
       .subscribe(null, err => console.error(err));
     this.pauses[roundId] = true;
+
+    if (this.rounds.every(round => this.pauses[round.id])) {
+      this.paused = true;
+    }
   }
 
   clearAlertError() {
