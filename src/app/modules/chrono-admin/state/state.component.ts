@@ -36,7 +36,7 @@ export class StateComponent implements OnInit {
       this.ecoeId = +params.ecoeId;
       this.getECOE();
       this.getRounds();
-      this.loadState();
+      this.getChronoStatus();
     });
   }
 
@@ -47,11 +47,43 @@ export class StateComponent implements OnInit {
 
   getRounds() {
     Round.query({where: {ecoe: +this.ecoeId}}, {cache: false, skip: ['ecoe']})
-      .then( (result: Round[]) => this.rounds = result);
+      .then((result: Round[]) => this.rounds = result);
+  }
+
+  getChronoStatus() {
+    this.chronoService.getChronoStatus(this.ecoeId)
+      .subscribe((status: any) => {
+        console.log("Status: ", status);
+        this.ecoeStarted = false;
+        this.paused = true;
+        this.pauses = {};
+
+        for (const roundId in status) {
+          const roundStatus = status[roundId];
+          switch (roundStatus) {
+            case "CREATED":
+              this.pauses[roundId] = false;
+              break;
+            case "RUNNING":
+              this.ecoeStarted = true;
+              this.paused = false;
+              this.pauses[roundId] = false;
+              break;
+            case "PAUSED":
+              this.ecoeStarted = true;
+              this.paused = true;
+              this.pauses[roundId] = true;
+              break;
+            case "FINISHED":
+            case "ABORTED":
+              this.pauses[roundId] = true;
+              break;
+          }
+        }
+      });
   }
 
   onBack() {
-    this.saveState();
     this.router.navigate(['./home']).finally();
   }
 
@@ -64,7 +96,6 @@ export class StateComponent implements OnInit {
         }
       });
     this.ecoeStarted = true;
-    this.saveState();
   }
 
   pauseECOE(id: number) {
@@ -75,7 +106,6 @@ export class StateComponent implements OnInit {
         });
       }, err => console.error(err));
     this.paused = true;
-    this.saveState();
   }
 
   playECOE(id: number) {
@@ -86,7 +116,6 @@ export class StateComponent implements OnInit {
         });
       }, err => console.error(err));
     this.paused = false;
-    this.saveState();
   }
 
   stopECOE(id: number) {
@@ -101,22 +130,18 @@ export class StateComponent implements OnInit {
       this.disabledBtnStart = false;
       this.clearAlertError();
     }, 1000);
-
-    this.saveState();
   }
 
   playRound(roundId: number) {
     this.chronoService.playRound(roundId)
       .subscribe(null, err => console.error(err));
     this.pauses[roundId] = false;
-    this.saveState();
   }
 
   pauseRound(roundId: number) {
     this.chronoService.pauseRound(roundId)
       .subscribe(null, err => console.error(err));
     this.pauses[roundId] = true;
-    this.saveState();
   }
 
   clearAlertError() {
@@ -166,26 +191,4 @@ export class StateComponent implements OnInit {
       this.ecoe = value;
     });
   }
-
-  saveState() {
-    const state = {
-      ecoeStarted: this.ecoeStarted,
-      paused: this.paused,
-      pauses: this.pauses
-    };
-    localStorage.setItem(`ecoeState_${this.ecoeId}`, JSON.stringify(state));
-  }
-
-  loadState() {
-    const state = localStorage.getItem(`ecoeState_${this.ecoeId}`);
-    if (state) {
-      const { ecoeStarted, paused, pauses } = JSON.parse(state);
-      this.ecoeStarted = ecoeStarted;
-      this.paused = paused;
-      this.pauses = pauses;
-    }
-  }
 }
-
-
-  
