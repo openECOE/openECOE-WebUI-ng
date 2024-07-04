@@ -117,6 +117,7 @@ export class StateComponent implements OnInit, OnDestroy {
         }
       });
     this.ecoeStarted = true;
+    this.paused = false;
   }
 
   pauseECOE(id: number) {
@@ -146,6 +147,10 @@ export class StateComponent implements OnInit, OnDestroy {
     this.disabledBtnStart = true;
     this.ecoeStarted = false;
     this.paused = false;
+
+    for (const round of this.rounds) {
+      this.pauses[round.id] = false;
+    }
 
     setTimeout(() => {
       this.disabledBtnStart = false;
