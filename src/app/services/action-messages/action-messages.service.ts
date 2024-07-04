@@ -30,6 +30,15 @@ export class ActionMessagesService {
     return this.nzMessageService.error(message, options);
   }
 
+  /**
+   * Generates an warning alert message.
+   *
+   * @param message Message to show on the alert
+   */
+  createWarningMsg(message: string, options?: NzMessageDataOptions): NzMessageRef {
+    return this.nzMessageService.warning(message, options);
+  }
+
   removeMessage(messageId: string): void {
     this.nzMessageService.remove(messageId);
   }

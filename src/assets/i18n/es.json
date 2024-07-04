@@ -331,5 +331,7 @@
   "TEMPLATE_SAVED": "Plantilla guardada correctamente",
   "BACK_ECOE": "Menú principal",
   "PERSONAL_DATA": "Datos personales",
-  "EDIT_PERSONAL_DATA_ERROR": "Error al editar los datos personales"
+  "EDIT_PERSONAL_DATA_ERROR": "Error al editar los datos personales",
+  "AUTO_ASSINGMENT_EXCESS_STUDENTS": "Quedan {{totalStudents}} alumnos sin asignar",
+  "AUTO_ASSINGMENT_SUCCESS": "Todos los alumnos han sido asignados correctamente"
 }

@@ -7,6 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {SharedService} from '../../../services/shared/shared.service';
 import {formatDate} from '@angular/common';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {PlannerService} from '@app/planner/planner.service';
 
 /**
  * Component to select and display information about a Planner
@@ -56,7 +57,8 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
   loading: boolean = false;
 
   constructor(private modalService: NzModalService,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private plannerService: PlannerService) {
   }
 
   ngOnInit() {
@@ -146,6 +148,7 @@ export class PlannerSelectorComponent implements OnInit, OnChanges {
       .then(() => {
         this.planner = null;
         this.destroyModal();
+        this.plannerService.checkStudentCapacity();
       });
   }
 
@@ -233,13 +236,14 @@ export class AppStudentSelectorComponent implements OnInit {
 
   selectedStudents: Student[] = [];
 
-  constructor(public shared: SharedService) {
+  constructor(public shared: SharedService,
+              private plannerService: PlannerService) {
   }
 
   ngOnInit() {
 
     this.groupName = this.shift.shiftCode + this.round.roundCode;
-    this.planner.students = this.plannerStudentsOrdered
+    this.planner.students = this.plannerStudentsOrdered;
     this.searchStudents();
   }
 
@@ -263,22 +267,25 @@ export class AppStudentSelectorComponent implements OnInit {
 
     this.updateStudentPlanner(student, this.planner, order).then((updatedStudent) => {
       this.planner.students.push(updatedStudent);
-      this.planner.students = this.plannerStudentsOrdered
+      this.planner.students = this.plannerStudentsOrdered;
       this.searchListStudents = this.searchListStudents.filter(value => value.id !== student.id);
-    })
+      this.plannerService.checkStudentCapacity();
+    });
+
   }
 
   rmStudent(student: Student) {
     this.updateStudentPlanner(student, null, null).then((updatedStudent)=> {
       this.planner.students = this.planner.students.filter(value => value.id !== student.id);
       this.searchListStudents.push(updatedStudent);
-      this.reorderPlannerStudents(this.planner.students)
-    })
+      this.reorderPlannerStudents(this.planner.students);
+      this.plannerService.checkStudentCapacity();
+    });
   }
 
   updateStudentPlanner(student: Student, planner: Planner, order: number) {
-    const data = {"planner": planner, "planner_order": order}
-    return student.update(data)
+    const data = {"planner": planner, "planner_order": order};
+    return student.update(data);
   }
 
   searchStudents(value?: string) {
@@ -303,10 +310,6 @@ export class AppStudentSelectorComponent implements OnInit {
   }
 
   loadMore() {
-    if (this.studentsSearch.page >= this.studentsSearch.page) {
-      return;
-    }
-
     this.studentsSearch.changePageTo(this.studentsSearch.page + 1)
       .then(page => {
         this.searchListStudents = [...this.searchListStudents, ...page['items']];
@@ -314,22 +317,20 @@ export class AppStudentSelectorComponent implements OnInit {
       .catch(() => console.warn('no more results'));
   }
 
-  
-
   moveStudent(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.planner.students, event.previousIndex, event.currentIndex);
-    this.reorderPlannerStudents(this.planner.students)
+    this.reorderPlannerStudents(this.planner.students);
 
   }
 
   get plannerStudentsOrdered() {
-    return this.planner.students.sort((a, b) => a.plannerOrder > b.plannerOrder?1:-1)
+    return this.planner.students.sort((a, b) => a.plannerOrder > b.plannerOrder ? 1 : -1);
   }
 
   reorderPlannerStudents(students: Array<Student>) {
     students.forEach((student, index) => {
-      const _order = index + 1
-      this.updateStudentPlanner(student, this.planner, _order)
-    })
+      const _order = index + 1;
+      this.updateStudentPlanner(student, this.planner, _order);
+    });
   }
 }
