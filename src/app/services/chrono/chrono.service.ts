@@ -170,7 +170,12 @@ export class ChronoService {
         }
       })
     ); 
+  }
 
+  getChronoStatus(id: number) {
+    const command = '/rounds-status/:id';
+    const url = this.URL_CHRONO + command.replace(':id', id + '');
 
+    return this.http.get(url);
   }
 }
