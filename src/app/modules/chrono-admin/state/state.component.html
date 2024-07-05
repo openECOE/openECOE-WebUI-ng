@@ -81,12 +81,12 @@
           [idEcoe]="ecoeId"
           [showDetails]="false"
           [mute]="true">
-          <nz-button-group nzSize="default" *ngIf="ecoeStarted">
+          <nz-button-group nzSize="default" *ngIf="ecoeStarted" style="width: 100%;">
             <ng-container *ngIf="pauses[round.id]; else pausedState">
-              <button (click)="playRound(round.id)" nz-button nzType="primary"><i nz-icon nzType="play-circle" nzTheme="outline"></i>{{'CONTINUE' | translate}}</button>
+              <button (click)="playRound(round.id)" nz-button nzType="primary" style="width: 100%;"><i nz-icon nzType="play-circle" nzTheme="outline"></i>{{'CONTINUE' | translate}}</button>
             </ng-container>
             <ng-template #pausedState>
-              <button (click)="pauseRound(round.id)" nz-button nzType="primary" style=' background: #faad14; border-color: #faad14; color: black;'><i nz-icon nzType="pause-circle" nzTheme="outline"></i>{{'PAUSE' | translate}}</button>
+              <button (click)="pauseRound(round.id)" nz-button nzType="primary" style=' background: #faad14; border-color: #faad14; color: black;width: 100%;'><i nz-icon nzType="pause-circle" nzTheme="outline"></i>{{'PAUSE' | translate}}</button>
             </ng-template>
           </nz-button-group>
         </app-chrono>
