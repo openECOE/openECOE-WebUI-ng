@@ -54,9 +54,11 @@ export class StateComponent implements OnInit, OnDestroy {
 
   checkIfAllRoundsCreated() {
     this.chronoService.getChronoStatus(this.ecoeId).subscribe((status: any) => {
-      const allCreated = Object.values(status).every((state: string) => state === "CREATED");
+      const allCreated = Object.values(status).every((state: string) => state === "CREATED" || state === "ABORTED");
       if (allCreated) {
         this.ecoeStarted = false;
+        this.paused = true;
+        this.pauses = {};
       }
     });
   }
@@ -87,12 +89,10 @@ export class StateComponent implements OnInit, OnDestroy {
               break;
             case "RUNNING":
               this.ecoeStarted = true;
-              this.paused = false;
               this.pauses[roundId] = false;
               break;
             case "PAUSED":
               this.ecoeStarted = true;
-              this.paused = true;
               this.pauses[roundId] = true;
               break;
             case "FINISHED":
@@ -101,6 +101,7 @@ export class StateComponent implements OnInit, OnDestroy {
               break;
           }
         }
+        this.paused = !Object.values(this.pauses).some(paused => paused === false);
       });
   }
 
