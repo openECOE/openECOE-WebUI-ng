@@ -76,7 +76,6 @@ export class StateComponent implements OnInit, OnDestroy {
   getChronoStatus() {
     this.chronoService.getChronoStatus(this.ecoeId)
       .subscribe((status: any) => {
-        console.log("Status: ", status);
         this.ecoeStarted = false;
         this.paused = true;
         this.pauses = {};
