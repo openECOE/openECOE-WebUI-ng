@@ -163,9 +163,7 @@ export class StateComponent implements OnInit, OnDestroy {
     this.chronoService.playRound(roundId)
       .subscribe(null, err => console.error(err));
     this.pauses[roundId] = false;
-    if (this.rounds.every(round => !this.pauses[round.id])) {
-      this.paused = false;
-    }
+    this.paused = false;
   }
 
   pauseRound(roundId: number) {
