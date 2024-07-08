@@ -8,7 +8,7 @@ import {Planner, Round, Shift} from '../../../models';
 import {Item, Pagination} from '@openecoe/potion-client';
 import {ActionMessagesService} from '@app/services/action-messages/action-messages.service';
 import {TranslateService} from '@ngx-translate/core';
-import { PlannerService } from '@app/planner/planner.service';
+import { PlannerService } from '@app/services/planner/planner.service';
 
 /**
  * Component with the relations of rounds and shifts to create plannersMatrix.

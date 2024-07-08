@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {SharedService} from '../../../services/shared/shared.service';
 import {formatDate} from '@angular/common';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import {PlannerService} from '@app/planner/planner.service';
+import {PlannerService} from '@app/services/planner/planner.service';
 
 /**
  * Component to select and display information about a Planner
