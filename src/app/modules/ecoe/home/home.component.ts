@@ -60,10 +60,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       // Cuando le das a la flecha para atrás
       // se seguiran viendo las ecoes
       this.user = this.userService.userData;
+      this.organization = this.user.user.organization;
       this.loadEcoes();
     } else {
       this.userService.userDataChange.pipe(takeUntil(this.destroyed$)).subscribe((user) => {
         this.user = user;
+        this.organization = this.user.user.organization;
         this.loadEcoes();
       });
     }
