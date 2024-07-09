@@ -24,6 +24,7 @@ export class StateComponent implements OnInit, OnDestroy {
   paused: boolean;
   pauses: { [key: number]: boolean } = {};
   checkInterval: any;
+  loop: boolean;
 
   constructor(private route: ActivatedRoute,
               private translate: TranslateService,
@@ -173,6 +174,11 @@ export class StateComponent implements OnInit, OnDestroy {
     if (this.rounds.every(round => this.pauses[round.id])) {
       this.paused = true;
     }
+  }
+
+  setLoop(){
+    this.loop = !this.loop;
+    this.chronoService.setLoop(this.ecoeId, this.loop)
   }
 
   clearAlertError() {
