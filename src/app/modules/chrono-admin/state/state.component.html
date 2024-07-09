@@ -60,7 +60,8 @@
         <app-chrono *ngIf="ecoe"
           [idEcoe]="ecoe.id"
           [round]="rounds[0]"
-          [mute]="true">
+          [mute]="true"
+          (loop)="getLoop($event)">
         </app-chrono>
         <nz-alert *ngIf="errorAlert"
                   nzType="warning"
@@ -82,7 +83,8 @@
           [round]="round"
           [idEcoe]="ecoeId"
           [showDetails]="false"
-          [mute]="true">
+          [mute]="true"
+          (state)="getState($event)">
           <nz-button-group nzSize="default" *ngIf="ecoeStarted" style="width: 100%;">
             <ng-container *ngIf="pauses[round.id]; else pausedState">
               <button (click)="playRound(round.id)" nz-button nzType="primary" style="width: 100%;"><i nz-icon nzType="play-circle" nzTheme="outline"></i>{{'CONTINUE' | translate}}</button>

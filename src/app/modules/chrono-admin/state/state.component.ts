@@ -12,9 +12,10 @@ import { NzModalService } from 'ng-zorro-antd/modal';
   styleUrls: ['./state.component.less'],
   providers: [ChronoService]
 })
-export class StateComponent implements OnInit, OnDestroy {
+export class StateComponent implements OnInit {
   ecoe: ECOE;
   ecoeId: number;
+  rounds_status: any = {};
   rounds: Round[] = [];
   disabledBtnStart: boolean;
   errorAlert: string;
@@ -23,8 +24,8 @@ export class StateComponent implements OnInit, OnDestroy {
   ecoeStarted: boolean = false;
   paused: boolean;
   pauses: { [key: number]: boolean } = {};
-  checkInterval: any;
   loop: boolean;
+  state: string;
 
   constructor(private route: ActivatedRoute,
               private translate: TranslateService,
@@ -39,28 +40,6 @@ export class StateComponent implements OnInit, OnDestroy {
       this.getECOE();
       this.getRounds();
       this.getChronoStatus();
-      this.startCheckStatusInterval();
-    });
-  }
-
-  ngOnDestroy() {
-    clearInterval(this.checkInterval);
-  }
-
-  startCheckStatusInterval() {
-    this.checkInterval = setInterval(() => {
-      this.checkIfAllRoundsCreated();
-    }, 1000);
-  }
-
-  checkIfAllRoundsCreated() {
-    this.chronoService.getChronoStatus(this.ecoeId).subscribe((status: any) => {
-      const allCreated = Object.values(status).every((state: string) => state === "CREATED" || state === "ABORTED");
-      if (allCreated) {
-        this.ecoeStarted = false;
-        this.paused = true;
-        this.pauses = {};
-      }
     });
   }
 
@@ -176,9 +155,27 @@ export class StateComponent implements OnInit, OnDestroy {
     }
   }
 
-  setLoop(){
+  async setLoop(){
     this.loop = !this.loop;
-    this.chronoService.setLoop(this.ecoeId, this.loop)
+    try {
+      await this.chronoService.setLoop(this.ecoeId, this.loop).toPromise();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  getLoop(loop: boolean) {
+    this.loop = loop;
+  }
+
+  getState(state: any) {    
+    const round = Object.keys(state)[0];
+    this.rounds_status[Object.keys(state)[0]] = state[round];
+    
+    if(!this.loop) {
+      // TODO: enum con los estados
+      this.ecoeStarted = !Object.values(this.rounds_status).every((state: string) => state === "FINISHED" || state === "ABORTED");
+    }
   }
 
   clearAlertError() {
