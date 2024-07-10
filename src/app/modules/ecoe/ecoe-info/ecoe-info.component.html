@@ -12,18 +12,24 @@
         class="success"
         (click)="publishECOE()"
         [nzLoading]="changing_state"
-        >{{ "ACTION_STATE_PUBLISH" | translate }}</a
       >
+        <span nz-icon nzType="eye" nzTheme="outline"></span>
+        {{ "ACTION_STATE_PUBLISH" | translate }}
+      </a>
+
       <a
         *ngIf="(ecoe?.status | uppercase) == 'PUBLISHED'"
         nz-button
         class="warning"
         (click)="draftECOE()"
         [nzLoading]="changing_state"
-        >{{ "ACTION_STATE_DRAFT" | translate }}</a
       >
+        <span nz-icon nzType="eye-invisible" nzTheme="outline"></span>
+        {{ "ACTION_STATE_DRAFT" | translate }}
+      </a>
 
       <a nz-button (click)="showECOENameDrawer(true)">
+        <span nz-icon nzType="edit" nzTheme="outline"></span>
         <span>{{ "EDIT_ECOE" | translate }}</span>
       </a>
       <a
@@ -38,8 +44,10 @@
         [nzCancelText]="'CANCEL' | translate"
         [nzIcon]="iconDeleteTpl"
       >
+        <span nz-icon nzType="container" nzTheme="outline"></span>
         <span>{{ "DELETE_ECOE" | translate }}</span>
       </a>
+      
       <ng-template #iconDeleteTpl>
         <i nz-icon nzType="question-circle" class="error" nzTheme="outline"></i>
       </ng-template>
