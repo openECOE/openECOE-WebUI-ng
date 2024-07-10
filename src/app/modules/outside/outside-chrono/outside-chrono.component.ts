@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
 import {ECOEConfig} from '../../../models/chrono';
@@ -11,11 +11,11 @@ import {ChronoService} from '../../../services/chrono/chrono.service';
   providers: [ChronoService]
 })
 export class OutsideChronoComponent implements OnInit {
-
   ecoeId: number;
   roundId: number;
   ecoeName: string;
   roundDescription: string;
+  loop: boolean;
 
   private config: ECOEConfig;
 
@@ -39,6 +39,10 @@ export class OutsideChronoComponent implements OnInit {
     this.ecoeName = this.config.ecoe.name;
     const auxRound = this.config.rounds.filter(item => +item.id === +this.roundId);
     this.roundDescription = (auxRound.length > 0) ? auxRound[0].name : null;
+  }
+
+  getLoop(loop: boolean) {
+    this.loop = loop;
   }
 
   onBack() {

@@ -9,6 +9,7 @@
     <h2 *ngIf="ecoeName && roundDescription">
       {{ecoeName + ' - ' + roundDescription}}
     </h2>
+    <span nz-icon nzType="retweet" nzTheme="outline" [style]="loop ? 'color:#008aa4' : 'color: grey'"></span>
   </ng-template>
 
   <app-chrono
@@ -16,6 +17,7 @@
     [roundId]="roundId"
     withPreview="true"
     [templateBeforeStart]="ChronoPreview"
+    (loop)="getLoop($event)"
   >
   </app-chrono>
 
