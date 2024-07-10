@@ -180,9 +180,9 @@ export class ChronoService {
   }
 
   setLoop(id: number, loop: boolean) {
-    const command = '/loop/:id';
-    const url = this.URL_CHRONO + command.replace(':id', id + '');
+    const COMMAND = '/ecoes/:id/loop';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
   
-    return this.http.post(url, {loop});
+    return this.http.post(URL_V1, {loop});
   }
 }
