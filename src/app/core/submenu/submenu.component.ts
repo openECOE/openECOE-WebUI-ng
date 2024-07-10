@@ -37,7 +37,6 @@ export class SubmenuComponent implements OnInit {
         const activeLink = this.router.url.split("/")[3];
         await this.userService.loadUserData();
         const _userData = this.userService.userData;
-
         if (_userData) {
           const isEval = _userData.isEval;
           const isAdmin = _userData.isAdmin;

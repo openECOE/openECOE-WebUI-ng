@@ -1,12 +1,12 @@
 <nz-card nzTitle="{{ 'PERSONAL_DATA' | translate }}" nzBordered>
   <div class="card-content">
     <div class="user-info">
-      <p><b>{{ 'EMAIL' | translate }}:</b> {{ userData.user.email }}</p>
+      <p><b>{{ 'EMAIL' | translate }}:</b> {{ userData?.user.email }}</p>
       <p>
         <b>{{ 'NAME' | translate }}:</b> 
         
         <ng-container *ngIf="!editUserName" >
-          {{ userData.user.name }}
+          {{ userData?.user.name }}
         </ng-container>
         
         <ng-container *ngIf="editUserName">
@@ -24,7 +24,7 @@
         <b>{{ 'SURNAMES' | translate }}:</b> 
         
         <ng-container *ngIf="!editUserSurname" >
-          {{ userData.user.surname }}
+          {{ userData?.user.surname }}
         </ng-container>
         
         <ng-container *ngIf="editUserSurname">
