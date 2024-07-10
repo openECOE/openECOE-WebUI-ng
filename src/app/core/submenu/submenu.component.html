@@ -7,8 +7,9 @@
       nz-menu-item
       [nzSelected]="item.active"
       [routerLink]="[item.redirecTo]">
-
+    <span nz-icon [nzType]="item.icon" nzTheme="outline"></span>
     {{item.title | translate}}
+    
   </li>
 
 </ul>
