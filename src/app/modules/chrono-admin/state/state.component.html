@@ -22,7 +22,7 @@
 </nz-content>
 
 <nz-content padding *ngIf="(ecoe?.status | uppercase)=='PUBLISHED'" >
-  <button (click)="setLoop()" nz-button [nzType]="loop ? 'primary' : 'default'" style="margin-bottom: 5px;"><span nz-icon nzType="retweet" nzTheme="outline"></span></button>
+  <button (click)="setLoop()" nz-button [nzType]="loop ? 'primary' : 'default'" style="margin-bottom: 5px;"><span nz-icon class="retweet-icon" nzType="retweet" nzTheme="outline"></span></button>
 
   <div nz-row nzJustify="space-between" nzGutter="8" nzAlign="top" class="border">
     <div nz-col margin-top nzSm="24" nzMd="14">

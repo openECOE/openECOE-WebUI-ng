@@ -5,11 +5,11 @@
   </nz-page-header>
 
   <ng-template #Title>
-    <h1>{{('EVALUATION' | translate)}}</h1>
+    <h1>{{ 'EVALUATION' | translate }}</h1>
     <h2 *ngIf="ecoeName && roundDescription">
-      {{ecoeName + ' - ' + roundDescription}}
+      {{ ecoeName + ' - ' + roundDescription }}
+      <span *ngIf="loop" nz-icon nzType="retweet" nzTheme="outline" style="color:#008aa4"></span>
     </h2>
-    <span nz-icon nzType="retweet" nzTheme="outline" [style]="loop ? 'color:#008aa4' : 'color: grey'"></span>
   </ng-template>
 
   <app-chrono
