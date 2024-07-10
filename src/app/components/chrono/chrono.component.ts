@@ -13,7 +13,6 @@ import { TranslateService } from '@ngx-translate/core';
   providers: [ChronoService]
 })
 export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
-
   @Input() round: Round;
   @Input() roundId: number;
   @Input() station: Station;
@@ -23,6 +22,8 @@ export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
   @Input() withPreview: boolean = false;
   @Input() templateBeforeStart: TemplateRef<void>;
   @Output() started: EventEmitter<number> = new EventEmitter<number>();
+  @Output() state: EventEmitter<any> = new EventEmitter<any>();
+  @Output() loop: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   aborted: boolean;
   stageName: string;
@@ -43,7 +44,6 @@ export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
 
   connectedFlag: boolean;
   tictacFlag: boolean;
-
 
   momentRef = moment;
   configurationECOE: Object;
@@ -83,6 +83,7 @@ export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
       });
       this.chronoService.onReceive('end_round').subscribe((data: any[]) => {
         this.stageName = (data[1]['data'] as string).toUpperCase();
+        this.state.next({[data[1]['id']]: 'FINISHED'});
       });
       this.chronoService.onReceive('evento').subscribe(data => {
         this.event = data[1];
@@ -91,6 +92,7 @@ export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
       this.chronoService.onReceive('aborted').subscribe(data => {
         this.aborted = true;
         this.stageName = (data[0] as string).toUpperCase();
+        this.state.next({[data[1]['id']]: 'ABORTED'});
       });
       this.chronoService.onReceive('tic_tac').subscribe((data: any[]) => {
         this.tictacFlag = true;
@@ -134,6 +136,8 @@ export class ChronoComponent implements OnChanges, OnDestroy, OnInit {
     this.totalPercent   = (this.currentSeconds / this.totalDuration) * 100;
     this.minutes        = Math.trunc((this.totalDuration - this.currentSeconds) / 60);
     this.seconds        = ((this.totalDuration - this.currentSeconds) % 60 );
+    this.state.next({[data[1]['id']]: data[1]['state']});
+    this.loop.next(data[1]['loop'])
 
     // Sets events only firt time (ex: when page is reloaded)
     if (!this.eventsToPlay || this.eventsToPlay.length < 0) {

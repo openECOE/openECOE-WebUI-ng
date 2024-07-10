@@ -333,5 +333,7 @@
   "PERSONAL_DATA": "Datos personales",
   "EDIT_PERSONAL_DATA_ERROR": "Error al editar los datos personales",
   "AUTO_ASSINGMENT_EXCESS_STUDENTS": "Quedan {{totalStudents}} alumnos sin asignar",
-  "AUTO_ASSINGMENT_SUCCESS": "Todos los alumnos han sido asignados correctamente"
+  "AUTO_ASSINGMENT_SUCCESS": "Todos los alumnos han sido asignados correctamente",
+  "ACTIVATE_LOOP": "Activar bucle",
+  "DESACTIVATE_LOOP": "Desactivar bucle"
 }
