@@ -4,7 +4,7 @@
       <a (click)="isCollapsed = !isCollapsed" style="font-size: 30px;">
         <i nz-icon [nzType]="isCollapsed ? 'menu-fold' : 'menu-unfold'"></i>
       </a>
-      <a routerLink="/ecoe" style="display: flex; align-items: center;">
+      <a routerLink="/ecoe" title="{{'BACK_ECOE' | translate }}" class="logoHover" style="display: flex; align-items: center;">
         <img alt="logo" src="../assets/logo.png" class="logo">
       </a>
       <app-change-organization *ngIf="isLoggedIn()"></app-change-organization>
