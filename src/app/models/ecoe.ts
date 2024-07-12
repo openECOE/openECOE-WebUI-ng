@@ -71,7 +71,7 @@ export class ECOE extends Item {
 
   configuration = Route.GET("/configuration");
   results = Route.GET("/results");
-  itemscore = Route.GET("/item-score");
+  itemscore = Route.GET("/results/item-score");
 }
 
 export class Area extends Item {

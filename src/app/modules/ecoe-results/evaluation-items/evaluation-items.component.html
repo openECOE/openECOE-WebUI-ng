@@ -48,12 +48,14 @@
       <tbody>
         <tr *ngFor="let registro of table.data">
           <td>{{ registro.stationName }}</td>
-          <td>{{ registro.idQuestion }}</td>
+          <td>{{ registro.questionId }}</td>
           <td>{{ registro.reference }}</td>
           <td>{{ registro.description }}</td>
-          <td>{{ registro.acierto * 100 | number : "1.0-2" }}%</td>
+          <td>{{ registro.rate }} %</td>
         </tr>
       </tbody>
     </nz-table>
   </nz-content>
 </div>
+
+<nz-spin nzSimple *ngIf="loading" class="spinner"></nz-spin>
