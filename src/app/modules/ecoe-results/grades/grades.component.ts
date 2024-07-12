@@ -16,6 +16,7 @@ class Puntuacion {
   pos?: number;
   median?: number;
   perc?: number;
+  maxPoints: number;
 
   sortOrder?: NzTableSortOrder;
   sortFn?: NzTableSortFn;
