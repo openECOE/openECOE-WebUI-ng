@@ -111,6 +111,13 @@ export class UploadAndParseComponent implements OnInit {
     });
   }
 
+  importStations(){
+    this.selectedSations.forEach((station: Station) => {
+      this.parserResult.emit(station);
+    });
+    this.handleCancel();
+  }
+
   /**
    * Event handler on file upload.
    * Reads the file data and then calls [handleFile]{@link #handleFile} function.

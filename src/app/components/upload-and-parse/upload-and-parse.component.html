@@ -61,29 +61,34 @@
   </ng-template>
 
   <ng-template #ecoesTemplate>
-    <nz-select  nzShowSearch 
-                nzAllowClear 
-                style="width: 300px" 
-                nzPlaceHolder="Selecciona ECOE" 
-                [(ngModel)]="selectedEcoe" 
-                (ngModelChange)="getStations()">
+    <nz-row>
+      <nz-select  nzShowSearch 
+                  nzAllowClear 
+                  nzPlaceHolder="Seleccione una ECOE"
+                  [(ngModel)]="selectedEcoe" 
+                  (ngModelChange)="getStations()">
+  
+        <nz-option  *ngFor="let ecoe of ecoeList" 
+                    nzCustomContent [nzLabel]="ecoe.name" 
+                    [nzValue]="ecoe"> 
+          {{ ecoe.name }}
+        </nz-option>
+      </nz-select>
+    </nz-row>
+  
+    <nz-row>
+      <nz-select  nzMode="multiple" 
+                  nzPlaceHolder="Seleccione la/s estación/es a importar" 
+                  [nzOptions]="getStationOptions()"
+                  [(ngModel)]="selectedSations">
+      </nz-select>
+    </nz-row>
 
-      <nz-option  *ngFor="let ecoe of ecoeList" 
-                  nzCustomContent [nzLabel]="ecoe.name" 
-                  [nzValue]="ecoe"> 
-        {{ ecoe.name }}
-      </nz-option>
-    </nz-select>
-    <br>
-    
-    <nz-select  nzMode="multiple" 
-                nzPlaceHolder="Please select"
-                style="width: 300px" 
-                [nzOptions]="getStationOptions()"
-                [(ngModel)]="selectedSations">
-    </nz-select>
-  <br>
-    <button nz-button nzType="primary">Importar</button>
+    <nz-row>
+      <nz-col nzSpan="24" text-center>
+        <button (click)="importStations()" nz-button nzType="primary">Importar</button>
+      </nz-col>
+    </nz-row>
   </ng-template>
 
   <ng-template #modalFooter>
