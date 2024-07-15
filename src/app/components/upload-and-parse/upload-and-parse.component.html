@@ -64,7 +64,7 @@
     <nz-row>
       <nz-select  nzShowSearch 
                   nzAllowClear 
-                  nzPlaceHolder="Seleccione una ECOE"
+                  nzPlaceHolder="{{ 'SELECT_ECOE' | translate }}"
                   [(ngModel)]="selectedEcoe" 
                   (ngModelChange)="getStations()">
   
@@ -78,7 +78,7 @@
   
     <nz-row>
       <nz-select  nzMode="multiple" 
-                  nzPlaceHolder="Seleccione la/s estación/es a importar" 
+                  nzPlaceHolder="{{'SELECT_STATION_TO_IMPORT' | translate }}"
                   [nzOptions]="getStationOptions()"
                   [(ngModel)]="selectedSations">
       </nz-select>

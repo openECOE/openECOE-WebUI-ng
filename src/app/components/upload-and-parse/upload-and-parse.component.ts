@@ -81,7 +81,6 @@ export class UploadAndParseComponent implements OnInit {
       (response: any) => {
         this.ecoeList = Object.values(response)
           .filter((ecoe: ECOE) => ecoe.organization.$ref === this.currentOrganization);
-          console.log(this.ecoeList);
       },
       error => {
         console.warn(error);
