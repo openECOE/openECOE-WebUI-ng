@@ -45,7 +45,7 @@ export class UploadAndParseComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.parserFile.filename) {
       this.isStation = this.parserFile.filename.includes('stations');
     }
@@ -54,15 +54,17 @@ export class UploadAndParseComponent implements OnInit {
       this.ecoeId = params.ecoeId;
     });
 
-    ECOE.fetch<ECOE>(this.ecoeId, { cache: false }).then((value) => {
-      this.ecoe = value;
+    try {
+      this.ecoe = await ECOE.fetch<ECOE>(this.ecoeId, { cache: false });
       this.ecoeID = this.ecoe.id;
-    });
+    } catch (error) {
+      console.error("Error fetching ECOE:", error);
+    }
 
     if (this.isStation) {
       this.initializeTabs();
-      this.getCurrentOrganization();
-      this.getEcoes();
+      await this.getCurrentOrganization();
+      await this.getEcoes();
     }
   }
 
@@ -81,40 +83,33 @@ export class UploadAndParseComponent implements OnInit {
     ];
   }
 
-  getCurrentOrganization() {
-    this.apiService.getResource('users/me').subscribe(
-      (response: any) => {
-        this.currentOrganization = response.organization.$ref;
-      },
-      error => {
-        console.warn(error);
-      }
-    );
+  async getCurrentOrganization() {
+    try {
+      const response: any = await this.apiService.getResource('users/me').toPromise();
+      this.currentOrganization = response.organization.$ref;
+    } catch (error) {
+      console.warn("Error fetching current organization:", error);
+    }
   }
 
-  getEcoes() {
-    this.apiService.getResource('ecoes').subscribe(
-      (response: any) => {
-        this.ecoeList = Object.values(response)
-          .filter((ecoe: any) => ecoe.organization.$ref === this.currentOrganization && ecoe.$uri !== '/backend/api/v1/ecoes/' + this.ecoeID);
-      },
-      error => {
-        console.warn(error);
-      }
-    );
+  async getEcoes() {
+    try {
+      const response: any = await this.apiService.getResource('ecoes').toPromise();
+      this.ecoeList = Object.values(response)
+        .filter((ecoe: any) => ecoe.organization.$ref === this.currentOrganization && ecoe.$uri !== '/backend/api/v1/ecoes/' + this.ecoeID);
+    } catch (error) {
+      console.warn("Error fetching ECOEs:", error);
+    }
   }
 
-  getStations() {
-    console.log(this.selectedEcoe);
-    this.apiService.getResource('stations').subscribe(
-      (response: any) => {
-        this.stationsList = Object.values(response)
-          .filter((station: Station) => station.ecoe.$ref === this.selectedEcoe.$uri);
-      },
-      error => {
-        console.warn(error);
-      }
-    );
+  async getStations() {
+    try {
+      const response: any = await this.apiService.getResource('stations').toPromise();
+      this.stationsList = Object.values(response)
+        .filter((station: Station) => station.ecoe.$ref === this.selectedEcoe.$uri);
+    } catch (error) {
+      console.warn("Error fetching stations:", error);
+    }
   }
 
   getStationOptions() {
@@ -126,11 +121,13 @@ export class UploadAndParseComponent implements OnInit {
     });
   }
 
-  importStations(){
+  async importStations(){
     try{
-      this.apiService.cloneStations(this.ecoe, this.selectedSations);
+      await this.apiService.cloneStations(this.ecoe, this.selectedSations);
+      console.log('Stations:', this.selectedSations);
+      console.log('ECOE:', this.ecoe);
     } catch (error) {
-      console.warn(error);
+      console.warn("Error importing stations:", error);
     }
   }
 
