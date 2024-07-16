@@ -79,7 +79,7 @@
     <nz-row>
       <nz-select  nzMode="multiple" 
                   nzPlaceHolder="{{'SELECT_STATION_TO_IMPORT' | translate }}"
-                  [nzOptions]="getStationOptions()"
+                  [nzOptions]="stationsOptions"
                   [(ngModel)]="selectedSations">
       </nz-select>
     </nz-row>

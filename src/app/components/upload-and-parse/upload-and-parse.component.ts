@@ -37,6 +37,7 @@ export class UploadAndParseComponent implements OnInit {
   ecoe: ECOE;
   ecoeID: number;
   ecoeId: number;
+  stationsOptions:Array<{ label: string; value: Station; }> = [];
 
   constructor(
     private papaParser: Papa,
@@ -107,6 +108,7 @@ export class UploadAndParseComponent implements OnInit {
       const response: any = await this.apiService.getResource('stations').toPromise();
       this.stationsList = Object.values(response)
         .filter((station: Station) => station.ecoe.$ref === this.selectedEcoe.$uri);
+      this.stationsOptions = this.getStationOptions();
     } catch (error) {
       console.warn("Error fetching stations:", error);
     }
