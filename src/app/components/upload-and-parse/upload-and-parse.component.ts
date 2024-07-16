@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import { ECOE, Station } from '@app/models';
 import { Papa } from 'ngx-papaparse';
 import { ApiService } from '@app/services/api/api.service';
-import { get } from 'http';
+import { ActivatedRoute, Router } from "@angular/router";
 
 export interface ParserFile {
   filename: string;
@@ -34,19 +34,35 @@ export class UploadAndParseComponent implements OnInit {
   ecoeList: any[] = [];
   selectedEcoe: any;
   currentOrganization: any;
+  ecoe: ECOE;
+  ecoeID: number;
+  ecoeId: number;
 
-  constructor(private papaParser: Papa, private apiService: ApiService) {}
+  constructor(
+    private papaParser: Papa,
+    private apiService: ApiService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     if (this.parserFile.filename) {
       this.isStation = this.parserFile.filename.includes('stations');
     }
 
+    this.route.params.subscribe((params) => {
+      this.ecoeId = params.ecoeId;
+    });
+
+    ECOE.fetch<ECOE>(this.ecoeId, { cache: false }).then((value) => {
+      this.ecoe = value;
+      this.ecoeID = this.ecoe.id;
+    });
+
     if (this.isStation) {
       this.initializeTabs();
       this.getCurrentOrganization();
       this.getEcoes();
-  
     }
   }
 
@@ -80,7 +96,7 @@ export class UploadAndParseComponent implements OnInit {
     this.apiService.getResource('ecoes').subscribe(
       (response: any) => {
         this.ecoeList = Object.values(response)
-          .filter((ecoe: ECOE) => ecoe.organization.$ref === this.currentOrganization);
+          .filter((ecoe: any) => ecoe.organization.$ref === this.currentOrganization && ecoe.$uri !== '/backend/api/v1/ecoes/' + this.ecoeID);
       },
       error => {
         console.warn(error);
@@ -111,10 +127,7 @@ export class UploadAndParseComponent implements OnInit {
   }
 
   importStations(){
-    this.selectedSations.forEach((station: Station) => {
-      this.parserResult.emit(station);
-    });
-    this.handleCancel();
+    this.apiService.cloneStations(this.ecoe, this.selectedSations);
   }
 
   /**
