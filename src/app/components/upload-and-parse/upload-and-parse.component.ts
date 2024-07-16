@@ -130,8 +130,7 @@ export class UploadAndParseComponent implements OnInit {
         return id;
       });
       await this.apiService.cloneStations(this.ecoe, stationsID);
-      console.log('Stations:', this.selectedSations);
-      console.log('ECOE:', this.ecoe);
+      this.handleCancel();
     } catch (error) {
       console.warn("Error importing stations:", error);
     }
