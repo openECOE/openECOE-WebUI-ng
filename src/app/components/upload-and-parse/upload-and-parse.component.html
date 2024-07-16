@@ -86,7 +86,7 @@
 
     <nz-row>
       <nz-col nzSpan="24" text-center>
-        <button (click)="importStations()" nz-button nzType="primary">Importar</button>
+        <button (click)="importStations()" nz-button nzType="primary" [disabled]="selectedSations.length < 1">{{ 'IMPORT_DATA' | translate }}</button>
       </nz-col>
     </nz-row>
   </ng-template>
