@@ -127,7 +127,11 @@ export class UploadAndParseComponent implements OnInit {
   }
 
   importStations(){
-    this.apiService.cloneStations(this.ecoe, this.selectedSations);
+    try{
+      this.apiService.cloneStations(this.ecoe, this.selectedSations);
+    } catch (error) {
+      console.warn(error);
+    }
   }
 
   /**
