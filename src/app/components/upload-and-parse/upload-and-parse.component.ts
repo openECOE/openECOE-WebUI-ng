@@ -125,7 +125,11 @@ export class UploadAndParseComponent implements OnInit {
 
   async importStations(){
     try{
-      await this.apiService.cloneStations(this.ecoe, this.selectedSations);
+      const stationsID: number[] = this.selectedSations.map(s => {
+        const id = parseInt(s.$uri.split('/').pop());
+        return id;
+      });
+      await this.apiService.cloneStations(this.ecoe, stationsID);
       console.log('Stations:', this.selectedSations);
       console.log('ECOE:', this.ecoe);
     } catch (error) {

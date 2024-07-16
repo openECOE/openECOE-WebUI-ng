@@ -296,12 +296,9 @@ export class ApiService {
     return areas;
   }
 
-  cloneStations(ecoe: ECOE, stations: any[]){
+  cloneStations(ecoe: ECOE, stationsID: any[]){
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/clone`;
-    this.http.post(url, {stations: stations.map(s => {
-      const id = parseInt(s.$uri.split('/').pop());
-      s.id = id;
-    })}).subscribe(
+    this.http.post(url, stationsID).subscribe(
       (response: any) => {
         console.log(response);
       },
