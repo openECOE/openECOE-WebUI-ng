@@ -5,8 +5,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID, Pagination} from '@openecoe/potion-client';
-import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
 
 /**
  * Component with stations and qblocks by station.
@@ -59,8 +59,9 @@ export class StationsComponent implements OnInit {
               private translate: TranslateService,
               public shared: SharedService,
               private fb: FormBuilder,
-              private message: NzMessageService,
-              private modalService: NzModalService) {
+              private modalService: NzModalService,
+              private message: ActionMessagesService
+            ) {
 
     this.stationForm = this.fb.group({
       stationRow: this.fb.array([])
@@ -198,6 +199,10 @@ export class StationsComponent implements OnInit {
         .then(() => {
           this.loadStations()
             .then(() => this.updateEditCache());
+        })
+        .catch(err => {
+          console.log(err.error);
+          this.message.createWarningMsg('error', err.error.message);
         });
       }
     },
@@ -245,7 +250,7 @@ export class StationsComponent implements OnInit {
     })
     .catch((err) => {
       console.log(err.error);
-      this.message.create('error', err.error.message);
+      this.message.createErrorMsg('error', err.error.message);
     });
   }
 
