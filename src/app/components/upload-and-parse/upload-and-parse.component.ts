@@ -23,6 +23,8 @@ export class UploadAndParseComponent implements OnInit {
   @ViewChild('ecoesTemplate', { static: true }) ecoesTemplate: TemplateRef<any>;
 
   @Output() parserResult = new EventEmitter();
+  @Output() importCompleted = new EventEmitter<void>();
+
   @Input() fileURL: string;
   @Input() parserFile: ParserFile;
 
@@ -124,13 +126,14 @@ export class UploadAndParseComponent implements OnInit {
   }
 
   async importStations(){
-    try{
+    try {
       const stationsID: number[] = this.selectedSations.map(s => {
         const id = parseInt(s.$uri.split('/').pop());
         return id;
       });
       this.apiService.cloneStations(this.ecoe, stationsID);
       this.handleCancel();
+      this.importCompleted.emit();
     } catch (error) {
       console.warn("Error importing stations:", error);
     }
