@@ -3,6 +3,7 @@ import { ECOE, Station } from '@app/models';
 import { Papa } from 'ngx-papaparse';
 import { ApiService } from '@app/services/api/api.service';
 import { ActivatedRoute, Router } from "@angular/router";
+import {getPotionID, Pagination} from '@openecoe/potion-client';
 
 export interface ParserFile {
   filename: string;
@@ -31,21 +32,24 @@ export class UploadAndParseComponent implements OnInit {
   isStation: boolean;
   tabs: Array<{ name: string, icon: string, content: TemplateRef<any> }> = [];
   isVisible: boolean;
-  stationsList: any[] = [];
-  selectedSations: any[] = [];
+  stationsList: Station[] = [];
+  selectedStations: any[] = [];
   ecoeList: any[] = [];
   selectedEcoe: any;
+  selectedEcoeID: number;
   currentOrganization: any;
   ecoe: ECOE;
   ecoeID: number;
   ecoeId: number;
   stationsOptions:Array<{ label: string; value: Station; }> = [];
 
+  page: number = 1;
+  pagStations: Pagination<Station>;
+
   constructor(
     private papaParser: Papa,
     private apiService: ApiService,
-    private route: ActivatedRoute,
-    private router: Router
+    private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
@@ -105,17 +109,6 @@ export class UploadAndParseComponent implements OnInit {
     }
   }
 
-  async getStations() {
-    try {
-      const response: any = await this.apiService.getResource('stations').toPromise();
-      this.stationsList = Object.values(response)
-        .filter((station: Station) => station.ecoe.$ref === this.selectedEcoe.$uri);
-      this.stationsOptions = this.getStationOptions();
-    } catch (error) {
-      console.warn("Error fetching stations:", error);
-    }
-  }
-
   getStationOptions() {
     return this.stationsList.map((station: Station) => {
       return {
@@ -124,10 +117,56 @@ export class UploadAndParseComponent implements OnInit {
       };
     });
   }
+  
+  async getStations() {
+    this.selectedEcoeID = parseInt(this.selectedEcoe.$uri.split('/').pop());
+    return new Promise(resolve => {
+      Station.query<Station>({
+        where: {ecoe: this.selectedEcoeID},
+        sort: {order: false},
+        page: this.page,
+        perPage: 200
+      }, {paginate: true})
+        .then(response => {
+          console.log(response);
+          console.log("Selected Ecoe:", this.selectedEcoeID);
+          this.loadPage(response);
+          this.stationsOptions = this.getStationOptions();
+        })
+        .catch(err => {
+          if (err.status === 404) {
+            this.page--;
+            if (this.page > 0) {
+              this.getStations().finally();
+            }
+          }
+        })
+        .finally(() => {
+          resolve(null);
+        });
+    });
+  }
+
+  loadPage(pagination: Pagination<Station>  | Station[]) {
+    this.pagStations = pagination as Pagination<Station>;
+    this.stationsList = [];
+    for (let station of this.pagStations.toArray()) {
+      this.stationsList.push(Object.assign(new Station, station));
+    }
+
+    this.stationsList.map(value => {
+      // Fix for SelfReference Station Type
+      if (value.parentStation !== null && !value.parentStation.name) {
+        Station.fetch<Station>(getPotionID(value.parentStation['$uri'], '/stations'))
+          .then(parentStation => value.parentStation = parentStation);
+      }
+    });
+    return;
+  }
 
   async importStations(){
     try {
-      const stationsID: number[] = this.selectedSations.map(s => {
+      const stationsID: number[] = this.selectedStations.map(s => {
         const id = parseInt(s.$uri.split('/').pop());
         return id;
       });
