@@ -169,14 +169,16 @@ export class UploadAndParseComponent implements OnInit {
         const id = parseInt(s.$uri.split('/').pop());
         return id;
       });
-      this.apiService.cloneStations(this.ecoe, stationsID);
+      this.apiService.cloneStations(this.ecoe, stationsID)
+        .toPromise().then(() => this.importCompleted.emit());
+        
       this.handleCancel();
-      this.importCompleted.emit();
       
       // Limpiar los selects
       this.selectedEcoe = null;
       this.selectedStations = [];
       this.stationsOptions = [];
+
     } catch (error) {
       console.warn("Error importing stations:", error);
     }
