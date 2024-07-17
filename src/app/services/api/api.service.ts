@@ -298,13 +298,6 @@ export class ApiService {
 
   cloneStations(ecoe: ECOE, stationsID: any[]){
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/clone`;
-    this.http.post(url, {"stations": stationsID}).subscribe(
-      (response: any) => {
-        console.log(response);
-      },
-      error => {
-        console.warn(error);
-      }
-    );
+    return this.http.post(url, {"stations": stationsID});
   }
 }
