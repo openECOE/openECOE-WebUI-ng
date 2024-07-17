@@ -129,7 +129,6 @@ export class UploadAndParseComponent implements OnInit {
       }, {paginate: true})
         .then(response => {
           console.log(response);
-          console.log("Selected Ecoe:", this.selectedEcoeID);
           this.loadPage(response);
           this.stationsOptions = this.getStationOptions();
         })
@@ -173,6 +172,11 @@ export class UploadAndParseComponent implements OnInit {
       this.apiService.cloneStations(this.ecoe, stationsID);
       this.handleCancel();
       this.importCompleted.emit();
+      
+      // Limpiar los selects
+      this.selectedEcoe = null;
+      this.selectedStations = [];
+      this.stationsOptions = [];
     } catch (error) {
       console.warn("Error importing stations:", error);
     }
