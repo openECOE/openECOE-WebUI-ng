@@ -335,5 +335,7 @@
   "AUTO_ASSINGMENT_EXCESS_STUDENTS": "Quedan {{totalStudents}} alumnos sin asignar",
   "AUTO_ASSINGMENT_SUCCESS": "Todos los alumnos han sido asignados correctamente",
   "ACTIVATE_LOOP": "Activar bucle",
-  "DESACTIVATE_LOOP": "Desactivar bucle"
+  "DESACTIVATE_LOOP": "Desactivar bucle",
+  "SELECT_ECOE": "Seleccione una ECOE",
+  "SELECT_STATION_TO_IMPORT": "Seleccione la/s estación/es a importar"
 }

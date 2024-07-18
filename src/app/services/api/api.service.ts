@@ -295,4 +295,9 @@ export class ApiService {
 
     return areas;
   }
+
+  cloneStations(ecoe: ECOE, stationsID: any[]){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/clone`;
+    return this.http.post(url, {"stations": stationsID});
+  }
 }
