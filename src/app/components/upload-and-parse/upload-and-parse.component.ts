@@ -57,18 +57,18 @@ export class UploadAndParseComponent implements OnInit {
       this.isStation = this.parserFile.filename.includes('stations');
     }
 
-    this.route.params.subscribe((params) => {
-      this.ecoeId = params.ecoeId;
-    });
-
-    try {
-      this.ecoe = await ECOE.fetch<ECOE>(this.ecoeId, { cache: false });
-      this.ecoeID = this.ecoe.id;
-    } catch (error) {
-      console.error("Error fetching ECOE:", error);
-    }
-
     if (this.isStation) {
+      this.route.params.subscribe((params) => {
+        this.ecoeId = params.ecoeId;
+      });
+
+      try {
+        this.ecoe = await ECOE.fetch<ECOE>(this.ecoeId, { cache: false });
+        this.ecoeID = this.ecoe.id;
+      } catch (error) {
+        console.error("Error fetching ECOE:", error);
+      }
+
       this.initializeTabs();
       await this.getCurrentOrganization();
       await this.getEcoes();
@@ -128,7 +128,6 @@ export class UploadAndParseComponent implements OnInit {
         perPage: 200
       }, {paginate: true})
         .then(response => {
-          console.log(response);
           this.loadPage(response);
           this.stationsOptions = this.getStationOptions();
         })
