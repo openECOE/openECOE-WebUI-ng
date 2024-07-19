@@ -5,11 +5,11 @@
         <i class="back-color" nz-icon nzType="arrow-left"></i>
         <span class="back-color">{{'BACK_ECOE' | translate }} </span>
       </li>
-      <li nz-menu-item [routerLink]="['personal-data']" routerLinkActive="ant-menu-item-selected">
+      <li nz-menu-item routerLink="personal-data" routerLinkActive="ant-menu-item-selected">
         <i nz-icon nzType="user" nzTheme="outline"></i>
         <span>{{'PERSONAL_DATA' | translate }} </span>
       </li>
-      <li nz-menu-item [routerLink]="['users']" routerLinkActive="ant-menu-item-selected" *ngIf="userData?.isAdmin || userData?.isSuper">
+      <li nz-menu-item routerLink="users" routerLinkActive="ant-menu-item-selected" *ngIf="userData?.isAdmin && !loading">
         <table style="width: 200px">
           <tr>
             <td style="width: 165px">
@@ -19,14 +19,14 @@
             <td>
               <nz-badge
               nzStandalone
-              [nzCount]="initialLoading ? '...' : usersPage['total'] || 0"
+              [nzCount]="usersPage.total || 0"
               [nzStyle]="{ backgroundColor: '#188fff25', color: '#1890ff', fontSize: '16px', borderRadius: '4px', boxShadow: '0 0 0 1px #157fe225 inset' }"
             ></nz-badge>
             </td>
           </tr>
         </table>
       </li>
-      <li nz-menu-item [routerLink]="['organizations']" routerLinkActive="ant-menu-item-selected" *ngIf="userData?.isSuper">
+      <li nz-menu-item routerLink="organizations" routerLinkActive="ant-menu-item-selected" *ngIf="userData?.isSuper && !loading">
         <table style="width: 200px">
           <tr>
             <td style="width: 165px">
@@ -36,7 +36,7 @@
             <td>
               <nz-badge
                     nzStandalone
-                    [nzCount]="initialLoading ? '...' : organizationsPage['total'] || 0"
+                    [nzCount]="organizationsPage.total || 0"
                     [nzStyle]="{ backgroundColor: '#188fff25', color: '#1890ff', fontSize: '16px', borderRadius: '4px', boxShadow: '0 0 0 1px #157fe225 inset' }"
               ></nz-badge>
             </td>

@@ -104,7 +104,7 @@
   "DURATION_PLACEHOLDER": "Introduzca la duración de la Fase",
   "MINUTES": "minutos",
   "SECONDS": "segundos",
-  "START": "Inicio",
+  "START": "Iniciar",
   "END": "Fin",
   "STOP": "Detener",
   "ADD_EVENT": "Añadir Evento",
@@ -238,7 +238,7 @@
   "DOWNLOAD_TEMPLATE": "Descargar plantilla",
   "ACTION_STATE_DRAFT": "Poner en borrador",
   "ACTION_STATE_PUBLISH": "Publicar ECOE",
-  "ERROR_ACTION_STATE_DRAFT": "Error al poner la ECOE en estado 'Borrador'.",
+  "ERROR_ACTION_STATE_DRAFT": "Error al poner la ECOE en estado 'Borrador', compruebe que no hay cronómetros activos.",
   "ERROR_ACTION_STATE_PUBLISH": "Error al publicar ECOE.",
   "NO_ECOE_PUBLISHED": "La ECOE no ha sido publicada",
   "CLICK_HERE_OR_DRAG_FILE": "Pinche aquí o arrastre un archivo",
@@ -331,5 +331,11 @@
   "TEMPLATE_SAVED": "Plantilla guardada correctamente",
   "BACK_ECOE": "Menú principal",
   "PERSONAL_DATA": "Datos personales",
-  "EDIT_PERSONAL_DATA_ERROR": "Error al editar los datos personales"
+  "EDIT_PERSONAL_DATA_ERROR": "Error al editar los datos personales",
+  "AUTO_ASSINGMENT_EXCESS_STUDENTS": "Quedan {{totalStudents}} alumnos sin asignar",
+  "AUTO_ASSINGMENT_SUCCESS": "Todos los alumnos han sido asignados correctamente",
+  "ACTIVATE_LOOP": "Activar bucle",
+  "DESACTIVATE_LOOP": "Desactivar bucle",
+  "SELECT_ECOE": "Seleccione una ECOE",
+  "SELECT_STATION_TO_IMPORT": "Seleccione la/s estación/es a importar"
 }

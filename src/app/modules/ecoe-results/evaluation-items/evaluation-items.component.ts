@@ -10,13 +10,13 @@ import {
 } from "ng-zorro-antd/table";
 
 class itemEval {
-  acierto?: number;
-  idQuestion?: number;
-  idStation?: number;
+  rate: number;
+  questionId: number;
+  stationId: number;
   maxPoints: number;
   points: number;
-  questionSchema?: any;
-  stationName?: string;
+  questionSchema: any;
+  stationName: string;
 }
 
 @Component({
@@ -34,9 +34,12 @@ export class EvaluationItemsComponent implements OnInit {
   filter: Object[];
   filterFn: boolean | null;
 
+  loading: boolean;
+
   constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
+    this.loading = true;
     this.route.params.subscribe((params) => {
       this.ecoeId = +params.ecoeId;
       ECOE.fetch<ECOE>(this.ecoeId, { cache: false }).then((value) => {
@@ -67,6 +70,7 @@ export class EvaluationItemsComponent implements OnInit {
           });
           this.filter = filter;
           this.results = response;
+          this.loading = false;
         });
       });
     });

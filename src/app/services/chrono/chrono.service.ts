@@ -170,7 +170,19 @@ export class ChronoService {
         }
       })
     ); 
+  }
 
+  getChronoStatus(id: number) {
+    const command = '/rounds-status/:id';
+    const url = this.URL_CHRONO + command.replace(':id', id + '');
 
+    return this.http.get(url);
+  }
+
+  setLoop(id: number, loop: boolean) {
+    const COMMAND = '/ecoes/:id/loop';
+    const URL_V1 = this.API_ROUTE + this.API_V1 + COMMAND.replace(':id', id + '');
+  
+    return this.http.post(URL_V1, {loop});
   }
 }

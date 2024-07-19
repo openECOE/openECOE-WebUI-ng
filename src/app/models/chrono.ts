@@ -15,6 +15,7 @@ export interface InfoData {
   id: number;
   name: string;
   time_start?: string;
+  organization?: number;
 }
 
 export interface Event {

@@ -35,7 +35,13 @@
               "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
               "src/styles.less"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "jodit-angular",
+              "socket.io-client",
+              "autolinker",
+              "papaparse"
+            ]
           },
           "configurations": {
             "production": {

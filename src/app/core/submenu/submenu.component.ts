@@ -37,7 +37,6 @@ export class SubmenuComponent implements OnInit {
         const activeLink = this.router.url.split("/")[3];
         await this.userService.loadUserData();
         const _userData = this.userService.userData;
-
         if (_userData) {
           const isEval = _userData.isEval;
           const isAdmin = _userData.isAdmin;
@@ -46,24 +45,28 @@ export class SubmenuComponent implements OnInit {
             ECOE: [
               {
                 title: "CONFIGURATION",
+                icon: "setting",
                 redirecTo: `/ecoe/${this.ecoeId}/admin`,
                 active: activeLink === "admin",
                 show: isAdmin,
               },
               {
                 title: "EVALUATION",
+                icon: "solution",
                 redirecTo: `/ecoe/${this.ecoeId}/eval`,
                 active: activeLink === "eval",
                 show: isEval || isAdmin,
               },
               {
                 title: "SCHEDULE",
+                icon: "clock-circle",
                 redirecTo: `/ecoe/${this.ecoeId}/chrono`,
                 active: activeLink === "chrono",
                 show: isAdmin,
               },
               {
                 title: "RESULTS",
+                icon: "file-text",
                 redirecTo: `/ecoe/${this.ecoeId}/results`,
                 active: activeLink === "results",
                 show: isAdmin,

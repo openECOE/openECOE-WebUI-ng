@@ -47,12 +47,15 @@ export class TextDatePipe implements PipeTransform {
 
     inputDate.setHours(0, 0, 0, 0);
 
+    let todayOrYesterday = false;
     if (inputDate.getTime() === today.getTime()) {
       date = this.translate
         .instant('TIME_TODAY') + ', ' + pad(new Date(value).getHours(), 2, '0') + ':' + pad(new Date(value).getMinutes(), 2, '0');
+        todayOrYesterday = true;
     } else if (inputDate.getTime() === yesterday.getTime()) {
       date = this.translate
         .instant('TIME_YESTERDAY') + ', ' + pad(new Date(value).getHours(), 2, '0') + ':' + pad(new Date(value).getMinutes(), 2, '0');
+        todayOrYesterday = true;
     } else {
 
       let dateOptions;
@@ -66,6 +69,6 @@ export class TextDatePipe implements PipeTransform {
       date = inputDate.toLocaleDateString(this.translate.currentLang, dateOptions);
     }
 
-    return fullDate ? date + hhMMss2hhMM(value) : date;
+    return fullDate && !todayOrYesterday ? date + hhMMss2hhMM(value) : date;
   }
 }

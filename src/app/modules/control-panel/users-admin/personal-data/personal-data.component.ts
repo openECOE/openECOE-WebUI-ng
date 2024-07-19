@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { User, UserLogged } from '@app/models';
 import { SharedService } from '@app/services/shared/shared.service';
 import { UserService } from '@app/services/user/user.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-personal-data',
   templateUrl: './personal-data.component.html',
   styleUrls: ['./personal-data.component.less']
 })
-export class PersonalDataComponent implements OnInit {
+export class PersonalDataComponent implements OnInit, OnDestroy {
   userData: UserLogged;
   validateForm: FormGroup;
   showEditPassword: boolean = false;
@@ -19,6 +21,8 @@ export class PersonalDataComponent implements OnInit {
   editUserSurname: boolean = false;
   editedName: string;
   editedSurname: string;
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     private fb: FormBuilder,
@@ -30,7 +34,16 @@ export class PersonalDataComponent implements OnInit {
 
   ngOnInit(): void {
     this.getPasswordForm();
-    this.getUserData();
+    if(this.userService.userData) {
+      this.userData = this.userService.userData;
+    } else {
+      this.getUserData();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 
   startEdit(user: User, option: number): void {
@@ -92,8 +105,8 @@ export class PersonalDataComponent implements OnInit {
   }
 
   getUserData(): void {
-    this.userService.loadUserData().then(() => {
-      this.userData = this.userService.userData;
+    this.userService.userDataChange.pipe(takeUntil(this.destroyed$)).subscribe((user: UserLogged) => {
+      this.userData = user;
       this.editedName = this.userData.user.name;
       this.editedSurname = this.userData.user.surname;
     });

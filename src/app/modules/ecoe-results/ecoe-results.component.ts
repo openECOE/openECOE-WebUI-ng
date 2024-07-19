@@ -1,8 +1,10 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ApiService } from "@app/services/api/api.service";
 import { ECOE, Job, Student, Round, Shift } from "@models/index";
 import { Item, Pagination } from "@openecoe/potion-client";
+import { ReplaySubject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 
 interface ISummaryItems {
   total: number;
@@ -14,7 +16,7 @@ interface ISummaryItems {
   templateUrl: "./ecoe-results.component.html",
   styleUrls: ["./ecoe-results.component.less"],
 })
-export class EcoeResultsComponent implements OnInit {
+export class EcoeResultsComponent implements OnInit, OnDestroy {
   areGeneratedReport: boolean;
   areGeneratedCSV: boolean;
   ecoeId: number;
@@ -46,6 +48,8 @@ export class EcoeResultsComponent implements OnInit {
   stages: ISummaryItems = { total: 0, show: false, loading: true };
   ecoeName: any;
 
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  
   constructor(
     private api: ApiService,
     private route: ActivatedRoute,
@@ -103,6 +107,11 @@ export class EcoeResultsComponent implements OnInit {
       return;
     });
   }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
+  }
   
   onBack() {
     this.router.navigate(["/ecoe"]).finally();
@@ -137,6 +146,7 @@ export class EcoeResultsComponent implements OnInit {
     this.btn_dwl_csv = false;
     this.api
       .postResource("ecoes/" + this.ecoeId + "/csv")
+      .pipe(takeUntil(this.destroyed$))
       .subscribe(() => this.updateProgressCsv());
   }
   async updateProgressCsv() {
@@ -158,7 +168,7 @@ export class EcoeResultsComponent implements OnInit {
     }, 500);
   }
   downloadCSV() {
-    this.api.getJobFile(this.job_id_csv, "CSV_" + this.ecoeName);
+    this.api.getJobFile(this.job_id_csv, "csv_" + 'ecoe_' + this.ecoeID);
   }
 
   get show_students(): boolean {

@@ -53,6 +53,7 @@ import { ProgressBarComponent } from './chrono/progress-bar/progress-bar.compone
 import { ChronoHeaderComponent } from './chrono/chrono-header/chrono-header.component';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { ChangeOrganizationComponent } from './change-organization/change-organization.component';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
 // TODO: Review to include Login and Home components
 @NgModule({
@@ -111,7 +112,8 @@ import { ChangeOrganizationComponent } from './change-organization/change-organi
     NzInputNumberModule,
     NzSpaceModule,
     NzRadioModule,
-    NzDropDownModule
+    NzDropDownModule,
+    NzTabsModule
   ],
   exports: [
     UploadAndParseComponent,
