@@ -9,6 +9,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
 import { ApiService } from '@app/services/api/api.service';
 import { json } from 'node:stream/consumers';
+import { HttpResponse } from '@angular/common/http';
 
 /**
  * Component with stations and qblocks by station.
@@ -440,7 +441,8 @@ export class StationsComponent implements OnInit {
     this.api
       .getResourceFile("stations/" + station.id + "/export")
       .subscribe((results) => {
-        const jsonFile = new Blob([JSON.stringify(results)], { type: 'application/json' });
+        const parsedJson = JSON.parse(new TextDecoder().decode(results as ArrayBuffer));
+        const jsonFile = new Blob([JSON.stringify(parsedJson)], { type: 'application/json' });
         const url = window.URL.createObjectURL(jsonFile);
 
         const link = document.createElement('a');
