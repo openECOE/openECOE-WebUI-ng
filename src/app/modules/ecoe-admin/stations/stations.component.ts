@@ -442,7 +442,7 @@ export class StationsComponent implements OnInit {
       .getResourceFile("stations/" + station.id + "/export")
       .subscribe((results) => {
         const parsedJson = JSON.parse(new TextDecoder().decode(results as ArrayBuffer));
-        const jsonFile = new Blob([JSON.stringify(parsedJson)], { type: 'application/json' });
+        const jsonFile = new Blob([JSON.stringify(parsedJson, null, 2)], { type: 'application/json' });
         const url = window.URL.createObjectURL(jsonFile);
 
         const link = document.createElement('a');
