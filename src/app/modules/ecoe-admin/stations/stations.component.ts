@@ -437,7 +437,6 @@ export class StationsComponent implements OnInit {
       .catch(err => console.error('ERROR ON IMPORT:', err));
   }
 
-
   modalExportStations(station: Station) {
     this.modalService.confirm({
       nzTitle: this.translate.instant('EXPORT_STATIONS'),
