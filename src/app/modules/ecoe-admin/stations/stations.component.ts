@@ -440,8 +440,8 @@ export class StationsComponent implements OnInit {
 
   modalExportStations(station: Station) {
     this.modalService.confirm({
-      nzTitle: this.translate.instant("Exportar estaciones"),
-      nzContent: this.translate.instant("Esta estación tiene estaciones hijas o está anidada en otra estación. ¿Desea exportarla junto a sus estaciones vinculadas?"),
+      nzTitle: this.translate.instant('EXPORT_STATIONS'),
+      nzContent: this.translate.instant('EXPORT_STATIONS_CONFIRM'),
       nzOnOk: () => {
         this.exportStation(station);
       }
