@@ -437,11 +437,24 @@ export class StationsComponent implements OnInit {
       .catch(err => console.error('ERROR ON IMPORT:', err));
   }
 
+
+  modalExportStations(station: Station) {
+    this.modalService.confirm({
+      nzTitle: this.translate.instant("Exportar estaciones"),
+      nzContent: this.translate.instant("Esta estación tiene estaciones hijas o está anidada en otra estación. ¿Desea exportarla junto a sus estaciones vinculadas?"),
+      nzOnOk: () => {
+        this.exportStation(station);
+      }
+    },
+    'confirm');
+  }
+
   exportStation(station: Station) {
     this.api
       .getResourceFile("stations/" + station.id + "/export")
       .subscribe((results) => {
         const parsedJson = JSON.parse(new TextDecoder().decode(results as ArrayBuffer));
+        const formattedJson = JSON.stringify(parsedJson, null, 2);
         const jsonFile = new Blob([JSON.stringify(parsedJson)], { type: 'application/json' });
         const url = window.URL.createObjectURL(jsonFile);
 
