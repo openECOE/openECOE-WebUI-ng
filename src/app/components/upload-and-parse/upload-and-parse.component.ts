@@ -191,7 +191,8 @@ export class UploadAndParseComponent implements OnInit {
     const fr = new FileReader();
     fr.onload = (e) => {
       file.onSuccess({}, file.file, 'success');
-      this.handleFile(fr.result.toString());
+      const fileContent = fr.result.toString();
+      this.handleFile(fileContent);
     };
     fr.readAsText(file.file);
     this.handleCancel();
@@ -203,6 +204,20 @@ export class UploadAndParseComponent implements OnInit {
    * @param fileString File data as string
    */
   handleFile(fileString: string) {
+    // Verificar si el archivo es JSON
+    let isJson = false;
+    try {
+      const jsonObject = JSON.parse(fileString);
+      if (jsonObject.blocks) {
+        isJson = true;
+        this.parserResult.emit({ items: [jsonObject], isJson });
+        return;
+      }
+    } catch (e) {
+      console.log("ERROR JSON: ", e.message);
+    }
+
+    // Procesar como CSV si no es JSON
     this.papaParser.parse(fileString, {
       header: true,
       dynamicTyping: true,
@@ -210,7 +225,10 @@ export class UploadAndParseComponent implements OnInit {
       quoteChar: '"',
       escapeChar: '"',
       complete: (results, file) => {
-        this.parserResult.emit(results.data);
+        if(this.isStation)
+          this.parserResult.emit({ items: results.data, isJson });
+        else
+          this.parserResult.emit(results.data);
       }
     });
   }
