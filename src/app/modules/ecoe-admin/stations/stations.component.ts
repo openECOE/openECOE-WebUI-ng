@@ -425,16 +425,26 @@ export class StationsComponent implements OnInit {
     this.InitStationRow();
   }
 
+  onFileParsed(event: { items: any[], isJson: boolean }) {
+    const { items, isJson } = event;
+    this.importStations(items, isJson);
+  }
+
   /**
    * Import stations from file
    * @param items rows readed from file
    */
-  importStations(items: any[]) {
-    this.saveArrayStations(items)
-      .then(() => {
-        this.loadStations().finally();
-      })
-      .catch(err => console.error('ERROR ON IMPORT:', err));
+  importStations(items: any[], isJson: boolean): void {
+    if (isJson) {
+      console.log('El archivo es un JSON');
+      this.api.importStationsJSON(this.ecoe, items)
+    } else {
+      this.saveArrayStations(items)
+        .then(() => {
+          this.loadStations().finally();
+        })
+        .catch(err => console.error('ERROR ON IMPORT:', err));
+    }
   }
 
   modalExportStations(station: Station) {
