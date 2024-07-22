@@ -300,4 +300,10 @@ export class ApiService {
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/clone`;
     return this.http.post(url, {"stations": stationsID});
   }
+
+  importStationsJSON(ecoe: ECOE, stations: any){
+    console.log("Importing stations", stations);
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/import`;
+    return this.http.post(url, {"stations": stations});
+  }
 }
