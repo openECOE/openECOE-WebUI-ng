@@ -7,6 +7,9 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 import {getPotionID, Pagination} from '@openecoe/potion-client';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
+import { ApiService } from '@app/services/api/api.service';
+import { json } from 'node:stream/consumers';
+import { HttpResponse } from '@angular/common/http';
 
 /**
  * Component with stations and qblocks by station.
@@ -60,7 +63,8 @@ export class StationsComponent implements OnInit {
               public shared: SharedService,
               private fb: FormBuilder,
               private modalService: NzModalService,
-              private message: ActionMessagesService
+              private message: ActionMessagesService,
+              private api: ApiService
             ) {
 
     this.stationForm = this.fb.group({
@@ -431,6 +435,43 @@ export class StationsComponent implements OnInit {
         this.loadStations().finally();
       })
       .catch(err => console.error('ERROR ON IMPORT:', err));
+  }
+
+  modalExportStations(station: Station) {
+    this.modalService.confirm({
+      nzTitle: this.translate.instant('EXPORT_STATIONS'),
+      nzContent: this.translate.instant('EXPORT_STATIONS_CONFIRM'),
+      nzOnOk: () => {
+        this.exportStation(station);
+      }
+    },
+    'confirm');
+  }
+
+  exportStation(station: Station) {
+    this.api
+      .getResourceFile("stations/" + station.id + "/export")
+      .subscribe((results) => {
+        const parsedJson = JSON.parse(new TextDecoder().decode(results as ArrayBuffer));
+        const jsonFile = new Blob([JSON.stringify(parsedJson, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(jsonFile);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = station.name + '.json';
+
+        document.body.appendChild(link);
+
+        link.dispatchEvent(
+          new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          })
+        );
+
+        document.body.removeChild(link);
+      });
   }
 
   /**

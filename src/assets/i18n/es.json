@@ -337,5 +337,8 @@
   "ACTIVATE_LOOP": "Activar bucle",
   "DESACTIVATE_LOOP": "Desactivar bucle",
   "SELECT_ECOE": "Seleccione una ECOE",
-  "SELECT_STATION_TO_IMPORT": "Seleccione la/s estación/es a importar"
+  "SELECT_STATION_TO_IMPORT": "Seleccione la/s estación/es a importar",
+  "EXPORT": "Exportar",
+  "EXPORT_STATIONS": "Exportar estaciones",
+  "EXPORT_STATIONS_CONFIRM": "Esta estación tiene estaciones hijas o está anidada a otra estación. ¿Desea exportarla junto a sus estaciones vinculadas?"
 }
