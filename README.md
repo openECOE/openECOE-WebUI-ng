@@ -34,7 +34,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## How to contribute
 
-If you want to contribute, you can do it [here](CONTRIBUTING.md).
+If you want to contribute, you can [read the contributing guide](CONTRIBUTING.md).
 
 ## License
 Copyright (c) 2019 Universidad Miguel Hernandez de Elche
