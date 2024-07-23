@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SharedService} from '@services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
-import {RowStation, Station, ECOE} from '../../../models';
+import {RowStation, Station, ECOE, QuestionOld, Block} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID, Pagination} from '@openecoe/potion-client';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -437,7 +437,7 @@ export class StationsComponent implements OnInit {
   importStations(items: any[], isJson: boolean): void {
     if (isJson) {
       console.log('El archivo es un JSON');
-      this.api.importStationsJSON(this.ecoe, items)
+      this.api.importStationsJSON(this.ecoe, items[0])
     } else {
       this.saveArrayStations(items)
         .then(() => {
@@ -564,4 +564,5 @@ export class StationsComponent implements OnInit {
       .catch(err =>
         new Promise(((resolve, reject) => reject(err))));
   }
+
 }
