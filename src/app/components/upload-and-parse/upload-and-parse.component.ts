@@ -204,19 +204,18 @@ export class UploadAndParseComponent implements OnInit {
    * @param fileString File data as string
    */
   handleFile(fileString: string) {
-    // Verificar si el archivo es JSON
     let isJson = false;
-    try {
+
+    if(this.isStation){
+      // Verificar si el archivo es JSON
       const jsonObject = JSON.parse(fileString);
       if (jsonObject.blocks) {
         isJson = true;
         this.parserResult.emit({ items: [jsonObject], isJson });
         return;
       }
-    } catch (e) {
-      console.log("ERROR JSON: ", e.message);
     }
-
+    
     // Procesar como CSV si no es JSON
     this.papaParser.parse(fileString, {
       header: true,
