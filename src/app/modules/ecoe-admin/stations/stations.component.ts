@@ -468,7 +468,7 @@ export class StationsComponent implements OnInit {
 
         const link = document.createElement('a');
         link.href = url;
-        link.download = station.name + '.json';
+        link.download = station.name + '.station';
 
         document.body.appendChild(link);
 
