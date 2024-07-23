@@ -437,7 +437,8 @@ export class StationsComponent implements OnInit {
   importStations(items: any[], isJson: boolean): void {
     if (isJson) {
       console.log('El archivo es un JSON');
-      this.api.importStationsJSON(this.ecoe, items[0])
+      this.api.importStationsJSON(this.ecoe, items[0]).toPromise()
+        .then(() => this.loadStations().finally());
     } else {
       this.saveArrayStations(items)
         .then(() => {
