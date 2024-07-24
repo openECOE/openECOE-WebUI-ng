@@ -4,6 +4,8 @@ import { Papa } from 'ngx-papaparse';
 import { ApiService } from '@app/services/api/api.service';
 import { ActivatedRoute, Router } from "@angular/router";
 import {getPotionID, Pagination} from '@openecoe/potion-client';
+import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface ParserFile {
   filename: string;
@@ -49,7 +51,9 @@ export class UploadAndParseComponent implements OnInit {
   constructor(
     private papaParser: Papa,
     private apiService: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private message: ActionMessagesService,
+    private translate: TranslateService
   ) {}
 
   async ngOnInit() {
@@ -206,14 +210,19 @@ export class UploadAndParseComponent implements OnInit {
   handleFile(fileString: string) {
     let isJson = false;
 
+    // Verificar si el archivo es JSON
     if(this.isStation){
-      // Verificar si el archivo es JSON
-      const jsonObject = JSON.parse(fileString);
-      if (jsonObject.blocks) {
-        isJson = true;
-        this.parserResult.emit({ items: [jsonObject], isJson });
-        return;
+      try{
+        const jsonObject = JSON.parse(fileString);
+        if (jsonObject.blocks) {
+          isJson = true;
+          this.parserResult.emit({ items: [jsonObject], isJson });
+          return;
+        }
+      }catch(e){
+        this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
       }
+
     }
     
     // Procesar como CSV si no es JSON
