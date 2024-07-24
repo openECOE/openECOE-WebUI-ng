@@ -65,7 +65,21 @@
           *ngFor="let item of ecoesList"
         >
           <nz-list-item>
-            <nz-card [nzTitle]="item.name">
+            <nz-card [nzTitle]="cardTitleTemplate">
+              <ng-template #cardTitleTemplate>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>{{ item.name }}</span>
+                  <div>
+                    <a [title]=" 'EXPORT' | translate "style="margin-right: 15px;">
+                      <span nz-icon nzType="download" nzTheme="outline"></span>
+                    </a>
+                    <a [title]=" 'DUPLICATE' | translate ">
+                      <span nz-icon nzType="copy" nzTheme="outline"></span>
+                    </a>
+                  </div>
+                </div>
+              </ng-template>
+
               <a
                 nz-button
                 [routerLink]="[
@@ -126,7 +140,7 @@
   [nzTitle]="'CREATE_ECOE' | translate"
   (nzOnClose)="closeDrawer()"
 >
-  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormECOE(validateForm)">
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormECOE(validateForm)" style="width: 95%;">
     <nz-form-item>
       <nz-form-control nzHasFeedback [nzValidatingTip]="'VALIDATING' | translate" [nzErrorTip]="userErrorTpl">
         <input nz-input formControlName="ecoeName" [placeholder]="'ECOE_NAME' | translate" />
@@ -141,8 +155,29 @@
       </nz-form-control>
     </nz-form-item>
 
-    <button type="submit" nz-button nzType="primary" [disabled]="!validateForm.valid">
-      <span>{{ "ACCEPT" | translate }}</span>
+    <button type="submit" nz-button nzType="primary" [disabled]="!validateForm.valid" style="width: 100%; justify-content: center;">
+      <span>{{ "CREATE" | translate }}</span>
     </button>
   </form>
+
+  <div style="width: 95%; margin-top: 20px;height: 200px;">
+    <nz-divider nzText="o"></nz-divider>
+    <h3>{{ "IMPORT_ECOE" | translate }}</h3>
+    <nz-upload
+      [nzMultiple]="false"
+      
+      [nzShowUploadList]="false"
+      nzType="drag"
+      >
+      <p class="ant-upload-drag-icon">
+        <span nz-icon nzType="inbox"></span>
+      </p>
+      <p class="ant-upload-text">{{ 'CLICK_HERE_OR_DRAG_FILE' | translate }}</p>
+      <p class="ant-upload-hint">
+        {{ 'DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE' | translate }}
+      </p>
+    </nz-upload>
+
+  </div>
+
 </nz-drawer>
