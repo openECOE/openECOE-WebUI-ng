@@ -439,9 +439,10 @@ export class StationsComponent implements OnInit {
         .catch(err =>
           { 
             if (err.status === 500) {
-              this.message.createErrorMsg(err.message);
+              this.message.createErrorMsg(err.error.message);
+            } else {
+              this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
             }
-            this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
           });
     } else {
       this.saveArrayStations(items)
