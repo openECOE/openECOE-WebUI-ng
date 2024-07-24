@@ -2,14 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SharedService} from '@services/shared/shared.service';
 import {TranslateService} from '@ngx-translate/core';
-import {RowStation, Station, ECOE, QuestionOld, Block} from '../../../models';
+import {RowStation, Station, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID, Pagination} from '@openecoe/potion-client';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
 import { ApiService } from '@app/services/api/api.service';
-import { json } from 'node:stream/consumers';
-import { HttpResponse } from '@angular/common/http';
 
 /**
  * Component with stations and qblocks by station.
@@ -206,7 +204,7 @@ export class StationsComponent implements OnInit {
         })
         .catch(err => {
           console.log(err.error);
-          this.message.createWarningMsg('error', err.error.message);
+          this.message.createWarningMsg(err.message);
         });
       }
     },
@@ -254,7 +252,7 @@ export class StationsComponent implements OnInit {
     })
     .catch((err) => {
       console.log(err.error);
-      this.message.createErrorMsg('error', err.error.message);
+      this.message.createErrorMsg(err.message);
     });
   }
 
@@ -436,9 +434,15 @@ export class StationsComponent implements OnInit {
    */
   importStations(items: any[], isJson: boolean): void {
     if (isJson) {
-      console.log('El archivo es un JSON');
       this.api.importStationsJSON(this.ecoe, items[0]).toPromise()
-        .then(() => this.loadStations().finally());
+        .then(() => this.loadStations().finally())
+        .catch(err =>
+          { 
+            if (err.status === 500) {
+              this.message.createErrorMsg(err.message);
+            }
+            this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
+          });
     } else {
       this.saveArrayStations(items)
         .then(() => {
