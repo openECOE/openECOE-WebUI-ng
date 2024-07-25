@@ -295,6 +295,10 @@ export class ApiService {
 
     return areas;
   }
+  cloneEcoe(ecoe: ECOE){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoe/${ecoe.id}/clone`;
+    return this.http.post(url, ecoe);
+  }
 
   cloneStations(ecoe: ECOE, stationsID: any[]){
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/clone`;

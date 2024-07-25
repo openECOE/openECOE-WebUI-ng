@@ -200,4 +200,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         document.body.removeChild(link);
       });
   }
+
+  cloneECOE(ecoe: ECOE) {
+    this.apiService.cloneEcoe(ecoe)
+      .toPromise().then(() => this.loadEcoes());
+  }
+
 }

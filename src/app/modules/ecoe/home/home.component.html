@@ -73,7 +73,7 @@
                     <a (click)="exportECOE(item)" nz-tooltip [nzTooltipTitle]=" 'EXPORT' | translate"  style="margin-right: 15px;">
                       <span nz-icon nzType="download" nzTheme="outline"></span>
                     </a>
-                    <a nz-tooltip [nzTooltipTitle]=" 'DUPLICATE' | translate">
+                    <a (click)="cloneECOE(item)" nz-tooltip [nzTooltipTitle]=" 'DUPLICATE' | translate">
                       <span nz-icon nzType="copy" nzTheme="outline"></span>
                     </a>
                   </div>
