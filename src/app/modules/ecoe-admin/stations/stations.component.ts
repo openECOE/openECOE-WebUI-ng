@@ -8,8 +8,6 @@ import {getPotionID, Pagination} from '@openecoe/potion-client';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
 import { ApiService } from '@app/services/api/api.service';
-import { json } from 'node:stream/consumers';
-import { HttpResponse } from '@angular/common/http';
 
 /**
  * Component with stations and qblocks by station.
@@ -206,7 +204,7 @@ export class StationsComponent implements OnInit {
         })
         .catch(err => {
           console.log(err.error);
-          this.message.createWarningMsg('error', err.error.message);
+          this.message.createWarningMsg(err.error.message);
         });
       }
     },
@@ -254,7 +252,7 @@ export class StationsComponent implements OnInit {
     })
     .catch((err) => {
       console.log(err.error);
-      this.message.createErrorMsg('error', err.error.message);
+      this.message.createErrorMsg(err.error.message);
     });
   }
 
@@ -425,16 +423,34 @@ export class StationsComponent implements OnInit {
     this.InitStationRow();
   }
 
+  onFileParsed(event: { items: any[], isJson: boolean }) {
+    const { items, isJson } = event;
+    this.importStations(items, isJson);
+  }
+
   /**
    * Import stations from file
    * @param items rows readed from file
    */
-  importStations(items: any[]) {
-    this.saveArrayStations(items)
-      .then(() => {
-        this.loadStations().finally();
-      })
-      .catch(err => console.error('ERROR ON IMPORT:', err));
+  importStations(items: any[], isJson: boolean): void {
+    if (isJson) {
+      this.api.importStationsJSON(this.ecoe, items[0]).toPromise()
+        .then(() => this.loadStations().finally())
+        .catch(err =>
+          { 
+            if (err.status === 500) {
+              this.message.createErrorMsg(err.error.message);
+            } else {
+              this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
+            }
+          });
+    } else {
+      this.saveArrayStations(items)
+        .then(() => {
+          this.loadStations().finally();
+        })
+        .catch(err => console.error('ERROR ON IMPORT:', err));
+    }
   }
 
   modalExportStations(station: Station) {
@@ -458,7 +474,7 @@ export class StationsComponent implements OnInit {
 
         const link = document.createElement('a');
         link.href = url;
-        link.download = station.name + '.json';
+        link.download = station.name + '.station';
 
         document.body.appendChild(link);
 
@@ -554,4 +570,5 @@ export class StationsComponent implements OnInit {
       .catch(err =>
         new Promise(((resolve, reject) => reject(err))));
   }
+
 }
