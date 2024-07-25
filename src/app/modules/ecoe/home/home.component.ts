@@ -185,7 +185,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         const link = document.createElement('a');
         link.href = url;
-        link.download = ecoe.name + '.json';
+        link.download = ecoe.name + '.ecoe';
 
         document.body.appendChild(link);
 
