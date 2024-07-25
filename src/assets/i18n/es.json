@@ -340,5 +340,6 @@
   "SELECT_STATION_TO_IMPORT": "Seleccione la/s estación/es a importar",
   "EXPORT": "Exportar",
   "EXPORT_STATIONS": "Exportar estaciones",
-  "EXPORT_STATIONS_CONFIRM": "Esta estación tiene estaciones hijas o está anidada a otra estación. ¿Desea exportarla junto a sus estaciones vinculadas?"
+  "EXPORT_STATIONS_CONFIRM": "Esta estación tiene estaciones hijas o está anidada a otra estación. ¿Desea exportarla junto a sus estaciones vinculadas?",
+  "CORRUPTED_JSON_FILE": "El archivo JSON está corrupto"
 }
