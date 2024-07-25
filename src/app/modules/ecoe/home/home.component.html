@@ -70,10 +70,10 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <span>{{ item.name }}</span>
                   <div>
-                    <a (click)="exportECOE(item)" [title]=" 'EXPORT' | translate "style="margin-right: 15px;">
+                    <a (click)="exportECOE(item)" nz-tooltip [nzTooltipTitle]=" 'EXPORT' | translate"  style="margin-right: 15px;">
                       <span nz-icon nzType="download" nzTheme="outline"></span>
                     </a>
-                    <a [title]=" 'DUPLICATE' | translate ">
+                    <a nz-tooltip [nzTooltipTitle]=" 'DUPLICATE' | translate">
                       <span nz-icon nzType="copy" nzTheme="outline"></span>
                     </a>
                   </div>
