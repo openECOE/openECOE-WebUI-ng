@@ -295,8 +295,14 @@ export class ApiService {
 
     return areas;
   }
+
   cloneEcoe(ecoe: ECOE){
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoe/${ecoe.id}/clone`;
+    return this.http.post(url, ecoe);
+  }
+
+  importEcoeJSON(ecoe: ECOE){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoe/${ecoe.id}/import`;
     return this.http.post(url, ecoe);
   }
 
