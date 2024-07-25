@@ -70,7 +70,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <span>{{ item.name }}</span>
                   <div>
-                    <a [title]=" 'EXPORT' | translate "style="margin-right: 15px;">
+                    <a (click)="exportECOE(item)" [title]=" 'EXPORT' | translate "style="margin-right: 15px;">
                       <span nz-icon nzType="download" nzTheme="outline"></span>
                     </a>
                     <a [title]=" 'DUPLICATE' | translate ">

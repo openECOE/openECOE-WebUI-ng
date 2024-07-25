@@ -7,7 +7,6 @@ import { TranslateService } from "@ngx-translate/core";
 import { Organization, UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
-import { Router } from "@angular/router";
 import { Observable, Observer, ReplaySubject, Subscription, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
 
@@ -174,5 +173,31 @@ export class HomeComponent implements OnInit, OnDestroy {
           nzTitle: msg,
         });
     }
+  }
+
+  exportECOE(ecoe: ECOE) {
+    this.apiService
+      .getResourceFile("ecoes/" + ecoe.id + "/export")
+      .subscribe((results) => {
+        const parsedJson = JSON.parse(new TextDecoder().decode(results as ArrayBuffer));
+        const jsonFile = new Blob([JSON.stringify(parsedJson, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(jsonFile);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = ecoe.name + '.json';
+
+        document.body.appendChild(link);
+
+        link.dispatchEvent(
+          new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          })
+        );
+
+        document.body.removeChild(link);
+      });
   }
 }
