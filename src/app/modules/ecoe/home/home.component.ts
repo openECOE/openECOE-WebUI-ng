@@ -9,6 +9,7 @@ import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
 import { Observable, Observer, ReplaySubject, Subscription, defer, from } from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
+import { ActionMessagesService } from "@app/services/action-messages/action-messages.service";
 
 @Component({
   selector: "app-home",
@@ -30,6 +31,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   validateForm!: FormGroup;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  isVisible: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -38,7 +40,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private modalSrv: NzModalService,
     private translate: TranslateService,
     private fb: FormBuilder,
-    private shared: SharedService
+    private shared: SharedService,
+    private message: ActionMessagesService
   ) {
     this.validateForm = this.fb.group({
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
@@ -206,4 +209,46 @@ export class HomeComponent implements OnInit, OnDestroy {
       .toPromise().then(() => this.loadEcoes());
   }
 
+  handleUpload = (file: any) => {
+    const fr = new FileReader();
+    fr.onload = (e) => {
+      file.onSuccess({}, file.file, 'success');
+      const fileContent = fr.result.toString();
+      const ecoe = this.handleFile(fileContent);
+      this.importECOE(ecoe);
+    };
+    fr.readAsText(file.file);
+    this.handleCancel();
+  }
+
+  handleFile(fileString: string) {
+    // Verificar si el archivo es JSON
+    try{
+      const jsonObject = JSON.parse(fileString);
+      if (jsonObject.areas) {
+        const ecoe =  [jsonObject];
+        return ecoe;
+      }else
+        this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
+    }catch(e){
+      this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
+    }
+  }
+
+  handleCancel() {
+    this.isVisible = false;
+  }
+
+  importECOE(ecoe:any): void {
+    this.apiService.importEcoeJSON(ecoe[0]).toPromise()
+      .then(() => this.loadEcoes().finally())
+      .catch(err =>
+        { 
+          if (err.status === 500) {
+            this.message.createErrorMsg(err.error.message);
+          } else {
+            this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
+          }
+        });
+  }
 }

@@ -165,7 +165,8 @@
     <h3>{{ "IMPORT_ECOE" | translate }}</h3>
     <nz-upload
       [nzMultiple]="false"
-      
+      [nzAccept]="'.json,.ecoe'"
+      (nzChange)="handleUpload($event)"
       [nzShowUploadList]="false"
       nzType="drag"
       >
