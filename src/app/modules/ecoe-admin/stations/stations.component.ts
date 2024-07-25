@@ -204,7 +204,7 @@ export class StationsComponent implements OnInit {
         })
         .catch(err => {
           console.log(err.error);
-          this.message.createWarningMsg(err.message);
+          this.message.createWarningMsg(err.error.message);
         });
       }
     },
@@ -252,7 +252,7 @@ export class StationsComponent implements OnInit {
     })
     .catch((err) => {
       console.log(err.error);
-      this.message.createErrorMsg(err.message);
+      this.message.createErrorMsg(err.error.message);
     });
   }
 
