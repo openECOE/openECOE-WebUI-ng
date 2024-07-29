@@ -22,7 +22,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   ecoesDelist: ECOE[];
   ecoe: ECOE;
   organization: Organization;
-  ecoesImportadas:number;
+
+  isVisible: any;
+  ecoeName: string;
+  fileContent: any;
 
   user: UserLogged;
   Listed: any;
@@ -31,10 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   validateForm!: FormGroup;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-  isVisible: any;
-  ecoeName: string;
-  fileContent: any;
-
+ 
   constructor(
     private formBuilder: FormBuilder,
     public userService: UserService,
@@ -59,7 +59,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.Listed = true;
     this.Delisted = false;
     this.ecoeForm = this.formBuilder.control("", Validators.required);
-    this.ecoesImportadas = 0;
 
     if (this.userService.userData) {
       // Cuando le das a la flecha para atrás
