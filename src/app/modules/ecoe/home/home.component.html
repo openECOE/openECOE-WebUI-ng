@@ -166,7 +166,7 @@
     <nz-upload
       [nzMultiple]="false"
       [nzAccept]="'.json,.ecoe'"
-      (nzChange)="handleUpload($event)"
+      [nzCustomRequest]="handleUpload"
       [nzShowUploadList]="false"
       nzType="drag"
       >

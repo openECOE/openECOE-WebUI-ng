@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { debounceTime, switchMap, takeUntil, tap } from "rxjs/operators";
+import { takeUntil} from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ApiService } from "../../../services/api/api.service";
 import { NzModalService } from "ng-zorro-antd/modal";
@@ -7,7 +7,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { Organization, UserLogged } from "@app/models";
 import { ECOE } from "../../../models";
 import { UserService } from "@app/services/user/user.service";
-import { Observable, Observer, ReplaySubject, Subscription, defer, from } from "rxjs";
+import { Observable, Observer, ReplaySubject} from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
 import { ActionMessagesService } from "@app/services/action-messages/action-messages.service";
 
@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ecoesDelist: ECOE[];
   ecoe: ECOE;
   organization: Organization;
+  ecoesImportadas:number;
 
   user: UserLogged;
   Listed: any;
@@ -31,7 +32,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   validateForm!: FormGroup;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-  isVisible: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -57,6 +57,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.Listed = true;
     this.Delisted = false;
     this.ecoeForm = this.formBuilder.control("", Validators.required);
+    this.ecoesImportadas = 0;
 
     if (this.userService.userData) {
       // Cuando le das a la flecha para atrás
@@ -218,7 +219,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.importECOE(ecoe);
     };
     fr.readAsText(file.file);
-    this.handleCancel();
+    this.closeDrawer();
   }
 
   handleFile(fileString: string) {
@@ -235,12 +236,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleCancel() {
-    this.isVisible = false;
-  }
-
   importECOE(ecoe:any): void {
-    this.apiService.importEcoeJSON(ecoe[0]).toPromise()
+    this.ecoesImportadas++;
+    const nameEcoe = this.translate.instant("ECOE_IMPORTED") + this.ecoesImportadas;
+    this.apiService.importEcoeJSON(ecoe[0], nameEcoe).toPromise()
       .then(() => this.loadEcoes().finally())
       .catch(err =>
         { 

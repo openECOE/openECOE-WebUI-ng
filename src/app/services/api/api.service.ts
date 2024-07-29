@@ -301,8 +301,8 @@ export class ApiService {
     return this.http.post(url, ecoe);
   }
 
-  importEcoeJSON(ecoe: any){
-    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoe/${ecoe.id}/import`;
+  importEcoeJSON(ecoe: any, ecoeName:string){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/import?name=${ecoeName}`;
     return this.http.post(url, ecoe);
   }
 
