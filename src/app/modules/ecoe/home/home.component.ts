@@ -31,6 +31,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   validateForm!: FormGroup;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  isVisible: any;
+  ecoeName: string;
+  fileContent: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -213,9 +216,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     const fr = new FileReader();
     fr.onload = (e) => {
       file.onSuccess({}, file.file, 'success');
-      const fileContent = fr.result.toString();
-      const ecoe = this.handleFile(fileContent);
-      this.importECOE(ecoe);
+      this.fileContent = fr.result.toString();
+      this.isVisible = true;
     };
     fr.readAsText(file.file);
     this.closeDrawer();
@@ -226,19 +228,31 @@ export class HomeComponent implements OnInit, OnDestroy {
     try{
       const jsonObject = JSON.parse(fileString);
       if (jsonObject.areas) {
-        const ecoe =  [jsonObject];
-        return ecoe;
+        return [jsonObject];
       }else
         this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
     }catch(e){
       this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
     }
   }
+  
+  handleOk(): void {
+    this.isVisible = false;
+    const ecoe = this.handleFile(this.fileContent);
+    if (ecoe) {
+      this.importECOE(ecoe);
+    }
+    this.ecoeName = "";
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+    this.fileContent = null;
+    this.ecoeName = "";
+  }
 
   importECOE(ecoe:any): void {
-    this.ecoesImportadas++;
-    const nameEcoe = this.translate.instant("ECOE_IMPORTED") + this.ecoesImportadas;
-    this.apiService.importEcoeJSON(ecoe[0], nameEcoe).toPromise()
+    this.apiService.importEcoeJSON(ecoe[0], this.ecoeName).toPromise()
       .then(() => {
         this.message.createSuccessMsg(this.translate.instant("ECOE_IMPORTED_SUCCESS"));
         this.loadEcoes().finally()

@@ -345,6 +345,6 @@
   "EXPORT_STATIONS": "Exportar estaciones",
   "EXPORT_STATIONS_CONFIRM": "Esta estación tiene estaciones hijas o está anidada a otra estación. ¿Desea exportarla junto a sus estaciones vinculadas?",
   "CORRUPTED_JSON_FILE": "El archivo JSON está corrupto",
-  "ECOE_IMPORTED": "ECOE importada ",
+  "ECOE_TO_IMPORT_NAME": "Introduzca un nombre a la ECOE a importar",
   "ECOE_IMPORTED_SUCCESS": "ECOE importada correctamente"
 }

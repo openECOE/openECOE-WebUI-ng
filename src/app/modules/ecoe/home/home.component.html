@@ -182,3 +182,14 @@
   </div>
 
 </nz-drawer>
+
+<nz-modal 
+[(nzVisible)]="isVisible" 
+nzTitle="{{ 'ECOE_TO_IMPORT_NAME' | translate }}"
+(nzOnCancel)="handleCancel()"
+(nzOnOk)="handleOk()"
+[nzOkDisabled]="!ecoeName">
+  <ng-container *nzModalContent>
+    <input nz-input [(ngModel)]="ecoeName" type="text" />
+  </ng-container>
+</nz-modal>
