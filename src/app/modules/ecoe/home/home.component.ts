@@ -10,7 +10,6 @@ import { UserService } from "@app/services/user/user.service";
 import { Observable, Observer, ReplaySubject} from "rxjs";
 import { SharedService } from "@app/services/shared/shared.service";
 import { ActionMessagesService } from "@app/services/action-messages/action-messages.service";
-
 @Component({
   selector: "app-home",
   templateUrl: "./home.component.html",
@@ -240,7 +239,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.ecoesImportadas++;
     const nameEcoe = this.translate.instant("ECOE_IMPORTED") + this.ecoesImportadas;
     this.apiService.importEcoeJSON(ecoe[0], nameEcoe).toPromise()
-      .then(() => this.loadEcoes().finally())
+      .then(() => {
+        this.message.createSuccessMsg(this.translate.instant("ECOE_IMPORTED_SUCCESS"));
+        this.loadEcoes().finally()
+      })
       .catch(err =>
         { 
           if (err.status === 500) {
