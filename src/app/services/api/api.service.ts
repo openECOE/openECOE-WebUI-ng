@@ -296,8 +296,8 @@ export class ApiService {
     return areas;
   }
 
-  cloneEcoe(ecoe: any){
-    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoe/${ecoe.id}/clone`;
+  cloneEcoe(ecoe: ECOE){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/clone`;
     return this.http.post(url, ecoe);
   }
 
