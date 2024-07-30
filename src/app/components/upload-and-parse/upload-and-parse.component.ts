@@ -210,36 +210,36 @@ export class UploadAndParseComponent implements OnInit {
   handleFile(fileString: string) {
     let isJson = false;
 
-    // Verificar si el archivo es JSON
-    if(this.isStation){
-      try{
-        const jsonObject = JSON.parse(fileString);
-        if (jsonObject.blocks) {
-          isJson = true;
-          this.parserResult.emit({ items: [jsonObject], isJson });
-          return;
+    // Intentar verificar si el archivo es JSON
+    if (this.isStation) {
+        try {
+            const jsonObject = JSON.parse(fileString);
+            if (jsonObject.blocks) {
+                isJson = true;
+                this.parserResult.emit({ items: [jsonObject], isJson });
+                return;
+            }
+        } catch (e) {
+            // No hacer nada aquí porque el archivo puede no ser JSON
         }
-      }catch(e){
-        this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
-      }
-
     }
-    
+
     // Procesar como CSV si no es JSON
     this.papaParser.parse(fileString, {
-      header: true,
-      dynamicTyping: true,
-      skipEmptyLines: true,
-      quoteChar: '"',
-      escapeChar: '"',
-      complete: (results, file) => {
-        if(this.isStation)
-          this.parserResult.emit({ items: results.data, isJson });
-        else
-          this.parserResult.emit(results.data);
-      }
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        quoteChar: '"',
+        escapeChar: '"',
+        complete: (results, file) => {
+            if (this.isStation)
+                this.parserResult.emit({ items: results.data, isJson });
+            else
+                this.parserResult.emit(results.data);
+        }
     });
-  }
+}
+
 
   // Generate CSV file to download with papaparse
   generateCSV() {
