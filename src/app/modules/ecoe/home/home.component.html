@@ -190,7 +190,7 @@ nzTitle="{{ 'ECOE_TO_IMPORT_NAME' | translate }}"
 (nzOnOk)="handleOk()"
 [nzOkDisabled]="!ecoeNameJSON">
   <ng-container *nzModalContent>
-    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormECOE(validateForm)">
+    <form nz-form [formGroup]="validateFormJSON" (ngSubmit)="submitFormECOE(validateFormJSON)">
       <nz-form-item>
         <nz-form-control nzHasFeedback [nzValidatingTip]="'VALIDATING' | translate" [nzErrorTip]="userErrorTpl">
           <input nz-input formControlName="ecoeNameJSON" [placeholder]="'ECOE_NAME' | translate" [(ngModel)]="ecoeNameJSON"  />

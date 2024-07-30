@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   Delisted: any;
 
   validateForm!: FormGroup;
+  validateFormJSON!: FormGroup;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
  
@@ -47,6 +48,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {
     this.validateForm = this.fb.group({
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
+    });
+
+    this.validateFormJSON = this.fb.group({
       ecoeNameJSON: ['', [Validators.required], [this.userNameAsyncValidator]],
     });
   }
@@ -141,7 +145,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   async submitFormECOE(form: FormGroup) { 
 
-    this.shared.doFormDirty(this.validateForm)
+    this.shared.doFormDirty(this.validateForm || this.validateFormJSON);
     if (form.pending) {
       const sub = form.statusChanges.subscribe(() => {
         if (form.valid) {
@@ -209,7 +213,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   cloneECOE(ecoe: ECOE) {
     this.apiService.cloneEcoe(ecoe)
-      .toPromise().then(() => this.loadEcoes());
+      .toPromise().then(() => {
+        this.loadEcoes();
+        this.message.createSuccessMsg(this.translate.instant("ECOE_CLONED_SUCCESS"));
+      }).catch((err) => {
+        this.message.createErrorMsg(err.error.message);
+      });
   }
 
   handleUpload = (file: any) => {
