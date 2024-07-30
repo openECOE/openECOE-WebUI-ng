@@ -3,8 +3,15 @@
     class="margin-bottom"
     (nzBack)="onBack()"
     nzBackIcon
-    [nzTitle]="ecoeName"
+    [nzTitle]="titleTemplate"
   >
+  <ng-template #titleTemplate>
+    {{ecoeName}}
+    <a (click)="showECOENameDrawer(true)" nz-tooltip [nzTooltipTitle]=" 'EDIT' | translate">
+      <span nz-icon nzType="edit" nzTheme="outline"></span>
+    </a>
+  </ng-template>
+  
     <nz-page-header-extra>
       <a
         *ngIf="(ecoe?.status | uppercase) == 'DRAFT'"
@@ -28,10 +35,6 @@
         {{ "ACTION_STATE_DRAFT" | translate }}
       </a>
 
-      <a nz-button (click)="showECOENameDrawer(true)">
-        <span nz-icon nzType="edit" nzTheme="outline"></span>
-        <span>{{ "EDIT_ECOE" | translate }}</span>
-      </a>
       <a
         nz-button
         class="error"
