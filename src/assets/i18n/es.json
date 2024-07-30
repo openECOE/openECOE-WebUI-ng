@@ -4,6 +4,8 @@
   "HOME": "Inicio",
   "LOGIN": "Iniciar sesión",
   "CREATE_ECOE": "Crear nueva ECOE",
+  "CREATE": "Crear",
+  "IMPORT_ECOE": "Importar ECOE",
   "ECOE_NAME": "Nombre de la ECOE",
   "DELETE_ECOE": "Archivar ECOE",
   "ARCHIVE": "Archivar",
@@ -338,8 +340,13 @@
   "DESACTIVATE_LOOP": "Desactivar bucle",
   "SELECT_ECOE": "Seleccione una ECOE",
   "SELECT_STATION_TO_IMPORT": "Seleccione la/s estación/es a importar",
+  "DUPLICATE": "Duplicar",
   "EXPORT": "Exportar",
   "EXPORT_STATIONS": "Exportar estaciones",
   "EXPORT_STATIONS_CONFIRM": "Esta estación tiene estaciones hijas o está anidada a otra estación. ¿Desea exportarla junto a sus estaciones vinculadas?",
-  "CORRUPTED_JSON_FILE": "El archivo JSON está corrupto"
+  "CORRUPTED_JSON_FILE": "El archivo JSON está corrupto",
+  "ECOE_TO_IMPORT_NAME": "Introduzca un nombre a la ECOE a importar",
+  "ECOE_IMPORTED_SUCCESS": "ECOE importada correctamente",
+  "ECOE_CLONED_SUCCESS": "ECOE duplicada correctamente",
+  "ERROR_CLONING_ECOE": "Error al duplicar la ECOE"
 }
