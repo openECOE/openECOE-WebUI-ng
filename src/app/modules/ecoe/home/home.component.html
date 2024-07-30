@@ -190,7 +190,7 @@
   [nzWidth]="400"
   [nzMaskClosable]="true"
   [nzVisible]="showEditEcoe"
-  [nzTitle]="'EDIT' | translate"
+  [nzTitle]="'EDIT_ECOE' | translate"
   (nzOnClose)="closeDrawer()"
 >
   <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormEditECOE(validateForm)" style="width: 95%;">
@@ -209,7 +209,7 @@
     </nz-form-item>
 
     <button type="submit" nz-button nzType="primary" [disabled]="!validateForm.valid" style="width: 100%; justify-content: center;">
-      <span>{{ "EDIT" | translate }}</span>
+      <span>{{ "ACCEPT" | translate }}</span>
     </button>
   </form>
 </nz-drawer>
