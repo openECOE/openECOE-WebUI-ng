@@ -70,6 +70,9 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <span>{{ item.name }}</span>
                   <div>
+                    <a (click)="showEditEcoeDrawer(item)" nz-tooltip [nzTooltipTitle]=" 'EDIT' | translate"  style="margin-right: 15px;">
+                      <span nz-icon nzType="edit" nzTheme="outline"></span>
+                    </a>
                     <a (click)="exportECOE(item)" nz-tooltip [nzTooltipTitle]=" 'EXPORT' | translate"  style="margin-right: 15px;">
                       <span nz-icon nzType="download" nzTheme="outline"></span>
                     </a>
@@ -181,6 +184,34 @@
 
   </div>
 
+</nz-drawer>
+
+<nz-drawer
+  [nzWidth]="400"
+  [nzMaskClosable]="true"
+  [nzVisible]="showEditEcoe"
+  [nzTitle]="'EDIT' | translate"
+  (nzOnClose)="closeDrawer()"
+>
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormEditECOE(validateForm)" style="width: 95%;">
+    <nz-form-item>
+      <nz-form-control nzHasFeedback [nzValidatingTip]="'VALIDATING' | translate" [nzErrorTip]="userErrorTpl">
+        <input nz-input formControlName="ecoeName" [placeholder]="'ECOE_NAME' | translate" [value]="ecoe?.name"/>
+        <ng-template #userErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            {{ "ECOE_NAME_REQUIRED" | translate }}
+          </ng-container>
+          <ng-container *ngIf="control.hasError('duplicated')">
+            {{'ERROR_DUPLICATE_ECOE' | translate }}
+          </ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+
+    <button type="submit" nz-button nzType="primary" [disabled]="!validateForm.valid" style="width: 100%; justify-content: center;">
+      <span>{{ "EDIT" | translate }}</span>
+    </button>
+  </form>
 </nz-drawer>
 
 <nz-modal 

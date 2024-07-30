@@ -17,6 +17,7 @@ import { ActionMessagesService } from "@app/services/action-messages/action-mess
 })
 export class HomeComponent implements OnInit, OnDestroy {
   showCreateEcoe: boolean;
+  showEditEcoe: boolean;
   ecoesList: ECOE[];
   ecoeForm: FormControl;
   ecoesDelist: ECOE[];
@@ -24,6 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   organization: Organization;
 
   isVisible: any;
+  ecoeName: string;
   ecoeNameJSON: string;
   fileContent: any;
 
@@ -33,6 +35,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   validateForm!: FormGroup;
   validateFormJSON!: FormGroup;
+
+  // Form ECOE name
+  show_ecoe_name_drawer: Boolean = false;
+  ecoe_name_form_loading: Boolean = false;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
  
@@ -89,6 +95,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   closeDrawer() {
     this.showCreateEcoe = false;
+    this.showEditEcoe = false;
     this.ecoeForm.reset();
   }
 
@@ -274,5 +281,44 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
           }
         });
+  }
+  
+  showEditEcoeDrawer(ecoeEdit: ECOE) {
+    this.ecoe = ecoeEdit;
+    this.showEditEcoe = true;
+  }
+
+  async submitFormEditECOE(form: FormGroup) { 
+
+    this.shared.doFormDirty(this.validateForm);
+    if (form.pending) {
+      const sub = form.statusChanges.subscribe(() => {
+        if (form.valid) {
+          this.submitECOENameForm(form.value);
+        }
+        sub.unsubscribe();
+      });
+    } else if (form.valid) {
+      this.submitECOENameForm(form.value);
+    }
+  }
+
+  submitECOENameForm(value: any) {
+    new ECOE(this.ecoe).update({name: value.ecoeName}).then(
+      response => {
+        this.message.createSuccessMsg(this.translate.instant('OK_REQUEST_CONTENT'), {nzDuration: 5000});
+        this.ecoe = response;
+        this.ecoeName = this.ecoe.name;
+      }
+    ).catch(
+      error => {
+        this.message.createErrorMsg(this.translate.instant('ERROR_REQUEST_CONTENT'), {nzDuration: 5000});
+        value.setValue(this.ecoe.name);
+      }
+    ).finally(
+      () => {
+        this.closeDrawer();
+      }
+    );
   }
 }
