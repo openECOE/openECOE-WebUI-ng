@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   organization: Organization;
 
   isVisible: any;
-  ecoeName: string;
+  ecoeNameJSON: string;
   fileContent: any;
 
   user: UserLogged;
@@ -47,6 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {
     this.validateForm = this.fb.group({
       ecoeName: ['', [Validators.required], [this.userNameAsyncValidator]],
+      ecoeNameJSON: ['', [Validators.required], [this.userNameAsyncValidator]],
     });
   }
   ngOnDestroy(): void {
@@ -241,17 +242,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (ecoe) {
       this.importECOE(ecoe);
     }
-    this.ecoeName = "";
+    this.ecoeNameJSON = "";
   }
 
   handleCancel(): void {
     this.isVisible = false;
     this.fileContent = null;
-    this.ecoeName = "";
+    this.ecoeNameJSON = "";
   }
 
   importECOE(ecoe:any): void {
-    this.apiService.importEcoeJSON(ecoe[0], this.ecoeName).toPromise()
+    this.apiService.importEcoeJSON(ecoe[0], this.ecoeNameJSON).toPromise()
       .then(() => {
         this.message.createSuccessMsg(this.translate.instant("ECOE_IMPORTED_SUCCESS"));
         this.loadEcoes().finally()

@@ -188,8 +188,22 @@
 nzTitle="{{ 'ECOE_TO_IMPORT_NAME' | translate }}"
 (nzOnCancel)="handleCancel()"
 (nzOnOk)="handleOk()"
-[nzOkDisabled]="!ecoeName">
+[nzOkDisabled]="!ecoeNameJSON">
   <ng-container *nzModalContent>
-    <input nz-input [(ngModel)]="ecoeName" type="text" />
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitFormECOE(validateForm)">
+      <nz-form-item>
+        <nz-form-control nzHasFeedback [nzValidatingTip]="'VALIDATING' | translate" [nzErrorTip]="userErrorTpl">
+          <input nz-input formControlName="ecoeNameJSON" [placeholder]="'ECOE_NAME' | translate" [(ngModel)]="ecoeNameJSON"  />
+          <ng-template #userErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              {{ "ECOE_NAME_REQUIRED" | translate }}
+            </ng-container>
+            <ng-container *ngIf="control.hasError('duplicated')">
+              {{'ERROR_DUPLICATE_ECOE' | translate }}
+            </ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
   </ng-container>
 </nz-modal>
