@@ -33,7 +33,7 @@
   <ng-template #importTemplate>
     <div [style]="isStation ? 'height: 250px' : 'height: 85%'">
       <nz-upload [nzMultiple]="false"
-                [nzAccept]="'.csv,.json,.station,.ecoe'"
+                [nzAccept]="'.csv,.json,.station'"
                 [nzCustomRequest]="handleUpload"
                 [nzShowUploadList]="false"
                 nzType="drag">
