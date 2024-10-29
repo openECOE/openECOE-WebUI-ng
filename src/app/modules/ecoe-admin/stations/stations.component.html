@@ -40,7 +40,7 @@
                   (click)="showDrawer()">
             <i nz-icon [nzType]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
-          <app-upload-and-parse [parserFile]="stationsParser" (parserResult)="importStations($event)" (importCompleted)="loadStations()"></app-upload-and-parse>
+          <app-upload-and-parse [parserFile]="stationsParser" (parserResult)="onFileParsed($event)" (importCompleted)="loadStations()"></app-upload-and-parse>
         </nz-button-group>
       </th>
     </tr>
@@ -100,12 +100,17 @@
         <td>{{item.childrenStations?.length}}</td>
 
         <td text-right>
+          <button (click)="item.childrenStations.length > 0 || item.parentStation ? modalExportStations(item) : exportStation(item)" nz-button nzType="default">
+            <span nz-icon nzType="download" nzTheme="outline"></span>{{ 'EXPORT' | translate }}
+          </button>
+          
           <app-action-buttons [isEditing]="editCache[item.id]?.edit"
                               [isNewItem]="editCache[item.id]?.new_item"
                               (startEdit)="startEdit(item)"
                               (delete)="deleteItem(item)"
                               (save)="updateItem(editCache[item.id].item)"
-                              (cancelEdit)="cancelEdit(item)">
+                              (cancelEdit)="cancelEdit(item)"
+                              style="margin-left: 20px;">
           </app-action-buttons>
         </td>
       </tr>

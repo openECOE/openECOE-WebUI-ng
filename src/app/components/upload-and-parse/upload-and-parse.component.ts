@@ -4,6 +4,8 @@ import { Papa } from 'ngx-papaparse';
 import { ApiService } from '@app/services/api/api.service';
 import { ActivatedRoute, Router } from "@angular/router";
 import {getPotionID, Pagination} from '@openecoe/potion-client';
+import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface ParserFile {
   filename: string;
@@ -49,7 +51,9 @@ export class UploadAndParseComponent implements OnInit {
   constructor(
     private papaParser: Papa,
     private apiService: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private message: ActionMessagesService,
+    private translate: TranslateService
   ) {}
 
   async ngOnInit() {
@@ -191,7 +195,8 @@ export class UploadAndParseComponent implements OnInit {
     const fr = new FileReader();
     fr.onload = (e) => {
       file.onSuccess({}, file.file, 'success');
-      this.handleFile(fr.result.toString());
+      const fileContent = fr.result.toString();
+      this.handleFile(fileContent);
     };
     fr.readAsText(file.file);
     this.handleCancel();
@@ -203,17 +208,38 @@ export class UploadAndParseComponent implements OnInit {
    * @param fileString File data as string
    */
   handleFile(fileString: string) {
+    let isJson = false;
+
+    // Intentar verificar si el archivo es JSON
+    if (this.isStation) {
+        try {
+            const jsonObject = JSON.parse(fileString);
+            if (jsonObject.blocks) {
+                isJson = true;
+                this.parserResult.emit({ items: [jsonObject], isJson });
+                return;
+            }
+        } catch (e) {
+            // No hacer nada aquí porque el archivo puede no ser JSON
+        }
+    }
+
+    // Procesar como CSV si no es JSON
     this.papaParser.parse(fileString, {
-      header: true,
-      dynamicTyping: true,
-      skipEmptyLines: true,
-      quoteChar: '"',
-      escapeChar: '"',
-      complete: (results, file) => {
-        this.parserResult.emit(results.data);
-      }
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        quoteChar: '"',
+        escapeChar: '"',
+        complete: (results, file) => {
+            if (this.isStation)
+                this.parserResult.emit({ items: results.data, isJson });
+            else
+                this.parserResult.emit(results.data);
+        }
     });
-  }
+}
+
 
   // Generate CSV file to download with papaparse
   generateCSV() {
