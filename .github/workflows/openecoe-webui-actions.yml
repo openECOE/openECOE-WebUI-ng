@@ -94,6 +94,7 @@ jobs:
           tags: |
             type=pep440,pattern={{version}},event=tag
             type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
