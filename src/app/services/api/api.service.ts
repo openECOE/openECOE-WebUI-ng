@@ -296,8 +296,23 @@ export class ApiService {
     return areas;
   }
 
+  cloneEcoe(ecoe: ECOE){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/clone`;
+    return this.http.post(url, ecoe);
+  }
+
+  importEcoeJSON(ecoe: any, ecoeName:string){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/import?name=${ecoeName}`;
+    return this.http.post(url, ecoe);
+  }
+
   cloneStations(ecoe: ECOE, stationsID: any[]){
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/clone`;
     return this.http.post(url, {"stations": stationsID});
+  }
+
+  importStationsJSON(ecoe: ECOE, stations: any){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/import`;
+    return this.http.post(url, stations);
   }
 }

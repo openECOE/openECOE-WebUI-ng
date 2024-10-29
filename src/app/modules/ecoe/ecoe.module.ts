@@ -30,6 +30,8 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 
 @NgModule({
@@ -64,6 +66,8 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
     NzListModule,
     NzSpinModule,
     NzPopconfirmModule,
+    NzUploadModule,
+    NzDividerModule,
   ],
   exports: [EcoeInfoComponent, HomeComponent],
 })
