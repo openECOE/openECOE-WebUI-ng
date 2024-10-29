@@ -5,7 +5,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {RowStation, Station, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {getPotionID, Pagination} from '@openecoe/potion-client';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
 
 /**
  * Component with stations and qblocks by station.
@@ -58,7 +59,9 @@ export class StationsComponent implements OnInit {
               private translate: TranslateService,
               public shared: SharedService,
               private fb: FormBuilder,
-              private message: NzMessageService) {
+              private modalService: NzModalService,
+              private message: ActionMessagesService
+            ) {
 
     this.stationForm = this.fb.group({
       stationRow: this.fb.array([])
@@ -189,11 +192,21 @@ export class StationsComponent implements OnInit {
    * @param station Resource selected
    */
   deleteItem(station: Station) {
-    station.destroy()
-      .then(() => {
-        this.loadStations()
-          .then(() => this.updateEditCache());
-      });
+    this.modalService.confirm({
+      nzTitle: this.translate.instant("CONFIRM_ALSO_DELETE_BLOCKS_AND_QUESTION"),
+      nzOnOk: () => {
+        station.destroy()
+        .then(() => {
+          this.loadStations()
+            .then(() => this.updateEditCache());
+        })
+        .catch(err => {
+          console.log(err.error);
+          this.message.createWarningMsg('error', err.error.message);
+        });
+      }
+    },
+    'confirm');
   }
 
   /**
@@ -220,24 +233,25 @@ export class StationsComponent implements OnInit {
       if (!cacheItem.name) {
         return;
       }
-  
+
       const body = {
         order: cacheItem.order,
         name: cacheItem.name,
         ecoe: this.ecoeId,
         parentStation: (cacheItem.parentStation) ? cacheItem.parentStation.id : null
       };
-  
+
       const request = cacheItem.update(body);
-  
-      request.then(response => {
-        this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
-        this.editCache[cacheItem.id].edit = false;   
-        this.loadStations().finally();   
-      })
-      .catch((err) => {
-        this.message.create('error', this.translate.instant('EDIT_STATION_ERROR'));
-      });
+
+    request.then(response => {
+      this.stations = this.stations.map(x => (x.id === cacheItem.id) ? response : x);
+      this.editCache[cacheItem.id].edit = false;   
+      this.loadStations().finally();   
+    })
+    .catch((err) => {
+      console.log(err.error);
+      this.message.createErrorMsg('error', err.error.message);
+    });
   }
 
   /**

@@ -1,17 +1,19 @@
 <nz-layout class="layout">
   <nz-header>
-    <div class="logo" style="vertical-align: middle;float: left;">
-      <a (click)="isCollapsed = !isCollapsed" style="margin-right: 13px;font-size: 30px;">
+    <div style="display: flex; gap: 10px">
+      <a (click)="isCollapsed = !isCollapsed" style="font-size: 30px;">
         <i nz-icon [nzType]="isCollapsed ? 'menu-fold' : 'menu-unfold'"></i>
       </a>
-      <img alt="logo" src="../assets/logo.png">
+      <a routerLink="/ecoe" title="{{'BACK_ECOE' | translate }}" style="display: flex; align-items: center;">
+        <img alt="logo" src="../assets/logo.png" class="logo">
+      </a>
+      <app-change-organization *ngIf="isLoggedIn()"></app-change-organization>
     </div>
-
-    <app-usermenu *ngIf="isLoggedIn()" style="margin: auto;"></app-usermenu>
-
-    <app-submenu *ngIf="isLoggedIn()" [submenuSelected]="'ECOE'" style="float: right;padding-right: 2em;"></app-submenu>
-
-
+    
+    <div style="display: flex;" *ngIf="isLoggedIn()">
+      <app-submenu [submenuSelected]="'ECOE'"></app-submenu>
+      <app-usermenu></app-usermenu>
+    </div>
   </nz-header>
 
   <nz-content>
@@ -20,15 +22,17 @@
         <router-outlet></router-outlet>
       </div>
       <nz-footer>
-        <label>openECOE {{year}} - Universitas Miguel Hernández</label>
+        <p>openECOE {{year}} - Universitas Miguel Hernández</p>
       </nz-footer>
       <nz-back-top [nzTarget]="TopDiv" #backTop></nz-back-top>
     </div>
   </nz-content>
-
-
 </nz-layout>
-<nz-drawer [nzVisible]="isCollapsed" [nzPlacement]="'left'" [nzWidth]="320"
-            (nzOnClose)="isCollapsed = !isCollapsed" [nzBodyStyle]="{'padding':'0'}">
+
+<nz-drawer  [nzVisible]="isCollapsed"
+            [nzPlacement]="'left'"
+            [nzWidth]="320"
+            (nzOnClose)="isCollapsed = !isCollapsed"
+            [nzBodyStyle]="{'padding':'0'}">
   <app-menu (menu_close_event)="toCollapse($event)"></app-menu>
 </nz-drawer>

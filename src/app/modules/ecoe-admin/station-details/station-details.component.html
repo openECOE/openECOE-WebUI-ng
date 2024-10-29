@@ -28,7 +28,7 @@
     <thead>
     <tr>
       <th>
-        <a (click)="getQblocks(station)">
+        <a (click)="refreshTable()">
           <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
         </a>
       </th>
@@ -42,9 +42,9 @@
       <th nzWidth="6%" style="min-width: 65px;"></th>
     </tr>
     </thead>
-    <tbody>
+    <tbody cdkDropList [cdkDropListData]="qblocks" (cdkDropListDropped)="onDropBlock($event)">
     <ng-template ngFor let-item [ngForOf]="table.data" let-index="index">
-      <tr>
+      <tr cdkDropListGroup cdkDrag [cdkDragData]="item" cdkDragLockAxis="y" (cdkDragStarted)="onDragStart(table.data)">
         <td>
           <i nz-icon nzType="file-text" nzTheme="outline"></i>
         </td>
@@ -55,7 +55,7 @@
           </ng-container>
 
           <ng-container *ngIf="editCache[item.id].edit">
-            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
+            <nz-input-number [nzMin]="1" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
           </ng-container>
         </td>
 
@@ -85,7 +85,7 @@
           </app-action-buttons>
         </td>
       </tr>
-      <tr [nzExpand]="item.clicked">
+      <tr [nzExpand]="item.expand" cdkDropListGroup>
         <!-- TODO: Revisar refreshquestions no funciona correctamente cuando se importan las preguntas -->
           <app-questions-list
             [refreshQuestions]="refreshQuestions"
@@ -93,6 +93,8 @@
             [preview]="false"
             (newQuestion)="onNewQuestion($event)"
             (editQuestion)="onEditQuestion($event)"
+            (onDrop)="onDropQuestion()"
+            [connectedList]="getConnectedList()"
           ></app-questions-list>
       </tr>
     </ng-template>

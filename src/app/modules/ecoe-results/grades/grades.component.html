@@ -61,7 +61,7 @@
             {{ "HITS" | translate }}
           </th>
           <th nzWidth="100px" [nzSortFn]="sortPoints">
-            {{ "POINTS" | translate }}
+            {{ "POINTS"| translate }}
           </th>
           <th nzWidth="200px" [nzSortFn]="sortAbsoluteScore">
             {{ "ABSOLUTE_GRADES" | translate }}
@@ -80,7 +80,7 @@
           <td>
             {{ result.points / result.absoluteScore | percent : "0.2-2" }}
           </td>
-          <td>{{ result.points | number }}</td>
+          <td>{{ result.points | number }} / {{ result.maxPoints }}</td>
           <td>
             {{ (result.points / result.absoluteScore) * 10 | number : "1.2-2" }}
           </td>

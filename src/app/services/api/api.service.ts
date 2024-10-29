@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
-import { map } from "rxjs/operators";
-import { Role, User, Option } from "@app/models";
+import { catchError, map, tap } from "rxjs/operators";
+import { Role, User, Option, ECOE, Station, Area } from "@app/models";
+import { ApiPermissions } from "@app/models";
 
 /**
  * Service with the HTTP requests to the backend.
@@ -66,6 +67,37 @@ export class ApiService {
   deleteUserRole(role: Role) {
     return role.destroy();
   }
+
+  addPermision(user: User, name: string, idObject: number | string, object: string): Promise<ApiPermissions> {
+
+    // TODO: asegurar que name y object son strings permitidos
+
+    const permission = new ApiPermissions({
+      user,
+      name,
+      idObject,
+      object
+    });
+
+    return permission.save();
+  }
+
+  async getPermissionForStation(user: User, station: Station): Promise<ApiPermissions | null> {
+    try {
+      const permission = await ApiPermissions.first<ApiPermissions>({
+        where: {
+          user: user,
+          object: "stations",
+          idObject: station.id
+        }
+      });
+      return permission;
+    } catch (error) {
+      console.error("Error al obtener el permiso para la estación:", error);
+      return null;
+    }
+  }
+  
 
   /**
    * Makes a HTTP GET request to the backend and gets a list of items.
@@ -147,7 +179,6 @@ export class ApiService {
       observe: "body",
       responseType: "arraybuffer",
     };
-    // ,headers:{['Content-Disposition']:'attachment; filename=resultados_ecoe_1.csv' }
     return this.http
       .get(url, { observe: "response", responseType: "arraybuffer" })
       .pipe(
@@ -204,5 +235,69 @@ export class ApiService {
    */
   getIdFromRef(ref: string): number {
     return +ref.substr(ref.lastIndexOf("/") + 1);
+  }
+
+  getServerStatus(): Observable<string> {
+    const url = `${environment.API_ROUTE}/status/`;
+
+    return this.http.get(url, { responseType: 'text' as const})
+      .pipe(
+        catchError(() => of('ko'))
+      );
+  }
+
+  async getEvaluators(ecoe: ECOE): Promise<User[]> {
+    let permissions = await ApiPermissions.query<ApiPermissions>({
+      where: {
+        name: "evaluate",
+        object: "stations"
+      },
+      perPage: 100
+    }, {paginate: true});
+
+    let permissionsOfThisEcoe = [];
+    for (const permission of permissions) {
+      let station = await Station.fetch<Station>(permission.idObject);
+      if(station.ecoe.id == ecoe.id) {
+        permissionsOfThisEcoe.push(permission);
+      }
+    }
+
+    return [...new Set(permissionsOfThisEcoe.map(p => p.user))];
+  }
+
+  async getStationsByEvaluator(user: User, ecoe: ECOE): Promise<Station[]> {
+    let permissions = await ApiPermissions.query<ApiPermissions>({
+      where: {
+        name: "evaluate",
+        object: "stations",
+        user: user,
+      }
+    });
+
+    let stations: Station[] = [];
+    for(const permission of permissions) {
+      let station = await Station.fetch<Station>(permission.idObject);
+      if(station.ecoe.id == ecoe.id) {
+        stations.push(station);
+      }
+    }
+
+    return stations;
+  }
+
+  async getAreasByEcoe(ecoe: ECOE): Promise<Area[]> {
+    let areas = await Area.query<Area>({
+      where: {
+        ecoe: ecoe.id
+      }
+    });
+
+    return areas;
+  }
+
+  cloneStations(ecoe: ECOE, stationsID: any[]){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/clone`;
+    return this.http.post(url, {"stations": stationsID});
   }
 }

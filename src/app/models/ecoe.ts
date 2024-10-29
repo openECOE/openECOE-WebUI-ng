@@ -10,7 +10,7 @@ import { Schedule, Stage } from "./schedule";
 import { Organization } from "./organization";
 import { QuestionOld, Block, Question } from "@models/question";
 import { User } from "@models/user";
-import { Answer } from ".";
+import { Answer, ApiPermissions } from ".";
 
 export class Permission extends potionItem {
   "create": boolean;
@@ -58,6 +58,7 @@ export class ECOE extends Item {
   rounds = Route.GET<Round | Round[] | Pagination<Round>>("/rounds");
   shifts = Route.GET<Shift | Shift[] | Pagination<Shift>>("/shifts");
   stages = Route.GET<Stage | Pagination<Stage>>("/stages");
+  evaluators = Route.GET<ApiPermissions | Pagination<ApiPermissions>>("/evaluators");
 
   id: number;
   name: string;
@@ -70,7 +71,7 @@ export class ECOE extends Item {
 
   configuration = Route.GET("/configuration");
   results = Route.GET("/results");
-  itemscore = Route.GET("/item-score");
+  itemscore = Route.GET("/results/item-score");
 }
 
 export class Area extends Item {
@@ -141,7 +142,6 @@ export class Student extends Item {
 
   getAnswers? = Route.GET("/answers");
   getAllAnswers? = Route.GET<Array<Answer>>("/answers/all");
-  // getAnswersStation ? = Route.GET('/answers/station/');
   getAnswersStation? = (station: Number) =>
     Route.GET("/answers/station/" + station.toString());
 

@@ -1,15 +1,15 @@
 <ul *ngIf="userService.userData && location.path().indexOf('/ecoe/') === 0"
     nz-menu
     nzMode="horizontal"
-    class="header-menu"
-    style="float: left; width: 100%;margin:auto;">
+    class="header-menu">
 
   <li *ngFor="let item of submenu2build"
       nz-menu-item
       [nzSelected]="item.active"
       [routerLink]="[item.redirecTo]">
-
+    <span nz-icon [nzType]="item.icon" nzTheme="outline"></span>
     {{item.title | translate}}
+    
   </li>
 
 </ul>

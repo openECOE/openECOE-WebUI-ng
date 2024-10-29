@@ -25,10 +25,10 @@ export class ChronoHeaderComponent implements OnInit {
   ngOnInit() {
   }
 
-  goEvaluation(roundId, ecoeId: number) {
-    if (ecoeId) {
-      this.evalService.setSelectedRound(roundId, ecoeId);
-      this.router.navigate(['/eval/ecoe/', ecoeId]).finally();
+  goEvaluation(idRound, idEcoe: number) {
+    if (idEcoe) {
+      this.evalService.setSelectedRound(idRound, idEcoe);
+      this.router.navigate(['/outside/ecoe/', idEcoe, 'round', idRound]).finally();
     }
   }
 

@@ -7,7 +7,10 @@ import {ApiService} from '@services/api/api.service';
 import { DOCUMENT } from '@angular/common';
 import { UserService } from '@app/services/user/user.service';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { NzMessageService, NzModalService, valueFunctionProp } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzSafeAny } from 'ng-zorro-antd/core/types';
+
 import { findLast } from '@angular/compiler/src/directive_resolver';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
@@ -81,21 +84,18 @@ export class UsersAdminComponent implements OnInit {
 
   async ngOnInit() {
     this.listRoles = await this.getRoles();
-
     this.userService.userDataChange.subscribe((user) => {
       this.user = user;
       this.activeUser = this.user.user;
       this.loadUsers();
+      this.getUserForm();
+      this.loadUsers();
     });
-
-    this.getUserForm();
 
     this.user = this.userService.userData;
     this.activeUser = this.user.user;
-
+    this.getUserForm();
     this.loadUsers();
-
-    this.loading = false;
   }
 
   async getUserForm() {
@@ -173,7 +173,9 @@ export class UsersAdminComponent implements OnInit {
         page: this.page,
         perPage: this.perPage,
       })
-      .then((page) => this.loadPage(page))
+      .then((page) => {
+        this.loadPage(page)
+  })
       .catch((err) => console.log(err))
       .finally(() => (this.loading = false));
   }
@@ -370,12 +372,12 @@ export class UsersAdminComponent implements OnInit {
       this.modalService.confirm({
         nzTitle: this.translate.instant("DELETE_USER"),
         nzContent: this.translate.instant("DELETE_USER_CONFIRM"),
-        nzOkText: this.translate.instant("YES"),
+        nzOkText: this.translate.instant("DELETE"),
         nzOkType: "danger",
         nzOnOk: () => {
           this.delUsers(_delUsers);
         },
-        nzCancelText: this.translate.instant("NO"),
+        nzCancelText: this.translate.instant("CANCEL"),
       });
       return;
     }
@@ -500,10 +502,6 @@ export class UsersAdminComponent implements OnInit {
       );
     }
     this.closeModal();
-  }
-
-  onBack() {
-    this.router.navigate(["/control-panel"]).finally();
   }
 
   onCheckedChange(idx: number) {

@@ -1,19 +1,55 @@
-<nz-content>
-  <nz-card style="width: 300px;margin-top: 16px" >
-    <nz-skeleton [nzActive]="true" [nzLoading]="loading" [nzAvatar]="{ size: 'large' }">
-      <nz-card-meta
-        [nzAvatar]="avatarTemplate"
-        [nzTitle]="'USERS' | translate"
-        [nzDescription]="cardContent"
-      ></nz-card-meta>
-    </nz-skeleton>
-  </nz-card>
-  <ng-template #avatarTemplate>
-    <i nz-icon nzType="user"></i>
-  </ng-template>
-  <ng-template #cardContent>
-    <nz-statistic [nzValue]="usersPage['total']"
-                  [nzSuffix]="'USERS' | translate"></nz-statistic>
-    <a [routerLink]="['users']"><span><i nz-icon nzType="setting" nzTheme="outline"></i> {{ 'SHOW' | translate }}</span></a>
-  </ng-template>
-</nz-content>
+<nz-layout class="layout">
+  <nz-sider nzWidth="250px" nzTheme="light">
+    <ul nz-menu nzMode="inline">
+      <li nz-menu-item (click)="goBack()">
+        <i class="back-color" nz-icon nzType="arrow-left"></i>
+        <span class="back-color">{{'BACK_ECOE' | translate }} </span>
+      </li>
+      <li nz-menu-item routerLink="personal-data" routerLinkActive="ant-menu-item-selected">
+        <i nz-icon nzType="user" nzTheme="outline"></i>
+        <span>{{'PERSONAL_DATA' | translate }} </span>
+      </li>
+      <li nz-menu-item routerLink="users" routerLinkActive="ant-menu-item-selected" *ngIf="userData?.isAdmin && !loading">
+        <table style="width: 200px">
+          <tr>
+            <td style="width: 165px">
+              <i nz-icon nzType="team"></i>
+              <span>{{ 'USERS' | translate }}</span>
+            </td>
+            <td>
+              <nz-badge
+              nzStandalone
+              [nzCount]="usersPage.total || 0"
+              [nzStyle]="{ backgroundColor: '#188fff25', color: '#1890ff', fontSize: '16px', borderRadius: '4px', boxShadow: '0 0 0 1px #157fe225 inset' }"
+            ></nz-badge>
+            </td>
+          </tr>
+        </table>
+      </li>
+      <li nz-menu-item routerLink="organizations" routerLinkActive="ant-menu-item-selected" *ngIf="userData?.isSuper && !loading">
+        <table style="width: 200px">
+          <tr>
+            <td style="width: 165px">
+              <i nz-icon nzType="bank"></i>
+              <span>{{ 'ORGANIZATIONS' | translate }}</span>
+            </td>
+            <td>
+              <nz-badge
+                    nzStandalone
+                    [nzCount]="organizationsPage.total || 0"
+                    [nzStyle]="{ backgroundColor: '#188fff25', color: '#1890ff', fontSize: '16px', borderRadius: '4px', boxShadow: '0 0 0 1px #157fe225 inset' }"
+              ></nz-badge>
+            </td>
+          </tr>
+        </table>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout class="right-layout">
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

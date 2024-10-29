@@ -12,39 +12,86 @@
   [nzTitle]="('IMPORT_DATA' | translate)"
   (nzOnCancel)="handleCancel()"
   [nzFooter]="modalFooter"
-  [nzBodyStyle]="{height: '300px' }">
+  [nzBodyStyle]="{height: '400px' }">
+  
+  <nz-tabset *ngIf="isStation">
+    <nz-tab *ngFor="let tab of tabs" [nzTitle]="titleTemplate">
+      <ng-template #titleTemplate>
+        <i nz-icon [nzType]="tab.icon"></i>
+        {{ tab.name }}
+      </ng-template>      
+      <ng-container *ngIf="tab.content">
+        <ng-container *ngTemplateOutlet="tab.content"></ng-container>
+      </ng-container>
+    </nz-tab>
+  </nz-tabset>
 
-  <div style="height: 85%">
-    <nz-upload [nzMultiple]="false"
-               [nzCustomRequest]="handleUpload"
-               [nzShowUploadList]="false"
-               nzType="drag">
+  <ng-container *ngIf="!isStation">
+    <ng-container *ngTemplateOutlet="importTemplate"></ng-container>
+  </ng-container>
 
-      <p class="ant-upload-drag-icon">
-        <i nz-icon nzType="inbox"></i>
-      </p>
-      <p class="ant-upload-text">{{'CLICK_HERE_OR_DRAG_FILE' | translate}}</p>
-      <p class="ant-upload-hint">
-        {{'DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE' | translate}}
-      </p>
-    </nz-upload>
-  </div>
-  <div style="height: 15%" *ngIf="parserFile">
-    <nz-row nzType="flex" nzAlign="middle" nzJustify="center">
+  <ng-template #importTemplate>
+    <div [style]="isStation ? 'height: 250px' : 'height: 85%'">
+      <nz-upload [nzMultiple]="false"
+                [nzCustomRequest]="handleUpload"
+                [nzShowUploadList]="false"
+                nzType="drag">
+        <p class="ant-upload-drag-icon">
+          <i nz-icon nzType="inbox"></i>
+        </p>
+        <p class="ant-upload-text">{{ 'CLICK_HERE_OR_DRAG_FILE' | translate }}</p>
+        <p class="ant-upload-hint">
+          {{ 'DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE' | translate }}
+        </p>
+      </nz-upload>
+    </div>
+    <div [style]="isStation ? '' : 'height: 15%'" *ngIf="parserFile">
+      <nz-row nzType="flex" nzAlign="middle" nzJustify="center">
+        <nz-col nzSpan="24" text-center>
+          <span>{{ 'DOWNLOAD_TEMPLATE_HERE' | translate }}</span>
+        </nz-col>
+        <nz-col nzSpan="24" text-center>
+          <button nz-button nzSize="default" nzType="primary" (click)="generateCSV()">
+            <i nz-icon nzType="download"></i>
+            {{ 'DOWNLOAD_TEMPLATE' | translate }}
+          </button>
+        </nz-col>
+      </nz-row>
+    </div>
+  </ng-template>
+
+  <ng-template #ecoesTemplate>
+    <nz-row>
+      <nz-select  nzShowSearch 
+                  nzAllowClear 
+                  nzPlaceHolder="{{ 'SELECT_ECOE' | translate }}"
+                  [(ngModel)]="selectedEcoe" 
+                  (ngModelChange)="getStations()">
+  
+        <nz-option  *ngFor="let ecoe of ecoeList" 
+                    nzCustomContent [nzLabel]="ecoe.name" 
+                    [nzValue]="ecoe"> 
+          {{ ecoe.name }}
+        </nz-option>
+      </nz-select>
+    </nz-row>
+  
+    <nz-row>
+      <nz-select  nzMode="multiple" 
+                  nzPlaceHolder="{{'SELECT_STATION_TO_IMPORT' | translate }}"
+                  [nzOptions]="stationsOptions"
+                  [(ngModel)]="selectedStations">
+      </nz-select>
+    </nz-row>
+
+    <nz-row>
       <nz-col nzSpan="24" text-center>
-        <span>{{'DOWNLOAD_TEMPLATE_HERE' | translate}}</span>
-      </nz-col>
-      <nz-col nzSpan="24" text-center>
-        <button nz-button nzSize="default" nzType="primary" (click)="generateCSV()">
-          <i nz-icon nzType="download"></i>
-          {{'DOWNLOAD_TEMPLATE' | translate}}
-        </button>
+        <button (click)="importStations()" nz-button nzType="primary" [disabled]="selectedStations.length < 1">{{ 'IMPORT_DATA' | translate }}</button>
       </nz-col>
     </nz-row>
-  </div>
+  </ng-template>
 
   <ng-template #modalFooter>
     <button (click)="handleCancel()" nz-button>{{'CLOSE' | translate}}</button>
   </ng-template>
-
 </nz-modal>

@@ -40,7 +40,7 @@
                   (click)="showDrawer()">
             <i nz-icon [nzType]="'plus-circle'" nzTheme="twotone" icon-16></i>
           </button>
-          <app-upload-and-parse [parserFile]="stationsParser" (parserResult)="importStations($event)"></app-upload-and-parse>
+          <app-upload-and-parse [parserFile]="stationsParser" (parserResult)="importStations($event)" (importCompleted)="loadStations()"></app-upload-and-parse>
         </nz-button-group>
       </th>
     </tr>
@@ -58,7 +58,7 @@
           </ng-container>
 
           <ng-container *ngIf="editCache[item.id].edit">
-            <nz-input-number [nzMin]="0" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
+            <nz-input-number [nzMin]="1" [nzSize]="'small'" [(ngModel)]="editCache[item.id].item.order"></nz-input-number>
           </ng-container>
         </td>
 

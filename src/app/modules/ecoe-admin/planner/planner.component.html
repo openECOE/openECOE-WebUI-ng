@@ -4,6 +4,9 @@
       <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ecoe_name}}</a></nz-breadcrumb-item>
       <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"PLANNER" | translate}}</nz-tag></nz-breadcrumb-item>
     </nz-breadcrumb>
+    <nz-page-header-extra>
+      <button [disabled]="shifts.length && rounds.length == 0" [routerLink]="['/ecoe/' + ecoeId + '/admin/evaluators']" nz-button [nzType]="'primary'"><span>{{"CONFIGURATION" | translate}} {{"EVALUATORS" | translate}} <i nz-icon nzType="arrow-right" nzTheme="outline"></i></span></button>
+    </nz-page-header-extra>
   </nz-page-header>
 
   <nz-table #table
@@ -13,7 +16,12 @@
             [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
     <tr>
-      <th nzWidth="200px" nzLeft="0px"></th>
+      <th nzWidth="200px" nzLeft="0px">
+        <h3 *ngIf="totalStudents!=0">
+          <span nz-icon nzType="warning" nzTheme="outline" class="warning"></span>
+          {{ 'AUTO_ASSINGMENT_EXCESS_STUDENTS' | translate:{totalStudents: totalStudents} }}
+        </h3>
+      </th>
       <th nzWidth="200px" nzLeft="200px" text-center *ngFor="let _round of rounds">
         <div nz-col nzSpan="6">
           <h3>
@@ -87,7 +95,9 @@
 
   <button nz-button
           nzType="default"
+          nzSize="large"
           [nzBlock]="true"
+          style="margin-top: 10px;"
           (click)="autoCreatePlanners()"
           [nzLoading]="loading">
     <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>

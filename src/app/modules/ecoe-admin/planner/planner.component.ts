@@ -6,6 +6,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ECOE, Station, Student} from '../../../models';
 import {Planner, Round, Shift} from '../../../models';
 import {Item, Pagination} from '@openecoe/potion-client';
+import {ActionMessagesService} from '@app/services/action-messages/action-messages.service';
+import {TranslateService} from '@ngx-translate/core';
+import { PlannerService } from '@app/services/planner/planner.service';
 
 /**
  * Component with the relations of rounds and shifts to create plannersMatrix.
@@ -26,7 +29,6 @@ export class PlannerComponent implements OnInit {
   stations: any[] = [];
   stationsTotal: number;
 
-
   showAddShift: boolean = false;
   showAddRound: boolean = false;
 
@@ -38,12 +40,15 @@ export class PlannerComponent implements OnInit {
   loading: boolean = false;
 
   logPromisesERROR: any[] = [];
-
+  totalStudents: number;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
-              private router: Router) {
+              private router: Router,
+              private message: ActionMessagesService,
+              private translate: TranslateService,
+              private plannerService: PlannerService) {
 
     this.shiftForm = this.formBuilder.group({
       shift_code: [null, Validators.required],
@@ -58,18 +63,24 @@ export class PlannerComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.plannerService.registerCheckStudentCapacity(this.checkStudentCapacity.bind(this));
+
     this.route.params.subscribe(params => {
       this.loading = true;
-
       const excludeItems = [];
-
       this.ecoeId = +params.ecoeId;
-      ECOE.fetch(this.ecoeId, {skip: excludeItems})
+      ECOE.fetch(this.ecoeId, { skip: excludeItems })
         .then(value => {
           this.ecoe = value;
           this.ecoe_name = this.ecoe.name;
           this.loadStations();
-          this.loadRoundsShifts().then(() => this.loading = false);
+          this.loadRoundsShifts().then(() => {
+            this.loading = false;
+            this.checkStudentCapacity().then(() => {
+              this.warningMessage();
+              this.loading = false;
+            });
+          });
         });
     });
   }
@@ -84,6 +95,20 @@ export class PlannerComponent implements OnInit {
       });
   }
 
+  checkStudentCapacity(): Promise<void> {
+    return this.getStudents().then(pageStudents => {
+      this.totalStudents = pageStudents.total;
+    });
+  }
+
+  warningMessage() {
+    if (this.totalStudents !== 0) {
+      this.message.createWarningMsg(this.translate.instant("AUTO_ASSINGMENT_EXCESS_STUDENTS", {totalStudents : this.totalStudents}));
+    }else{
+      this.message.createSuccessMsg(this.translate.instant("AUTO_ASSINGMENT_SUCCESS"));
+    }
+  }
+  
   /**
    * Delete the planner passed.
    * Then reloads all plannersMatrix and hides the modal.
@@ -141,6 +166,7 @@ export class PlannerComponent implements OnInit {
 
           Promise.all(promises)
             .then(() => {
+              this.checkStudentCapacity();
               round.destroy()
                 .then(() => resolve())
                 .catch(reason => reject(reason));
@@ -214,14 +240,13 @@ export class PlannerComponent implements OnInit {
 
           Promise.all(promises)
             .then(() => {
+              this.checkStudentCapacity();
               shift.destroy()
                 .then(value => resolve(value))
                 .catch(reason => reject(reason));
             });
-      });
+        });
     });
-
-
   }
 
   /**
@@ -399,7 +424,7 @@ export class PlannerComponent implements OnInit {
     };
   }
 
-  getStudents(page: number = 1, perPage: number = 100) {
+  getStudents(page: number = 1, perPage: number = 100): Promise<Pagination<Student>> {
     const excludeItems = [];
 
     return Student.query<Student, Pagination<Student>>({
@@ -412,41 +437,38 @@ export class PlannerComponent implements OnInit {
     );
   }
 
-  autoCreatePlanners() {
+  async autoCreatePlanners() {
     this.loading = true;
-
-    forkJoin(
+  
+    const [listPlanners, listStations, pageStudents] = await forkJoin(
       from(this.createAllPlanners()),
-      from(Station.query<Station>({where: {ecoe: this.ecoeId}})),
+      from(Station.query<Station>({ where: { ecoe: this.ecoeId } })),
       from(this.getStudents())
-    ).subscribe(response => {
-      const promises = [];
-
-      const listPlanners: Array<any> = response[0];
-      const listStations: Array<any> = response[1];
-      const pageStudents: Pagination<Student> = response[2];
-
-
-      for (let i = 1; i <= pageStudents.pages; i += 1) {
-
-        // Load next Students page
-        pageStudents.changePageTo(i)
-          .then(page => {
-              page['items'].forEach(student => {
-                const freePlanner = listPlanners.find(value => (value.students ? value.students.length : 0) < listStations.length);
-                if (freePlanner) {
-                  promises.push(this.assignStudentToPlanner(student, freePlanner));
-                }
-              });
-            }
-          );
-      }
-
-
-      Promise.all(promises)
-        .then(() => this.loadRoundsShifts())
-        .finally(() => this.loading = false);
+    ).toPromise();
+  
+    const promises = [];
+  
+    for (let i = 1; i <= pageStudents.pages; i += 1) {
+      // Load next Students page
+      const page = await pageStudents.changePageTo(i);
+      page['items'].forEach(student => {
+        const freePlanner = listPlanners.find(value => (value.students ? value.students.length : 0) < listStations.length);
+        if (freePlanner) {
+          promises.push(this.assignStudentToPlanner(student, freePlanner));
+        }
+      });
+    }
+  
+    Promise.all(promises).then(() => {
+      this.loadRoundsShifts().then(() => {
+        this.checkStudentCapacity().then(() => {
+          this.warningMessage();
+          this.loading = false;
+        });
+      });
     });
+  
+    this.loading = false;
   }
 
   assignStudentToPlanner(itemStudent: Student, itemPlanner: Planner): Promise<any> {

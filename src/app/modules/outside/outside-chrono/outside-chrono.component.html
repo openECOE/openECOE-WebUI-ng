@@ -5,9 +5,10 @@
   </nz-page-header>
 
   <ng-template #Title>
-    <h1>{{('EVALUATION' | translate)}}</h1>
+    <h1>{{ 'EVALUATION' | translate }}</h1>
     <h2 *ngIf="ecoeName && roundDescription">
-      {{ecoeName + ' - ' + roundDescription}}
+      {{ ecoeName + ' - ' + roundDescription }}
+      <span *ngIf="loop" nz-icon nzType="retweet" nzTheme="outline" class="retweet-icon"></span>
     </h2>
   </ng-template>
 
@@ -16,6 +17,7 @@
     [roundId]="roundId"
     withPreview="true"
     [templateBeforeStart]="ChronoPreview"
+    (loop)="getLoop($event)"
   >
   </app-chrono>
 

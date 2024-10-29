@@ -1,0 +1,144 @@
+<nz-page-header class="margin-top margin-bottom" (nzBack)="onBack()" nzBackIcon [nzTitle]="'EVALUATORS' | translate">
+    <nz-breadcrumb nz-page-header-breadcrumb>
+      <nz-breadcrumb-item><a class="secondary-link" [routerLink]="['/ecoe/' + ecoeId + '/admin']">{{ecoe_name}}</a></nz-breadcrumb-item>
+      <nz-breadcrumb-item><nz-tag class="secondary-tag">{{"EVALUATORS" | translate}}</nz-tag></nz-breadcrumb-item>
+    </nz-breadcrumb>
+</nz-page-header>
+  
+<nz-content>
+  <nz-table 
+      #nzTable 
+      [nzData]="evaluators"
+      [nzLoading]="loading"
+      nzSize="small"
+      nzTemplateMode
+      >
+      <thead>
+      <tr>
+        <th>
+          <a (click)="loadEvaluators()">
+            <i nz-icon nzType="reload" [nz-tooltip] [nzTooltipPlacement]="'bottom'" [nzTooltipTitle]="'REFRESH' | translate"></i>
+          </a>
+        </th>
+        <th>{{"EMAIL" | translate}}</th>
+        <th>{{"NAME" | translate}}</th>
+        <th>{{"SURNAMES" | translate}}</th>
+        <th>{{"STATIONS" | translate}}</th>
+        <th nzAlign="right" nzRight>
+          <nz-button-group>
+            <button nz-button [nzType]="'primary'" class="margin-left"
+                    [nz-tooltip] [nzTooltipTitle]="'ADD_EVALUATOR' | translate"
+                    (click)="showModal()">
+              <i nz-icon nzType="plus-circle" nzTheme="twotone" icon-16></i>
+            </button>
+            <app-upload-and-parse [parserFile]="evaluatorsParser" (parserResult)="importEvaluators($event)"></app-upload-and-parse>
+
+          </nz-button-group>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="evaluators.length > 0; else noData">
+          <tr *ngFor="let item of evaluators">
+            <td></td>
+            <td>{{item.user.email}}</td>
+            <td>{{item.user.name}}</td>
+            <td>{{item.user.surname}}</td>
+            <td>
+              <ng-container>
+                <nz-tag *ngFor="let station of item.stations" [nzColor]="'blue'">
+                  {{station.name}}
+                </nz-tag>
+              </ng-container>
+            </td>
+            <td text-right>
+              <app-action-buttons (startEdit)="showModalEdit(item)"
+                                  (delete)="delEvaluator(item)">
+              </app-action-buttons>
+            </td>
+          </tr>
+        </ng-container>
+        </tbody>
+  </nz-table>
+  
+    <ng-template #noData>
+      <nz-empty class="width" nzNotFoundImage="simple"></nz-empty>
+    </ng-template>
+
+  <!--
+    MODAL DE ADD_EVALUATOR
+  -->
+  <nz-modal *ngIf="validateForm"
+    [nzVisible]="showAddEvaluator ||showEditEvaluator"
+    [nzTitle]="showAddEvaluator?('ADD_EVALUATOR' | translate) : ('EDIT_EVALUATOR' | translate: {email: evaluatorOriginal?.user.email})"
+    [nzOkText]="'ACCEPT' | translate"
+    [nzCancelText]="'CANCEL' | translate"
+    (nzOnOk)="submitFormEvaluator(validateForm)"
+    (nzOnCancel)="closeModal()">
+    
+    <form nz-form [formGroup]="validateForm">
+      <nz-form-item *ngIf="showAddEvaluator">
+        <nz-form-control [nzSpan]="24" nzHasFeedback>
+          <nz-input-group>
+            <nz-form-label >Correo electrónico</nz-form-label>
+            <nz-select 
+              style="width: 100%"
+              nzSize="medium"
+              formControlName="email"
+              nzShowSearch nzAllowClear 
+              [nzPlaceHolder]="'EMAIL' | translate"
+            >
+
+              <nz-option *ngFor="let user of listUsers"
+                          [nzLabel]="user.email | translate"
+                          [nzValue]="user.email"
+            >
+              </nz-option>
+            </nz-select>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <nz-input-group>
+            <nz-form-label >Estación/es</nz-form-label>
+            <nz-select
+            style="width: 100%"
+            nzSize="medium"
+            [nzMaxTagCount]="4"
+            nzMode="multiple"
+            [nzPlaceHolder]="'SELECT_STATIONS' | translate"
+            [nzAllowClear]="true"
+            nzAllowClear
+            formControlName="stations"
+          >
+            <nz-option *ngFor="let station of listStations"
+                        [nzLabel]="station.name | translate"
+                        [nzValue]="station"
+            >
+            </nz-option>
+          </nz-select>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-modal>
+
+  <ng-container>
+    <nz-drawer
+    [nzClosable]="true"
+    [nzVisible]="logPromisesERROR.length > 0"
+    nzPlacement="right"
+    [nzTitle]="'IMPORT_ERRORS' | translate"
+    (nzOnClose)="clearImportErrors()"
+    [nzWidth]="540">
+    <nz-alert *ngFor="let error of logPromisesERROR"
+              nzType="error"
+              [nzMessage]="error.reason.statusText"
+              [nzDescription]="error.reason.message"
+              nzShowIcon>
+    </nz-alert>
+  </nz-drawer>
+  </ng-container>
+</nz-content>

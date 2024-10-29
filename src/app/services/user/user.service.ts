@@ -62,6 +62,5 @@ export class UserService {
       this.auth.logout('/login');
       throw error;
     }
-
   }
 }

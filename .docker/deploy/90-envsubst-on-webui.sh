@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Guardar como LF en vez de CRLF
+
 set -e
 
 ME=$(basename $0)

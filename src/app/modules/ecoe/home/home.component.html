@@ -10,27 +10,23 @@
     </nz-page-header>
 
     <button
-      nz-col
-      nzSpan="4"
       nz-button
-      class="delisted-button"
       nzType="primary"
       nzDanger
       (click)="showDelisted()"
       *ngIf="Listed"
     >
+      <span nz-icon nzType="container" nzTheme="outline"></span>
       {{ "SHOW_ARCHIVED_ECOES" | translate }}
     </button>
     <button
-      nz-col
-      nzSpan="4"
       nz-button
-      class="delisted-button"
       nzType="primary"
       nzDanger
       (click)="showListed()"
       *ngIf="Delisted"
-    >
+    > 
+      <span nz-icon nzType="container" nzTheme="outline"></span>
       {{ "SHOW_ECOES" | translate }}
     </button>
   </div>
@@ -54,7 +50,7 @@
                 (click)="showCreateEcoe = true"
                 nzType="dashed"
               >
-                <i nz-icon nzType="plus" nzTheme="outline"></i>
+                <span nz-icon nzType="plus" nzTheme="outline"></span>
                 {{ "" | translate }}
               </a>
             </nz-card>
@@ -82,7 +78,7 @@
                 preserveFragment="false"
                 nzType="primary"
               >
-                <i nz-icon nzType="setting" nzTheme="outline"></i>
+                <span nz-icon nzType="setting" nzTheme="outline"></span>
                 {{ "" | translate }}
               </a>
             </nz-card>
@@ -112,9 +108,8 @@
                 nzType="primary"
                 (click)="restoreEcoe(item['id'])"
               >
-                <span nz-icon nzType="setting" nzTheme="outline">{{
-                  "RESTORE_ECOE" | translate
-                }}</span>
+              <span nz-icon nzType="setting" nzTheme="outline"></span>
+              {{ "RESTORE_ECOE" | translate }}
               </a>
             </nz-card>
           </nz-list-item>

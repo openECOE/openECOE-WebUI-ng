@@ -18,16 +18,20 @@
   -ms-overflow-style: none;
 }
 
+/* Hide scrollbar for Firefox */
+.long-div {
+  scrollbar-width: none;
+}
+
 nz-header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
   background-color: white;
   box-shadow: 0 2px 8px #f0f1f2;
 }
 
 .logo {
-  float: left;
-  display: table-cell;
-  vertical-align: middle;
+  height: 64px;
 }
 
 .inner-nz-content {
@@ -43,10 +47,4 @@ nz-footer {
   margin: 0 7%;
   text-align: center;
   background-color: white!important;
-}
-
-img {
-  height: 64px;
-  position: fixed;
-  top: 0;
 }

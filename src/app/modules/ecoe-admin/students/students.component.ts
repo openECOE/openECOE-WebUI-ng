@@ -7,7 +7,7 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 import {TranslateService} from '@ngx-translate/core';
 import {Pagination} from '@openecoe/potion-client';
 import {Planner, Round, Shift} from '../../../models';
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 
 /**
