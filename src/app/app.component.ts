@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, NgZone, OnInit, ViewChild } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { filter } from "rxjs/operators";
 import { NavigationEnd, Router } from "@angular/router";
@@ -9,13 +9,14 @@ import { Organization } from "./models";
 import { ServerStatusService } from "./services/server-status/server-status.service";
 import { ActionMessagesService } from "./services/action-messages/action-messages.service";
 import { NzMessageRef } from "ng-zorro-antd/message";
+import { GlobalErrorHandlerService } from "./services/error-handler.service";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.less"],
 })
-export class AppComponent implements OnInit { 
+export class AppComponent implements OnInit {
 
   language: string = "es";
   year: string = "";
@@ -35,6 +36,8 @@ export class AppComponent implements OnInit {
     public userService: UserService,
     private serverStatusService: ServerStatusService,
     private actionMessageService: ActionMessagesService,
+    private errorHandlerSvc: GlobalErrorHandlerService,
+    private ngZone: NgZone
   ) {
     this.initializeTranslate();
 
@@ -59,6 +62,21 @@ export class AppComponent implements OnInit {
     this.clientHeight = window.innerHeight;
     this.year = new Date().getFullYear().toString();
     this.checkServerStatus();
+    this.handleErrors();
+  }
+
+  handleErrors() {
+    // Captura errores en promesas no manejadas
+    window.addEventListener("unhandledrejection", (event) => {
+      const error = event.reason || new Error("Error en promesa no manejada");
+      this.ngZone.run(() => this.errorHandlerSvc.handleError(error));
+    });
+
+    // Captura errores no manejados en eventos globales
+    window.addEventListener("error", (event) => {
+      const error = event.error || event.message || new Error("Error en evento global");
+      this.ngZone.run(() =>this.errorHandlerSvc.handleError(error));
+    });
   }
 
   toCollapse(event) {
@@ -69,7 +87,7 @@ export class AppComponent implements OnInit {
     return this.authService.userLogged ? true : false;
   }
 
-  
+
   checkServerStatus(): void {
     let previousStatus = true;
     let errorMessageRef: NzMessageRef;
@@ -79,7 +97,7 @@ export class AppComponent implements OnInit {
         if(!status && previousStatus) {
           errorMessageRef = this.actionMessageService.createErrorMsg(this.translate.instant("LOST_BACKEND_CONNECTION"), { nzDuration: 0});
         }
-        
+
         if(status && !previousStatus) {
           this.actionMessageService.removeMessage(errorMessageRef.messageId);
           this.actionMessageService.createSuccessMsg(this.translate.instant("RECOVERED_BACKEND_CONNECTION"));
