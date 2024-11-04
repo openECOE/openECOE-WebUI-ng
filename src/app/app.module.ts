@@ -1,5 +1,5 @@
 import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
+import { ErrorHandler, NgModule } from "@angular/core";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -67,6 +67,7 @@ import { GradesComponent } from "./modules/ecoe-results/grades/grades.component"
 import { EvaluationItemsComponent } from './modules/ecoe-results/evaluation-items/evaluation-items.component';
 import { ComponentsModule } from "./components/components.module";
 import { JoditAngularModule } from 'jodit-angular';
+import { GlobalErrorHandlerService } from "./services/error-handler.service";
 
 registerLocaleData(localeEs, "es", localeEsExtra);
 
@@ -132,7 +133,7 @@ export function createTranslateLoader(http: HttpClient) {
     NzDropDownModule,
     NzUploadModule,
     ComponentsModule,
-    JoditAngularModule
+    JoditAngularModule,
   ],
   providers: [
     {
@@ -156,6 +157,11 @@ export function createTranslateLoader(http: HttpClient) {
       useValue: resources,
       multi: true,
     },
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandlerService,
+    },
+    GlobalErrorHandlerService
   ],
   bootstrap: [AppComponent],
 })

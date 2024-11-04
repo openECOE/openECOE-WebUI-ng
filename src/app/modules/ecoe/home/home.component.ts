@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ecoe_name_form_loading: Boolean = false;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
- 
+
   constructor(
     private formBuilder: FormBuilder,
     public userService: UserService,
@@ -87,10 +87,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   async loadEcoes(): Promise<void> {
-    this.ecoesList = await ECOE.query({
+    const query = {
       where: {organization: this.user.user.organization},
-      sort: {$uri: false}
-    }) as ECOE[];
+      sort: {$uri: false},
+      perPage: 100
+    }
+
+    this.ecoesList = (await ECOE.query(query, {
+      paginate: false,
+      cache: false, skip:['jobReports','jobCsv','organization','stages','stations','schedules','students','rounds','shifts','evaluators']
+    })) as ECOE[];
+
   }
 
   closeDrawer() {
@@ -150,7 +157,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }, 1000);
     });
 
-  async submitFormECOE(form: FormGroup) { 
+  async submitFormECOE(form: FormGroup) {
 
     this.shared.doFormDirty(this.validateForm || this.validateFormJSON);
     if (form.pending) {
@@ -169,7 +176,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     const _ecoe = new ECOE();
     _ecoe.name = value.ecoeName;
     _ecoe.organization = this.organization;
-    
+
     try {
       const newEcoe = await _ecoe.save();
       this.ecoesList.push(newEcoe);
@@ -251,7 +258,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.message.createErrorMsg(this.translate.instant("CORRUPTED_JSON_FILE"));
     }
   }
-  
+
   handleOk(): void {
     this.isVisible = false;
     const ecoe = this.handleFile(this.fileContent);
@@ -274,7 +281,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.loadEcoes().finally()
       })
       .catch(err =>
-        { 
+        {
           if (err.status === 500) {
             this.message.createErrorMsg(err.error.message);
           } else {
@@ -282,13 +289,13 @@ export class HomeComponent implements OnInit, OnDestroy {
           }
         });
   }
-  
+
   showEditEcoeDrawer(ecoeEdit: ECOE) {
     this.ecoe = ecoeEdit;
     this.showEditEcoe = true;
   }
 
-  async submitFormEditECOE(form: FormGroup) { 
+  async submitFormEditECOE(form: FormGroup) {
 
     this.shared.doFormDirty(this.validateForm);
     if (form.pending) {
