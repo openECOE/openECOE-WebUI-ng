@@ -39,18 +39,18 @@ export class LoginComponent implements OnInit {
     }
 
     if (this.validateForm.valid) {
-      this.authService.loginUser(this.validateForm.value)
-        .subscribe(
-          result => {
-            if (result) {
-              this.router.navigate([this.returnUrl]);
-            } else {
-              this.error_login = true;
-            }
-          },
-          error => {
+        this.authService.loginUser(this.validateForm.value)
+        .then((result) => {
+          if (result) {
+            this.router.navigate([this.returnUrl]);
+          } else {
             this.error_login = true;
-          });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          this.error_login = true;
+        });
     }
   }
 
