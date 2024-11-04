@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "ng serve",
+            "name": "Iniciar App",
             "type": "chrome",
             "request": "launch",
             "preLaunchTask": "npm: start",
@@ -17,6 +17,9 @@
               "/src/*": "${webRoot}/*",
               "/*": "*",
               "/./~/*": "${webRoot}/node_modules/*"
+            },
+            "env": {
+              "DEBUG":"true",
             }
         }
     ]
