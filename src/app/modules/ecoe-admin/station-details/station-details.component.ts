@@ -86,8 +86,8 @@ export class StationDetailsComponent implements OnInit {
 
   convertQuestionTypes(items: any[]): any[] {
     const spanishToEnglishQuestionType = {
-      'simple': 'checkbox',
-      'multiple': 'radio',
+      'multiple': 'checkbox',
+      'simple': 'radio',
       'rango': 'range'
     };
 
@@ -100,7 +100,7 @@ export class StationDetailsComponent implements OnInit {
       return item;
     });
   }
-  
+
   onBack() {
     this.router.navigate(['/ecoe/' + this.ecoeId + '/admin/stations']).finally();
   }
@@ -271,7 +271,7 @@ export class StationDetailsComponent implements OnInit {
     this.getQblocks(this.station);
     this.sendRefreshQuestions();
   }
-  
+
   sendRefreshQuestions() {
     this.refreshQuestions = true;
     setTimeout(() => this.refreshQuestions = false, 1000 );
@@ -294,7 +294,7 @@ export class StationDetailsComponent implements OnInit {
   onDragStart(items: any) {
     items.forEach((item) => item.expand = false);
   }
-  
+
   onDropBlock(event: CdkDragDrop<string[]>) {
     this.qblocks[event.previousIndex].update({order: event.currentIndex + 1})
     .then(() => {
