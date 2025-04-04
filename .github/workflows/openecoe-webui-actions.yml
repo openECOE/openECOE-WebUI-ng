@@ -51,7 +51,7 @@ jobs:
     - name: Install dependencies
       run: yarn --frozen-lockfile
     - name: Build application
-      run: yarn build
+      run: yarn build --configuration=production
     #- name: Launch tests
     #  run: yarn test
 

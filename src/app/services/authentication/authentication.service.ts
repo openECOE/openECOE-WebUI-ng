@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject, throwError} from 'rxjs';
+import {Subject} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {catchError, map} from 'rxjs/operators';
 import {Router} from '@angular/router';
 
 interface IUserToken {
@@ -16,7 +15,7 @@ interface IUserToken {
 export class AuthenticationService {
 
   private authUrl: string = '/auth/tokens';
-  
+
   private _userToken: IUserToken;
   userTokenChange: Subject<IUserToken> = new Subject<IUserToken>();
 
@@ -32,7 +31,7 @@ export class AuthenticationService {
     if (_userLog) {
       this.userToken = _userLog
     }
-    
+
   }
 
   get userToken() {
@@ -53,11 +52,11 @@ export class AuthenticationService {
     } else {
       localStorage.removeItem(this.storageToken)
     }
-    
+
     this.userTokenChange.next(data);
   }
 
-  loginUser(userData: { email: string, password: string }): Observable<any> {
+  async loginUser(userData: { email: string, password: string }) {
     const hashedCredentials = btoa(userData.email + ':' + userData.password);
 
     let headers = new HttpHeaders({
@@ -65,16 +64,22 @@ export class AuthenticationService {
       'Authorization': `Basic ${hashedCredentials}` });
     let options = { headers: headers };
 
-    return this.http.post(environment.API_ROUTE + this.authUrl, userData, options).pipe(
-      map(async (data: IUserToken) => {
-        this.userToken = data;
-        return !!data
-      }),
-      catchError(err => {
-        this.logout();
-        return throwError(err);
-      })
-    );
+    try {
+      const _token = await(
+        this.http
+          .post<IUserToken>(
+            environment.API_ROUTE + this.authUrl,
+            userData,
+            options
+          )
+          .toPromise()
+      );
+      this.userToken = _token;
+      return !!_token;
+    } catch (error) {
+      this.userToken = null;
+      return false;
+    }
   }
 
   logout(route: string = '/login') {
