@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Block, Question, RowQuestion, Station} from '../../../models';
+import {Block, Question, RowQuestion, Station} from '../../../../models';
 import {Location} from '@angular/common';
 import {QuestionsService} from '@services/questions/questions.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
