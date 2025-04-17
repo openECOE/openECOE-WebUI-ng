@@ -16,7 +16,7 @@ interface IUserToken {
 export class AuthenticationService {
 
   private authUrl: string = '/auth/tokens';
-  
+
   private _userToken: IUserToken;
   userTokenChange: Subject<IUserToken> = new Subject<IUserToken>();
 
@@ -32,14 +32,16 @@ export class AuthenticationService {
     if (_userLog) {
       this.userToken = _userLog
     }
-    
+
   }
 
   get userToken() {
     if (!this._userToken) {
       const _tokenStored = localStorage.getItem(this.storageToken);
       try {
-        this.userToken = JSON.parse(_tokenStored)
+        if (_tokenStored) {
+          this.userToken = JSON.parse(_tokenStored);
+        }
       } catch {}
     }
 
@@ -53,7 +55,7 @@ export class AuthenticationService {
     } else {
       localStorage.removeItem(this.storageToken)
     }
-    
+
     this.userTokenChange.next(data);
   }
 
@@ -83,6 +85,6 @@ export class AuthenticationService {
   }
 
   get userLogged(): any {
-    return this.userToken
+    return this._userToken;
   }
 }
