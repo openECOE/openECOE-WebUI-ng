@@ -38,7 +38,9 @@ export class AuthenticationService {
     if (!this._userToken) {
       const _tokenStored = localStorage.getItem(this.storageToken);
       try {
-        this.userToken = JSON.parse(_tokenStored)
+        if (_tokenStored) {
+          this.userToken = JSON.parse(_tokenStored);
+        }
       } catch {}
     }
 
@@ -88,6 +90,6 @@ export class AuthenticationService {
   }
 
   get userLogged(): any {
-    return this.userToken
+    return this._userToken;
   }
 }
