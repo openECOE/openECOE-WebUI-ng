@@ -8,7 +8,7 @@ import { PipesModule } from "@pipes/pipes.module";
 import { ComponentsModule } from "@components/components.module";
 import { AreasComponent } from "./areas/areas.component";
 import { StationsComponent } from "./stations/stations.component";
-import { StationDetailsComponent } from "./station-details/station-details.component";
+import { StationDetailsComponent } from "./stations/station-details/station-details.component";
 import { ScheduleComponent } from "./schedule/schedule.component";
 import { EventsComponent } from "./events-schedule/events.component";
 import { StudentsComponent } from "./students/students.component";

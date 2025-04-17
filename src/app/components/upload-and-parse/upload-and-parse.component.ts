@@ -121,7 +121,7 @@ export class UploadAndParseComponent implements OnInit {
       };
     });
   }
-  
+
   async getStations() {
     this.selectedEcoeID = parseInt(this.selectedEcoe.$uri.split('/').pop());
     return new Promise(resolve => {
@@ -174,9 +174,9 @@ export class UploadAndParseComponent implements OnInit {
       });
       this.apiService.cloneStations(this.ecoe, stationsID)
         .toPromise().then(() => this.importCompleted.emit());
-        
+
       this.handleCancel();
-      
+
       // Limpiar los selects
       this.selectedEcoe = null;
       this.selectedStations = [];
@@ -226,17 +226,20 @@ export class UploadAndParseComponent implements OnInit {
 
     // Procesar como CSV si no es JSON
     this.papaParser.parse(fileString, {
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-        quoteChar: '"',
-        escapeChar: '"',
-        complete: (results, file) => {
-            if (this.isStation)
-                this.parserResult.emit({ items: results.data, isJson });
-            else
-                this.parserResult.emit(results.data);
-        }
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      quoteChar: '"',
+      escapeChar: '"',
+      transform: (value) => {
+        const trimmedValue = value.trim();
+        return trimmedValue === "" ? null : trimmedValue;
+      },
+      complete: (results, file) => {
+        if (this.isStation)
+          this.parserResult.emit({ items: results.data, isJson });
+        else this.parserResult.emit(results.data);
+      },
     });
 }
 
