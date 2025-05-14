@@ -121,6 +121,7 @@
       -->
       <td text-right>
         <app-action-buttons [showDeleteButton]="!(activeUser.id === item.id)"
+                            [showEditButton]="!Roles(item, 'superadmin') || user.isSuper "
                             (startEdit)="showModalEdit(item)"
                             (delete)="delUser(item)">
         </app-action-buttons>
