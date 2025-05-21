@@ -3,7 +3,7 @@ import {Answer, AnswerRange, QuestionRange} from '@app/models';
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
-
+import {ServerStatusService} from '@app/services/server-status/server-status.service';
 @Component({
   selector: 'app-question-range',
   templateUrl: './question-range.component.html',
@@ -16,8 +16,9 @@ export class QuestionRangeComponent extends QuestionBaseComponent implements OnI
   selected: number;
 
   constructor(protected message: NzMessageService,
-              protected translate: TranslateService) {
-    super(message, translate);
+              protected translate: TranslateService,
+              protected serverStatus: ServerStatusService) {
+    super(message, translate, serverStatus);
   }
 
   ngOnInit() {

@@ -3,6 +3,7 @@ import {Answer, AnswerCheckBox, AnswerRadio, QuestionCheckBox, QuestionOption, Q
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
+import {ServerStatusService} from '@app/services/server-status/server-status.service';
 
 class RadioOption {
   constructor(option: QuestionOption, checked: boolean) {
@@ -34,8 +35,10 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
   singleLabel: string;
 
   constructor(protected message: NzMessageService,
-              protected translate: TranslateService) {
-    super(message, translate);
+              protected translate: TranslateService,
+              protected serverStatus: ServerStatusService) {
+    super(message, translate, serverStatus);
+
   }
 
   ngOnInit() {
@@ -65,7 +68,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
       } 
     }
   }
-
+ 
   changeRadioAnswer(answer: Answer, option: number, checked: boolean) {
     if (answer) {
       if (checked && option) {
