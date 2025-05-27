@@ -39,7 +39,8 @@ export class QuestionsListComponent implements OnInit, OnChanges {
   questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'radio', label: 'ONE_ANSWER'},
     {type: 'checkbox', label: 'MULTI_ANSWER'},
-    {type: 'range', label: 'VALUE_RANGE'}
+    {type: 'range', label: 'VALUE_RANGE'},
+    {type: 'grid', label: 'GRID_ANSWER'}
   ];
 
   constructor(private route: ActivatedRoute,

@@ -2,31 +2,65 @@
 <!--  [nzLoading]="loading"-->
 <!--  [nzParagraph]="false"-->
 <!--  [nzActive]="true"-->
-<!--&gt;-->
-<div nz-row nzGutter="16" nzAlign="middle" nzJustify="center">
+<!--&gt;--><!--
+<div nz-row 
+*ngIf="question.schema.type==='none'"
+nzGutter="16" nzAlign="middle" nzJustify="center">
+  <div nz-col nzFlex="1 1 375px" [innerHTML]="question['order'] + '. ' + question['schema']['description']"></div>
+  <div nz-col nzFlex="0 1 150px">
+    <b>{{question['schema']['reference']}}</b>
+  </div>-->
+<div nz-col nzFlex="0 1 250px" [ngSwitch]="question.schema.type">
+  <nz-spin [nzSpinning]="loading" [nzDelay]="500">
+      <app-question-radio
+        *ngSwitchCase="'radio'"
+        [questiondesc]="question"
+        [question]="_questionSchema"
+        [answer]="_questionAnswer">
+      </app-question-radio>
+      <app-question-checkbox
+        *ngSwitchCase="'checkbox'"
+        [questiondesc]="question"
+        [question]="_questionSchema"
+        [answer]="_questionAnswer">
+      </app-question-checkbox>
+      <app-question-range
+        *ngSwitchCase="'range'"
+        [questiondesc]="question"
+        [question]="_questionSchema"
+        [answer]="_questionAnswer">
+      </app-question-range>
+      <app-question-grid
+      *ngSwitchCase="'grid'"
+        [questiondesc]="question"
+      [question]="_questionSchema"
+      [answer]="_questionAnswer">
+      </app-question-grid>
+  </nz-spin>
+</div>
+
+<!--
+<div nz-row 
+*ngIf="question.schema.type==='grid'"
+nzGutter="16" nzAlign="middle" nzJustify="center">
   <div nz-col nzFlex="1 1 375px" [innerHTML]="question['order'] + '. ' + question['schema']['description']"></div>
   <div nz-col nzFlex="0 1 150px">
     <b>{{question['schema']['reference']}}</b>
   </div>
-  <div nz-col nzFlex="0 1 250px" [ngSwitch]="question.schema.type">
+  <div nz-col nzFlex="0 1 250px"></div>
+</div>
+<div nz-row 
+*ngIf="question.schema.type==='grid'"
+nzGutter="16" nzAlign="middle" nzJustify="center">
+<div nz-col nzFlex="0 1 100%" [ngSwitch]="question.schema.type">
     <nz-spin [nzSpinning]="loading" [nzDelay]="500">
-        <app-question-radio
-          *ngSwitchCase="'radio'"
-          [question]="_questionSchema"
-          [answer]="_questionAnswer">
-        </app-question-radio>
-        <app-question-checkbox
-          *ngSwitchCase="'checkbox'"
-          [question]="_questionSchema"
-          [answer]="_questionAnswer">
-        </app-question-checkbox>
-        <app-question-range
-          *ngSwitchCase="'range'"
-          [question]="_questionSchema"
-          [answer]="_questionAnswer">
-        </app-question-range>
+        <app-question-grid
+        *ngSwitchCase="'grid'"
+        [question]="_questionSchema"
+        [answer]="_questionAnswer">
+        </app-question-grid>
     </nz-spin>
   </div>
-
 </div>
+-->
 <!--</nz-skeleton>-->
