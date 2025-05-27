@@ -3,7 +3,7 @@
     <form nz-form [formGroup]="optionForm" *ngIf="current_number_options > 0" >
 
       <ng-container [formArrayName]="'optionRow'" *ngFor=" let control of optionForm.get('optionRow')['controls']; let i = index">
-        <ng-container *ngIf=" type === 'radio' || type === 'checkbox' || (type === 'range' && (i + 1) == optionForm.get('optionRow')['controls'].length)">
+        <ng-container *ngIf=" type === 'radio' || type === 'checkbox' || type === 'grid' || (type === 'range' && (i + 1) == optionForm.get('optionRow')['controls'].length)">
           <div nz-row nzGutter="8" nzType="flex" nzAlign="top" nzJustify="start">
               <h3 text-left *ngIf="+i === 0"><b>{{'OPTIONS' | translate}}</b></h3>
           </div>
@@ -65,7 +65,32 @@
             {{'ADD_OPTION' | translate}}
           </button>
         </nz-form-control>
+        <!--<nz-form-control *ngIf="type === 'grid'">
+                    <nz-input-number formControlName="gridRows"
+                      [nzPlaceHolder]="'ROWS_NUMBER' | translate"
+                      [nzMin]="1"></nz-input-number>
+                  </nz-form-control>-->
+      </nz-form-item><!--
+      <nz-form-item  *ngIf="type === 'grid'">
+        <nz-space-item>
+          <nz-form-control>
+            <button nz-button nzType="dashed" class="add-button" (click)="addOptionRow(type)">
+              <i nz-icon nzType="plus"></i>
+              {{'ADD_OPTION' | translate}}
+            </button>
+          </nz-form-control>
       </nz-form-item>
+      <nz-form-item  *ngIf="type === 'grid'">-->
+        <!--</nz-space-item>
+        <nz-space-item>-->
+          <!--<nz-form-control *ngIf="type === 'grid'">
+            <nz-input-number formControlName="gridRowsCount"
+              [nzPlaceHolder]="'ROWS_NUMBER' | translate"
+              [nzMin]="1" [nzMax]="current_number_options"></nz-input-number>
+          </nz-form-control>-->
+        <!--</nz-space-item>
+      </nz-form-item>-->
+
     </form>
   </div>
   <!-- <div *ngIf="type === questionTypeOptions[0] || type ===  questionTypeOptions[1]" nzGutter="8" nz-row nzType="flex" nzJustify="center">

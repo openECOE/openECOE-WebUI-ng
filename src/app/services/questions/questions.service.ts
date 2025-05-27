@@ -9,7 +9,8 @@ import {
   Question,
   QuestionSchema,
   QuestionBase,
-  QuestionRange, QuestionCheckBox, QuestionRadio, QuestionOption, ECOE
+  QuestionRange, QuestionCheckBox, QuestionRadio, QuestionOption, ECOE,
+  QuestionGrid
 } from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -259,7 +260,7 @@ export class QuestionsService {
         _schema.range = item[this.HEADER.range] || getRateCount();
 
         _schema.max_points = item[this.HEADER.points];
-      } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
+      } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox || _schema instanceof QuestionGrid) {
         const _options = item[this.OPTIONS];
 
         if (_options.length === 0) {

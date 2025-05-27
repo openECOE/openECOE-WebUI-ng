@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Answer, AnswerCheckBox, AnswerRadio, QuestionCheckBox, QuestionOption, QuestionRadio, Option} from '@app/models';
+import {Answer, AnswerCheckBox, AnswerRadio, QuestionCheckBox, QuestionOption, QuestionRadio, Option, Question, AnswerSchema, Station, Student} from '@app/models';
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
@@ -26,19 +26,25 @@ class RadioOption {
 })
 export class QuestionRadioComponent extends QuestionBaseComponent implements OnInit {
 
+  @Input() questiondesc: Question;
   @Input() question: QuestionRadio;
+  @Input() station?: Station = null;
+  @Input() student?: Student = null;
 
   RadioOptions: Array<RadioOption> = [];
 
   singleChecked: boolean = false;
   singleLabel: string;
 
+  _questionSchema: QuestionRadio = null;
+  _questionAnswer: Answer = null;
   constructor(protected message: NzMessageService,
               protected translate: TranslateService) {
     super(message, translate);
   }
 
   ngOnInit() {
+    this._questionSchema = this.questiondesc.schema as QuestionRadio;
     this.RadioOptions = this.loadQuestion(this.question);
   }
 
@@ -83,4 +89,27 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
     }
   }
 
+
+    async findAnswer(questiondesc: Question, answersList: Array<Answer>): Promise<Answer> {
+      //this.loading = true;
+      let _answer = null;
+      if (answersList) {
+        // console.log(question.id, 'findAnswer for Question:', question, 'in', answersList);
+        _answer = answersList.find(answer => answer.question.equals(this.question));
+        _answer = _answer || await this.createAnswer(questiondesc)
+      }
+      //this.loading = false;
+      return _answer;
+    }
+  
+    async createAnswer(questiondesc: Question) {
+      const _answer = new Answer({
+        station: this.station,
+        student: this.student,
+        questiondesc: this.questiondesc,
+        schema: new AnswerSchema(questiondesc.schema.type)
+      })
+  
+      return _answer
+    }
 }
