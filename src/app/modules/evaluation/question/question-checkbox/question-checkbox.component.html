@@ -1,13 +1,24 @@
-<ng-container *ngFor="let cb of _checkBoxes; let indexOption = index">
-  <nz-switch nz-row
-            [ngClass]="cb.class"
-            [nzCheckedChildren]="label"
-            [nzUnCheckedChildren]="label"
-            [ngModel]="cb.checked"
-            (ngModelChange)="changeAnswer(answer, cb, $event)">
-  </nz-switch>
-  
-  <ng-template #label>
-    <div [innerHTML]="cb.option.label"></div>
-  </ng-template>
-</ng-container>
+
+<!-- Enunciado de la pregunta tipo checkbox-->
+<div nz-row nzGutter="16" nzAlign="middle" nzJustify="center">
+  <div nz-col nzFlex="1 1 375px" [innerHTML]="questiondesc['order'] + '. ' + questiondesc['schema']['description']"></div>
+  <div nz-col nzFlex="0 1 150px">
+    <b>{{questiondesc['schema']['reference']}}</b>
+  </div>
+  <div nz-col nzFlex="0 1 250px">
+    <!-- Opciones de la pregunta tipo checkbox -->
+    <ng-container *ngFor="let cb of _checkBoxes; let indexOption = index">
+      <nz-switch nz-row
+                [ngClass]="cb.class"
+                [nzCheckedChildren]="label"
+                [nzUnCheckedChildren]="label"
+                [ngModel]="cb.checked"
+                (ngModelChange)="changeAnswer(answer, cb, $event)">
+      </nz-switch>
+      
+      <ng-template #label>
+        <div [innerHTML]="cb.option.label"></div>
+      </ng-template>
+    </ng-container><!--Cierre de las preguntas tipo checkbox-->
+  </div>
+</div>

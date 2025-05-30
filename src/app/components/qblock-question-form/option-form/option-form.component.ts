@@ -1,6 +1,6 @@
 import {AfterContentInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {QuestionCheckBox, QuestionOption, QuestionRadio, QuestionRange, QuestionSchema, RowOption} from '@app/models';
+import {QuestionCheckBox, QuestionGrid, QuestionOption, QuestionRadio, QuestionRange, QuestionSchema, RowOption} from '@app/models';
 import {stringify} from 'querystring';
 @Component({
   selector: 'app-option-form',
@@ -10,7 +10,7 @@ import {stringify} from 'querystring';
 export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit {
 
   @Input() questionOrder: number;
-  @Input() type: 'radio' | 'checkbox'  | 'range';
+  @Input() type: 'radio' | 'checkbox'  | 'range' | 'grid';
   @Input() schema: QuestionSchema;
 
   @Output() returnData:   EventEmitter<any> = new EventEmitter();
@@ -26,11 +26,17 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     min: 1,
     current: 10
   };
+/*
+  nGridRows: {max: number, min: number, current: number} ={
+    min: 1,
+    current: 1,
+    max: 1
+  };*/
 
   current_number_options: number = 0;
   arrPoints: Array<{ option: number, value: number }> = [];
   defaultTextValues: string[] = ['Sí'];
-  public questionTypeOptions: string[] = ['radio', 'checkbox', 'range'];
+  public questionTypeOptions: string[] = ['radio', 'checkbox', 'range', 'grid'];
 
   constructor(
     private fb: FormBuilder) { }
@@ -57,7 +63,8 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
   }
 
   initOptionsCache() {
-    if ( this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox) {
+    if ( this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox
+      || this.schema instanceof QuestionGrid ) {
       this.schema.options = this.schema.options.map(option => {
         const _option = new QuestionOption()
         _option.id_option = option.id_option
@@ -85,7 +92,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     let i = 0;
     this.arrPoints = [];
 
-    if (this.type === this.questionTypeOptions[2]) {
+    if (this.type === this.questionTypeOptions[2]) { //RS
       const length = this.optionForm.get('optionRow')['controls'].length;
       if (!length) {
         return;
@@ -96,7 +103,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
         option: i,
         value: points,
       });
-    } else {
+    } else {                                        //RB,CH,GRID
       for (const item of (this.optionForm.get('optionRow')['controls'])) {
         this.arrPoints.push({
           option: i,
@@ -116,8 +123,14 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     this.pointValues.next([this.questionOrder, [...this.arrPoints]]);
   }
 
+  /*
+  * Obtain a RowOption instance 
+  * @param rowType 
+  * @param params
+  * @param index 
+  */
   getRowOption(rowType: string, params: any, index?: number) {
-    if (rowType !== this.questionTypeOptions[2]) {
+    if (rowType !== this.questionTypeOptions[2]) {  //RB,CH,GRID
       return <RowOption>({
         id: (params && params['id']) ? params['id'] : '',
         order: params ? params['order'] : '',
@@ -125,7 +138,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
         points: [params ? params.points : '', [Validators.required, Validators.maxLength(2)]]
       });
     } else {
-      return <RowOption>({
+      return <RowOption>({  //RS
         id: (params && params['id']) ? params['id'] : '',
         order: '',
         label: [{value: ' ', disabled: true}, ],
@@ -218,6 +231,24 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     }
   }
 
+  //Initialize the grid question form
+  initGRIDrow(){
+    //
+    while (this.current_number_options > 0) {
+      this.deleteRow(this.current_number_options - 1);
+    }
+    
+    if (this.optionsCache && this.optionsCache.length > 0) {
+      this.optionsCache.forEach((item, idx) => {
+        this.addOptionRow(this.type, item, idx);
+      });
+    } else {
+      this.defaultTextValues.forEach((item, idx) => {
+        this.addOptionRow(this.type, null, idx);
+      });
+    }
+  }
+
   /**
    * Adds new row (name and order fields) station to the form
    */
@@ -230,6 +261,8 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
       this.initCHrow(DEFAULT_N_CH_ROWS, prevValue);
     } else if (this.type === this.questionTypeOptions[2]) { // RS
       this.initRSrow();
+    } else if (this.type === this.questionTypeOptions[3]){ // Grid
+      this.initGRIDrow();
     }
   }
 
@@ -277,6 +310,13 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
       this.getFormControl('rateCount', pos).setValue(this.nRateCount.current);
     }
   }
+
+  /** function in order to check de grid rows number is not higher
+    * than added answers for the current question
+    */
+  /*increaseGridRowsCount(pos: number, value: number) {
+    
+  }*/
 
   parseOptions(options: RowOption[]) {    
     return options;
