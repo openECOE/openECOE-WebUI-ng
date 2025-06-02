@@ -9,7 +9,8 @@ import {
   Question,
   QuestionSchema,
   QuestionBase,
-  QuestionRange, QuestionCheckBox, QuestionRadio, QuestionOption, ECOE
+  QuestionRange, QuestionCheckBox, QuestionRadio, QuestionOption, ECOE,
+  QuestionGrid
 } from '../../models';
 import {Pagination} from '@openecoe/potion-client';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -259,7 +260,7 @@ export class QuestionsService {
         _schema.range = item[this.HEADER.range] || getRateCount();
 
         _schema.max_points = item[this.HEADER.points];
-      } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox) {
+      } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox || _schema instanceof QuestionGrid) {
         const _options = item[this.OPTIONS];
 
         if (_options.length === 0) {
@@ -276,8 +277,27 @@ export class QuestionsService {
           const _questionOption = new QuestionOption();
 
           _questionOption.id_option = idx;
-          _questionOption.points = opt.points || opt[`points${idx}`];
-          _questionOption.label = opt.label || opt[`option${idx}`];
+          /* In order to avoid null/undefined assignations to Points property, 
+           * parameters values inside opt object are strictly controlled
+           */
+          if(opt[`points${idx}`] === undefined || opt[`points${idx}`] === null) {
+            _questionOption.points = opt.points;
+          } else if (opt.points === undefined || opt.points === null) {
+            _questionOption.points = opt[`points${idx}`];
+          } else {
+            _questionOption.points = opt.points || opt[`points${idx}`];
+          }
+          /* In order to avoid null/undefined assignations to Label property, 
+           * parameters values inside opt object are strictly controlled
+           */
+          if (opt[`option${idx}`] === undefined || opt[`option${idx}`] === null){
+            _questionOption.label = opt.label;
+          } else if(opt.label === undefined || opt.label === null) {
+             _questionOption.label = opt[`option${idx}`];
+          }
+          else {
+             _questionOption.label = opt.label || opt[`option${idx}`];
+          }
           _questionOption.order = opt.order ? opt.order : idx;
 
           _schema.options.push(_questionOption);
