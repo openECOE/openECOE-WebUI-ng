@@ -97,7 +97,7 @@ export class ApiService {
       return null;
     }
   }
-  
+
 
   /**
    * Makes a HTTP GET request to the backend and gets a list of items.
@@ -247,41 +247,55 @@ export class ApiService {
   }
 
   async getEvaluators(ecoe: ECOE): Promise<User[]> {
-    let permissions = await ApiPermissions.query<ApiPermissions>({
-      where: {
-        name: "evaluate",
-        object: "stations"
-      },
-      perPage: 100
-    }, {paginate: true});
 
+    const _stations = await ecoe.stations() as Station[];
     let permissionsOfThisEcoe = [];
-    for (const permission of permissions) {
-      let station = await Station.fetch<Station>(permission.idObject);
-      if(station.ecoe.id == ecoe.id) {
+
+    await Promise.all(_stations.map(async station => {
+      let permissions = await ApiPermissions.query<ApiPermissions>(
+        {
+          where: {
+            name: "evaluate",
+            object: "stations",
+            idObject: station.id,
+          },
+          perPage: 100,
+        },
+        { paginate: true }
+      );
+
+      for (const permission of permissions) {
         permissionsOfThisEcoe.push(permission);
       }
-    }
+    }));
 
     return [...new Set(permissionsOfThisEcoe.map(p => p.user))];
   }
 
   async getStationsByEvaluator(user: User, ecoe: ECOE): Promise<Station[]> {
-    let permissions = await ApiPermissions.query<ApiPermissions>({
-      where: {
-        name: "evaluate",
-        object: "stations",
-        user: user,
-      }
-    });
+    const _stations = await ecoe.stations() as Station[];
 
     let stations: Station[] = [];
-    for(const permission of permissions) {
-      let station = await Station.fetch<Station>(permission.idObject);
-      if(station.ecoe.id == ecoe.id) {
-        stations.push(station);
+    await Promise.all(_stations.map(async station => {
+      let permissions = await ApiPermissions.query<ApiPermissions>(
+        {
+          where: {
+            name: "evaluate",
+            object: "stations",
+            user: user,
+            idObject: station.id,
+          },
+          perPage: 100,
+        },
+        { paginate: true }
+      );
+
+      for (const permission of permissions) {
+        if (permission.idObject == station.id) {
+          stations.push(station);
+        }
       }
-    }
+    }));
 
     return stations;
   }

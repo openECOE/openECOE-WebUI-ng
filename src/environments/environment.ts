@@ -19,9 +19,10 @@ export const environment = {
   production: false,
   TESTING: false,
   DEBUG: true,
-  API_ROUTE: "http://localhost:8081/backend",
-  CHRONO_ROUTE: "http://localhost:8081/chrono",
-  BACK_ROUTE: "http://localhost:8081",
+  API_ROUTE: "https://openecoe.umh.es/backend",
+  CHRONO_ROUTE: "https://openecoe.umh.es/chrono",
+  BACK_ROUTE: "https://openecoe.umh.es",
+
 };
 
 /*
