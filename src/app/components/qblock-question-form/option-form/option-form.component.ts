@@ -233,7 +233,6 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
 
   //Initialize the grid question form
   initGRIDrow(){
-    //
     while (this.current_number_options > 0) {
       this.deleteRow(this.current_number_options - 1);
     }
@@ -311,13 +310,7 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
     }
   }
 
-  /** function in order to check de grid rows number is not higher
-    * than added answers for the current question
-    */
-  /*increaseGridRowsCount(pos: number, value: number) {
-    
-  }*/
-
+ 
   parseOptions(options: RowOption[]) {    
     return options;
   }
