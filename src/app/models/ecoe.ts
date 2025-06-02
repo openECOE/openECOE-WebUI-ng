@@ -52,7 +52,7 @@ export class Job extends Item {
 
 export class ECOE extends Item {
   areas = Route.GET<Area | Pagination<Area>>("/areas");
-  stations = Route.GET<Station | Pagination<Station>>("/stations");
+  stations = Route.GET<Station | Station[] | Pagination<Station>>("/stations");
   schedules = Route.GET<Schedule | Pagination<Schedule>>("/schedules");
   students = Route.GET<Student | Pagination<Student>>("/students");
   rounds = Route.GET<Round | Round[] | Pagination<Round>>("/rounds");
