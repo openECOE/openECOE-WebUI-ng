@@ -138,6 +138,7 @@
   [nzTitle]="showAddUser?('ADD_USER' | translate) : ('EDIT_USER' | translate: {email: usuarioOriginal?.email})"
   [nzOkText]="'ACCEPT' | translate"
   [nzCancelText]="'CANCEL' | translate"
+  [nzMaskClosable]="false"
   (nzOnOk)="submitFormUser(validateForm)"
   (nzOnCancel)="closeModal()">
 
