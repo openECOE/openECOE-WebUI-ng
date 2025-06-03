@@ -265,14 +265,14 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         });
         break;
       }
-      case this.questionTypeOptions[2].type: { // Range
+      case this.questionTypeOptions[2].type: { // RS
         $event[1].forEach(item => {
           this.totalPoints += parseInt(item.value ? item.value : 0, 10);
           this.getFormControl('points', $event[0]).setValue(this.totalPoints);
         });
         break;
       }
-      case this.questionTypeOptions[3].type: { // Grid
+      case this.questionTypeOptions[3].type: { // GRID
         this.totalPoints = ($event[1].length > 0) ? Math.max(...(Array.from( $event[1], x => x['value'] ))) : 0;
         this.getFormControl('points', $event[0]).setValue(this.totalPoints);
         break;
