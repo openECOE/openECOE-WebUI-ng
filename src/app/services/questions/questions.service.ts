@@ -251,14 +251,22 @@ export class QuestionsService {
         const getRateCount = () => {
           const _options = item[this.OPTIONS];
           if (_options) {
-            return _options['ratecount'];
+            return _options[0].rateCount;
           } else {
             return 10;
           }
         }
-
-        _schema.range = item[this.HEADER.range] || getRateCount();
-
+        const rateCountFromGet= getRateCount();
+        /* In order to avoid null/undefined assignations to Range property, 
+         * parameters values inside item and _options are strictly controlled
+         */
+        if (item[this.HEADER.range] === null || item[this.HEADER.range] === undefined) {
+          _schema.range = rateCountFromGet
+        } else if (rateCountFromGet === null || rateCountFromGet === undefined) {
+          _schema.range = item[this.HEADER.range]
+        } else {
+          _schema.range = item[this.HEADER.range] || getRateCount();
+        }
         _schema.max_points = item[this.HEADER.points];
       } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox || _schema instanceof QuestionGrid) {
         const _options = item[this.OPTIONS];
@@ -280,7 +288,7 @@ export class QuestionsService {
           /* In order to avoid null/undefined assignations to Points property, 
            * parameters values inside opt object are strictly controlled
            */
-          if(opt[`points${idx}`] === undefined || opt[`points${idx}`] === null) {
+          if (opt[`points${idx}`] === undefined || opt[`points${idx}`] === null) {
             _questionOption.points = opt.points;
           } else if (opt.points === undefined || opt.points === null) {
             _questionOption.points = opt[`points${idx}`];
@@ -290,9 +298,9 @@ export class QuestionsService {
           /* In order to avoid null/undefined assignations to Label property, 
            * parameters values inside opt object are strictly controlled
            */
-          if (opt[`option${idx}`] === undefined || opt[`option${idx}`] === null){
+          if (opt[`option${idx}`] === undefined || opt[`option${idx}`] === null) {
             _questionOption.label = opt.label;
-          } else if(opt.label === undefined || opt.label === null) {
+          } else if (opt.label === undefined || opt.label === null) {
              _questionOption.label = opt[`option${idx}`];
           }
           else {

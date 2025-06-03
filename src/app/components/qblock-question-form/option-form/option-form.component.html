@@ -14,10 +14,11 @@
                   <nz-form-control *ngIf="type !== 'range'" [nzErrorTip]="'DESCRIPTION_INPUT_REQUIRED' | translate">
                     <input nz-input [placeholder]="('DESCRIPTION_PLACEHOLDER' | translate)" formControlName="label"/>
                   </nz-form-control>
-                  <nz-form-control *ngIf="type === 'range'">
+                  <nz-form-control *ngIf="type === 'range'" [nzErrorTip]="'RANGE_INPUT_REQUIRED' | translate">
                     <nz-input-number formControlName="rateCount"
                       [nzPlaceHolder]="'RANGE_PLACEHOLDER' | translate"
-                      [nzMin]="5" [nzMax]="10"></nz-input-number>
+                      [nzMin]="2"
+                      class="range-input"></nz-input-number>
                   </nz-form-control>
                 </nz-space-item>
                 <nz-space-item>
@@ -58,7 +59,7 @@
           </div>
         </ng-container>
       </ng-container>
-      <nz-form-item>
+      <nz-form-item *ngIf="type !== 'range'">
         <nz-form-control>
           <button nz-button nzType="dashed" class="add-button" (click)="addOptionRow(type)">
             <i nz-icon nzType="plus"></i>
