@@ -43,7 +43,7 @@ export class Job extends Item {
   name: string;
   progress: number;
   complete: boolean;
-  user: User;
+  user: number;
   created: Date;
   finished: Date;
   description: string;

@@ -49,7 +49,7 @@ export class EcoeResultsComponent implements OnInit, OnDestroy {
   ecoeName: any;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-  
+
   constructor(
     private api: ApiService,
     private route: ActivatedRoute,
@@ -112,7 +112,7 @@ export class EcoeResultsComponent implements OnInit, OnDestroy {
     this.destroyed$.next(true);
     this.destroyed$.complete();
   }
-  
+
   onBack() {
     this.router.navigate(["/ecoe"]).finally();
   }
@@ -150,11 +150,9 @@ export class EcoeResultsComponent implements OnInit, OnDestroy {
       .subscribe(() => this.updateProgressCsv());
   }
   async updateProgressCsv() {
-    await ECOE.fetch<ECOE>(this.ecoeId, { cache: false }).then(
-      (response) => this.job_id_csv = response.jobCsv.id
-    );
+    const _ecoe = await ECOE.fetch<ECOE>(this.ecoeId, { cache: false });
 
-    this.ecoe_csv = await Job.fetch<Job>(this.job_id_csv, { cache: false });
+    this.ecoe_csv = _ecoe.jobCsv;
 
     this.file_name_csv = this.ecoe_csv.file;
 
@@ -181,18 +179,16 @@ export class EcoeResultsComponent implements OnInit, OnDestroy {
     );
   }
   async getProgressCsv() {
-    return await Job.fetch<Job>(this.job_id_csv, { cache: false }).then(
-      (value) => {
-        this.progress_csv = value.progress;
-        if (this.progress_csv == 100.0) {
-          this.job_csv_file = this.ecoe_csv.uri;
-          this.areGeneratedCSV = true;
-          this.btn_csv = true;
-          this.btn_dwl_csv = true;
-        }
-        return value.progress;
-      }
-    );
+    const value = await Job.fetch<Job>(this.job_id_csv, { cache: false });
+
+    this.progress_csv = value.progress;
+    if (this.progress_csv == 100.0) {
+      this.job_csv_file = this.ecoe_csv.uri;
+      this.areGeneratedCSV = true;
+      this.btn_csv = true;
+      this.btn_dwl_csv = true;
+    }
+    return value.progress;
   }
   async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
     const _pag: Pagination<Item> = await (itemClass as unknown as Item).query(
