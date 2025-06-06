@@ -135,7 +135,8 @@ export class OptionFormComponent implements OnInit, OnChanges, AfterContentInit 
         id: (params && params['id']) ? params['id'] : '',
         order: params ? params['order'] : '',
         label: [params ? params['label'] : this.defaultTextValues[index], [Validators.required, Validators.maxLength(255)]],
-        points: [params ? params.points : '', [Validators.required, Validators.maxLength(2)]]
+        points: [params ? params.points : '', [Validators.required, Validators.maxLength(2)]],
+        rateCount: [params ? params.rateCount : 10, [Validators.required]]
       });
     } else {
       return <RowOption>({  //RS
