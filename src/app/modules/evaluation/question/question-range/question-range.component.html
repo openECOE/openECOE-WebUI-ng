@@ -1,3 +1,13 @@
-<nz-radio-group [ngModel]="selected" (ngModelChange)="changeAnswer(answer, $event)" nzButtonStyle="solid">
-  <label *ngFor="let number of [].constructor(this.question.range + 1); let i = index" nz-radio-button [nzValue]="i">{{i}}</label>
-</nz-radio-group>
+<!-- Enunciado de la pregunta de rango-->
+<div nz-row nzGutter="16" nzAlign="middle" nzJustify="center">
+  <div nz-col nzFlex="1 1 375px" [innerHTML]="questiondesc['order'] + '. ' + questiondesc['schema']['description']"></div>
+  <div nz-col nzFlex="0 1 150px">
+    <b>{{questiondesc['schema']['reference']}}</b>
+  </div>
+  <div nz-col nzFlex="0 1 250px">
+    <!--Opciones de rango-->
+    <nz-radio-group [ngModel]="selected" (ngModelChange)="changeAnswer(answer, $event)" nzButtonStyle="solid">
+      <label *ngFor="let number of [].constructor(this.question.range + 1); let i = index" nz-radio-button [nzValue]="i">{{i}}</label>
+    </nz-radio-group> <!--/Opciones de rango-->
+  </div>
+</div>

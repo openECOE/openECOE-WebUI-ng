@@ -12,6 +12,7 @@ import {QuestionComponent} from './question/question.component';
 import {QuestionRadioComponent} from './question/question-radio/question-radio.component';
 import {QuestionCheckboxComponent} from './question/question-checkbox/question-checkbox.component';
 import {QuestionRangeComponent} from './question/question-range/question-range.component';
+import { QuestionGridComponent } from './question/question-grid/question-grid.component';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -86,7 +87,9 @@ import { NzMessageModule } from 'ng-zorro-antd/message';
     QuestionComponent,
     QuestionRadioComponent,
     QuestionCheckboxComponent,
-    QuestionRangeComponent]
+    QuestionRangeComponent,
+    QuestionGridComponent  
+  ]
 })
 export class EvaluationModule {
 }

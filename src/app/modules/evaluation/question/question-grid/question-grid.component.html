@@ -1,0 +1,52 @@
+<!-- Enunciado de la pregunta de cuadrícula-->
+<div nz-row nzGutter="16" nzAlign="middle" nzJustify="center">
+  <div nz-col nzFlex="1 1 375px" [innerHTML]="questiondesc['order'] + '. ' + questiondesc['schema']['description']"></div>
+  <div nz-col nzFlex="0 1 150px">
+    <b>{{questiondesc['schema']['reference']}}</b>
+  </div>
+  <div nz-col nzFlex="0 1 250px"><div nz-row nzGutter="16" nzAlign="middle" nzJustify="center" class="grid-vertical">
+       <div nz-col nzFlex="0 1 100%">
+              <!--<nz-spin [nzSpinning]="loading" [nzDelay]="500">-->
+              <div nz-row nzGutter="16" nzAlign="middle" nzJustify="center">
+                     <nz-radio-group 
+                                   [ngModel]="answer?.schema?.selected ? answer?.schema?.selected?.id_option : null"
+                                   [nzButtonStyle]="'solid'"
+                                   (ngModelChange)="changeGridAnswer(answer, $event, true)">
+                     <label nz-radio-button
+                            *ngFor="let cb of GridOptions; let indexOption = index"
+                            [nzValue]="cb.option.id_option"
+                            [ngClass]="cb.class"
+                            [innerHTML]="cb.option.label"></label>
+                     <label nz-radio-button
+                            [nzValue]="null"
+                            [innerHTML]="'NONE_OPTION' |translate"></label>
+                     </nz-radio-group>
+              </div>
+              <!--</nz-spin>-->
+       </div>
+</div>
+<!-- /Opciones de respuesta --></div>
+</div><!-- Cierre de la etiqueta para que las opciones se visualicen debajo del enunciado -->
+<!-- Opciones de respuesta de cuadrícula (debajo el enunciado)-->
+<div nz-row nzGutter="16" nzAlign="middle" nzJustify="center" class="grid-horizontal">
+       <div nz-col nzFlex="0 1 100%">
+              <!--<nz-spin [nzSpinning]="loading" [nzDelay]="500">-->
+              <div nz-row nzGutter="16" nzAlign="middle" nzJustify="center">
+                     <nz-radio-group 
+                                   [ngModel]="answer?.schema?.selected ? answer?.schema?.selected?.id_option : null"
+                                   [nzButtonStyle]="'solid'"
+                                   (ngModelChange)="changeGridAnswer(answer, $event, true)">
+                     <label nz-radio-button
+                            *ngFor="let cb of GridOptions; let indexOption = index"
+                            [nzValue]="cb.option.id_option"
+                            [ngClass]="cb.class"
+                            [innerHTML]="cb.option.label"></label>
+                     <label nz-radio-button
+                            [nzValue]="null"
+                            [innerHTML]="'NONE_OPTION' |translate"></label>
+                     </nz-radio-group>
+              </div>
+              <!--</nz-spin>-->
+       </div>
+</div>
+<!-- /Opciones de respuesta -->
