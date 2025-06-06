@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
-import { catchError, map, tap } from "rxjs/operators";
+import { catchError, map, tap, timeout } from "rxjs/operators";
 import { Role, User, Option, ECOE, Station, Area } from "@app/models";
 import { ApiPermissions } from "@app/models";
 
@@ -237,13 +237,21 @@ export class ApiService {
     return +ref.substr(ref.lastIndexOf("/") + 1);
   }
 
-  getServerStatus(): Observable<string> {
+  async getServerStatus(): Promise<string> {
     const url = `${environment.API_ROUTE}/status/`;
 
-    return this.http.get(url, { responseType: 'text' as const})
+    return this.http
+      .get(url, { responseType: "text" as const }, )
       .pipe(
-        catchError(() => of('ko'))
-      );
+        timeout(6000),
+        map((response) => {
+          return response;
+        }),
+        catchError(() => {
+          return of("ko");
+        })
+      )
+      .toPromise();    
   }
 
   async getEvaluators(ecoe: ECOE): Promise<User[]> {

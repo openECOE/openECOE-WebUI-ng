@@ -48,7 +48,7 @@ export class QuestionComponent implements OnInit {
     let _answer = null;
     if (answersList) {
       // console.log(question.id, 'findAnswer for Question:', question, 'in', answersList);
-      _answer = answersList.find(answer => answer.question.equals(this.question));
+      _answer = answersList.find(answer => answer.question.id === question.id);
       _answer = _answer || await this.createAnswer(question)
     }
     this.loading = false;

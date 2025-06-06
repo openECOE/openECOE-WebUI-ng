@@ -1,16 +1,18 @@
 import { Input, OnInit, Directive } from '@angular/core';
-import {Answer, QuestionBase} from '@app/models';
+import {Answer, QuestionBase, Station} from '@app/models';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
 import {ServerStatusService} from '@app/services/server-status/server-status.service';
 import { getServers } from 'dns';
 import { is } from 'date-fns/locale';
+import { QuestionOfflineService } from '@app/services/questions/question-offline.service';
+import { guardedExpression } from '@angular/compiler/src/render3/util';
 @Directive()
 export class QuestionBaseComponent implements OnInit {
   protected _answer: Answer = null;
 
   protected isOnline: boolean = true;
-
+   recuperarconexion: boolean = false;
   @Input() question: QuestionBase;
    _questionAnswer: Answer = null;
 
@@ -26,33 +28,42 @@ export class QuestionBaseComponent implements OnInit {
 
   constructor(protected message: NzMessageService,
               protected translate: TranslateService,
-              protected serverStatus: ServerStatusService) {
+              protected serverStatus: ServerStatusService,
+              protected questionOnline: QuestionOfflineService) {
   }
 
   ngOnInit() {
 
-  
+    console.log("entra al ngonint")
     // Load question init values
     this.loadQuestion(this.question);
     const questionSchema = this.question as QuestionBase;
-     // recuperar respuestas si hay conexion
-
-    this.serverStatus.isAvailable.subscribe(value => {
+      this.serverStatus.isAvailable.subscribe(value => {
       this.isOnline = value;
 
       if(value)
       {
+        this.loadSelected(this.answer);
       console.log('conexion activa?', value);
-      localStorage.getItem('answers');
+      if(this.recuperarconexion)
+      { 
+        this.questionOnline.saveAnswer(this.answer);
+        console.log('respuestas guardadas en el servidor');
+        window.location.reload();
+        this.recuperarconexion = false;
 
-        this.recuperarRespuestasGuardadas();
       }
+      }
+      else
+      {
+         this.recuperarconexion = true;
+      }
+      
+      
       });
      
         
 }
-    
-  
 
   loadQuestion(question: QuestionBase) {
     // Create any additional structure needed for the template
@@ -64,52 +75,12 @@ export class QuestionBaseComponent implements OnInit {
     }
   }
   
-  saveAnswer(answer: Answer): Promise<Answer> {
-    return new Promise<Answer>((resolve, reject) => {
-
-      if(!this.isOnline)
-      {
-           // Save answer to local storagechrome
-          const respuestasGuardadas = JSON.parse(localStorage.getItem('answers')) || [];
-          const respuestasActualizadas = respuestasGuardadas.filter((a: any) => a.question !== answer.question);
-          respuestasActualizadas.push(answer);
-          localStorage.setItem('answers', JSON.stringify(respuestasActualizadas));
-          console.log('Answer saved to local storage:', respuestasGuardadas);
-      }
-      else
-          // Save answer to server
-        answer.save()
-        .then(value => {
-          this.answer = value
-          resolve(value)
-        })
-        .catch(reason => {
-          this.message.error(
-            this.translate.instant('ANSWER_SAVING_ERROR', {questionName: this.question.description}),
-            {nzDuration: 30});
-          console.error(reason);
-          reject(reason);
-
-        });
-    });
-  }
 
   loadselected(answer: Answer) {
-    if (!answer || !this.question) {
+    if (answer && this.question) {
       (this._questionAnswer = answer.value);
       this.answer = answer;
     }
   }
   
-  recuperarRespuestasGuardadas() {
-
-  const respuestas = JSON.parse(localStorage.getItem('answers') || '[]');
-  const respuestasGuardadas = respuestas.find((a: any) => a.question === this.question);
-  this.saveAnswer(this.answer)
-  if(respuestasGuardadas)
-    {
-    this.loadSelected(respuestasGuardadas);
-    console.log("respuesta guardada")
-    }
-  }
 }

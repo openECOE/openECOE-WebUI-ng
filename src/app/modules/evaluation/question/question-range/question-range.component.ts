@@ -4,6 +4,8 @@ import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-b
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
 import {ServerStatusService} from '@app/services/server-status/server-status.service';
+import { QuestionOfflineService } from '@app/services/questions/question-offline.service';
+
 @Component({
   selector: 'app-question-range',
   templateUrl: './question-range.component.html',
@@ -17,12 +19,13 @@ export class QuestionRangeComponent extends QuestionBaseComponent implements OnI
 
   constructor(protected message: NzMessageService,
               protected translate: TranslateService,
-              protected serverStatus: ServerStatusService) {
-    super(message, translate, serverStatus);
+              protected serverStatus: ServerStatusService,
+              protected questionOnline: QuestionOfflineService) {
+    super(message, translate, serverStatus, questionOnline);
   }
 
   ngOnInit() {
-
+    super.ngOnInit();
   }
 
   loadSelected(answer: Answer) {
@@ -36,7 +39,7 @@ export class QuestionRangeComponent extends QuestionBaseComponent implements OnI
       this.selected = value;
       (answer.schema as AnswerRange).selected = value;
       answer.points = (this.question.max_points / this.question.range) * value;
-      this.saveAnswer(answer);
+      this.questionOnline.saveAnswer(answer);
     }
   }
 

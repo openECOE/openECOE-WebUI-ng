@@ -4,6 +4,7 @@ import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-b
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
 import {ServerStatusService} from '@app/services/server-status/server-status.service';
+import { QuestionOfflineService } from '@app/services/questions/question-offline.service';
 
 class RadioOption {
   constructor(option: QuestionOption, checked: boolean) {
@@ -36,12 +37,14 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
 
   constructor(protected message: NzMessageService,
               protected translate: TranslateService,
-              protected serverStatus: ServerStatusService) {
-    super(message, translate, serverStatus);
+              protected serverStatus: ServerStatusService,
+            protected questionOnline: QuestionOfflineService) {
+    super(message, translate, serverStatus,questionOnline);
 
   }
 
   ngOnInit() {
+    super.ngOnInit();
     this.RadioOptions = this.loadQuestion(this.question);
   }
 
@@ -80,7 +83,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
         answer.points = 0
       }
       
-      this.saveAnswer(answer)
+      this.questionOnline.saveAnswer(answer)
         .then(newAnswer => this.answer = newAnswer)
         .catch(reason => console.error(reason));
     }
