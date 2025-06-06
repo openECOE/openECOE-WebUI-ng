@@ -3,6 +3,7 @@
   "ADMIN": "Administración",
   "HOME": "Inicio",
   "LOGIN": "Iniciar sesión",
+  "LOGIN_ERROR": "Error al iniciar sesión",
   "CREATE_ECOE": "Crear nueva ECOE",
   "CREATE": "Crear",
   "IMPORT_ECOE": "Importar ECOE",

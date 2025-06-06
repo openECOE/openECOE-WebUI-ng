@@ -7,7 +7,11 @@ import {ApiService} from '@services/api/api.service';
 import {getPotionID} from '@openecoe/potion-client';
 import {AppComponent} from '@app/app.component';
 import {AuthenticationService} from '@services/authentication/authentication.service';
-
+import { ServerStatusService } from '@app/services/server-status/server-status.service';
+import { take } from 'rxjs/operators';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {QuestionComponent} from '@app/modules/evaluation/question/question.component';
+import { QuestionOfflineService } from '@app/services/questions/question-offline.service';
 @Component({
   selector: 'app-evaluate',
   templateUrl: './evaluate.component.html',
@@ -36,14 +40,16 @@ export class EvaluateComponent implements OnInit {
   getQuestionsCompleted: boolean;
   isSpinning: boolean = true;
   ecoeDay: string;
-
-
+  isOnline: boolean;
+  primerinicio: number = 0;
   constructor(private route: ActivatedRoute,
               private router: Router,
               public location: Location,
               private questionService: QuestionsService,
               public apiService: ApiService,
               private authService: AuthenticationService,
+              private ServerStatusService: ServerStatusService,
+              protected questionOffline: QuestionOfflineService,
               @Inject(AppComponent) private parent: AppComponent) {
   }
 
@@ -55,6 +61,11 @@ export class EvaluateComponent implements OnInit {
     } else {
       this.authService.logout();
     }
+     this.ServerStatusService.isAvailable.subscribe(value => {
+      this.isOnline = value;
+      });
+    
+
   }
 
   getParams(params: {}) {
@@ -65,23 +76,24 @@ export class EvaluateComponent implements OnInit {
     this.ecoeDay = params['date'];
   }
 
-  getData() {
-    Shift.fetch(this.shiftId, {skip: ['ecoe']}).then((shift: Shift) => this.shift = shift);
-    Round.fetch(this.roundId, {skip: ['ecoe']}).then((round: Round) => this.round = round);
-    Station.fetch(this.stationId, {skip: ['ecoe']}).then((station: Station) => {
+  async getData() {
+  await  Shift.fetch(this.shiftId, {skip: ['ecoe']}).then((shift: Shift) => this.shift = shift);
+  await  Round.fetch(this.roundId, {skip: ['ecoe']}).then((round: Round) => this.round = round);
+  await  Station.fetch(this.stationId, {skip: ['ecoe']}).then((station: Station) => {
       this.station = station;
       this.getParentStation();
       this.getQuestions();
     });
-    return this.getPlanner().then((students: Student[]) => {
+      const students = await this.getPlanner() as Student[];
       this.students = this.reorderStudents(students, this.station);
+
       if (this.station && !this.station.parentStation && this.students.length > 0) {
         this.setCurrentStudent(this.students.filter(student => student && student.plannerOrder === this.station.order)[0]);
       } else {
         this.setCurrentStudent({planner_order: 0} as Student);
       }
+      this.loading = false;
       return;
-    });
   }
 
   getPlanner() {
@@ -103,16 +115,61 @@ export class EvaluateComponent implements OnInit {
         : new Promise(resolve => resolve([]));
     });
   }
-
+  
+  
   async getAnswers(student: Student, station: Station): Promise<Array<Answer>> {
-      if (student.id && station.id) {
-        return this.queryAnswers(student, station)
-      } else {
-        return null;
+    console.log("entra a getAnswers");
+      if (student.id && station.id) 
+      {
+        console.log("entra a getAnswers con student y station");
+        const key = `answers_${student.id}_${station.id}`;
+        console.log('serverStatus', this.isOnline);
+        if(this.isOnline) 
+        {
+            const answers = await this.queryAnswers(student, station);
+            console.log('before save (with toJSON):', answers);   
+            localStorage.setItem(key, JSON.stringify(answers.map(this.answerToString)));
+            console.log('recuperando repsuestas desde el servidor', answers);
+            return answers;
+        }  
+        if(!this.isOnline)
+        {
+          console.log("detecta que no hay conexion")
+          const cachedAnswers = localStorage.getItem(key);
+          const rawAnswers = JSON.parse(cachedAnswers || '[]');
+          console.log('raw answer before revive:', rawAnswers);
+          return rawAnswers;
+        }
+      } 
+      else 
+      {
+        
+        return [];
       }
+      this.primerinicio +1;
   }
 
-  queryAnswers(student: Student, station: Station, page: number = 1): Promise<Answer[]> {
+  answerToString(answer: Answer)
+  {
+    const _answer = {
+      id: answer.id,
+      schema: answer.schema,
+      points: answer.points,
+      question: {...answer.question},
+      student: {...answer.student},
+      station: {...answer.station}
+    };
+
+    _answer.question.id = answer.question.id;
+    _answer.student.id = answer.student.id;
+    _answer.station.id = answer.station.id;
+
+    return _answer;
+    
+
+  }
+
+   queryAnswers(student: Student, station: Station, page: number = 1): Promise<Answer[]> {
     return new Promise<Array<Answer>>(resolve => {
       Answer.query({
         where: {student: student, station: station},
@@ -217,15 +274,15 @@ export class EvaluateComponent implements OnInit {
     return cleanArrStudents;
   }
 
-  nextStudent() {
+   async nextStudent() {
     if (this.students.length < 1) {
       return;
     }
     if ((this.currentStudent.index + 1) !== this.students.length) {
       this.currentStudent.index++;
       this.setCurrentStudent(this.students[this.currentStudent.index]);
+      this.scrollTabContentToTop();
     }
-    this.scrollTabContentToTop();
   }
 
   previousStudent() {

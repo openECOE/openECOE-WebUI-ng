@@ -3,6 +3,8 @@ import {Answer, AnswerCheckBox, AnswerRadio, QuestionCheckBox, QuestionOption, Q
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
+import {ServerStatusService} from '@app/services/server-status/server-status.service';
+import { QuestionOfflineService } from '@app/services/questions/question-offline.service';
 
 class RadioOption {
   constructor(option: QuestionOption, checked: boolean) {
@@ -34,11 +36,15 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
   singleLabel: string;
 
   constructor(protected message: NzMessageService,
-              protected translate: TranslateService) {
-    super(message, translate);
+              protected translate: TranslateService,
+              protected serverStatus: ServerStatusService,
+            protected questionOnline: QuestionOfflineService) {
+    super(message, translate, serverStatus,questionOnline);
+
   }
 
   ngOnInit() {
+    super.ngOnInit();
     this.RadioOptions = this.loadQuestion(this.question);
   }
 
@@ -65,7 +71,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
       } 
     }
   }
-
+ 
   changeRadioAnswer(answer: Answer, option: number, checked: boolean) {
     if (answer) {
       if (checked && option) {
@@ -77,7 +83,7 @@ export class QuestionRadioComponent extends QuestionBaseComponent implements OnI
         answer.points = 0
       }
       
-      this.saveAnswer(answer)
+      this.questionOnline.saveAnswer(answer)
         .then(newAnswer => this.answer = newAnswer)
         .catch(reason => console.error(reason));
     }

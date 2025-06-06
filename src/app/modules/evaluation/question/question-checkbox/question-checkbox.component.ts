@@ -3,7 +3,8 @@ import {Answer, AnswerCheckBox, QuestionCheckBox, QuestionOption} from '@app/mod
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
-
+import {ServerStatusService} from '@app/services/server-status/server-status.service';
+import { QuestionOfflineService } from '@app/services/questions/question-offline.service';
 class CheckBoxOption {
   constructor(option: QuestionOption, checked: boolean) {
     this.option = option;
@@ -31,11 +32,14 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
   _checkBoxes: Array<CheckBoxOption> = [];
 
   constructor(protected message: NzMessageService,
-              protected translate: TranslateService) {
-    super(message, translate);
+              protected translate: TranslateService,
+              protected serverStatus: ServerStatusService,
+             protected questionOnline: QuestionOfflineService) {
+    super(message, translate, serverStatus,questionOnline);
   }
 
   ngOnInit() {
+    super.ngOnInit();
     this._checkBoxes = this.loadQuestion(this.question);
   }
 
@@ -69,7 +73,7 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
       answer.points = _sumPoints;
       (answer.schema as AnswerCheckBox).selected = _cbFiltered.map(optionChecked => ({id_option: optionChecked.option.id_option}));     
 
-      this.answer = await this.saveAnswer(answer).finally();
+      this.answer = await this.questionOnline.saveAnswer(answer).finally();
     }
   }
 
