@@ -178,11 +178,6 @@ export class QuestionsService {
       return error;
 
     }
-
-
-
-
-
   }
 
   private async getArea(area: Area | String, ecoe: ECOE | number): Promise<Area> {
@@ -251,7 +246,17 @@ export class QuestionsService {
         const getRateCount = () => {
           const _options = item[this.OPTIONS];
           if (_options) {
-            return _options[0].rateCount;
+            if (_options['rateCount'] === null && _options[0].rateCount === null) {
+              return 10;
+            } else if  (_options['rateCount'] === undefined && _options[0].rateCount === undefined) {
+              return 10;
+            } else if (_options['rateCount'] === null || _options['rateCount'] === undefined) {
+              return _options[0].rateCount;
+            } else if (_options[0].rateCount === null || _options[0].rateCount === undefined) {
+              return _options['rateCount'];
+            } else {
+              return 10;
+            }
           } else {
             return 10;
           }
