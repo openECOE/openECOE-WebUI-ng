@@ -61,7 +61,7 @@ export class EcoeResultsComponent implements OnInit, OnDestroy {
       this.ecoeId = params.ecoeId;
     });
 
-    ECOE.fetch<ECOE>(this.ecoeId, { cache: false }).then((value) => {
+    ECOE.fetch<ECOE>(this.ecoeId).then((value) => {
       this.ecoe = value;
       this.ecoeID = this.ecoe.id;
 
@@ -100,8 +100,8 @@ export class EcoeResultsComponent implements OnInit, OnDestroy {
         this.shifts.show = this.show_planner;
       });
       if (this.job_id_reports) this.checkGenerated();
-      if (this.job_id_csv) {
-        this.updateProgressCsv();
+      if (this.ecoe.jobCsv) {
+        this.updateProgressCsv(this.ecoe.jobCsv);
       }
 
       return;
@@ -140,30 +140,32 @@ export class EcoeResultsComponent implements OnInit, OnDestroy {
     this.api.getJobFile(this.job_id_reports, this.file_name_reports);
   }
 
-  generateEcoeData() {
+  async generateEcoeData() {
     this.progress_csv = 0;
     this.btn_csv = false;
     this.btn_dwl_csv = false;
-    this.api
-      .postResource("ecoes/" + this.ecoeId + "/csv")
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe(() => this.updateProgressCsv());
+    this.ecoe.generateCSV().then((job: Job) => {
+      this.job_id_csv = job.id;
+      this.ecoe_csv = job;
+      this.ecoe_csv.complete = false;
+      this.ecoe_csv.file = "ecoe_" + this.ecoeID + ".csv";
+      this.updateProgressCsv(job);
+    });
   }
-  async updateProgressCsv() {
-    const _ecoe = await ECOE.fetch<ECOE>(this.ecoeId, { cache: false });
 
-    this.ecoe_csv = _ecoe.jobCsv;
+  async updateProgressCsv(job: Job) {
+    this.ecoe_csv = job;
 
     this.file_name_csv = this.ecoe_csv.file;
 
     var completation_csv = setInterval(() => {
-      var progress = this.getProgressCsv().then((progress) => {
+      var progress = this.getProgressCsv(job).then((progress) => {
         if (progress == 100) {
           clearInterval(completation_csv);
           this.btn_dwl_csv = true;
         }
       });
-    }, 500);
+    }, 1000);
   }
   downloadCSV() {
     this.api.getJobFile(this.job_id_csv, "csv_" + 'ecoe_' + this.ecoeID);
@@ -178,17 +180,16 @@ export class EcoeResultsComponent implements OnInit, OnDestroy {
       this.stages.total > 0 || this.rounds.total > 0 || this.shifts.total > 0
     );
   }
-  async getProgressCsv() {
-    const value = await Job.fetch<Job>(this.job_id_csv, { cache: false });
-
-    this.progress_csv = value.progress;
+  async getProgressCsv(job: Job = null): Promise<number> {
+    const _job = await Job.fetch<Job>(job.id, { cache: false });
+    this.progress_csv = _job.progress;
     if (this.progress_csv == 100.0) {
       this.job_csv_file = this.ecoe_csv.uri;
       this.areGeneratedCSV = true;
       this.btn_csv = true;
       this.btn_dwl_csv = true;
     }
-    return value.progress;
+    return _job.progress;
   }
   async getTotalItems<T extends Item>(itemClass: new () => T): Promise<number> {
     const _pag: Pagination<Item> = await (itemClass as unknown as Item).query(
