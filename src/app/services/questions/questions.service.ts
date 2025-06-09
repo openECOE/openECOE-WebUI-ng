@@ -270,7 +270,7 @@ export class QuestionsService {
         } else if (rateCountFromGet === null || rateCountFromGet === undefined) {
           _schema.range = item[this.HEADER.range]
         } else {
-          _schema.range = item[this.HEADER.range] || getRateCount();
+          _schema.range = item[this.HEADER.range] || rateCountFromGet;
         }
         _schema.max_points = item[this.HEADER.points];
       } else if (_schema instanceof QuestionRadio || _schema instanceof QuestionCheckBox || _schema instanceof QuestionGrid) {
