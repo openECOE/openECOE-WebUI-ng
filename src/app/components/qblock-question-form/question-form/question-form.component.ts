@@ -32,7 +32,8 @@ export class QuestionFormComponent implements OnInit, OnChanges {
   public questionTypeOptions: Array<{ type: string, label: string }> = [
     {type: 'radio', label: 'ONE_ANSWER'},
     {type: 'checkbox', label: 'MULTI_ANSWER'},
-    {type: 'range', label: 'VALUE_RANGE'}
+    {type: 'range', label: 'VALUE_RANGE'},
+    {type: 'grid', label: 'GRID_ANSWER'}
   ];
 
   selectedQType: string = this.questionTypeOptions[0].type;
@@ -264,11 +265,16 @@ export class QuestionFormComponent implements OnInit, OnChanges {
         });
         break;
       }
-      case this.questionTypeOptions[2].type: {
+      case this.questionTypeOptions[2].type: { // RS
         $event[1].forEach(item => {
           this.totalPoints += parseInt(item.value ? item.value : 0, 10);
           this.getFormControl('points', $event[0]).setValue(this.totalPoints);
         });
+        break;
+      }
+      case this.questionTypeOptions[3].type: { // GRID
+        this.totalPoints = ($event[1].length > 0) ? Math.max(...(Array.from( $event[1], x => x['value'] ))) : 0;
+        this.getFormControl('points', $event[0]).setValue(this.totalPoints);
         break;
       }
     }
