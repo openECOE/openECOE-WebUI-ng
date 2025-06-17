@@ -9,6 +9,7 @@ import {Item, Pagination} from '@openecoe/potion-client';
 import {ActionMessagesService} from '@app/services/action-messages/action-messages.service';
 import {TranslateService} from '@ngx-translate/core';
 import { PlannerService } from '@app/services/planner/planner.service';
+import { saveAs } from "file-saver";
 
 /**
  * Component with the relations of rounds and shifts to create plannersMatrix.
@@ -528,5 +529,52 @@ export class PlannerComponent implements OnInit {
    clearImportErrors() {
     this.logPromisesERROR = [];
   }
+
+  /* Función para exportar la tabla de alumnos asignados a un fichero XLS
+   *
+   *  Cabeceras: TURNO | HORA | RUEDA | ESTUDIANTE (Nombre Apellidos) | DNI | ORDEN
+   * 
+   * (El campo ORDEN determinaría también el orden de las filas)
+   * 
+   */
+  exportPlannersTable(item: any[], fileName: string): void {
+
+    if (!this.roundForm.valid){
+      return;
+    }
+
+
+  //  exportPlannersToXLS(this.getStudents, fileName)
+
+  }
 }
+/*
+getSudentsByOrder():Promise<Any>{
+  return Student.query<Student,Pagination<Student>>(
+    {
+        where: {ecoe: this.ecoeId, planner }
+    }
+  )
+}
+
+function exportPlannersToXLS(getStudents: (page?: number, perPage?: number) => Promise<Pagination<Student>>, fileName: string) {
+  throw new Error('Function not implemented.');
+
+    const cabecera= Object.keys(item[0]).map()
+
+}*/
+
+/*
+ *  Consulta SQL cuyo resultado se debería exportar a un CSV/XLS
+ *
+ *  SELECT sh.shift_code, sh.time_start , r.round_code, 
+            e.name, e.surnames, e.dni, e.planner_order 
+      FROM student e, planner p, round r, shift sh 
+      WHERE e.id_planner = p.id 
+        AND p.id_round = r.id 
+        AND p.id_shift = sh.id 
+      ORDER BY e.planner_order
+ *
+ * 
+ */
 

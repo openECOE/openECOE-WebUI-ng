@@ -208,3 +208,14 @@
     </ng-template>
   </form>
 </nz-modal>
+<!-- Assignation Table Exportation -->
+<button nz-button nzType="default"
+          nzSize="large"
+          [nzBlock]="true"
+          style="margin-top: 10px;"
+          [nzLoading]="loading"
+          [nzType]="'primary'" 
+          (click)="exportPlannersTable($event, roundForm.value)">
+   <span nz-icon nzType="download" nzTheme="outline"></span>
+    {{"EXPORT_PLANNERS_TABLE" | translate}}
+</button>
