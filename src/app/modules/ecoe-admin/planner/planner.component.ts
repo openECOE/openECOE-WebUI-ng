@@ -537,15 +537,30 @@ export class PlannerComponent implements OnInit {
    * (El campo ORDEN determinaría también el orden de las filas)
    * 
    */
-  exportPlannersTable(item: any[], fileName: string): void {
+  // Algo falla al generar el Blob, pero no doy con la opción idónea
+  exportPlannersTable() {
+    this.apiService
+      .getResourceFile("ecoes/" + this.ecoeId + "/export/planners")
+      .subscribe((shifts) => {
+        const blob = new Blob([shifts], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download= "PlannerStudents_ECOE_" + this.ecoeId + ".xlsx";
 
-    if (!this.roundForm.valid){
-      return;
-    }
+        document.body.appendChild(link);
 
-
-  //  exportPlannersToXLS(this.getStudents, fileName)
-
+        link.dispatchEvent(
+          new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          })
+        );
+        
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      });
   }
 }
 /*
