@@ -539,12 +539,16 @@ export class PlannerComponent implements OnInit {
    */
   // Algo falla al generar el Blob, pero no doy con la opción idónea
   exportPlannersTable() {
+    console.log('exportPlannersTable(): Inicio');
     this.apiService
       .getResourceFile("ecoes/" + this.ecoeId + "/export/planners")
-      .subscribe((shifts) => {
-        const blob = new Blob([shifts], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      .subscribe((response) => {
+        console.log('New Blob()');
+        const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        console.log('url=win.URL.createObjURL(blob)');
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
+        console.log('link.href=url');
         link.href = url;
         link.download= "PlannerStudents_ECOE_" + this.ecoeId + ".xlsx";
 
@@ -560,7 +564,11 @@ export class PlannerComponent implements OnInit {
         
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-      });
+      },
+    (error) => {
+      console.error("Error al exportar el fichero XLSX:", error);
+      this.message.createErrorMsg(this.translate.instant("No se pudo exportar el planificador"));
+    });
   }
 }
 /*
