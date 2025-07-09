@@ -530,25 +530,18 @@ export class PlannerComponent implements OnInit {
     this.logPromisesERROR = [];
   }
 
-  /* Función para exportar la tabla de alumnos asignados a un fichero XLS
-   *
-   *  Cabeceras: TURNO | HORA | RUEDA | ESTUDIANTE (Nombre Apellidos) | DNI | ORDEN
-   * 
-   * (El campo ORDEN determinaría también el orden de las filas)
+  /**
+   * Function in order to save the result set of the assigned
+   * students query into an XLSX file
    * 
    */
-  // Algo falla al generar el Blob, pero no doy con la opción idónea
   exportPlannersTable() {
-    console.log('exportPlannersTable(): Inicio');
     this.apiService
       .getResourceFile("ecoes/" + this.ecoeId + "/export/planners")
       .subscribe((response) => {
-        console.log('New Blob()');
         const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        console.log('url=win.URL.createObjURL(blob)');
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
-        console.log('link.href=url');
         link.href = url;
         link.download= "PlannerStudents_ECOE_" + this.ecoeId + ".xlsx";
 
@@ -567,37 +560,7 @@ export class PlannerComponent implements OnInit {
       },
     (error) => {
       console.error("Error al exportar el fichero XLSX:", error);
-      this.message.createErrorMsg(this.translate.instant("No se pudo exportar el planificador"));
+      this.message.createErrorMsg(this.translate.instant("No se ha podido exportar el planificador"));
     });
   }
 }
-/*
-getSudentsByOrder():Promise<Any>{
-  return Student.query<Student,Pagination<Student>>(
-    {
-        where: {ecoe: this.ecoeId, planner }
-    }
-  )
-}
-
-function exportPlannersToXLS(getStudents: (page?: number, perPage?: number) => Promise<Pagination<Student>>, fileName: string) {
-  throw new Error('Function not implemented.');
-
-    const cabecera= Object.keys(item[0]).map()
-
-}*/
-
-/*
- *  Consulta SQL cuyo resultado se debería exportar a un CSV/XLS
- *
- *  SELECT sh.shift_code, sh.time_start , r.round_code, 
-            e.name, e.surnames, e.dni, e.planner_order 
-      FROM student e, planner p, round r, shift sh 
-      WHERE e.id_planner = p.id 
-        AND p.id_round = r.id 
-        AND p.id_shift = sh.id 
-      ORDER BY e.planner_order
- *
- * 
- */
-
