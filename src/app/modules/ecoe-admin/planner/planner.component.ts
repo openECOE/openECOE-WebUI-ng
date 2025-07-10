@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {forkJoin, from} from 'rxjs';
@@ -42,6 +42,8 @@ export class PlannerComponent implements OnInit {
 
   logPromisesERROR: any[] = [];
   totalStudents: number;
+
+  @ViewChild('fileInputXLSX') fileInputXLSXRef!: ElementRef;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -562,5 +564,26 @@ export class PlannerComponent implements OnInit {
       console.error("Error al exportar el fichero XLSX:", error);
       this.message.createErrorMsg(this.translate.instant("No se ha podido exportar el planificador"));
     });
+  }
+
+  importPlannersFileSelection(): void{
+    this.fileInputXLSXRef.nativeElement.click();
+  }
+  async importPlannersTable(event: any){
+    const target: DataTransfer=<DataTransfer>(event.target);
+    
+    const file: File = event.target.files[0];
+
+    const reader: FileReader = new FileReader();
+
+    if (file){
+      console.log('Fichero seleccionado: ', file.name);
+      reader.onload = (e: any) => {
+        const binaryString: string = e.target.result;
+       /* const workbook: XLSX.WorkBook = this.fileInputXLSXRef.read (binaryString, { type: 'binary'});*/
+      }
+
+      //this.apiService [en desarrollo]
+    }
   }
 }
