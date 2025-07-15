@@ -175,12 +175,20 @@ export class ApiService {
 
   getResourceFile(ref: string): Observable<any> {
     const url = `${environment.API_ROUTE}/${this.apiUrl}/${ref}`;
+
+    const headers = new HttpHeaders({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+
     const _options = {
+      headers: headers,
       observe: "body",
       responseType: "arraybuffer",
     };
     return this.http
-      .get(url, { observe: "response", responseType: "arraybuffer" })
+      .get(url, { headers: headers, observe: "response", responseType: "arraybuffer" })
       .pipe(
         map((response) => {
           return response.body;
@@ -314,5 +322,10 @@ export class ApiService {
   importStationsJSON(ecoe: ECOE, stations: any){
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/import`;
     return this.http.post(url, stations);
+  }
+  importPlannerXLSX(ecoe: ECOE, planner: any){
+    const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/import/planners`;
+
+    return this.http.post(url,planner)
   }
 }

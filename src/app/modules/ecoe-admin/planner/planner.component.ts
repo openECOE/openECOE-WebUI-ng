@@ -538,11 +538,8 @@ export class PlannerComponent implements OnInit {
    * 
    */
   exportPlannersTable() {
-
-    const cacheBuster = "?_cacheBuster=" + new Date().getTime();
-
     this.apiService
-      .getResourceFile("ecoes/" + this.ecoeId + "/export/planners" + cacheBuster)
+      .getResourceFile("ecoes/" + this.ecoeId + "/export/planners")
       .subscribe((response) => {
         const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
         const url = window.URL.createObjectURL(blob);
