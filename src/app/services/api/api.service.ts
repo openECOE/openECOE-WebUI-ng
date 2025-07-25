@@ -323,9 +323,8 @@ export class ApiService {
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/stations/import`;
     return this.http.post(url, stations);
   }
-  importPlannerXLSX(ecoe: ECOE, planner: any){
+  importPlannerXLSX(ecoe: ECOE, planners: FormData){
     const url = `${environment.API_ROUTE}/${this.apiUrl}/ecoes/${ecoe.id}/import/planners`;
-
-    return this.http.post(url,planner)
+    return this.http.post(url, planners)
   }
 }

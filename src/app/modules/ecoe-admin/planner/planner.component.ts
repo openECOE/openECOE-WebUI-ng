@@ -569,21 +569,22 @@ export class PlannerComponent implements OnInit {
   importPlannersFileSelection(): void{
     this.fileInputXLSXRef.nativeElement.click();
   }
-  async importPlannersTable(event: any){
-    const target: DataTransfer=<DataTransfer>(event.target);
-    
-    const file: File = event.target.files[0];
-
-    const reader: FileReader = new FileReader();
-
-    if (file){
-      console.log('Fichero seleccionado: ', file.name);
-      reader.onload = (e: any) => {
-        const binaryString: string = e.target.result;
-       /* const workbook: XLSX.WorkBook = this.fileInputXLSXRef.read (binaryString, { type: 'binary'});*/
-      }
-
-      //this.apiService [en desarrollo]
+  importPlannersTable(event: Event){
+    const target = event.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) {
+      console.error('No se seleccionó ningún fichero.');
+      return;
+    }
+    const file: File = target.files[0];
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    if (this.ecoe instanceof ECOE) {
+      this.apiService.importPlannerXLSX(this.ecoe, formData).subscribe({
+        next: () => this.message.createSuccessMsg(this.translate.instant('PLANNER_IMPORTED_SUCCESS')),
+        error: (err) => this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER'), err)
+      });
+    } else {
+      this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
     }
   }
 }
