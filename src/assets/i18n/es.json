@@ -353,5 +353,8 @@
   "ECOE_TO_IMPORT_NAME": "Introduzca un nombre a la ECOE a importar",
   "ECOE_IMPORTED_SUCCESS": "ECOE importada correctamente",
   "ECOE_CLONED_SUCCESS": "ECOE duplicada correctamente",
-  "ERROR_CLONING_ECOE": "Error al duplicar la ECOE"
+  "ERROR_CLONING_ECOE": "Error al duplicar la ECOE",
+  "ERROR_IMPORTING_PLANNER": "Error al importar los planificadores",
+  "ERROR_IMPORTING_PLANNER_TYPE": "El contexto actual no es un ECOE válido para la importación",
+  "PLANNER_IMPORTED_SUCCESS": "Importación completada"
 }
