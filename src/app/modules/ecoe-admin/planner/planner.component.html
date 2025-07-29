@@ -103,6 +103,29 @@
     <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
     {{"AUTO_PLANNERS" | translate}}
   </button>
+<ng-container>
+<!-- Assignation Table Exportation -->
+  <button nz-button nzType="primary"
+            nzSize="medium"
+            [nzBlock]="true"
+            style="margin-top: 10px;"
+            [nzLoading]="loading"
+            (click)="exportPlannersTable()">
+    <span nz-icon nzType="download" nzTheme="outline"></span>
+      {{"EXPORT_PLANNERS_TABLE" | translate}}
+  </button>
+  <!-- Assignation Table Importation-->
+  <button nz-button nzType="default"
+            nzSize="medium"
+            [nzBlock]="true"
+            style="margin-top: 10px;"
+            [nzLoading]="loading"
+            (click)="importPlannersFileSelection()">
+    <i nz-icon nzType="upload" nzTheme="outline"></i>
+      {{"IMPORT_DATA" | translate}}
+  </button>
+</ng-container>
+
 
   <ng-container>
     <nz-drawer
@@ -208,28 +231,6 @@
     </ng-template>
   </form>
 </nz-modal>
-<!-- Assignation Table Exportation -->
-<button nz-button nzType="default"
-          nzSize="large"
-          [nzBlock]="true"
-          style="margin-top: 10px;"
-          [nzLoading]="loading"
-          [nzType]="'primary'" 
-          (click)="exportPlannersTable()">
-   <span nz-icon nzType="download" nzTheme="outline"></span>
-    {{"EXPORT_PLANNERS_TABLE" | translate}}
-</button>
-<!-- Assignation Table Importation-->
- <button nz-button nzType="default"
-          nzSize="large"
-          [nzBlock]="true"
-          style="margin-top: 10px;"
-          [nzLoading]="loading"
-          [nzType]="'primary'" 
-          (click)="importPlannersFileSelection()">
-   <span nz-icon nzType="upload" nzTheme="outline"></span>
-    {{"IMPORT_DATA" | translate}}
-</button>
 
 <input type="file"
   #fileInputXLSX
