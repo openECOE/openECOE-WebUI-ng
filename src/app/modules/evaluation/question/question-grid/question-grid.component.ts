@@ -115,9 +115,4 @@ export class QuestionGridComponent extends QuestionBaseComponent implements OnIn
   
       return _answer
     }
-    /*
-    async createAnswer(question: QuestionGrid){
-      const _answer = new AnswerGrid()
-      return _answer
-    }*/
 }
