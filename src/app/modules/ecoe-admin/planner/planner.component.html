@@ -13,16 +13,48 @@
             nzBordered
             [nzData]="rounds"
             [nzLoading]="loading"
-            [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
+            [nzShowPagination]="false" 
+            [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
+      <th></th>
+      <th>
+        <h3
+          style="margin-top: 10px;">
+            {{"STUDENTS_DISTRIBUTION" | translate}}
+        </h3>
+      </th>
+      <th nzAlign="right" nzRight>
+        <nz-button-group style="margin-right: 5%;">
+          <button nz-button nzType="default"
+                    nzSize="medium"
+                    [nzBlock]="true"
+                    style="margin-top: 10px;"
+                    [nzLoading]="loading"
+                    (click)="importPlannersFileSelection()">
+            <i nz-icon nzType="upload" nzTheme="outline" icon-16></i>
+              {{"IMPORT_DATA" | translate}}
+          </button>
+          <button nz-button nzType="primary"
+                    nzSize="medium"
+                    [nzBlock]="true"
+                    style="margin-top: 10px;"
+                    [nzLoading]="loading"
+                    (click)="exportPlannersTable()">
+            <i nz-icon nzType="download" nzTheme="outline" icon-16></i>
+              {{"EXPORT_PLANNERS_TABLE" | translate}}
+          </button>
+        </nz-button-group>
+      </th>  
+    </thead>
+    <tbody>
     <tr>
-      <th nzWidth="200px" nzLeft="0px">
+      <td nzWidth="200px" nzLeft="0px">
         <h3 *ngIf="totalStudents!=0">
           <span nz-icon nzType="warning" nzTheme="outline" class="warning"></span>
           {{ 'AUTO_ASSINGMENT_EXCESS_STUDENTS' | translate:{totalStudents: totalStudents} }}
         </h3>
-      </th>
-      <th nzWidth="200px" nzLeft="200px" text-center *ngFor="let _round of rounds">
+      </td>
+      <td nzWidth="200px" nzLeft="200px" text-center *ngFor="let _round of rounds">
         <div nz-col nzSpan="6">
           <h3>
             <app-action-buttons class="action-buttons"
@@ -37,8 +69,8 @@
         <div nz-col nzSpan="18">
           {{_round.description}}
         </div>
-      </th>
-      <th nzWidth="200px" nzLeft="200px">
+      </td>
+      <td nzWidth="200px" nzLeft="200px">
         <button nz-button
                 nzGhost
                 nzType="primary"
@@ -47,10 +79,8 @@
           <i nz-icon [nzType]="'plus-circle'" [nzTheme]="'twotone'" icon-16></i>
           {{"ADD_ROUND" | translate}}
         </button>
-      </th>
+      </td>
     </tr>
-    </thead>
-    <tbody>
     <tr *ngFor="let _shift of shifts">
       <td nzLeft="0px" text-center>
         <div nz-col nzSpan="6">
@@ -103,29 +133,6 @@
     <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
     {{"AUTO_PLANNERS" | translate}}
   </button>
-<ng-container>
-<!-- Assignation Table Exportation -->
-  <button nz-button nzType="primary"
-            nzSize="medium"
-            [nzBlock]="true"
-            style="margin-top: 10px;"
-            [nzLoading]="loading"
-            (click)="exportPlannersTable()">
-    <span nz-icon nzType="download" nzTheme="outline"></span>
-      {{"EXPORT_PLANNERS_TABLE" | translate}}
-  </button>
-  <!-- Assignation Table Importation-->
-  <button nz-button nzType="default"
-            nzSize="medium"
-            [nzBlock]="true"
-            style="margin-top: 10px;"
-            [nzLoading]="loading"
-            (click)="importPlannersFileSelection()">
-    <i nz-icon nzType="upload" nzTheme="outline"></i>
-      {{"IMPORT_DATA" | translate}}
-  </button>
-</ng-container>
-
 
   <ng-container>
     <nz-drawer
