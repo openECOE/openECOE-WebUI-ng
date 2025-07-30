@@ -539,7 +539,7 @@ export class PlannerComponent implements OnInit {
    */
   exportPlannersTable() {
     this.apiService
-      .getResourceFile("ecoes/" + this.ecoeId + "/export/planners")
+      .getResourceFile("ecoes/" + this.ecoeId + "/planners/export")
       .subscribe((response) => {
         const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
         const url = window.URL.createObjectURL(blob);
