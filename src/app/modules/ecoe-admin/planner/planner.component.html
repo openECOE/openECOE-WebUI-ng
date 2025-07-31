@@ -15,7 +15,7 @@
     <thead>
       <tr>
         <th text-center>{{"STUDENTS_DISTRIBUTION" | translate}}</th>
-        <th nzWidth="235px" nzLeft="200px">
+        <th nzWidth="235px">
           <nz-button-group>
             <button class="ant-btn"
                       nztype="dashed"
@@ -46,7 +46,9 @@
             nzBordered
             [nzData]="rounds"
             [nzLoading]="loading"
-            [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
+            [nzShowPagination]="false"
+            [nzFrontPagination]="false"
+            [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
     <tr>
       <th nzWidth="200px" nzLeft="0px">
