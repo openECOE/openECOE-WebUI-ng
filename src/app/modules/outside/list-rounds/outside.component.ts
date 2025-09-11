@@ -32,6 +32,7 @@ export class OutsideComponent implements OnInit, OnDestroy {
           this.ecoesConfig = result;
           this.onChangeRound(this.ecoesConfig[0].rounds[0]);
           this.getOrganizations();
+          //this.chronosToShow();
         }
       },
       error => {
@@ -41,6 +42,17 @@ export class OutsideComponent implements OnInit, OnDestroy {
   }
 
   getOrganizations() {
+    this.organizationsList = this.ecoesConfig.map(key => {
+
+        const orgId = key.ecoe.organization;
+        const orgName = key.ecoe.name;
+
+        return { id: orgId, name: orgName };
+
+      });
+
+      this.chronosToShow();
+    /*
     this.api.getResource('organizations').subscribe(
       (response: any) => {
         this.organizationsList = Object.keys(response).map(key => {
@@ -53,7 +65,7 @@ export class OutsideComponent implements OnInit, OnDestroy {
       error => {
         console.warn(error);
       }
-    );
+    );*/
   }
   
   chronosToShow() {
