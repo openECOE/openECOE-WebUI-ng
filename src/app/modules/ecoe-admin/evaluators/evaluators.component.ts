@@ -47,7 +47,7 @@ export class EvaluatorsComponent implements OnInit {
 
   listStations: Station[] = [];
   listUsers: User[] = [];
-  
+
   evaluatorForm: FormGroup;
   evaluatorControl: FormArray;
 
@@ -74,12 +74,12 @@ export class EvaluatorsComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private translate: TranslateService,
-    private message: NzMessageService) { 
+    private message: NzMessageService) {
 
       this.evaluatorForm = this.fb.group({
         evaluatorRow: this.fb.array([])
       });
-  
+
       this.evaluatorControl = <FormArray>this.evaluatorForm.controls.evaluatorRow;
     }
 
@@ -106,7 +106,7 @@ export class EvaluatorsComponent implements OnInit {
           });
       });
   }
-  
+
   async getStations(): Promise<Station[]> {
     return Station.query<Station>({where: {ecoe: this.ecoe}, sort: {order: false}});
   }
@@ -114,8 +114,8 @@ export class EvaluatorsComponent implements OnInit {
   async getUsers(): Promise<User[]> {
     const evaluators = await this.apiService.getEvaluators(this.ecoe);
     const allUsers = await User.query<User>({
-      where: {organization: this.ecoe.organization}, 
-      sort: {email: false}, 
+      where: {organization: this.ecoe.organization},
+      sort: {email: false},
       perPage: 100});
 
     const nonEvaluators = allUsers.filter(user => !evaluators.some(evaluator => evaluator.id === user.id));
@@ -134,22 +134,27 @@ export class EvaluatorsComponent implements OnInit {
   async loadEvaluators() {
     this.evaluators = [];
     this.loading = true;
-  
-    try {      
-     const usersWithEvalautePermission = await this.apiService.getEvaluators(this.ecoe);
-     usersWithEvalautePermission.forEach((evaluator) => this.evaluators.push({id: evaluator.id, stations: null, user: evaluator}));
 
-      for (const evaluator of this.evaluators) {
-        evaluator.stations = await this.apiService.getStationsByEvaluator(evaluator.user, this.ecoe);
-      }
-      this.totalItems = this.evaluators.length;  
+    try {
+     const usersWithEvalautePermission = await this.apiService.getEvaluators(this.ecoe);
+
+     usersWithEvalautePermission.forEach(async (evaluator) => {
+      const _evaluator = { id: evaluator.id, stations: null, user: evaluator };
+      _evaluator.stations = await this.apiService.getStationsByEvaluator(
+        _evaluator.user,
+        this.ecoe
+      );
+      this.evaluators.push(_evaluator);
+    });
+
+      this.totalItems = this.evaluators.length;
     } catch (error) {
       console.error('Error al cargar los evaluadores:', error);
     } finally {
       this.loading = false;
     }
   }
-  
+
   importEvaluators(parserResult: any): void {
     const fileData: any[] = parserResult as Array<any>
     const evaluators = fileData.filter(item => item["email"] !== null);
@@ -165,7 +170,7 @@ export class EvaluatorsComponent implements OnInit {
     const savePromises = [];
     this.logPromisesERROR = [];
     this.logPromisesOK = [];
-    
+
     const noItem = {
       statusText: 'no Item',
       message: this.translate.instant('INVALID_ITEM')
@@ -177,7 +182,7 @@ export class EvaluatorsComponent implements OnInit {
         try {
           promise = await this.addPermission(item.email.toString(), item.station.toString());
           this.logPromisesOK.push(promise);
-          
+
         } catch (reason) {
           if(reason instanceof HttpErrorResponse)  {
             reason = new Error(this.translate.instant('PERMISSION_ALREADY_EXISTS', {username: item.email, station: item.station}))
@@ -186,7 +191,7 @@ export class EvaluatorsComponent implements OnInit {
             value: item,
             reason
           });
-          
+
           savePromises.push(promise);
         }
       }
@@ -199,7 +204,7 @@ export class EvaluatorsComponent implements OnInit {
     }
 
     return Promise.all(savePromises)
-      .then(() => 
+      .then(() =>
         new Promise((resolve, reject) =>
           this.logPromisesERROR.length > 0 ? reject(this.logPromisesERROR) : resolve(items)))
       .catch(err => new Promise((resolve,reject) => reject(err)));
@@ -208,14 +213,14 @@ export class EvaluatorsComponent implements OnInit {
   async delEvaluator(evaluator: Evaluator, batch: boolean = false) {
     try {
       const stations = evaluator.stations;
-      
+
       for (const station of stations) {
         const permission = await this.apiService.getPermissionForStation(evaluator.user, station);
         if (permission) {
           await this.deletePermissions(permission);
         }
       }
-      
+
       if (!batch) {
         this.message.success(
           this.translate.instant("EVALUATOR_DELETED", { email: evaluator.user.email })
@@ -227,7 +232,7 @@ export class EvaluatorsComponent implements OnInit {
       this.message.error(this.translate.instant("ERROR_DELETE_EVALUATOR"));
     }
   }
-  
+
   async addPermission(email: string, stationName: string) {
     let user = await User.first<User>({where: {email}});
     if(!user) {
@@ -248,7 +253,7 @@ export class EvaluatorsComponent implements OnInit {
       return this.apiService.addPermision(user, 'evaluate', station.id, 'stations');
   }
 
-  async deletePermissions(permission: ApiPermissions) {    
+  async deletePermissions(permission: ApiPermissions) {
     let readPermission = await ApiPermissions.first<ApiPermissions>({
       where: {
         idObject: this.ecoe.id,
@@ -267,7 +272,7 @@ export class EvaluatorsComponent implements OnInit {
     (async () => {
       if(this.showAddEvaluator) {
         return this.createEvaluator(form.value.email, form.value.stations);
-      } 
+      }
         return this.editPermissions(form.value.stations);
     })().then(() => {
       this.loadEvaluators()
@@ -285,7 +290,7 @@ export class EvaluatorsComponent implements OnInit {
     let user = await User.first<User>({where: {email: this.evaluatorOriginal.user.email}});
     if(!user) {
       return Promise.reject(new Error(this.translate.instant('USER_NOT_FOUND', {username: this.evaluatorOriginal.user.email})))
-    }    
+    }
     const previousStations = await this.apiService.getStationsByEvaluator(user, this.ecoe);
 
     let difference = previousStations.filter(station => !newStations.includes(station))
