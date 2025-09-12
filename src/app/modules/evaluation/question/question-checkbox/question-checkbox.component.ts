@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Answer, AnswerCheckBox, QuestionCheckBox, QuestionOption} from '@app/models';
+import {Answer, AnswerCheckBox, AnswerSchema, Question, QuestionCheckBox, QuestionOption, Station, Student} from '@app/models';
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {TranslateService} from '@ngx-translate/core';
@@ -25,9 +25,12 @@ class CheckBoxOption {
   styleUrls: ['./question-checkbox.component.less']
 })
 export class QuestionCheckboxComponent extends QuestionBaseComponent implements OnInit {
-
+  @Input() questiondesc: Question;
   @Input() question: QuestionCheckBox;
+  @Input() station?: Station = null;
+  @Input() student?: Student = null;
 
+  _questionSchema: QuestionCheckBox = null;
   _checkBoxes: Array<CheckBoxOption> = [];
 
   constructor(protected message: NzMessageService,
@@ -36,6 +39,7 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
   }
 
   ngOnInit() {
+    this._questionSchema = this.questiondesc.schema as QuestionCheckBox;
     this._checkBoxes = this.loadQuestion(this.question);
   }
 
@@ -73,4 +77,27 @@ export class QuestionCheckboxComponent extends QuestionBaseComponent implements 
     }
   }
 
+  
+    async findAnswer(questiondesc: Question, answersList: Array<Answer>): Promise<Answer> {
+      //this.loading = true;
+      let _answer = null;
+      if (answersList) {
+        // console.log(question.id, 'findAnswer for Question:', question, 'in', answersList);
+        _answer = answersList.find(answer => answer.question.equals(this.question));
+        _answer = _answer || await this.createAnswer(questiondesc)
+      }
+      //this.loading = false;
+      return _answer;
+    }
+  
+    async createAnswer(questiondesc: Question) {
+      const _answer = new Answer({
+        station: this.station,
+        student: this.student,
+        questiondesc: this.questiondesc,
+        schema: new AnswerSchema(questiondesc.schema.type)
+      })
+  
+      return _answer
+    }
 }

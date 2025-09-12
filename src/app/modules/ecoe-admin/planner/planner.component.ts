@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {forkJoin, from} from 'rxjs';
@@ -9,6 +9,7 @@ import {Item, Pagination} from '@openecoe/potion-client';
 import {ActionMessagesService} from '@app/services/action-messages/action-messages.service';
 import {TranslateService} from '@ngx-translate/core';
 import { PlannerService } from '@app/services/planner/planner.service';
+import { saveAs } from "file-saver";
 
 /**
  * Component with the relations of rounds and shifts to create plannersMatrix.
@@ -41,6 +42,8 @@ export class PlannerComponent implements OnInit {
 
   logPromisesERROR: any[] = [];
   totalStudents: number;
+
+  @ViewChild('fileInputXLSX') fileInputXLSXRef!: ElementRef;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -528,5 +531,60 @@ export class PlannerComponent implements OnInit {
    clearImportErrors() {
     this.logPromisesERROR = [];
   }
-}
 
+  /**
+   * Function in order to save the result set of the assigned
+   * students query into an XLSX file
+   * 
+   */
+  exportPlannersTable() {
+    this.apiService
+      .getResourceFile("ecoes/" + this.ecoeId + "/planners/export")
+      .subscribe((response) => {
+        const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download= "PlannerStudents_ECOE_" + this.ecoeId + ".xlsx";
+
+        document.body.appendChild(link);
+
+        link.dispatchEvent(
+          new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          })
+        );
+        
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      },
+    (error) => {
+      console.error("Error al exportar el fichero XLSX:", error);
+      this.message.createErrorMsg(this.translate.instant("No se ha podido exportar el planificador"));
+    });
+  }
+
+  importPlannersFileSelection(): void{
+    this.fileInputXLSXRef.nativeElement.click();
+  }
+  importPlannersTable(event: Event){
+    const target = event.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) {
+      console.error('No se seleccionó ningún fichero.');
+      return;
+    }
+    const file: File = target.files[0];
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    if (this.ecoe instanceof ECOE) {
+      this.apiService.importPlannerXLSX(this.ecoe, formData).subscribe({
+        next: () => this.message.createSuccessMsg(this.translate.instant('PLANNER_IMPORTED_SUCCESS')),
+        error: (err) => this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER'), err)
+      });
+    } else {
+      this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
+    }
+  }
+}

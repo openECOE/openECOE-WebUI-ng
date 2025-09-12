@@ -10,10 +10,45 @@
   </nz-page-header>
 
   <nz-table #table
+            [nzShowPagination]="false"
+            nzSize="small">
+    <thead>
+      <tr>
+        <th text-center>{{"STUDENTS_DISTRIBUTION" | translate}}</th>
+        <th nzWidth="235px">
+          <nz-button-group>
+            <button class="ant-btn"
+                      nztype="dashed"
+                      nz-button nzType="dashed"
+                      nzSize="medium"
+                      [nzBlock]="true"
+                      style="margin-top: 10px;"
+                      [nzLoading]="loading"
+                      (click)="importPlannersFileSelection()">
+              <i nz-icon nzType="upload" nzTheme="outline"></i>
+                {{"IMPORT_DATA" | translate}}
+            </button>
+            <button nz-button nzType="primary"
+                      nzSize="medium"
+                      [nzBlock]="true"
+                      style="margin-top: 10px;"
+                      [nzLoading]="loading"
+                      (click)="exportPlannersTable()">
+              <span nz-icon nzType="download" nzTheme="outline"></span>
+                {{"EXPORT_PLANNERS_TABLE" | translate}}
+            </button>
+          </nz-button-group>
+        </th>
+      </tr>
+    </thead>
+  </nz-table>
+  <nz-table #table
             nzBordered
             [nzData]="rounds"
             [nzLoading]="loading"
-            [nzShowPagination]="false" [nzScroll]="{ x: '800px', y: '600px' }">
+            [nzShowPagination]="false"
+            [nzFrontPagination]="false"
+            [nzScroll]="{ x: '800px', y: '600px' }">
     <thead>
     <tr>
       <th nzWidth="200px" nzLeft="0px">
@@ -103,6 +138,7 @@
     <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
     {{"AUTO_PLANNERS" | translate}}
   </button>
+
 
   <ng-container>
     <nz-drawer
@@ -208,3 +244,9 @@
     </ng-template>
   </form>
 </nz-modal>
+
+<input type="file"
+  #fileInputXLSX
+  (change)="importPlannersTable($event)"
+  style="display: none"
+  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">

@@ -17,7 +17,9 @@ export class ActionButtonsComponent implements OnInit {
   @Input() showDeleteButton: boolean = true;
   @Input() showOrderButtons: boolean = false;
   @Input() showNavigateQuestions: boolean = false;
+  @Input() showEditButton: boolean = true;
 
+  
   @Output() changeOrder: EventEmitter<string> = new EventEmitter<string>();
   @Output() startEdit: EventEmitter<void> = new EventEmitter<void>();
   @Output() delete: EventEmitter<void> = new EventEmitter<void>();

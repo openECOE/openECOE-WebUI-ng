@@ -38,6 +38,8 @@ export class QuestionRadio extends QuestionBase {
     this.options = [];
   }
 
+  options: QuestionOption[];
+
   set max_points(points: number) {
 
     if (this.options.length > 0) {
@@ -46,8 +48,6 @@ export class QuestionRadio extends QuestionBase {
       _option.points = points;
     }
   }
-
-  options: QuestionOption[];
 
   get max_points() {
     // Calculate max points possible with the summatory of all positive values
@@ -68,6 +68,7 @@ export class QuestionCheckBox extends QuestionBase {
       this.options.map(option => option.points = option.points * diffPoints);
     }
   }
+
 
   private _options: QuestionOption[];
 
@@ -122,6 +123,30 @@ export class QuestionRange extends QuestionBase {
   get max_points() {
     return this._max_points;
   }
+}
+
+export class QuestionGrid extends QuestionBase{
+  constructor(){
+    super('grid');
+    this.options = [];
+    //this.gridrows=1;
+  }
+  options: QuestionOption[];
+  //gridrows: number;
+
+  set max_points(points: number) {
+    if (this.options.length > 0) {
+      // Recalculate options points, for radio assigns max points to value with max points
+      const _option: QuestionOption = this.options.reduce((a, b) => (a.points > b.points) ? a : b);
+      _option.points = points;
+    }
+  }
+  
+   get max_points() {
+    // Calculate max points possible with the summatory of all positive values
+    return Math.max(...this.options.filter(option => option.points > 0).map(option => option.points), 0);
+  }
+
 }
 
 export class Question extends Item {
@@ -265,10 +290,18 @@ export class AnswerRange extends AnswerBase {
   selected: number;
 }
 
+export class AnswerGrid extends AnswerBase{
+  constructor(){
+    super('grid');
+  }
+  selected: QuestionOption;
+}
+
 export const QuestionType: any = {
   'radio': {class: QuestionRadio, answerClass: AnswerRadio, label: 'ONE_ANSWER'},
   'checkbox': {class: QuestionCheckBox, answerClass: AnswerCheckBox, label: 'MULTI_ANSWER'},
   'range': {class: QuestionRange, answerClass: AnswerRange, label: 'VALUE_RANGE'},
+  'grid':{class: QuestionGrid, answerClass: AnswerGrid, label: 'GRID_ANSWER'},
   'RB': {class: QuestionRadio, answerClass: AnswerRadio, label: 'ONE_ANSWER'},
   'CH': {class: QuestionCheckBox, answerClass: AnswerCheckBox, label: 'MULTI_ANSWER'},
   'RS': {class: QuestionRange, answerClass: AnswerRange, label: 'VALUE_RANGE'}
@@ -356,7 +389,7 @@ export class QuestionOld extends Question {
     this.description = this.schema['description'];
     this.questionType = this.schema['type'];
 
-    if (this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox) {
+    if (this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox || this.schema instanceof QuestionGrid) {
       this.options = [];
       for (const option of this.schema.options) {
         const _option = new Option();
@@ -392,7 +425,7 @@ export class QuestionOld extends Question {
     this.schema['reference'] = this.reference;
     this.schema['description'] = this.description;
 
-    if (this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox) {
+    if (this.schema instanceof QuestionRadio || this.schema instanceof QuestionCheckBox || this.schema instanceof QuestionGrid) {
       const _options = [];
       this.options.forEach((option, index) => {
         const _option = new QuestionOption();
@@ -409,7 +442,7 @@ export class QuestionOld extends Question {
     } else if (this.schema instanceof QuestionRange) {
       this.schema.range = this.options.length;
       this.max_points = this.schema.max_points = Math.max(...this.options.filter(option => option.points > 0).map(option => option.points), 0);
-    }
+    } 
 
     this._questionSchema = JSON.stringify(this.schema);
     return this._questionSchema;
