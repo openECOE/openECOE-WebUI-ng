@@ -1,5 +1,5 @@
 import {Component,  Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {QuestionOld, Option, Question, QuestionRadio, QuestionCheckBox, QuestionOption, QuestionRange} from '@app/models';
+import {QuestionOld, Option, Question, QuestionRadio, QuestionCheckBox, QuestionOption, QuestionRange, QuestionGrid} from '@app/models';
 
 @Component({
   selector: 'app-options-list',
@@ -41,7 +41,8 @@ export class OptionsListComponent implements OnInit, OnChanges {
    * Then updates the options cache.
    */
   initOptions() {
-    if (this.question.schema instanceof QuestionRadio || this.question.schema instanceof QuestionCheckBox) {
+    if (this.question.schema instanceof QuestionRadio || this.question.schema instanceof QuestionCheckBox 
+      || this.question.schema instanceof QuestionGrid ) {
       this._options = this.parseOptions(this.question.schema.options);
 
       this._options.forEach((option) => {
@@ -83,6 +84,14 @@ export class OptionsListComponent implements OnInit, OnChanges {
       });
     } else if (questionType === 'checkbox') {
       this.editCacheOption[option.order]['checked'] = $event;
+    } else if (questionType === 'grid'){
+      this.editCacheOption.forEach((optionItem, idx) => {
+        if (idx === option.order) {
+          this.editCacheOption[idx]['checked'] = $event;
+        } else {
+          this.editCacheOption[idx]['checked'] = false;
+        }
+      });
     }
   }
 

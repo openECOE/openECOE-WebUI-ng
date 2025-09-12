@@ -22,7 +22,8 @@
 
     <td *ngIf="(  (question.schema.type == 'range' && indexOption === getIndex())
                 || (question.schema.type == 'checkbox')
-                || (question.schema.type == 'radio' ))"
+                || (question.schema.type == 'radio' ))
+                || (question.schema.type == 'grid')"
         [attr.rowspan]="1">
 
       <nz-switch *ngIf="question.schema.type == 'radio'"
@@ -46,6 +47,14 @@
           <label *ngFor="let number of [].constructor(option.range + 1); let i = index" nz-radio-button>{{i}}</label>
         </nz-radio-group>
       </ng-container>
+
+      <nz-switch *ngIf="question.schema.type == 'grid'"
+                 (ngModelChange)="onOptionChange($event, option, question.schema.type)"
+                 [ngModel]="editCacheOption[option.order]['checked']"
+                 [nzCheckedChildren]="option.label"
+                 [nzUnCheckedChildren]="option.label"
+                 [ngClass]="option.points < 0 ? 'negative-points' : 'positive-points'">
+      </nz-switch>
 
     </td>
   </tr>

@@ -41,19 +41,13 @@ export class OutsideComponent implements OnInit, OnDestroy {
   }
 
   getOrganizations() {
-    this.api.getResource('organizations').subscribe(
-      (response: any) => {
-        this.organizationsList = Object.keys(response).map(key => {
-          const organization = response[key];
-          const id = parseInt(organization.$uri.split('/').pop());
-          return { id, name: organization.name };
-        });
-        this.chronosToShow();
-      },
-      error => {
-        console.warn(error);
-      }
-    );
+    this.organizationsList = this.ecoesConfig.map(key => {
+        const orgId = key.ecoe.organization;
+        const orgName = key.ecoe.organization_name;
+        return { id: orgId, name: orgName };
+      });
+
+      this.chronosToShow();
   }
   
   chronosToShow() {
