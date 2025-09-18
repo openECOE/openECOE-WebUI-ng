@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ECOEConfig, InfoData } from '../../../models/chrono';
 import { Subscription } from 'rxjs';
 import { ChronoService } from '../../../services/chrono/chrono.service';
-import { ApiService } from '@app/services/api/api.service';
 
 interface Organization {
   id: number;
@@ -23,7 +22,7 @@ export class OutsideComponent implements OnInit, OnDestroy {
   organizationsList: Organization[] = [];
   chronoSubs: Subscription;
 
-  constructor(private chronoService: ChronoService, private api: ApiService) {}
+  constructor(private chronoService: ChronoService) {}
 
   ngOnInit() {
     this.chronoSubs = this.chronoService.getChronoConfiguration().subscribe(
