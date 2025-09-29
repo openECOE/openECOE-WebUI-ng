@@ -4,7 +4,7 @@
   "HOME": "Inicio",
   "LOGIN": "Iniciar sesión",
   "LOGIN_ERROR": "Error al iniciar sesión",
-  "LOGIN_WRONG": "Usuario o contraseña incorrectos",
+  "LOGIN_WRONG": "Login incorrecto",
   "CREATE_ECOE": "Crear nueva ECOE",
   "CREATE": "Crear",
   "IMPORT_ECOE": "Importar ECOE",
