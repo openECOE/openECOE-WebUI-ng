@@ -276,7 +276,7 @@
   "RELATIVE_GRADES": "Nota relativa",
   "ALERT_RESULTS": "Resultados de los {{numalumnos}} alumnos de esta ECOE",
   "RESULTS_BY_AREA": "Resultados de los {{numalumnos}} alumnos por Área",
-  "RESULTS_BY_AREA_ERROR": "Error al intentar obtener resultados por Área",
+  "RESULTS_BY_AREA_ERROR": "Error al intentar obtener los resultados por área",
   "RANGE_PLACEHOLDER": "Número de divisiones",
   "DELETE_SELECTED_CONFIRMATION": "¿Seguro que desea borrar todos los elementos seleccionados?",
   "DELETE_SELECTED": "Eliminar seleccionados",
