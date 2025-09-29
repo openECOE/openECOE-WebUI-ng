@@ -140,3 +140,11 @@
     </nz-table>
   </nz-content>
 </div>
+
+<nz-modal
+  [(nzVisible)]="showAreaResultsError"
+  [nzTitle]="'RESULTS_BY_AREA_ERROR' | translate"
+  (nzOnOk)="handleOk()"
+  [nzOkText]="'OK' | translate"
+  [nzCancelText]="null">
+</nz-modal>

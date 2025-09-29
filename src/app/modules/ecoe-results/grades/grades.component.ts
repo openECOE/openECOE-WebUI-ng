@@ -4,6 +4,7 @@ import { Area, ECOE } from "../../../models";
 import { ApiService } from "@app/services/api/api.service";
 import { NzTableSortFn, NzTableSortOrder } from "ng-zorro-antd/table";
 import { zip } from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
 
 class Puntuacion {
   idStudent?: number;
@@ -45,6 +46,7 @@ export class GradesComponent implements OnInit {
   headerResultsByArea: any[] = [];
   bodyResultsByArea: any[] = [];
   bodyResultsByAreaStructure: any[] = [];
+  showAreaResultsError: boolean = false;
 
   constructor(
     private api: ApiService,
@@ -231,7 +233,12 @@ export class GradesComponent implements OnInit {
           this.bodyResultsByAreaStructure = codeHead;
           this.cargarByArea = false;
         },
-        (error) => console.log(error),
+        (error: HttpErrorResponse) => {
+          console.log(error);
+          this.showModal();
+          this.cargarByArea = false;
+
+        },
         () => {
           return;
         } /**Funcion llamada al acabar el zip() */
@@ -246,5 +253,16 @@ export class GradesComponent implements OnInit {
       else if (dato.includes("punt_")) return "%";
       else return "";
     }
+  }
+
+  
+  showModal(){
+    this.showAreaResultsError = true;
+
+
+  }
+
+  handleOk(){
+    this.showAreaResultsError = false;
   }
 }
