@@ -254,12 +254,9 @@ export class GradesComponent implements OnInit {
       else return "";
     }
   }
-
   
   showModal(){
     this.showAreaResultsError = true;
-
-
   }
 
   handleOk(){
