@@ -2,19 +2,19 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-/*
+
 export const environment = {
   production: false,
   TESTING: false,
   DEBUG: true,
-  API_ROUTE: "http://localhost:5000/backend",
+  API_ROUTE: "http://localhost:8081/backend",
   CHRONO_ROUTE: "http://localhost:5001",
-  BACK_ROUTE: "http://localhost:5000",
+  BACK_ROUTE: "http://localhost:8081",
 
   //   private readonly URI_SOCKETIO = environment.CHRONO_ROUTE;
 };
-*/
 
+/*
 export const environment = {
   production: false,
   TESTING: false,
@@ -24,7 +24,7 @@ export const environment = {
   BACK_ROUTE: "https://openecoe.umh.es",
 
 };
-
+*/
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
