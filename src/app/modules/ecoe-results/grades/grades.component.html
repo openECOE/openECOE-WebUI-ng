@@ -133,7 +133,7 @@
           <td nzLeft>{{ row.idStudent }}</td>
           <td nzLeft>{{ row.dni }}</td>
           <td *ngFor="let dato of bodyResultsByAreaStructure">
-            {{ row[dato] }}{{ escribirporcentaje(dato) }}
+            {{ corregircantidad(row[dato]) }}{{ escribirporcentaje(dato,row[dato]) }}
           </td>
         </tr>
       </tbody>

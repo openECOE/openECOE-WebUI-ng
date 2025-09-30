@@ -246,11 +246,17 @@ export class GradesComponent implements OnInit {
     });
   }
 
-  escribirporcentaje(dato) {
+  corregircantidad(dato) {
+    if (isNaN(dato)) return "-";
+    else return dato;
+  }
+
+  escribirporcentaje(dato, datoRow) {
     if (dato === undefined) return "";
     else {
       if (dato.includes("med_")) return "%";
       else if (dato.includes("punt_")) return "%";
+      else if (isNaN(datoRow)) return "";
       else return "";
     }
   }
