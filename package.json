@@ -33,7 +33,7 @@
     "file-saver": "2.0.5",
     "jodit": "3.7.2",
     "jodit-angular": "1.11.3",
-    "mammoth": "^1.7.2",
+    "mammoth": "^1.11.0",
     "moment": "^2.24.0",
     "ng-zorro-antd": "11.4.2",
     "ngx-papaparse": "5.1.0",
