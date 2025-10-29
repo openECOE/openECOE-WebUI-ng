@@ -22,7 +22,6 @@
 
 <div id="resultados" name="resultados">
   <nz-content *ngIf="results">
-    <!--  <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>-->
     <h1>{{ "ALERT_RESULTS" | translate : { numalumnos: totalItems } }}</h1>
     <button nz-button [nzType]="'primary'" (click)="downloadCSV()">
       <span
