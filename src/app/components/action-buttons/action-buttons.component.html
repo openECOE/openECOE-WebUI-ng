@@ -31,7 +31,7 @@
               [nzType]="'vertical'">
   </nz-divider>
 
-  <i nz-icon nzType="edit" [nzTheme]="'outline'"
+  <i *ngIf="showEditButton" nz-icon nzType="edit" [nzTheme]="'outline'"
      [nz-tooltip] [nzTooltipTitle]="'EDIT' | translate"
      (click)="startEdit.emit()" tappable success-color>
   </i>

@@ -15,6 +15,7 @@ import { findLast } from '@angular/compiler/src/directive_resolver';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
+import { Item } from '@openecoe/potion-client';
 
 
 interface UserItem extends User {
@@ -96,7 +97,31 @@ export class UsersAdminComponent implements OnInit {
     this.activeUser = this.user.user;
     this.getUserForm();
     this.loadUsers();
+    this.FilteredRolesByUsers();
   }
+
+ // Filter roles by user
+  filteredRoles: RoleType[] = [];
+ superadmin: boolean = false;
+ FilteredRolesByUsers() {
+  if(this.user.isSuper)
+  {
+    this.filteredRoles = this.listRoles;
+    this.superadmin = true;
+  }
+  else if(this.user.isAdmin)
+  {
+    this.filteredRoles = this.listRoles.filter((role) => role.name !== 'superadmin');
+  }
+  else if(this.user.isEval)
+  {
+    this.filteredRoles = this.listRoles.filter((role) => role.name !== 'superadmin' && role.name !== 'administrator' && role.name !== 'evaluator');
+  }
+  else
+  {
+    this.filteredRoles = [];
+  }
+ }
 
   async getUserForm() {
     // TODO: Validate if email exists
@@ -125,6 +150,12 @@ export class UsersAdminComponent implements OnInit {
       return null;
     }
   };
+  // activar/desactivar el editor de usuarios
+
+  Roles(item: any, roleName: string): boolean
+  {
+  return item.rolesList?.some(role => role.name === roleName);
+  }
 
   //Validator to check if email exists, and wait a time to check it
   userEmailAsyncValidator = (control: FormControl) =>
@@ -569,3 +600,4 @@ export interface editarUser {
 }
 
 let userEditar : editarUser
+

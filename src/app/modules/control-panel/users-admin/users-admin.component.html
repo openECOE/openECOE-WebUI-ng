@@ -121,6 +121,7 @@
       -->
       <td text-right>
         <app-action-buttons [showDeleteButton]="!(activeUser.id === item.id)"
+                            [showEditButton]="!Roles(item, 'superadmin') || user.isSuper "
                             (startEdit)="showModalEdit(item)"
                             (delete)="delUser(item)">
         </app-action-buttons>
@@ -138,6 +139,7 @@
   [nzTitle]="showAddUser?('ADD_USER' | translate) : ('EDIT_USER' | translate: {email: usuarioOriginal?.email})"
   [nzOkText]="'ACCEPT' | translate"
   [nzCancelText]="'CANCEL' | translate"
+  [nzMaskClosable]="false"
   (nzOnOk)="submitFormUser(validateForm)"
   (nzOnCancel)="closeModal()">
 
@@ -208,7 +210,7 @@
     <nz-form-item>
       <nz-form-control>
         <nz-input-group>
-        <nz-form-label >Roles</nz-form-label>
+          <nz-form-label >{{'ROLES' | translate}}</nz-form-label>
           <nz-select
           style="width: 100%"
           nzSize="small"
