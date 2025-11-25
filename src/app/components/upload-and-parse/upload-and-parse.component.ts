@@ -236,6 +236,7 @@ export class UploadAndParseComponent implements OnInit {
         return trimmedValue === "" ? null : trimmedValue;
       },
       complete: (results, file) => {
+        console.log('CSV parse results:', results.data);
         if (this.isStation)
           this.parserResult.emit({ items: results.data, isJson });
         else this.parserResult.emit(results.data);

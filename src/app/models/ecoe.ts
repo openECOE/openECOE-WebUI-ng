@@ -80,6 +80,7 @@ export class Area extends Item {
   name: string;
   ecoe: ECOE;
   code: string;
+  weith: number;
   questions: QuestionOld[];
 }
 
@@ -91,6 +92,7 @@ export class EditCache extends Area {
 export interface RowArea {
   name: any[];
   code: any[];
+  weith: any[];
   questions?: any[];
 }
 

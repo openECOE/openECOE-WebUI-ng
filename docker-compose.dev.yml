@@ -1,0 +1,17 @@
+version: '3'
+services:
+  openecoe-webui:
+    build:
+      context: .
+      dockerfile: Dockerfile   
+    container_name: openecoe-webui
+    ports:
+      - 4200:4200
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:      
+      BACKEND_URL: "http://api:5000"
+        
+
+    command: ng serve --host 0.0.0.0 --poll=2000

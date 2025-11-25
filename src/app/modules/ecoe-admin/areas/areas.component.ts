@@ -5,6 +5,7 @@ import {SharedService} from '@services/shared/shared.service';
 import {Area, EditCache, RowArea, ECOE} from '../../../models';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 /**
  * Component with areas and number of questions by area.
@@ -29,7 +30,8 @@ export class AreasComponent implements OnInit {
 
   rowArea: RowArea = {
     name: ['', Validators.required],
-    code: ['', Validators.required]
+    code: ['', Validators.required],
+    weith: [0, [Validators.required, Validators.min(0), Validators.max(100)]]
   };
 
   data: object = {
@@ -44,16 +46,16 @@ export class AreasComponent implements OnInit {
 
   areasParser: ParserFile = {
     "filename": "areas.csv",
-    "fields": ["name", "code"],
+    "fields": ["name", "code", "weith"],
     "data": [
-      ["Anamnesis", "1"],
-      ["Exploración física", "2"],
-      ["Habilidades técnicas y procedimientos", "3"],
-      ["Habilidades de comunicación", "4"],
-      ["Juicio clínico y plan de manejo diagnóstico y terapéutico", "5"],
-      ["Prevención y promoción de la salud", "6"],
-      ["Relaciones interprofesionales , Aspectos éticos-legales y profesionalismo", "7"],
-      ["Otros","9"]
+      ["Anamnesis", "1", ""],
+      ["Exploración física", "2", ""],
+      ["Habilidades técnicas y procedimientos", "3", ""],
+      ["Habilidades de comunicación", "4", ""],
+      ["Juicio clínico y plan de manejo diagnóstico y terapéutico", "5", ""],
+      ["Prevención y promoción de la salud", "6", ""],
+      ["Relaciones interprofesionales , Aspectos éticos-legales y profesionalismo", "7", ""],
+      ["Otros","9", ""]
     ]
   };
 
@@ -61,10 +63,12 @@ export class AreasComponent implements OnInit {
               private route: ActivatedRoute,
               private router: Router,
               private sharedService: SharedService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private message: NzMessageService ) {
 
     this.areaForm = this.fb.group({
-      areaRow: this.fb.array([])
+      //areaRow: this.fb.array([])
+      areaRow: this.fb.array([], [this.validateTotalWeith.bind(this)]) // SCT validate weith
     });
 
     this.control = <FormArray>this.areaForm.controls.areaRow;
@@ -97,7 +101,30 @@ export class AreasComponent implements OnInit {
     this.InitAreaRow();
 
   }
+  /** SCT Validador global: suma de los WEITH debe ser 100 */
+    // SCT valida pesos
+  validateTotalWeith(control: AbstractControl): any {
+    const rows = (control as FormArray).controls;
 
+    const total = rows.reduce((acc, row) => {
+      const val = Number(row.get('weith')?.value);
+      return acc + (isNaN(val) ? 0 : val);
+    }, 0);
+
+    return total === 100 ? null : { totalWeithNot100: total };
+  }
+  getTotalWeith(): number {
+    // 1️⃣ Suma de los weith de áreas existentes
+    const existingTotal = this.areas.reduce((acc, area) => acc + Number(area.weith || 0), 0);
+
+    // 2️⃣ Suma de los weith que está creando/modificando en el formulario
+    const formTotal = this.control.controls.reduce((acc, row) => {
+      const val = Number(row.get('weith')?.value);
+      return acc + (isNaN(val) ? 0 : val);
+    }, 0);
+
+    return existingTotal + formTotal;
+  }
 
   /**
    * Load areas by the passed ECOE.
@@ -204,6 +231,7 @@ export class AreasComponent implements OnInit {
         area.ecoe = this.ecoe;
         area.name = item.name;
         area.code = item.code.toString();
+        area.weith = Number(item.weith || 0);  // SCT
 
         const promise = area.save()
           .then(result => {
@@ -231,14 +259,38 @@ export class AreasComponent implements OnInit {
   /**
    * Method for import areas values from file.
    * @param parserResult values that was readed from file.
+   * Convertimos los CSV fields a objetos con name, code, weith
    */
-  importAreas(parserResult: Array<any>) {
+/*   importAreas(parserResult: Array<any>) {
     this.saveArrayAreas(parserResult)
       .catch( err => {
         console.error('save ERROR: ', err);
       })
       .finally(() => this.loadAreas());
+  } */
+  importAreas(parserResult: Array<any>) {
+  // Convertimos CSV/JSON fields a objetos {name, code, weith}
+  const formatted = parserResult.map(item => ({
+    name: item[' '] || item.name,
+    code: item.code.toString(),
+    weith: Number(item.weith) || 0
+  }));
+
+  // Verificamos total WEITH incluyendo áreas existentes
+  const formTotal = formatted.reduce((acc, item) => acc + item.weith, 0);
+  const totalWeith = this.areas.reduce((acc, area) => acc + (area.weith || 0), 0) + formTotal;
+
+  if (totalWeith > 100) {
+    this.message.error(`La suma total de WEITH no puede superar 100. Actualmente: ${totalWeith}`);
+    return;
   }
+
+  // Guardar áreas importadas
+  this.saveArrayAreas(formatted)
+    .catch(err => console.error('Error importando áreas:', err))
+    .finally(() => this.loadAreas());
+}
+
 
   /**
    * Resets the array of promise errors when tried to save on
@@ -327,7 +379,7 @@ export class AreasComponent implements OnInit {
    * Before save values in data base, in first time checks that
    * all fields are validates and then will save the values.
    */
-  submitForm(): void {
+  /* submitForm(): void {
     for (const i in this.areaForm.get('areaRow')['controls']) {
       if (this.areaForm.get('areaRow')['controls'].hasOwnProperty(i)) {
         this.getFormControl('name', +i).markAsDirty();
@@ -335,6 +387,9 @@ export class AreasComponent implements OnInit {
 
         this.getFormControl('code', +i).markAsDirty();
         this.getFormControl('code', +i).updateValueAndValidity();
+
+        this.getFormControl('weith', +i).markAsDirty();
+        this.getFormControl('weith', +i).updateValueAndValidity();
       }
     }
     if (this.areaForm.valid) {
@@ -345,13 +400,51 @@ export class AreasComponent implements OnInit {
           this.InitAreaRow();
         });
     }
-  }
+    // SCT Validación total de WEITH incluyendo áreas existentes
+    const total = this.getTotalWeith();
+    if (total > 100) {
+      this.message.error(`La suma de los pesos no puede superar 100. Actualmente: ${total}`);
+      return;
+    }
+    
+  } */
 
   /**
    * When user decides do not save the form values and
    * close the form window: will close the drawer window
    * and reset the number of row areas.
    */
+  submitForm(): void {
+  // Marcar todos los campos como sucios y validar
+  this.control.controls.forEach((row, i) => {
+    this.getFormControl('name', i).markAsDirty();
+    this.getFormControl('name', i).updateValueAndValidity();
+
+    this.getFormControl('code', i).markAsDirty();
+    this.getFormControl('code', i).updateValueAndValidity();
+
+    this.getFormControl('weith', i).markAsDirty();
+    this.getFormControl('weith', i).updateValueAndValidity();
+  });
+
+  // SCT Validación total de WEITH incluyendo áreas existentes
+  const totalWeith = this.getTotalWeith();
+  if (totalWeith > 100) {
+    this.message.error(`La suma de los pesos no puede superar 100. Actualmente: ${totalWeith}`);
+    return;
+  }
+
+  // Si el formulario es válido, guardar nuevas áreas
+  if (this.areaForm.valid) {
+    this.saveArrayAreas(this.control.value)
+      .finally(() => {
+        this.loadAreas();
+        this.closeDrawer();
+        this.InitAreaRow();
+      });
+  }
+}
+
   cancelForm() {
     this.closeDrawer();
     this.InitAreaRow();
@@ -360,4 +453,6 @@ export class AreasComponent implements OnInit {
   onBack() {
     this.router.navigate(['/ecoe/' + this.ecoeId + '/admin']).finally();
   }
+
+
 }

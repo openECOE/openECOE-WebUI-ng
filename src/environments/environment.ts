@@ -2,7 +2,7 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-/*
+
 export const environment = {
   production: false,
   TESTING: false,
@@ -13,8 +13,8 @@ export const environment = {
 
   //   private readonly URI_SOCKETIO = environment.CHRONO_ROUTE;
 };
-*/
 
+/*
 export const environment = {
   production: false,
   TESTING: false,
@@ -23,6 +23,7 @@ export const environment = {
   CHRONO_ROUTE: "http://localhost:8081/chrono",
   BACK_ROUTE: "http://localhost:8081",
 };
+*/
 
 /*
  * For easier debugging in development mode, you can import the following file
