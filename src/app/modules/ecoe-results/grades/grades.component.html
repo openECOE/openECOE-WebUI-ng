@@ -77,14 +77,24 @@
           <td>{{ result.surnames }}</td>
           <td>{{ result.name }}</td>
           <td>{{ result.dni }}</td>
-          <td>            
+          <td>      
+            <!-- Aciertos -->      
             {{ result.points / result.absoluteScore | percent : "0.2-2" }}            
           </td>
-          <td>{{ result.points | number }} / {{ result.maxPoints }}</td>
           <td>
-            {{ (result.points / result.absoluteScore) * 10 | number : "1.2-2" }}
+            <!-- Puntos obtenidos BARRA maximo de puntos posibles -->      
+            {{ result.points | number }} / {{ result.maxPoints }}
           </td>
           <td>
+            <!-- Nota real -->      
+            {{ (result.points / result.absoluteScore) * 10 | number : "1.2-2" }}
+            
+          </td>          
+          <td *ngFor="let dato of bodyResultsByAreaStructure">
+            {{ result[dato] }}{{ escribirporcentaje(dato) }}
+          </td>
+          <td>
+            <!-- Nota relativa con respecto a los compañeros -->      
             {{ (result.points / result.relativeScore) * 10 | number : "1.2-2" }}
           </td>
         </tr>

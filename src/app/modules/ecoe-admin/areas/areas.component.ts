@@ -187,20 +187,22 @@ export class AreasComponent implements OnInit {
   }
 
   /**
-   * Creates or updates the resource passed.
+   * Creates or updates the resource passed. Actualiza Areas
    * Then updates the variables to avoid calling the backend again.
    *
    * @param item Resource selected
    */
    updateItem(item: any): void {
-     new Area(item).update({name: item.name, code: item.code})
-       .then((response: any) => {
-         this.editCache[item.$id].edit = false;
-         this.areas = this.areas.map(x => (x.id === item.id) ? response : x);
-       })
-      .catch( err => {
-        console.error('ERROR: ', err);
-      });
+    
+    new Area(item).update({name: item.name, code: item.code, weith: Number(item.weith)})
+    //new Area(item).update({name: item.name, code: item.code})
+      .then((response: any) => {
+        this.editCache[item.$id].edit = false;
+        this.areas = this.areas.map(x => (x.id === item.id) ? response : x);
+      })
+    .catch( err => {
+      console.error('ERROR: ', err);
+    });
   }
 
   /**
