@@ -18,7 +18,8 @@ import { GlobalErrorHandlerService } from "./services/error-handler.service";
 })
 export class AppComponent implements OnInit {
 
-  language: string = "es";
+  //language: string = "es";
+  language: string = "en";
   year: string = "";
   isCollapsed: Boolean = false;
 
@@ -107,5 +108,9 @@ export class AppComponent implements OnInit {
 
       }
     );
+  }
+  changeLang(lang: string) {
+    this.language = lang;
+    this.translate.use(lang);
   }
 }

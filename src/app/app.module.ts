@@ -69,7 +69,10 @@ import { ComponentsModule } from "./components/components.module";
 import { JoditAngularModule } from 'jodit-angular';
 import { GlobalErrorHandlerService } from "./services/error-handler.service";
 
-registerLocaleData(localeEs, "es", localeEsExtra);
+//registerLocaleData(localeEs, "es", localeEsExtra);
+//registerLocaleData(localeEs, "en", localeEsExtra);q
+
+
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -138,7 +141,7 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [
     {
       provide: NZ_I18N,
-      useValue: es_ES,
+      useValue: es_ES,      
     },
     {
       provide: HTTP_INTERCEPTORS,
