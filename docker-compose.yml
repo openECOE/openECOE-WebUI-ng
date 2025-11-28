@@ -9,4 +9,4 @@ services:
       DEBUG: "True"
       BACKEND_URL: "http://localhost:8081"
     ports:
-      - 8082:80
+      - 4200:4200
