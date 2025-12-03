@@ -271,7 +271,7 @@
   "ABSOLUTE_GRADES": "Absolute grade",
   "RELATIVE_GRADES": "Relative grade",
   "ALERT_RESULTS": "Results of the {{numalumnos}} students in this ECOE",
-  "RESULTS_BY_AREA": "Results of the {{numstudents}} students by Area",
+  "RESULTS_BY_AREA": "Results of the {{numalumnos}} students by Area",
   "RANGE_PLACEHOLDER": "Range",
   "DELETE_SELECTED_CONFIRMATION": "Are you sure you want to delete all selected items?",
   "DELETE_SELECTED": "Delete selected",

@@ -65,12 +65,18 @@
           </th>
           <th nzWidth="200px" [nzSortFn]="sortAbsoluteScore">
             {{ "ABSOLUTE_GRADES" | translate }}
+          </th>      
+          <!-- columnas dinámicas por área -->
+          <th *ngFor="let cabecera of headerResultsByArea" nzWidth="150px">
+            {{ cabecera | translate }}
           </th>
+            <!-- columna final alineada -->
           <th nzWidth="200px" [nzSortFn]="sortRelativeScore">
             {{ "RELATIVE_GRADES" | translate }}
           </th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let result of table.data">
           <td>{{ result.idStudent }}</td>
@@ -97,6 +103,7 @@
             <!-- Nota relativa con respecto a los compañeros -->      
             {{ (result.points / result.relativeScore) * 10 | number : "1.2-2" }}
           </td>
+          
         </tr>
       </tbody>
     </nz-table>
