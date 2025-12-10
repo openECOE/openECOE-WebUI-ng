@@ -69,8 +69,8 @@ import { ComponentsModule } from "./components/components.module";
 import { JoditAngularModule } from 'jodit-angular';
 import { GlobalErrorHandlerService } from "./services/error-handler.service";
 
-//registerLocaleData(localeEs, "es", localeEsExtra);
-//registerLocaleData(localeEs, "en", localeEsExtra);q
+registerLocaleData(localeEs, "es", localeEsExtra);
+registerLocaleData(localeEs, "en", localeEsExtra);
 
 
 
