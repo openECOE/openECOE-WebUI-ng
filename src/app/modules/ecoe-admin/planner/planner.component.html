@@ -138,8 +138,26 @@
     <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
     {{"AUTO_PLANNERS" | translate}}
   </button>
-
-
+<button nz-button
+          nzType="default"
+          nzSize="large"
+          [nzBlock]="true"
+          style="margin-top: 10px;"
+          (click)="autoCreatePlanners('ZA')"
+          [nzLoading]="loading">
+    <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
+    {{"AUTO_PLANNERS" | translate}} (Orden alfabético inverso)
+  </button>
+<button nz-button
+          nzType="default"
+          nzSize="large"
+          [nzBlock]="true"
+          style="margin-top: 10px;"
+          (click)="autoCreatePlanners('NPI')"
+          [nzLoading]="loading">
+    <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
+    {{"AUTO_PLANNERS" | translate}} (Orden NPI)
+  </button>
   <ng-container>
     <nz-drawer
     [nzClosable]="true"
