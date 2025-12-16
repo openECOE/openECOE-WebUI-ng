@@ -9,15 +9,7 @@
       </a>
       <app-change-organization *ngIf="isLoggedIn()"></app-change-organization>
     </div>
-     <!-- 🌐 SELECTOR DE IDIOMAS -->
-    <nz-select 
-      style="width: 120px;"
-      [(ngModel)]="language"
-      (ngModelChange)="changeLang($event)"
-    >
-      <nz-option nzValue="es" nzLabel="Español"></nz-option>
-      <nz-option nzValue="en" nzLabel="English"></nz-option>
-    </nz-select>
+
     
     <div style="display: flex;" *ngIf="isLoggedIn()">
       <app-submenu [submenuSelected]="'ECOE'"></app-submenu>

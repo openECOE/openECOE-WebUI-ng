@@ -39,6 +39,34 @@
                             (cancelEdit)="cancelEdit(2)">
         </app-action-buttons>
       </p>
+            <p>
+        <b>{{ 'LANGUAGE' | translate }}:</b> 
+        
+        <ng-container *ngIf="!editLanguageDefault" >
+          {{ userData?.user.language }}
+        </ng-container>
+        
+        
+        <ng-container *ngIf="editLanguageDefault">
+          <nz-select 
+            [(ngModel)]="editedLanguageDefault" 
+            nzSize="small" 
+            nzPlaceHolder="Selecciona un idioma"
+            style="width: 120px;">
+            <nz-option nzValue="es" nzLabel="{{ 'SPANISH' | translate }}"></nz-option>
+            <nz-option nzValue="en" nzLabel="{{ 'ENGLISH' | translate }}"></nz-option>
+            <nz-option nzValue="va" nzLabel="{{ 'VALENCIAN' | translate }}"></nz-option>
+          </nz-select>
+      </ng-container>
+
+        <app-action-buttons [showDeleteButton]="false"
+                            [isEditing]="editLanguageDefault"                             
+                            (startEdit)="startEdit(userData.user, 3)"
+                            (save)="updateItem(userData, 3)"
+                            (cancelEdit)="cancelEdit(3)">
+        </app-action-buttons>
+      </p>
+      <p>
     </div>
     <button nz-button nzType="primary" (click)="showModalEdit()">
       <span nz-icon nzType="edit" nzTheme="outline"></span>
@@ -109,4 +137,3 @@
     </nz-form-item>
   </form>
 </nz-modal>
-

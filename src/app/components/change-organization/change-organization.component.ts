@@ -60,4 +60,21 @@ export class ChangeOrganizationComponent implements OnInit, OnDestroy {
     await this.router.navigate(['/ecoe']);
     window.location.reload();
   }
+
+  async changeLanguage(selectedLanguage: string): Promise<void> {
+  const data = {
+    language: selectedLanguage
+  }
+
+  try {
+    await this.userService.userData.user.update(data); 
+  } catch (err) {
+    console.log("Error while changing organization: " + err);
+  }
+
+  //this.currentOrganization = this.userService.userData.user.organization;
+  await this.userService.loadUserData();
+  await this.router.navigate(['/ecoe']);
+  window.location.reload();
+}
 }

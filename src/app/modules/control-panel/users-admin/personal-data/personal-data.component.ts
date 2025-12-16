@@ -19,8 +19,10 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
   showEditPassword: boolean = false;
   editUserName: boolean = false;
   editUserSurname: boolean = false;
+  editLanguageDefault: boolean = false;
   editedName: string;
   editedSurname: string;
+  editedLanguageDefault: string;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -54,11 +56,14 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
       case 2:
         this.editUserSurname = true;
         break;
+      case 3:
+        this.editLanguageDefault = true;
+        break;
     }
   } 
   
   updateItem(item: any, option:number): void {
-    if (!this.editedName || !this.editedSurname) {
+    if (!this.editedName || !this.editedSurname || !this.editedLanguageDefault) {
       return;
     }
     switch (option) {
@@ -90,6 +95,20 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
           this.message.create('error', this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
         });
         break;
+      case 3:
+        const bodyLanguage = {
+          language: this.editedLanguageDefault,
+        };
+      
+        const requestLanguage = item.user.update(bodyLanguage);
+    
+        requestLanguage.then(response => {
+          this.userData.user = response;
+          this.editLanguageDefault = false;
+        }).catch((err) => {
+          this.message.create('error', this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
+        });
+        break;
     }
   }
   
@@ -100,6 +119,9 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
         break;
       case 2:
         this.editUserSurname = false;
+        break;
+      case 3:
+        this.editLanguageDefault = false;
         break;
     }
   }
