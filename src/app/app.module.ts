@@ -69,13 +69,10 @@ import { ComponentsModule } from "./components/components.module";
 import { JoditAngularModule } from 'jodit-angular';
 import { GlobalErrorHandlerService } from "./services/error-handler.service";
 
-<<<<<<< HEAD
+
 //registerLocaleData(localeEs, "es", localeEsExtra);
 //registerLocaleData(localeEs, "en", localeEsExtra);
-=======
-registerLocaleData(localeEs, "es", localeEsExtra);
-registerLocaleData(localeEs, "en", localeEsExtra);
->>>>>>> a849f83fe1acf4259a31205b029abf5d773833bf
+
 
 
 
