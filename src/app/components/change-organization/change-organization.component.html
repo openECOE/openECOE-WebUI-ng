@@ -9,25 +9,15 @@
   <i nz-icon nzType="caret-down"></i>
 </a>
 <!-- 🌐 SELECTOR DE IDIOMAS -->
-<a  
-  nz-dropdown
-  [nzDropdownMenu]="languagesMenu"
-  nzTrigger="click"
-  class="language-name">  
-  idioma
-  
+<a 
+  nz-dropdown 
+  [nzDropdownMenu]="languagesMenu" 
+  nzTrigger="click" 
+  class="language-name">
+  {{ 'idioma' | uppercase }}
   <i nz-icon nzType="caret-down"></i>
 </a>
-<!--
-    <nz-select 
-      style="width: 120px;"
-      [(ngModel)]="language"
-      (ngModelChange)="changeLang($event)"
-    >
-      <nz-option nzValue="es" nzLabel="Español"></nz-option>
-      <nz-option nzValue="en" nzLabel="English"></nz-option>
-    </nz-select>
--->
+
 <ng-template #organizationName>
   <p class="organization-name">{{currentOrganization?.name}}</p>
 </ng-template>
@@ -43,20 +33,10 @@
     </li>
   </ul>
 </nz-dropdown-menu>
-
 <nz-dropdown-menu #languagesMenu="nzDropdownMenu">
   <ul nz-menu>
-    <li nz-menu-item (click)="changeLanguage('es')">
-      <span nz-icon  ></span>
-      {{ 'SPANISH' | translate }}
-    </li>
-    <li nz-menu-item (click)="changeLanguage('en')">
-      <span nz-icon  ></span>
-      {{ 'ENGLISH' | translate }}
-    </li>
-    <li nz-menu-item (click)="changeLanguage('ca')">
-      <span nz-icon  ></span>
-      {{ 'VALENCIAN' | translate }}
-    </li>
+    <li nz-menu-item (click)="changeLanguage('es')"> Español </li>
+    <li nz-menu-item (click)="changeLanguage('en')"> English </li>
+    <li nz-menu-item (click)="changeLanguage('ca')"> Valencià </li>
   </ul>
 </nz-dropdown-menu>

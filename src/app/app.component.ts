@@ -19,7 +19,7 @@ import { GlobalErrorHandlerService } from "./services/error-handler.service";
 export class AppComponent implements OnInit {
 
   //language: string = "es";
-  language: string = "en";
+  //language: string = "en";
   year: string = "";
   isCollapsed: Boolean = false;
 
@@ -52,18 +52,39 @@ export class AppComponent implements OnInit {
   /**
    * Initializes the browser language.
    */
-  initializeTranslate() {
+  /*initializeTranslate() {
     this.translate.setDefaultLang(this.language);
     let browserLanguage = this.translate.getBrowserLang();
     let isBrowserLangAvailable = this.translate.getLangs().includes(browserLanguage);
     this.translate.use(isBrowserLangAvailable ? browserLanguage  : this.language);
-  }
+  }*/
 
   ngOnInit() {
     this.clientHeight = window.innerHeight;
     this.year = new Date().getFullYear().toString();
+    // 🌐 Escuchar cambios en los datos del usuario para aplicar su idioma
+    this.userService.userDataChange.subscribe((user) => {
+      if (user && user.user && user.user.language) {
+        const langToUse = user.user.language;
+        // Solo cambiar si el idioma es distinto al actual
+        if (this.translate.currentLang !== langToUse) {
+          this.translate.use(langToUse);
+          console.log("Idioma aplicado desde el perfil de usuario:", langToUse);
+        }
+      }
+    });
     this.checkServerStatus();
     this.handleErrors();
+  }
+
+  initializeTranslate() {
+    // 1. Idioma por defecto de seguridad
+    this.translate.setDefaultLang('es');
+
+    // 2. Lógica inicial (antes de que el usuario cargue)
+    const browserLanguage = this.translate.getBrowserLang();
+    // Puedes usar una lógica simple: si hay idioma en el navegador úsalo, si no, 'es'
+    this.translate.use(browserLanguage.match(/en|es|ca/) ? browserLanguage : 'es');
   }
 
   handleErrors() {
@@ -109,8 +130,8 @@ export class AppComponent implements OnInit {
       }
     );
   }
-  changeLang(lang: string) {
+  /*changeLang(lang: string) {
     this.language = lang;
     this.translate.use(lang);
-  }
+  }*/
 }
