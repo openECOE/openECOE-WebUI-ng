@@ -93,6 +93,7 @@ export interface RowArea {
   name: any[];
   code: any[];
   weith: any[];
+  locked?: any[];
   questions?: any[];
 }
 

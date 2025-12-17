@@ -7,9 +7,9 @@ export const environment = {
   production: false,
   TESTING: false,
   DEBUG: true,
-  API_ROUTE: "http://localhost:5000/backend",
+  API_ROUTE: "http://localhost:5001/backend",
   CHRONO_ROUTE: "http://localhost:5001/chrono",
-  BACK_ROUTE: "http://localhost:5000",
+  BACK_ROUTE: "http://localhost:5001",
 
   //   private readonly URI_SOCKETIO = environment.CHRONO_ROUTE;
 };

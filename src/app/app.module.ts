@@ -72,6 +72,8 @@ import { GlobalErrorHandlerService } from "./services/error-handler.service";
 
 //registerLocaleData(localeEs, "es", localeEsExtra);
 //registerLocaleData(localeEs, "en", localeEsExtra);
+registerLocaleData(localeEs, "es", localeEsExtra);
+registerLocaleData(localeEs, "en", localeEsExtra);
 
 
 

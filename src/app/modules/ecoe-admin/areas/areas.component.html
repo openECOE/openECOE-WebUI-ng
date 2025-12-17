@@ -118,9 +118,9 @@
           </div>
         </div>
         <!--SCT Form Add Area -->
-        <ng-container formArrayName="areaRow" *ngFor=" let control of areaForm.get('areaRow')['controls']; let i = index">
+            <ng-container formArrayName="areaRow" *ngFor=" let control of areaForm.get('areaRow')['controls']; let i = index">
           <div nz-row nzGutter="8" [formGroupName]="+i">
-            <div nz-col nzSpan="12">
+            <div nz-col nzSpan="11">
               <nz-form-item>
                 <nz-form-control [nzErrorTip]="'NAME_INPUT_REQUIRED' | translate">
                   <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
@@ -137,7 +137,13 @@
                 <input nz-input [placeholder]="('WEITH_PLACEHOLDER' | translate)" formControlName="weith"/>
               </nz-form-control>
             </div>
-            <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
+            <div nz-col nzSpan="3" style="display:flex;align-items:center;justify-content:center;">
+              <label style="display:flex;align-items:center;gap:6px;">
+                <input type="checkbox" formControlName="locked" />
+                <span>Lock value</span>
+              </label>
+            </div>
+            <div nz-col nzSpan="4" style="bottom: 0" *ngIf="i > 0">
               <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
             </div>
             
@@ -146,9 +152,14 @@
 
         <nz-form-item>
           <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
-            <button nz-button   nzType="dashed" style="width:60%" (click)="addAreaRow()">
-              <i nz-icon nzType="plus"></i> {{'ADD_AREA' | translate}}
-            </button>
+            <div style="display:flex;gap:8px;">
+              <button nz-button nzType="dashed" style="width:60%" (click)="addAreaRow()">
+                <i nz-icon nzType="plus"></i> {{'ADD_AREA' | translate}}
+              </button>
+              <button nz-button nzType="default" (click)="autobalanceWeights()" style="width:40%">
+                <i nz-icon nzType="fund" nzTheme="outline"></i> {{'AUTO_BALANCE' | translate}}
+              </button>
+            </div>
           </nz-form-control>
         </nz-form-item>
       </form>

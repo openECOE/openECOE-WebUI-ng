@@ -31,7 +31,8 @@ export class AreasComponent implements OnInit {
   rowArea: RowArea = {
     name: ['', Validators.required],
     code: ['', Validators.required],
-    weith: [0, [Validators.required, Validators.min(0), Validators.max(100)]]
+    weith: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+    locked: [false]
   };
 
   data: object = {
@@ -114,16 +115,33 @@ export class AreasComponent implements OnInit {
     return total === 100 ? null : { totalWeithNot100: total };
   }
   getTotalWeith(): number {
-    // 1️⃣ Suma de los weith de áreas existentes
-    const existingTotal = this.areas.reduce((acc, area) => acc + Number(area.weith || 0), 0);
+    // When the form includes existing areas (rows with an `id`), we must
+    // avoid double-counting them. Build the total as:
+    // - sum of all form rows' weights
+    // - plus weights of existing areas not present in the form
 
-    // 2️⃣ Suma de los weith que está creando/modificando en el formulario
+    // Sum weights from form rows
     const formTotal = this.control.controls.reduce((acc, row) => {
       const val = Number(row.get('weith')?.value);
       return acc + (isNaN(val) ? 0 : val);
     }, 0);
 
-    return existingTotal + formTotal;
+    // Collect ids present in the form (for rows that map to existing areas)
+    const idsInForm = new Set<number>();
+    this.control.controls.forEach(row => {
+      const id = row.get('id')?.value;
+      if (id !== undefined && id !== null && id !== '') {
+        idsInForm.add(Number(id));
+      }
+    });
+
+    // Sum weights of existing areas that are NOT represented in the form
+    const remainingExisting = this.areas.reduce((acc, area) => {
+      if (idsInForm.has(Number(area.id))) { return acc; }
+      return acc + Number(area.weith || 0);
+    }, 0);
+
+    return remainingExisting + formTotal;
   }
 
   /**
@@ -226,28 +244,40 @@ export class AreasComponent implements OnInit {
     const savePromises    = [];
     this.logPromisesERROR = [];
     this.logPromisesOK    = [];
-
     for (const item of items) {
       if (item.name && item.code) {
-        const area = new Area();
-        area.ecoe = this.ecoe;
-        area.name = item.name;
-        area.code = item.code.toString();
-        area.weith = Number(item.weith || 0);  // SCT
-
-        const promise = area.save()
-          .then(result => {
-            this.logPromisesOK.push(result);
-            return result;
-          })
-          .catch(err => {
-            this.logPromisesERROR.push({
-              value: item,
-              reason: err
+        if (item.id) {
+          // existing area -> fetch instance then update (avoid assigning id to prototype)
+          const promise = Area.fetch(item.id, {cache: false})
+            .then((areaInstance: any) => areaInstance.update({name: item.name, code: item.code.toString(), weith: Number(item.weith || 0)}))
+            .then(result => {
+              this.logPromisesOK.push(result);
+              return result;
+            })
+            .catch(err => {
+              this.logPromisesERROR.push({ value: item, reason: err });
+              return err;
             });
-            return err;
-          });
-        savePromises.push(promise);
+          savePromises.push(promise);
+        } else {
+          // new area -> create
+          const area = new Area();
+          area.ecoe = this.ecoe;
+          area.name = item.name;
+          area.code = item.code.toString();
+          area.weith = Number(item.weith || 0);
+
+          const promise = area.save()
+            .then(result => {
+              this.logPromisesOK.push(result);
+              return result;
+            })
+            .catch(err => {
+              this.logPromisesERROR.push({ value: item, reason: err });
+              return err;
+            });
+          savePromises.push(promise);
+        }
       }
     }
 
@@ -329,6 +359,23 @@ export class AreasComponent implements OnInit {
    * Opens form window to add new area/s
    */
   showDrawer() {
+    // Populate form with current areas so user can edit weights together with new ones
+    // Clear existing form rows
+    while (this.control.length > 0) { this.control.removeAt(0); }
+
+    // Add existing areas as editable rows
+    this.areas.forEach(area => {
+      this.control.push(this.fb.group({
+        id: [area.id],
+        name: [area.name, Validators.required],
+        code: [area.code, Validators.required],
+        weith: [area.weith || 0, [Validators.required, Validators.min(0), Validators.max(100)]],
+        locked: [false]
+      }));
+    });
+
+    // Always include one empty row to allow adding a new area
+    this.control.push( this.fb.group(this.rowArea) );
     this.isVisible = true;
   }
 
@@ -344,6 +391,56 @@ export class AreasComponent implements OnInit {
    */
   addAreaRow() {
     this.control.push( this.fb.group(this.rowArea) );
+  }
+
+  /**
+   * Auto balance weights across all rows in the form so total equals 100.
+   * This distributes integer percentages evenly and assigns the remainder
+   * to the first rows.
+   */
+  autobalanceWeights() {
+    const controls = this.control.controls;
+    const unlocked = [];
+    let lockedSum = 0;
+
+    controls.forEach(c => {
+      const isLocked = !!c.get('locked')?.value;
+      const val = Number(c.get('weith')?.value) || 0;
+      if (isLocked) {
+        lockedSum += val;
+      } else {
+        unlocked.push(c);
+      }
+    });
+
+    const remaining = 100 - lockedSum;
+    if (remaining < 0) {
+      this.message.error(`La suma de los pesos bloqueados supera 100 (bloqueado: ${lockedSum}).`);
+      return;
+    }
+
+    const m = unlocked.length;
+    if (m === 0) {
+      this.message.info('No hay filas desbloqueadas para autobalancear.');
+      return;
+    }
+
+    const base = Math.floor(remaining / m);
+    let remainder = remaining - base * m;
+
+    for (let i = 0; i < m; i++) {
+      const value = base + (remainder > 0 ? 1 : 0);
+      remainder = Math.max(0, remainder - 1);
+      const control = unlocked[i].get('weith');
+      if (control) {
+        control.setValue(value);
+        control.markAsDirty();
+        control.updateValueAndValidity();
+      }
+    }
+
+    // Update validators
+    this.areaForm.get('areaRow').updateValueAndValidity();
   }
 
   /**
@@ -418,34 +515,86 @@ export class AreasComponent implements OnInit {
    */
   submitForm(): void {
   // Marcar todos los campos como sucios y validar
-  this.control.controls.forEach((row, i) => {
-    this.getFormControl('name', i).markAsDirty();
-    this.getFormControl('name', i).updateValueAndValidity();
+  // Build raw values and filter out empty rows so the required validators
+  // on empty placeholder rows don't block saving existing/edited rows.
+  const allRows = this.control.value as any[];
 
-    this.getFormControl('code', i).markAsDirty();
-    this.getFormControl('code', i).updateValueAndValidity();
-
-    this.getFormControl('weith', i).markAsDirty();
-    this.getFormControl('weith', i).updateValueAndValidity();
+  // Consider a row as 'present' if it has an id (existing), or a name/code, or a non-zero weight
+  const rowsToSave = allRows.filter(r => {
+    const hasName = r.name !== undefined && r.name !== null && String(r.name).trim() !== '';
+    const hasCode = r.code !== undefined && r.code !== null && String(r.code).trim() !== '';
+    const hasWeight = Number(r.weith) && Number(r.weith) !== 0;
+    const hasId = r.id !== undefined && r.id !== null && r.id !== '';
+    return hasId || hasName || hasCode || hasWeight;
   });
 
-  // SCT Validación total de WEITH incluyendo áreas existentes
-  const totalWeith = this.getTotalWeith();
+  if (rowsToSave.length === 0) {
+    this.message.info('No hay filas a guardar.');
+    return;
+  }
+
+  // Mark only the rows that will be saved as dirty so their validators run
+  allRows.forEach((row, i) => {
+    const include = rowsToSave.indexOf(row) !== -1;
+    if (include) {
+      this.getFormControl('name', i).markAsDirty();
+      this.getFormControl('name', i).updateValueAndValidity();
+
+      this.getFormControl('code', i).markAsDirty();
+      this.getFormControl('code', i).updateValueAndValidity();
+
+      this.getFormControl('weith', i).markAsDirty();
+      this.getFormControl('weith', i).updateValueAndValidity();
+    }
+  });
+
+  // Validate total weight considering only rows to save + existing areas not in the form
+  const totalWeith = this.getTotalWeithForRows(rowsToSave);
   if (totalWeith > 100) {
     this.message.error(`La suma de los pesos no puede superar 100. Actualmente: ${totalWeith}`);
     return;
   }
 
-  // Si el formulario es válido, guardar nuevas áreas
-  if (this.areaForm.valid) {
-    this.saveArrayAreas(this.control.value)
-      .finally(() => {
-        this.loadAreas();
-        this.closeDrawer();
-        this.InitAreaRow();
-      });
+  // If any of the rows to save have invalid controls, show an error
+  const anyInvalid = rowsToSave.some((r, idx) => {
+    // find index in allRows to access controls
+    const i = allRows.indexOf(r);
+    return this.getFormControl('name', i).invalid || this.getFormControl('code', i).invalid || this.getFormControl('weith', i).invalid;
+  });
+  if (anyInvalid) {
+    this.message.error('Hay campos inválidos. Revise los campos requeridos.');
+    return;
   }
+
+  // Proceed to save only the filtered rows
+  this.saveArrayAreas(rowsToSave)
+    .finally(() => {
+      this.loadAreas();
+      this.closeDrawer();
+      this.InitAreaRow();
+    });
 }
+
+  /**
+   * Compute total weight for a set of form rows plus existing areas not represented in those rows.
+   * This prevents double-counting when the form already contains existing areas.
+   */
+  getTotalWeithForRows(rows: any[]): number {
+    // Sum weights from provided rows
+    const formTotal = rows.reduce((acc, row) => acc + (Number(row.weith) || 0), 0);
+
+    // Collect ids present in rows
+    const idsInRows = new Set<number>();
+    rows.forEach(r => { if (r.id !== undefined && r.id !== null && r.id !== '') idsInRows.add(Number(r.id)); });
+
+    // Sum existing areas not in rows
+    const remainingExisting = this.areas.reduce((acc, area) => {
+      if (idsInRows.has(Number(area.id))) { return acc; }
+      return acc + Number(area.weith || 0);
+    }, 0);
+
+    return remainingExisting + formTotal;
+  }
 
   cancelForm() {
     this.closeDrawer();
