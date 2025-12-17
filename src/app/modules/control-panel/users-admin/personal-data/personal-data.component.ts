@@ -67,6 +67,7 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
     console.log('[updateItem] called', { option, editedName: this.editedName, editedSurname: this.editedSurname, editedLanguageDefault: this.editedLanguageDefault, item });
     if (!this.editedName || !this.editedSurname || !this.editedLanguageDefault) {
       console.log('entra en el el if?');
+      
       return;
     }
     switch (option) {
@@ -121,12 +122,12 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
         const bodyLanguage = { language: this.editedLanguageDefault };      
         const requestLanguage = item?.user?.update?.(bodyLanguage);
           
-        if (!requestSurname) {
+        if (!requestLanguage) {
           console.error('[updateItem] item.user.update is not a function', { item });
           this.message.error('No se puede actualizar: método update no encontrado.');
           return;
         }
-        requestSurname
+        requestLanguage
           .then(response => {
             console.log('[updateItem] response case 3:', response);
             this.userData.user = response;
