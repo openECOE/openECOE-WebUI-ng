@@ -74,7 +74,7 @@
           </td>
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
-            100% <{{item.weith}}>
+              {{item.weith}}%
             </ng-container>
             <ng-container *ngIf="editCache[item.id].edit">
               <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].weith">

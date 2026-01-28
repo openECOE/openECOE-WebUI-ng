@@ -29,6 +29,47 @@
         >{{ "DOWNLOAD_GRADES" | translate }} <i nz-icon nzType="download"></i
       ></span>
     </button>
+
+    <!-- Total Grade Distribution Chart -->
+    <div class="chart-section" *ngIf="totalGradeDistribution.length > 0">
+      <h2>{{ "GRADE_DISTRIBUTION" | translate }}</h2>
+      <div class="stats-summary">
+        <nz-statistic [nzValue]="totalStats.average" [nzTitle]="'AVERAGE' | translate" [nzSuffix]="'/10'" [nzValueStyle]="{ color: '#1890ff' }"></nz-statistic>
+        <nz-statistic [nzValue]="totalStats.median" [nzTitle]="'MEDIAN' | translate" [nzSuffix]="'/10'" [nzValueStyle]="{ color: '#52c41a' }"></nz-statistic>
+        <nz-statistic [nzValue]="totalStats.min" [nzTitle]="'MIN' | translate" [nzSuffix]="'/10'" [nzValueStyle]="{ color: '#ff4d4f' }"></nz-statistic>
+        <nz-statistic [nzValue]="totalStats.max" [nzTitle]="'MAX' | translate" [nzSuffix]="'/10'" [nzValueStyle]="{ color: '#52c41a' }"></nz-statistic>
+        <nz-statistic [nzValue]="totalStats.stdDev" [nzTitle]="'STD_DEV' | translate" [nzValueStyle]="{ color: '#faad14' }"></nz-statistic>
+      </div>
+      <div class="bar-chart">
+        <div class="chart-container">
+          <div class="bars">
+            <div class="bar-wrapper" *ngFor="let item of totalGradeDistribution">
+              <div class="bar" 
+                   [style.height]="getBarHeight(item.percentage)"
+                   [style.background-color]="getBarColor(item.range)"
+                   [nz-tooltip]="item.count + ' estudiantes (' + item.percentage + '%)'">
+                <span class="bar-value" *ngIf="item.count > 0">{{ item.count }}</span>
+              </div>
+              <div class="bar-label">{{ item.range }}</div>
+            </div>
+          </div>
+          <div class="y-axis">
+            <span>100%</span>
+            <span>75%</span>
+            <span>50%</span>
+            <span>25%</span>
+            <span>0%</span>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-color" style="background:#ff4d4f"></span> {{ "FAILING" | translate }} (0-5)</span>
+          <span class="legend-item"><span class="legend-color" style="background:#faad14"></span> {{ "PASSING" | translate }} (5-7)</span>
+          <span class="legend-item"><span class="legend-color" style="background:#52c41a"></span> {{ "GOOD" | translate }} (7-9)</span>
+          <span class="legend-item"><span class="legend-color" style="background:#1890ff"></span> {{ "EXCELLENT" | translate }} (9-10)</span>
+        </div>
+      </div>
+    </div>
+
     <nz-table
       #table
       [nzData]="results"
@@ -63,13 +104,10 @@
           <th nzWidth="100px" [nzSortFn]="sortPoints">
             {{ "POINTS"| translate }}
           </th>
-          <th nzWidth="200px" [nzSortFn]="sortAbsoluteScore">
-            {{ "ABSOLUTE_GRADES" | translate }}
+          <th nzWidth="200px" [nzSortFn]="sortNotaFinal">
+            {{ "FINAL_GRADE" | translate }}
           </th>      
-          <!-- columnas dinámicas por área -->
-          <th *ngFor="let cabecera of headerResultsByArea" nzWidth="150px">
-            {{ cabecera | translate }}
-          </th>
+          <!-- columnas por área eliminadas en la tabla principal (se muestran sólo en la sección 'RESULTS_BY_AREA') -->
             <!-- columna final alineada -->
           <th nzWidth="200px" [nzSortFn]="sortRelativeScore">
             {{ "RELATIVE_GRADES" | translate }}
@@ -92,13 +130,11 @@
             {{ result.points | number }} / {{ result.maxPoints }}
           </td>
           <td>
-            <!-- Nota real -->      
-            {{ (result.points / result.absoluteScore) * 10 | number : "1.2-2" }}
+            <!-- Nota Final ponderada (sobre 10) -->      
+            {{ result.notaFinal / 10 | number : "1.2-2" }}
             
           </td>          
-          <td *ngFor="let dato of bodyResultsByAreaStructure">
-            {{ result[dato] }}{{ escribirporcentaje(dato) }}
-          </td>
+          <!-- filas por área eliminadas en la tabla principal -->
           <td>
             <!-- Nota relativa con respecto a los compañeros -->      
             {{ (result.points / result.relativeScore) * 10 | number : "1.2-2" }}
@@ -155,5 +191,34 @@
         </tr>
       </tbody>
     </nz-table>
+
+    <!-- Area Distribution Charts -->
+    <div class="area-charts-section" *ngIf="areaDistributions.length > 0">
+      <h2>{{ "DISTRIBUTION_BY_AREA" | translate }}</h2>
+      <div class="area-charts-grid">
+        <div class="area-chart-card" *ngFor="let area of areaDistributions">
+          <div class="area-chart-header">
+            <h3>{{ area.areaName }}</h3>
+            <div class="area-stats">
+              <span class="stat"><strong>{{ "AVERAGE" | translate }}:</strong> {{ area.average }}</span>
+              <span class="stat"><strong>{{ "MEDIAN" | translate }}:</strong> {{ area.median }}</span>
+              <span class="stat"><strong>{{ "RANGE" | translate }}:</strong> {{ area.min }} - {{ area.max }}</span>
+            </div>
+          </div>
+          <div class="mini-bar-chart">
+            <div class="mini-bars">
+              <div class="mini-bar-wrapper" *ngFor="let item of area.distribution">
+                <div class="mini-bar" 
+                     [style.height]="getMiniBarHeight(item.percentage)"
+                     [style.background-color]="getBarColor(item.range)"
+                     [nz-tooltip]="item.count + ' (' + item.percentage + '%)'">
+                </div>
+                <div class="mini-bar-label">{{ item.range.split('-')[0] }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </nz-content>
 </div>

@@ -146,7 +146,16 @@ export class ApiService {
       })
       .pipe(
         map((response) => {
-          if (typeof response != undefined) return { ...response };
+          console.log('getResource response type:', typeof response, 'isArray:', Array.isArray(response));
+          if (typeof response != undefined) {
+            // Si es un array, devolverlo directamente sin spread
+            if (Array.isArray(response)) {
+              console.log('Returning array directly');
+              return response;
+            }
+            console.log('Returning spread object');
+            return { ...response };
+          }
         })
       );
   }

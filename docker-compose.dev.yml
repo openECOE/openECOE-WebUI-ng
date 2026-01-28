@@ -11,7 +11,7 @@ services:
       - ./:/app
       - /app/node_modules
     environment:      
-      BACKEND_URL: "http://api:5001"
+      BACKEND_URL: "http://host.docker.internal:5001"
         
 
     command: ng serve --host 0.0.0.0 --poll=2000

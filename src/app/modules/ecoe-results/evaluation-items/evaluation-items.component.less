@@ -5,3 +5,161 @@
     text-align: center;
     min-height: 40vh;
 }
+
+// Station Charts Section
+.station-charts-section {
+  margin: 24px 0;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 18px;
+  }
+}
+
+.station-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.station-chart-card {
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 16px;
+  overflow: hidden;
+
+  .station-chart-header {
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e8e8e8;
+    padding-bottom: 12px;
+
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #333;
+      font-weight: 600;
+    }
+  }
+
+  .station-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: #666;
+
+    .stat {
+      strong {
+        color: #333;
+      }
+    }
+  }
+}
+
+.station-bar-chart {
+  position: relative;
+  
+  .y-axis-label {
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: rotate(-90deg) translateX(-50%);
+    font-size: 10px;
+    color: #888;
+    white-space: nowrap;
+  }
+
+  .x-axis-label {
+    text-align: center;
+    font-size: 10px;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .chart-area {
+    display: flex;
+    margin-left: 25px;
+  }
+
+  .y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 120px;
+    padding-right: 8px;
+    font-size: 10px;
+    color: #888;
+    text-align: right;
+    min-width: 25px;
+  }
+
+  .bars-container {
+    display: flex;
+    align-items: flex-end;
+    height: 120px;
+    gap: 3px;
+    flex: 1;
+    border-left: 1px solid #d9d9d9;
+    border-bottom: 1px solid #d9d9d9;
+    padding: 0 8px 0 4px;
+    overflow-x: auto;
+    background: linear-gradient(
+      to top,
+      rgba(255, 77, 79, 0.05) 0%,
+      rgba(255, 77, 79, 0.05) 50%,
+      rgba(82, 196, 26, 0.05) 50%,
+      rgba(82, 196, 26, 0.05) 100%
+    );
+  }
+
+  .bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 20px;
+    flex-shrink: 0;
+  }
+
+  .bar {
+    width: 16px;
+    min-height: 2px;
+    border-radius: 2px 2px 0 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    &:hover {
+      opacity: 0.8;
+      transform: scaleX(1.1);
+    }
+
+    .bar-value {
+      font-size: 8px;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+      padding-bottom: 2px;
+    }
+  }
+
+  .bar-label {
+    margin-top: 4px;
+    font-size: 8px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30px;
+    text-align: center;
+    cursor: help;
+  }
+}

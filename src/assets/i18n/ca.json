@@ -274,6 +274,7 @@
   "HITS": "Aciertos",
   "ABSOLUTE_GRADES": "Nota absoluta",
   "RELATIVE_GRADES": "Nota relativa",
+  "FINAL_GRADE": "Nota final",
   "ALERT_RESULTS": "Resultados de los {{numalumnos}} alumnos de esta ECOE",
   "RESULTS_BY_AREA": "Resultados de los {{numalumnos}} alumnos por Área",
   "RANGE_PLACEHOLDER": "Rango",
