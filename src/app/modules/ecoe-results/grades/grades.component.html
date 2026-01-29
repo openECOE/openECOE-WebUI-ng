@@ -22,7 +22,6 @@
 
 <div id="resultados" name="resultados">
   <nz-content *ngIf="results">
-    <!--  <nz-breadcrumb [nzAutoGenerate]="true"></nz-breadcrumb>-->
     <h1>{{ "ALERT_RESULTS" | translate : { numalumnos: totalItems } }}</h1>
     <button nz-button [nzType]="'primary'" (click)="downloadCSV()">
       <span
@@ -118,7 +117,7 @@
           <th nzLeft nzWidth="100px" [nzSortFn]="sortId">
             {{ "ID_STUDENT" | translate }}
           </th>
-          <th nzLeft nzWidth="80px" [nzSortFn]="sortDni">
+          <th nzLeft nzWidth="100px" [nzSortFn]="sortDni">
             {{ "DNI" | translate }}
           </th>
           <th *ngFor="let cabecera of headerResultsByArea" nzWidth="100px">
@@ -133,10 +132,19 @@
           <td nzLeft>{{ row.idStudent }}</td>
           <td nzLeft>{{ row.dni }}</td>
           <td *ngFor="let dato of bodyResultsByAreaStructure">
-            {{ row[dato] }}{{ escribirporcentaje(dato) }}
+            {{ corregircantidad(row[dato]) }}{{ escribirporcentaje(dato,row[dato]) }}
           </td>
         </tr>
       </tbody>
     </nz-table>
   </nz-content>
 </div>
+
+<nz-modal
+  [(nzVisible)]="showAreaResultsError"
+  [nzTitle]="'RESULTS_BY_AREA_ERROR' | translate"
+  (nzOnOk)="handleOk()"
+  [nzOkText]="'OK' | translate"
+  [nzCancelText]="null">
+    <p>{{ "RESULTS_BY_AREA_ERROR_BODY" | translate }}</p>
+</nz-modal>

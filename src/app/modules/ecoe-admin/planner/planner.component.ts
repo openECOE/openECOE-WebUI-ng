@@ -440,13 +440,40 @@ export class PlannerComponent implements OnInit {
     );
   }
 
-  async autoCreatePlanners() {
+  getStudentsOrdered(sortCriteria: any={surnames: false, name: false},page: number = 1, perPage: number = 100): Promise<Pagination<Student>> {
+    const excludeItems = [];
+
+    return Student.query<Student, Pagination<Student>>({
+        where: {ecoe: this.ecoeId, planner: null},
+        sort: sortCriteria,
+        perPage: perPage,
+        page: page
+      },
+      {paginate: true, skip: excludeItems}
+    );
+  }
+  
+
+  async autoCreatePlanners(studentsOrder: string = 'AZ') {
     this.loading = true;
+
+    let querySort;
+    switch (studentsOrder) {
+      case 'AZ':
+        querySort = {surnames: false, name: false};
+        break;
+      case 'ZA':
+        querySort = {surnames: true, name: true};
+        break;
+      case 'NPI':
+        querySort = {dni: false};
+        break;
+    }
   
     const [listPlanners, listStations, pageStudents] = await forkJoin(
       from(this.createAllPlanners()),
       from(Station.query<Station>({ where: { ecoe: this.ecoeId } })),
-      from(this.getStudents())
+      from(this.getStudentsOrdered(querySort))
     ).toPromise();
   
     const promises = [];
