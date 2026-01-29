@@ -33,7 +33,7 @@ export class SubmenuComponent implements OnInit {
         return false;
         }))
       .subscribe(async () => {
-        if (this.router.url !== "/login") {
+        if (this.router.url !== "/login" && this.router.url !== "/outside") {
           this.ecoeId = +this.router.url.split("/")[2];
           const activeLink = this.router.url.split("/")[3];
           await this.userService.loadUserData();
