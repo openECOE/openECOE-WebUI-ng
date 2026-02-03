@@ -47,6 +47,8 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { EvaluatorsComponent } from './evaluators/evaluators.component';
@@ -103,6 +105,8 @@ import { EvaluatorsComponent } from './evaluators/evaluators.component';
     NzMessageModule,
     NzSwitchModule,
     NzCheckboxModule,
+    NzUploadModule,
+    NzDividerModule,
     DragDropModule,
   ],
   exports: [

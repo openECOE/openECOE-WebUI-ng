@@ -104,6 +104,17 @@
     {{"AUTO_PLANNERS" | translate}}
   </button>
 
+  <button nz-button
+          nzType="dashed"
+          nzSize="large"
+          [nzBlock]="true"
+          style="margin-top: 10px;"
+          (click)="openImportModal()"
+          [nzLoading]="loading">
+    <i nz-icon nzType="upload" nzTheme="outline"></i>
+    {{"IMPORT_PLANNER_EXCEL" | translate}}
+  </button>
+
   <ng-container>
     <nz-drawer
     [nzClosable]="true"
@@ -207,4 +218,55 @@
       </button>
     </ng-template>
   </form>
+</nz-modal>
+
+<!-- Import Planner Modal -->
+<nz-modal [(nzVisible)]="showImportModal"
+          [nzTitle]="'IMPORT_PLANNER_EXCEL' | translate"
+          (nzOnCancel)="closeImportModal()"
+          nzMaskClosable="false"
+          [nzFooter]="modalFooterImport">
+  
+  <div style="height: 250px">
+    <nz-upload [nzMultiple]="false"
+              [nzAccept]="'.csv,.xlsx,.xls'"
+              [nzCustomRequest]="handlePlannerUpload"
+              [nzShowUploadList]="false"
+              nzType="drag">
+      <p class="ant-upload-drag-icon">
+        <i nz-icon nzType="inbox"></i>
+      </p>
+      <p class="ant-upload-text">{{ 'CLICK_HERE_OR_DRAG_FILE' | translate }}</p>
+      <p class="ant-upload-hint">
+        {{ 'DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE' | translate }}
+      </p>
+    </nz-upload>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <div>
+    <nz-row nzType="flex" nzAlign="middle" nzJustify="center">
+      <nz-col nzSpan="24" text-center>
+        <p>{{ 'PLANNER_IMPORT_DESCRIPTION' | translate }}</p>
+        <p><strong>{{ 'PLANNER_IMPORT_COLUMNS' | translate }}:</strong> IGO-POGPSIQ, ESTUDIANTE, APELLIDOS, NOMBRE, Estación Inicial</p>
+        <p><strong>{{ 'PLANNER_IMPORT_SHIFT_MARKER' | translate }}:</strong> <code>---TURNO---</code></p>
+      </nz-col>
+      <nz-col nzSpan="24" text-center style="margin-top: 10px;">
+        <span>{{ 'DOWNLOAD_TEMPLATE_HERE' | translate }}</span>
+      </nz-col>
+      <nz-col nzSpan="24" text-center style="margin-top: 5px;">
+        <button nz-button nzSize="default" nzType="primary" (click)="downloadPlannerTemplate()">
+          <i nz-icon nzType="download"></i>
+          {{ 'DOWNLOAD_TEMPLATE' | translate }}
+        </button>
+      </nz-col>
+    </nz-row>
+  </div>
+
+  <ng-template #modalFooterImport>
+    <button nz-button (click)="closeImportModal()">
+      <span>{{"CLOSE" | translate}}</span>
+    </button>
+  </ng-template>
 </nz-modal>
