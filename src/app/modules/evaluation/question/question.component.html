@@ -10,6 +10,7 @@
   </div>
   <div nz-col nzFlex="0 1 250px" [ngSwitch]="question.schema.type">
     <nz-spin [nzSpinning]="loading" [nzDelay]="500">
+      <ng-container *ngIf="_questionAnswer">
         <app-question-radio
           *ngSwitchCase="'radio'"
           [question]="_questionSchema"
@@ -25,6 +26,7 @@
           [question]="_questionSchema"
           [answer]="_questionAnswer">
         </app-question-range>
+      </ng-container>
     </nz-spin>
   </div>
 

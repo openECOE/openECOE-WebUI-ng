@@ -86,7 +86,7 @@ export class AuthenticationService {
 
   logout(route: string = '/login') {
     this.userToken = null;
-    this.router.navigate([route]).then(window.location.reload);
+    this.router.navigate([route]).then(() => window.location.reload());
   }
 
   get userLogged(): any {

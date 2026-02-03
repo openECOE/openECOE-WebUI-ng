@@ -1,6 +1,6 @@
 <!-- TODO: Review SingleRadio button code -->
 <nz-radio-group *ngIf="RadioOptions.length > 1 else singleRadio"
-                [ngModel]="answer?.schema?.selected ? answer?.schema?.selected?.id_option : null"
+                [ngModel]="selectedOptionId"
                 [nzButtonStyle]="'solid'"
                 (ngModelChange)="changeRadioAnswer(answer, $event, true)">
   <label nz-radio-button

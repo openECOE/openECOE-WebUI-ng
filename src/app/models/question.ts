@@ -232,7 +232,7 @@ export class Answer extends Item {
 export class AnswerBase {
   constructor(type) {
     this.type = type;
-    this.selected = '';
+    this.selected = null;  // Use null instead of empty string
   }
 
   readonly type: string;
@@ -246,6 +246,7 @@ export class AnswerBase {
 export class AnswerRadio extends AnswerBase {
   constructor() {
     super('radio');
+    this.selected = null;  // Explicitly set to null for unanswered questions
   }
   selected: QuestionOption;
 }
@@ -261,6 +262,7 @@ export class AnswerCheckBox extends AnswerBase {
 export class AnswerRange extends AnswerBase {
   constructor() {
     super('range');
+    this.selected = null;  // Explicitly set to null for unanswered questions
   }
   selected: number;
 }
