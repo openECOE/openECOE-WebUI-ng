@@ -12,8 +12,7 @@ export class ServerStatusService {
   private _pollingInterval: number = 5000;
 
   constructor(
-    private apiService: ApiService
-  ) { 
+      private apiService: ApiService) { 
       this._isAvailable = this.pollServer();
   }
 
