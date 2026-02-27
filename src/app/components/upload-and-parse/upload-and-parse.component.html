@@ -32,7 +32,8 @@
 
   <ng-template #importTemplate>
     <div [style]="isStation ? 'height: 250px' : 'height: 85%'">
-      <nz-upload [nzMultiple]="false"
+      <nz-upload *ngIf="!isPlanner" 
+                [nzMultiple]="false"
                 [nzAccept]="'.csv,.json,.station'"
                 [nzCustomRequest]="handleUpload"
                 [nzShowUploadList]="false"
@@ -45,6 +46,21 @@
           {{ 'DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE' | translate }}
         </p>
       </nz-upload>
+      <nz-upload *ngIf="isPlanner" 
+                [nzMultiple]="false"
+                [nzAccept]="'.xlsx'"
+                [nzCustomRequest]="handleUpload"
+                [nzShowUploadList]="false"
+                nzType="drag">
+        <p class="ant-upload-drag-icon">
+          <i nz-icon nzType="inbox"></i>
+        </p>
+        <p class="ant-upload-text">{{ 'CLICK_HERE_OR_DRAG_FILE' | translate }}</p>
+        <p class="ant-upload-hint">
+          {{ 'DO_NOT_SELECT_OR_DRAG_MORE_THAN_ONE_FILE' | translate }}
+        </p>
+      </nz-upload>
+
     </div>
     <div [style]="isStation ? '' : 'height: 15%'" *ngIf="parserFile">
       <nz-row nzType="flex" nzAlign="middle" nzJustify="center">
@@ -52,7 +68,11 @@
           <span>{{ 'DOWNLOAD_TEMPLATE_HERE' | translate }}</span>
         </nz-col>
         <nz-col nzSpan="24" text-center>
-          <button nz-button nzSize="default" nzType="primary" (click)="generateCSV()">
+          <button *ngIf="!isPlanner" nz-button nzSize="default" nzType="primary" (click)="generateCSV()">
+            <i nz-icon nzType="download"></i>
+            {{ 'DOWNLOAD_TEMPLATE' | translate }}
+          </button>
+          <button *ngIf="isPlanner" nz-button nzSize="default" nzType="primary" (click)="generateXLSXTemplate()">
             <i nz-icon nzType="download"></i>
             {{ 'DOWNLOAD_TEMPLATE' | translate }}
           </button>

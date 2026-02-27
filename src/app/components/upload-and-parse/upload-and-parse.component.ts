@@ -32,6 +32,7 @@ export class UploadAndParseComponent implements OnInit {
   @Input() parserFile: ParserFile;
 
   isStation: boolean;
+  isPlanner: boolean;
   tabs: Array<{ name: string, icon: string, content: TemplateRef<any> }> = [];
   isVisible: boolean;
   stationsList: Station[] = [];
@@ -59,9 +60,10 @@ export class UploadAndParseComponent implements OnInit {
   async ngOnInit() {
     if (this.parserFile.filename) {
       this.isStation = this.parserFile.filename.includes('stations');
+      this.isPlanner = this.parserFile.filename.includes('planner');
     }
 
-    if (this.isStation) {
+    if (this.isStation || this.isPlanner) {
       this.route.params.subscribe((params) => {
         this.ecoeId = params.ecoeId;
       });
@@ -73,9 +75,11 @@ export class UploadAndParseComponent implements OnInit {
         console.error("Error fetching ECOE:", error);
       }
 
-      this.initializeTabs();
-      await this.getCurrentOrganization();
-      await this.getEcoes();
+      if (this.isStation){
+        this.initializeTabs();
+        await this.getCurrentOrganization();
+        await this.getEcoes();
+      }
     }
   }
 
@@ -270,6 +274,34 @@ export class UploadAndParseComponent implements OnInit {
     a.remove();
   }
 
+  generateXLSXTemplate() {
+    this.apiService
+      .getResourceFile("ecoes/" + this.ecoeId + "/planners/template")
+      .subscribe((response) => {
+        const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = this.parserFile.filename;
+
+        document.body.appendChild(link);
+
+        link.dispatchEvent(
+          new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          })
+        );
+        
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      },
+    (error) => {
+      console.error("Error al exportar el fichero XLSX:", error);
+      this.message.createErrorMsg(this.translate.instant("No se ha podido exportar el planificador"));
+    });
+  }
   openDDModal() {
     this.isVisible = true;
   }
