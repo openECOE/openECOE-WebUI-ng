@@ -10,6 +10,7 @@ import {ActionMessagesService} from '@app/services/action-messages/action-messag
 import {TranslateService} from '@ngx-translate/core';
 import { PlannerService } from '@app/services/planner/planner.service';
 import { saveAs } from "file-saver";
+import { ParserFile } from '@app/components/upload-and-parse/upload-and-parse.component';
 
 /**
  * Component with the relations of rounds and shifts to create plannersMatrix.
@@ -65,6 +66,12 @@ export class PlannerComponent implements OnInit {
     });
   }
 
+  plannerParser: ParserFile = {
+    "filename": "planner.xlsx",
+    "fields": ["id", "shift_code", "time_start", "round_code", "name", "surname", "dni", "planner_order"],
+    "data": []
+  };
+
   ngOnInit() {
     this.plannerService.registerCheckStudentCapacity(this.checkStudentCapacity.bind(this));
 
@@ -76,6 +83,7 @@ export class PlannerComponent implements OnInit {
         .then(value => {
           this.ecoe = value;
           this.ecoe_name = this.ecoe.name;
+          this.plannerParser.filename = this.ecoe_name + "_planner_plantilla.xlsx";
           this.loadStations();
           this.loadRoundsShifts().then(() => {
             this.loading = false;
@@ -572,7 +580,7 @@ export class PlannerComponent implements OnInit {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download= "PlannerStudents_ECOE_" + this.ecoeId + ".xlsx";
+        link.download= this.ecoe_name + "_planner.xlsx";
 
         document.body.appendChild(link);
 
@@ -593,10 +601,15 @@ export class PlannerComponent implements OnInit {
     });
   }
 
-  importPlannersFileSelection(): void{
+  importPlannersFileSelection(): void{ //Función sin uso
     this.fileInputXLSXRef.nativeElement.click();
   }
-  importPlannersTable(event: Event){
+  importPlanner(parserResult: any) {
+    const planners: any[] = parserResult as Array<any>;
+    
+
+  }
+  importPlannersTable(event: any){
     const target = event.target as HTMLInputElement;
     if (!target.files || target.files.length === 0) {
       console.error('No se seleccionó ningún fichero.');

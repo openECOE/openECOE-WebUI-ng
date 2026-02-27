@@ -17,23 +17,12 @@
         <th text-center>{{"STUDENTS_DISTRIBUTION" | translate}}</th>
         <th nzWidth="235px">
           <nz-button-group>
-            <button class="ant-btn"
-                      nztype="dashed"
-                      nz-button nzType="dashed"
-                      nzSize="medium"
-                      [nzBlock]="true"
-                      style="margin-top: 10px;"
-                      [nzLoading]="loading"
-                      (click)="importPlannersFileSelection()">
-              <i nz-icon nzType="upload" nzTheme="outline"></i>
-                {{"IMPORT_DATA" | translate}}
-            </button>
+            <app-upload-and-parse [parserFile]="plannerParser" (parserResult)="importPlanner($event)"></app-upload-and-parse>
             <button nz-button nzType="primary"
-                      nzSize="medium"
-                      [nzBlock]="true"
-                      style="margin-top: 10px;"
-                      [nzLoading]="loading"
-                      (click)="exportPlannersTable()">
+                    [nzBlock]="true"
+                    class="margin-right"
+                    [nzLoading]="loading"
+                    (click)="exportPlannersTable()">
               <span nz-icon nzType="download" nzTheme="outline"></span>
                 {{"EXPORT_PLANNERS_TABLE" | translate}}
             </button>
