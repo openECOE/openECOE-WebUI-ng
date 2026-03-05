@@ -641,7 +641,10 @@ export class PlannerComponent implements OnInit {
       this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
     }
   }
-
+  /***
+   * Submit the selected students order criteria at AutoPlanners Modal Form.
+   * Calls autoCreatePlanners() in order to apply the corresponding query
+   */
   submitAutoPlannersForm(event:any){
     this.showAPModal=false;
     const selectedCriteria =this.autoplannersForm.value.criteria;
@@ -650,10 +653,16 @@ export class PlannerComponent implements OnInit {
     this.autoplannersForm.reset();
   }
 
+  /***
+   * Show a modal that cointains the form where the students order criteria
+   * can be chosen for the automated planner assignments
+   */
   autoPlannersCreateModal(){
     this.showAPModal=true;
   }
-
+  /**
+   * Function for closing the automated planner assignments modal
+   */
   closeModalAutoPlanners(){
     this.showAPModal=false;
     this.autoplannersForm.reset();
