@@ -122,31 +122,12 @@
           nzSize="large"
           [nzBlock]="true"
           style="margin-top: 10px;"
-          (click)="autoCreatePlanners()"
+          (click)="autoPlannersCreateModal()"
           [nzLoading]="loading">
     <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
     {{"AUTO_PLANNERS" | translate}}
   </button>
-<button nz-button
-          nzType="default"
-          nzSize="large"
-          [nzBlock]="true"
-          style="margin-top: 10px;"
-          (click)="autoCreatePlanners('ZA')"
-          [nzLoading]="loading">
-    <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
-    {{"AUTO_PLANNERS" | translate}} (Orden alfabético inverso)
-  </button>
-<button nz-button
-          nzType="default"
-          nzSize="large"
-          [nzBlock]="true"
-          style="margin-top: 10px;"
-          (click)="autoCreatePlanners('NPI')"
-          [nzLoading]="loading">
-    <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
-    {{"AUTO_PLANNERS" | translate}} (Orden NPI)
-  </button>
+
   <ng-container>
     <nz-drawer
     [nzClosable]="true"
@@ -250,6 +231,45 @@
       </button>
     </ng-template>
   </form>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="showAPModal"
+  [nzTitle]="('PLANNER_STUDENTS_ORDER' | translate)"
+  (nzOnCancel)="closeModalAutoPlanners()"
+  [nzFooter]="modalFooterAutoPlanners"
+  [nzOkText]="'ACCEPT' | translate"
+  [nzCancelText]="'CANCEL' | translate">
+    <form nz-form [formGroup]="autoplannersForm">
+      <nz-form-item *ngIf="showAPModal">
+          <nz-input-group>
+            <nz-form-label>{{'PLANNER_STUDENTS_ORDER_CRITERIA' | translate}}</nz-form-label>
+            <nz-form-control>
+              <nz-select
+                style="width: 100%"
+                nzSize="medium"
+                formControlName="criteria"
+                nzShowSearch nzAllowClear 
+                [nzPlaceHolder]="('PLANNER_STUDENTS_ORDER_CRITERIA_SELECT' | translate)">
+                <nz-option *ngFor="let criterio of criteria"
+                  [nzLabel]="criterio.label"
+                  [nzValue]="criterio.value">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-input-group>
+      </nz-form-item>
+    </form>
+  <ng-template #modalFooterAutoPlanners>
+    <button nz-button (click)="closeModalAutoPlanners()" class="margin-right">
+      <span>{{"CANCEL" | translate}}</span>
+    </button>
+    <button nz-button [nzType]="'primary'"
+            [disabled]="!autoplannersForm.valid"
+            (click)="submitAutoPlannersForm($event)">
+        <span>{{"ACCEPT" | translate}}</span>
+      </button>
+  </ng-template>
+
 </nz-modal>
 
 <input type="file"

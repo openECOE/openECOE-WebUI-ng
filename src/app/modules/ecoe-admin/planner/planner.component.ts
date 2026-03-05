@@ -35,14 +35,18 @@ export class PlannerComponent implements OnInit {
   showAddRound: boolean = false;
 
   isEditing: { itemRef: any, edit: boolean };
+  showAPModal: boolean = false;
 
   shiftForm: FormGroup;
   roundForm: FormGroup;
+  autoplannersForm: FormGroup;
 
   loading: boolean = false;
 
   logPromisesERROR: any[] = [];
   totalStudents: number;
+
+//  autoplannersOrderCriteria: String;
 
   @ViewChild('fileInputXLSX') fileInputXLSXRef!: ElementRef;
 
@@ -64,7 +68,17 @@ export class PlannerComponent implements OnInit {
       round_code: ['', Validators.required],
       description: ['', Validators.required]
     });
+
+    this.autoplannersForm=this.formBuilder.group({
+      criteria:['',Validators.required]
+    });
   }
+
+    criteria = [
+      { label: this.translate.instant('PLANNER_ORDER_BY_ALPHABET_ASC'), value: 'AZ'},
+      { label: this.translate.instant('PLANNER_ORDER_BY_ALPHABET_DESC'), value: 'ZA'},
+      { label: this.translate.instant('PLANNER_ORDER_BY_NPI_ASC'), value: 'NPI'}
+    ]
 
   plannerParser: ParserFile = {
     "filename": "planner.xlsx",
@@ -626,5 +640,22 @@ export class PlannerComponent implements OnInit {
     } else {
       this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
     }
+  }
+
+  submitAutoPlannersForm(event:any){
+    this.showAPModal=false;
+    const selectedCriteria =this.autoplannersForm.value.criteria;
+
+    this.autoCreatePlanners(selectedCriteria);
+    this.autoplannersForm.reset();
+  }
+
+  autoPlannersCreateModal(){
+    this.showAPModal=true;
+  }
+
+  closeModalAutoPlanners(){
+    this.showAPModal=false;
+    this.autoplannersForm.reset();
   }
 }

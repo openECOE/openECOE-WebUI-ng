@@ -361,5 +361,11 @@
   "ERROR_CLONING_ECOE": "Error al duplicar la ECOE",
   "ERROR_IMPORTING_PLANNER": "Error al importar los planificadores",
   "ERROR_IMPORTING_PLANNER_TYPE": "El contexto actual no es un ECOE válido para la importación",
-  "PLANNER_IMPORTED_SUCCESS": "Importación completada"
+  "PLANNER_IMPORTED_SUCCESS": "Importación completada",
+  "PLANNER_STUDENTS_ORDER": "Ordenar alumnos en el planificador",
+  "PLANNER_STUDENTS_ORDER_CRITERIA": "Criterio de ordenación",
+  "PLANNER_STUDENTS_ORDER_CRITERIA_SELECT":"Selecciona el criterio del orden de los alumnos",
+  "PLANNER_ORDER_BY_ALPHABET_ASC": "Orden alfabético",
+  "PLANNER_ORDER_BY_ALPHABET_DESC": "Orden alfabético inverso",
+  "PLANNER_ORDER_BY_NPI_ASC": "Orden por NPI (DNI/NIE)"
 }
