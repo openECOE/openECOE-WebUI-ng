@@ -18,7 +18,7 @@ export class ChronoService {
   private readonly URL_CHRONO = environment.CHRONO_ROUTE;
   private readonly API_ROUTE = environment.API_ROUTE;
   private readonly API_V1: string = '/api/v1';
-  private readonly URI_SOCKETIO = environment.CHRONO_ROUTE
+  private readonly URI_SOCKETIO = environment.BACK_ROUTE
 
   constructor(private http: HttpClient) {}
 

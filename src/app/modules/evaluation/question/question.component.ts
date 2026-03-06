@@ -19,8 +19,6 @@ export class QuestionComponent implements OnInit {
   @Input()
   set answers(answers: Array<Answer>) {
     this._answers = answers;
-    // Reset answer immediately to prevent showing previous student's selection
-    this._questionAnswer = null;
     this.findAnswer(this.question, this._answers).then(value => this._questionAnswer = value);
   }
 
@@ -45,27 +43,12 @@ export class QuestionComponent implements OnInit {
     this._questionSchema = this.question.schema as QuestionBase;
   }
 
-  private getQuestionId(question: any): number | string {
-    // Try to get ID from various possible locations
-    if (question?.id) return question.id;
-    if (question?.$uri) {
-      // Extract ID from URI like "/questions/123"
-      const match = question.$uri.match(/\/questions\/(\d+)/);
-      return match ? parseInt(match[1], 10) : null;
-    }
-    return null;
-  }
-
   async findAnswer(question: Question, answersList: Array<Answer>): Promise<Answer> {
     this.loading = true;
     let _answer = null;
     if (answersList) {
-      // Use ID comparison instead of .equals() for more reliable matching
-      const questionId = this.getQuestionId(this.question);
-      _answer = answersList.find(answer => {
-        const answerQuestionId = this.getQuestionId(answer.question);
-        return answerQuestionId === questionId;
-      });
+      // console.log(question.id, 'findAnswer for Question:', question, 'in', answersList);
+      _answer = answersList.find(answer => answer.question.equals(this.question));
       _answer = _answer || await this.createAnswer(question)
     }
     this.loading = false;

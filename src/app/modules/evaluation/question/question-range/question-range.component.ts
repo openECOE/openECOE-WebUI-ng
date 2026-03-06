@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Answer, AnswerRange, QuestionRange} from '@app/models';
 import {QuestionBaseComponent} from '@app/modules/evaluation/question/question-base/question-base.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -13,11 +13,10 @@ export class QuestionRangeComponent extends QuestionBaseComponent implements OnI
 
   @Input() question: QuestionRange;
 
-  selected: number = null;
+  selected: number;
 
   constructor(protected message: NzMessageService,
-              protected translate: TranslateService,
-              private cdr: ChangeDetectorRef) {
+              protected translate: TranslateService) {
     super(message, translate);
   }
 
@@ -28,11 +27,7 @@ export class QuestionRangeComponent extends QuestionBaseComponent implements OnI
   loadSelected(answer: Answer) {
     if (answer) {
       this.selected = (answer.schema as AnswerRange).selected;
-    } else {
-      // Reset when no answer
-      this.selected = null;
     }
-    this.cdr.detectChanges();
   }
 
   changeAnswer(answer: Answer, value: number) {
