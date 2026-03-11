@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import {getPotionID, Pagination} from '@openecoe/potion-client';
 import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
 import { TranslateService } from '@ngx-translate/core';
+import { FileDetector } from 'protractor';
 
 export interface ParserFile {
   filename: string;
@@ -31,6 +32,9 @@ export class UploadAndParseComponent implements OnInit {
   @Input() fileURL: string;
   @Input() parserFile: ParserFile;
 
+  //@ViewChild('fileInputXLSX') fileInputXLSXRef!: ElementRef;
+
+
   isStation: boolean;
   isPlanner: boolean;
   tabs: Array<{ name: string, icon: string, content: TemplateRef<any> }> = [];
@@ -48,6 +52,12 @@ export class UploadAndParseComponent implements OnInit {
 
   page: number = 1;
   pagStations: Pagination<Station>;
+
+  pruebaXLSXModal: boolean = false;
+  pruebaXSLXModalVar1: String;
+  pruebaXSLXModalVar2: String;
+  pruebaXSLXModalVar3: String;
+  pruebaXSLXModalVar4: String;
 
   constructor(
     private papaParser: Papa,
@@ -206,6 +216,28 @@ export class UploadAndParseComponent implements OnInit {
     this.handleCancel();
   }
 
+  handleXLSXFile(event: any) {
+    const fileStatus = event.type;
+  if (fileStatus === 'start'){
+    const file = event.file.originFileObj;
+    this.parserResult.emit(file); //Prueba de emmiter
+   /* const formData = new FormData();
+    formData.append('file', file);*/
+   /* if (this.ecoe instanceof ECOE) {
+      this.apiService
+        .importPlannerXLSX(this.ecoe, formData)
+        .subscribe({
+          next: () => this.message.createSuccessMsg(this.translate.instant('PLANNER_IMPORTED_SUCCESS')),
+          error: (err) => this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER'))
+        });
+      this.handleCancel();
+      //this.parserResult.emit(file);
+    } else {
+      this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
+    }*/
+  }
+  this.handleCancel();
+}
   /**
    * Parses the data string (CSV) to JSON and then creates the resources for each element.
    *

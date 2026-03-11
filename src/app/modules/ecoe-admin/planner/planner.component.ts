@@ -46,8 +46,6 @@ export class PlannerComponent implements OnInit {
   logPromisesERROR: any[] = [];
   totalStudents: number;
 
-//  autoplannersOrderCriteria: String;
-
   @ViewChild('fileInputXLSX') fileInputXLSXRef!: ElementRef;
 
   constructor(private apiService: ApiService,
@@ -618,10 +616,27 @@ export class PlannerComponent implements OnInit {
   importPlannersFileSelection(): void{ //Función sin uso
     this.fileInputXLSXRef.nativeElement.click();
   }
-  importPlanner(parserResult: any) {
-    const planners: any[] = parserResult as Array<any>;
-    
+  importPlanner(file: any) {
+    this.loading=true;
+    const formData = new FormData();
+    formData.append('file', file);
+    if (this.ecoe instanceof ECOE) {
+      this.apiService
+        .importPlannerXLSX(this.ecoe, formData)
+        .subscribe({
+          next: () => this.message.createSuccessMsg(this.translate.instant('PLANNER_IMPORTED_SUCCESS')),
+          error: (err) => this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER'))
+        });
+    } else {
+      this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
+    }
 
+    this.loadRoundsShifts().then(() => {
+        this.checkStudentCapacity().then(() => {
+          this.warningMessage();
+          this.loading = false;
+        });
+      });
   }
   importPlannersTable(event: any){
     const target = event.target as HTMLInputElement;
