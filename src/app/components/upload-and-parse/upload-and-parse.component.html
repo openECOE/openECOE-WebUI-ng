@@ -48,12 +48,12 @@
       </nz-upload>
       <nz-upload *ngIf="isPlanner" 
                 [nzMultiple]="false"
-                [nzAccept]="'.xlsx'"
-                [nzCustomRequest]="handleUpload"
+                [nzAccept]="'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
+                (nzChange)="handleXLSXFile($event)"
                 [nzShowUploadList]="false"
                 nzType="drag">
         <p class="ant-upload-drag-icon">
-          <i nz-icon nzType="inbox"></i>
+          <i nz-icon nzType="file-excel"></i>
         </p>
         <p class="ant-upload-text">{{ 'CLICK_HERE_OR_DRAG_FILE' | translate }}</p>
         <p class="ant-upload-hint">

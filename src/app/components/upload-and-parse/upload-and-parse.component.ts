@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import {getPotionID, Pagination} from '@openecoe/potion-client';
 import { ActionMessagesService } from '@app/services/action-messages/action-messages.service';
 import { TranslateService } from '@ngx-translate/core';
+import { FileDetector } from 'protractor';
 
 export interface ParserFile {
   filename: string;
@@ -31,6 +32,9 @@ export class UploadAndParseComponent implements OnInit {
   @Input() fileURL: string;
   @Input() parserFile: ParserFile;
 
+  //@ViewChild('fileInputXLSX') fileInputXLSXRef!: ElementRef;
+
+
   isStation: boolean;
   isPlanner: boolean;
   tabs: Array<{ name: string, icon: string, content: TemplateRef<any> }> = [];
@@ -48,6 +52,12 @@ export class UploadAndParseComponent implements OnInit {
 
   page: number = 1;
   pagStations: Pagination<Station>;
+
+  pruebaXLSXModal: boolean = false;
+  pruebaXSLXModalVar1: String;
+  pruebaXSLXModalVar2: String;
+  pruebaXSLXModalVar3: String;
+  pruebaXSLXModalVar4: String;
 
   constructor(
     private papaParser: Papa,
@@ -205,7 +215,18 @@ export class UploadAndParseComponent implements OnInit {
     fr.readAsText(file.file);
     this.handleCancel();
   }
-
+  /***
+   * Function for handling on XLSX file upload
+   * Calls emitter for file processing in importPlanner
+   */
+  handleXLSXFile(event: any) {
+    const fileStatus = event.type;
+    if (fileStatus === 'start'){
+      const file = event.file.originFileObj;
+      this.parserResult.emit(file);
+    }
+    this.handleCancel();
+  }
   /**
    * Parses the data string (CSV) to JSON and then creates the resources for each element.
    *
@@ -274,6 +295,7 @@ export class UploadAndParseComponent implements OnInit {
     a.remove();
   }
 
+  // Generate a XLSX template for planners through the API call
   generateXLSXTemplate() {
     this.apiService
       .getResourceFile("ecoes/" + this.ecoeId + "/planners/template")

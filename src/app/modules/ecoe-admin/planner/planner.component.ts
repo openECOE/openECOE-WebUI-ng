@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {forkJoin, from} from 'rxjs';
@@ -35,16 +35,16 @@ export class PlannerComponent implements OnInit {
   showAddRound: boolean = false;
 
   isEditing: { itemRef: any, edit: boolean };
+  showAPModal: boolean = false;
 
   shiftForm: FormGroup;
   roundForm: FormGroup;
+  autoplannersForm: FormGroup;
 
   loading: boolean = false;
 
   logPromisesERROR: any[] = [];
   totalStudents: number;
-
-  @ViewChild('fileInputXLSX') fileInputXLSXRef!: ElementRef;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -64,7 +64,17 @@ export class PlannerComponent implements OnInit {
       round_code: ['', Validators.required],
       description: ['', Validators.required]
     });
+
+    this.autoplannersForm=this.formBuilder.group({
+      criteria:['',Validators.required]
+    });
   }
+
+    criteria = [
+      { label: this.translate.instant('PLANNER_ORDER_BY_ALPHABET_ASC'), value: 'AZ'},
+      { label: this.translate.instant('PLANNER_ORDER_BY_ALPHABET_DESC'), value: 'ZA'},
+      { label: this.translate.instant('PLANNER_ORDER_BY_NPI_ASC'), value: 'NPI'}
+    ]
 
   plannerParser: ParserFile = {
     "filename": "planner.xlsx",
@@ -570,7 +580,6 @@ export class PlannerComponent implements OnInit {
   /**
    * Function in order to save the result set of the assigned
    * students query into an XLSX file
-   * 
    */
   exportPlannersTable() {
     this.apiService
@@ -600,31 +609,56 @@ export class PlannerComponent implements OnInit {
       this.message.createErrorMsg(this.translate.instant("No se ha podido exportar el planificador"));
     });
   }
-
-  importPlannersFileSelection(): void{ //Función sin uso
-    this.fileInputXLSXRef.nativeElement.click();
-  }
-  importPlanner(parserResult: any) {
-    const planners: any[] = parserResult as Array<any>;
-    
-
-  }
-  importPlannersTable(event: any){
-    const target = event.target as HTMLInputElement;
-    if (!target.files || target.files.length === 0) {
-      console.error('No se seleccionó ningún fichero.');
-      return;
-    }
-    const file: File = target.files[0];
+  /**
+   * Function for importing planners through API Service, 
+   * directly called from Upload and Parse Component
+   */
+  importPlanner(file: any) {
+    this.loading=true;
     const formData = new FormData();
-    formData.append('file', file, file.name);
+    formData.append('file', file);
     if (this.ecoe instanceof ECOE) {
-      this.apiService.importPlannerXLSX(this.ecoe, formData).subscribe({
-        next: () => this.message.createSuccessMsg(this.translate.instant('PLANNER_IMPORTED_SUCCESS')),
-        error: (err) => this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER'), err)
-      });
+      this.apiService
+        .importPlannerXLSX(this.ecoe, formData)
+        .subscribe({
+          next: () => this.message.createSuccessMsg(this.translate.instant('PLANNER_IMPORTED_SUCCESS')),
+          error: (err) => this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER'))
+        });
     } else {
       this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
     }
+
+    this.loadRoundsShifts().then(() => {
+        this.checkStudentCapacity().then(() => {
+          this.warningMessage();
+          this.loading = false;
+        });
+      });
+  }
+  /***
+   * Submit the selected students order criteria at AutoPlanners Modal Form.
+   * Calls autoCreatePlanners() in order to apply the corresponding query
+   */
+  submitAutoPlannersForm(event:any){
+    this.showAPModal=false;
+    const selectedCriteria =this.autoplannersForm.value.criteria;
+
+    this.autoCreatePlanners(selectedCriteria);
+    this.autoplannersForm.reset();
+  }
+
+  /***
+   * Show a modal that cointains the form where the students order criteria
+   * can be chosen for the automated planner assignments
+   */
+  autoPlannersCreateModal(){
+    this.showAPModal=true;
+  }
+  /**
+   * Function for closing the automated planner assignments modal
+   */
+  closeModalAutoPlanners(){
+    this.showAPModal=false;
+    this.autoplannersForm.reset();
   }
 }
