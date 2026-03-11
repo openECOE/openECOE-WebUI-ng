@@ -215,29 +215,18 @@ export class UploadAndParseComponent implements OnInit {
     fr.readAsText(file.file);
     this.handleCancel();
   }
-
+  /***
+   * Function for handling on XLSX file upload
+   * Calls emitter for file processing in importPlanner
+   */
   handleXLSXFile(event: any) {
     const fileStatus = event.type;
-  if (fileStatus === 'start'){
-    const file = event.file.originFileObj;
-    this.parserResult.emit(file); //Prueba de emmiter
-   /* const formData = new FormData();
-    formData.append('file', file);*/
-   /* if (this.ecoe instanceof ECOE) {
-      this.apiService
-        .importPlannerXLSX(this.ecoe, formData)
-        .subscribe({
-          next: () => this.message.createSuccessMsg(this.translate.instant('PLANNER_IMPORTED_SUCCESS')),
-          error: (err) => this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER'))
-        });
-      this.handleCancel();
-      //this.parserResult.emit(file);
-    } else {
-      this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
-    }*/
+    if (fileStatus === 'start'){
+      const file = event.file.originFileObj;
+      this.parserResult.emit(file);
+    }
+    this.handleCancel();
   }
-  this.handleCancel();
-}
   /**
    * Parses the data string (CSV) to JSON and then creates the resources for each element.
    *
@@ -306,6 +295,7 @@ export class UploadAndParseComponent implements OnInit {
     a.remove();
   }
 
+  // Generate a XLSX template for planners through the API call
   generateXLSXTemplate() {
     this.apiService
       .getResourceFile("ecoes/" + this.ecoeId + "/planners/template")

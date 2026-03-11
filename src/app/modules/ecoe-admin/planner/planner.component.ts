@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../services/api/api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {forkJoin, from} from 'rxjs';
@@ -45,8 +45,6 @@ export class PlannerComponent implements OnInit {
 
   logPromisesERROR: any[] = [];
   totalStudents: number;
-
-  @ViewChild('fileInputXLSX') fileInputXLSXRef!: ElementRef;
 
   constructor(private apiService: ApiService,
               private route: ActivatedRoute,
@@ -582,7 +580,6 @@ export class PlannerComponent implements OnInit {
   /**
    * Function in order to save the result set of the assigned
    * students query into an XLSX file
-   * 
    */
   exportPlannersTable() {
     this.apiService
@@ -612,10 +609,10 @@ export class PlannerComponent implements OnInit {
       this.message.createErrorMsg(this.translate.instant("No se ha podido exportar el planificador"));
     });
   }
-
-  importPlannersFileSelection(): void{ //Función sin uso
-    this.fileInputXLSXRef.nativeElement.click();
-  }
+  /**
+   * Function for importing planners through API Service, 
+   * directly called from Upload and Parse Component
+   */
   importPlanner(file: any) {
     this.loading=true;
     const formData = new FormData();
@@ -637,24 +634,6 @@ export class PlannerComponent implements OnInit {
           this.loading = false;
         });
       });
-  }
-  importPlannersTable(event: any){
-    const target = event.target as HTMLInputElement;
-    if (!target.files || target.files.length === 0) {
-      console.error('No se seleccionó ningún fichero.');
-      return;
-    }
-    const file: File = target.files[0];
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    if (this.ecoe instanceof ECOE) {
-      this.apiService.importPlannerXLSX(this.ecoe, formData).subscribe({
-        next: () => this.message.createSuccessMsg(this.translate.instant('PLANNER_IMPORTED_SUCCESS')),
-        error: (err) => this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER'), err)
-      });
-    } else {
-      this.message.createErrorMsg(this.translate.instant('ERROR_IMPORTING_PLANNER_TYPE'));
-    }
   }
   /***
    * Submit the selected students order criteria at AutoPlanners Modal Form.
