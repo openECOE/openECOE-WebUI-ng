@@ -34,6 +34,7 @@
         </th>
         <th>{{"NAME" | translate}}</th>
         <th nzWidth="300px">{{"CODE" | translate}}</th>
+        <th nzWidth="300px">{{"WEITH" | translate}}</th>
         <th nzWidth="100px">{{"QUESTIONS" | translate}}</th>
         <th nzWidth="240px">
           <nz-button-group>
@@ -51,6 +52,7 @@
       <ng-template ngFor let-item [ngForOf]="table.data">
         <tr>
           <td></td>
+           
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
               {{item.name}}
@@ -70,7 +72,14 @@
               <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].code">
             </ng-container>
           </td>
-
+          <td>
+            <ng-container *ngIf="!editCache[item.id].edit">
+              {{item.weith}}%
+            </ng-container>
+            <ng-container *ngIf="editCache[item.id].edit">
+              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].weith">
+            </ng-container>
+          </td>
           <td>{{item.questions?.length}}</td>
 
           <td text-right>
@@ -101,40 +110,64 @@
           <div nz-col nzSpan="12">
             <nz-form-label>{{'NAME' | translate}}</nz-form-label>
           </div>
-          <div nz-col nzSpan="9">
+          <div nz-col nzSpan="3">
             <nz-form-label>{{'CODE' | translate}}</nz-form-label>
           </div>
+          <div nz-col nzSpan="3">
+            <nz-form-label>{{'WEITH' | translate}}</nz-form-label>
+          </div>
         </div>
-
-        <ng-container formArrayName="areaRow" *ngFor=" let control of areaForm.get('areaRow')['controls']; let i = index">
+        <!--SCT Form Add Area -->
+            <ng-container formArrayName="areaRow" *ngFor=" let control of areaForm.get('areaRow')['controls']; let i = index">
           <div nz-row nzGutter="8" [formGroupName]="+i">
-            <div nz-col nzSpan="12">
+            <div nz-col nzSpan="11">
               <nz-form-item>
                 <nz-form-control [nzErrorTip]="'NAME_INPUT_REQUIRED' | translate">
                   <input nz-input [placeholder]="('NAME_PLACEHOLDER' | translate)" formControlName="name"/>
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="9">
+            <div nz-col nzSpan="3">
               <nz-form-control [nzErrorTip]="'CODE_INPUT_REQUIRED' | translate">
                 <input nz-input [placeholder]="('CODE_PLACEHOLDER' | translate)" formControlName="code"/>
               </nz-form-control>
             </div>
-            <div nz-col nzSpan="3" style="bottom: 0" *ngIf="i > 0">
+            <div nz-col nzSpan="3">
+              <nz-form-control [nzErrorTip]="'WEITH_INPUT_REQUIRED' | translate">
+                <input nz-input [placeholder]="('WEITH_PLACEHOLDER' | translate)" formControlName="weith"/>
+              </nz-form-control>
+            </div>
+            <div nz-col nzSpan="3" style="display:flex;align-items:center;justify-content:center;">
+              <label style="display:flex;align-items:center;gap:6px;">
+                <input type="checkbox" formControlName="locked" />
+                <span>Lock value</span>
+              </label>
+            </div>
+            <div nz-col nzSpan="4" style="bottom: 0" *ngIf="i > 0">
               <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
             </div>
+            
           </div>
         </ng-container>
 
         <nz-form-item>
           <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
-            <button nz-button   nzType="dashed" style="width:60%" (click)="addAreaRow()">
-              <i nz-icon nzType="plus"></i> {{'ADD_AREA' | translate}}
-            </button>
+            <div style="display:flex;gap:8px;">
+              <button nz-button nzType="dashed" style="width:60%" (click)="addAreaRow()">
+                <i nz-icon nzType="plus"></i> {{'ADD_AREA' | translate}}
+              </button>
+              <button nz-button nzType="default" (click)="autobalanceWeights()" style="width:40%">
+                <i nz-icon nzType="fund" nzTheme="outline"></i> {{'AUTO_BALANCE' | translate}}
+              </button>
+            </div>
           </nz-form-control>
         </nz-form-item>
       </form>
-
+      <!-- SCT mensaje warning-->
+      <nz-alert *ngIf="areaForm.get('areaRow').errors?.totalWeithNot100"
+          nzType="error"
+          nzMessage="La suma total de WEITH debe ser 100 (actual: {{areaForm.get('areaRow').errors.totalWeithNot100}})">
+      </nz-alert>
       <div class="footer">
         <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;"><span>{{'CANCEL' | translate}}</span></button>
         <button type="button" (click)="submitForm()" class="ant-btn ant-btn-primary"><span>{{'SAVE' | translate}}</span></button>

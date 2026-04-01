@@ -3,12 +3,20 @@
   nz-dropdown
   [nzDropdownMenu]="organizationsMenu"
   nzTrigger="click"
-  class="organization-name"
->
+  class="organization-name">
+
   {{ currentOrganization?.name }}
   <i nz-icon nzType="caret-down"></i>
 </a>
-
+<!-- 🌐 SELECTOR DE IDIOMAS -->
+<a 
+  nz-dropdown 
+  [nzDropdownMenu]="languagesMenu" 
+  nzTrigger="click" 
+  class="language-name">  
+  {{"LANGUAGE" | translate}}
+  <i nz-icon nzType="caret-down"></i>
+</a>
 
 <ng-template #organizationName>
   <p class="organization-name">{{currentOrganization?.name}}</p>
@@ -23,5 +31,12 @@
     >
       {{ organization.name }}
     </li>
+  </ul>
+</nz-dropdown-menu>
+<nz-dropdown-menu #languagesMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item (click)="changeLanguage('es')"> Español </li>
+    <li nz-menu-item (click)="changeLanguage('en')"> English </li>
+    <li nz-menu-item (click)="changeLanguage('ca')"> Valencià </li>
   </ul>
 </nz-dropdown-menu>

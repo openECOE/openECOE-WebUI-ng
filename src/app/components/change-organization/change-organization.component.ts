@@ -5,6 +5,8 @@ import { UserService } from '@app/services/user/user.service';
 import { ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-change-organization',
   templateUrl: './change-organization.component.html',
@@ -17,7 +19,8 @@ export class ChangeOrganizationComponent implements OnInit, OnDestroy {
 
   constructor(
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnDestroy(): void {
@@ -36,6 +39,10 @@ export class ChangeOrganizationComponent implements OnInit, OnDestroy {
         if(user) {
           this.isSuperAdmin = user.isSuper;
           this.currentOrganization = user.user.organization;
+          // 🌐 Sincronizar idioma con el servicio de traducción
+          if (user.user.language) {
+            this.translate.use(user.user.language);
+          }
         }
     });
   }
@@ -59,5 +66,27 @@ export class ChangeOrganizationComponent implements OnInit, OnDestroy {
     await this.userService.loadUserData();
     await this.router.navigate(['/ecoe']);
     window.location.reload();
+  }
+  
+ 
+
+  async changeLanguage(selectedLanguage: string): Promise<void> {    
+    try {
+      const data = { language: selectedLanguage };
+      
+      // 1. Actualizamos en base de datos
+      await this.userService.userData.user.update(data); 
+      
+      // 2. Forzamos la recarga de los datos del usuario en el servicio
+      await this.userService.loadUserData();
+      
+    // 3. Cambiar idioma en el servicio de traducción inmediatamente
+      this.translate.use(selectedLanguage).subscribe(() => {
+          // 4. Solo recargamos cuando el archivo de idioma se ha cargado con éxito
+          window.location.reload();
+      });
+    } catch (err) {
+      console.error("Error al cambiar el idioma:", err);
+    }
   }
 }

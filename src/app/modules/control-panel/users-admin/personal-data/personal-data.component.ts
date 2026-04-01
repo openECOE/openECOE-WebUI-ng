@@ -19,8 +19,10 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
   showEditPassword: boolean = false;
   editUserName: boolean = false;
   editUserSurname: boolean = false;
+  editLanguageDefault: boolean = false;
   editedName: string;
   editedSurname: string;
+  editedLanguageDefault: string;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -54,42 +56,89 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
       case 2:
         this.editUserSurname = true;
         break;
+      case 3:
+        this.editLanguageDefault = true;
+        break;
     }
   } 
   
   updateItem(item: any, option:number): void {
-    if (!this.editedName || !this.editedSurname) {
+    console.log('entra en update item?');
+    console.log('[updateItem] called', { option, editedName: this.editedName, editedSurname: this.editedSurname, editedLanguageDefault: this.editedLanguageDefault, item });
+    if (!this.editedName || !this.editedSurname || !this.editedLanguageDefault) {
+      console.log('entra en el el if?');
+      
       return;
     }
     switch (option) {
       case 1:
-        const bodyName = {
-          name: this.editedName,
-        };
+        console.log('[updateItem] entering case 1');
+        const bodyName = { name: this.editedName };
       
-        const requestName = item.user.update(bodyName);
-    
-        requestName.then(response => {
-          this.userData.user = response;
-          this.editUserName = false;
-        }).catch((err) => {
-          this.message.create('error', this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
-        });
+        const requestName = item?.user?.update?.(bodyName);
+        if (!requestName) {
+          console.error('[updateItem] item.user.update is not a function', { item });
+          this.message.error('No se puede actualizar: método update no encontrado.');
+          return;
+        }
+        requestName
+          .then(response => {
+            console.log('[updateItem] response case 1:', response);
+            this.userData.user = response;
+            this.editUserName = false;
+            this.message.success(this.translate.instant('EDIT_PERSONAL_DATA_SUCCESS'));
+          })
+          .catch(err => {
+            console.error('[updateItem] error case 1:', err);
+            this.message.error(this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
+          });
         break;
+
       case 2:
-        const bodySurname = {
-          surname: this.editedSurname,
-        };
-      
-        const requestSurname = item.user.update(bodySurname);
-    
-        requestSurname.then(response => {
-          this.userData.user = response;
-          this.editUserSurname = false;
-        }).catch((err) => {
-          this.message.create('error', this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
-        });
+        console.log('[updateItem] entering case 2');
+        const bodySurname = { surname: this.editedSurname };
+        const requestSurname = item?.user?.update?.(bodySurname);
+        
+        if (!requestSurname) {
+          console.error('[updateItem] item.user.update is not a function', { item });
+          this.message.error('No se puede actualizar: método update no encontrado.');
+          return;
+        }
+        requestSurname
+          .then(response => {
+            console.log('[updateItem] response case 2:', response);
+            this.userData.user = response;
+            this.editUserSurname = false;
+            this.message.success(this.translate.instant('EDIT_PERSONAL_DATA_SUCCESS'));
+          })
+          .catch(err => {
+            console.error('[updateItem] error case 2:', err);
+            this.message.error(this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
+          });
         break;
+        
+      case 3:
+        console.log('[updateItem] entering case 3');
+        const bodyLanguage = { language: this.editedLanguageDefault };      
+        const requestLanguage = item?.user?.update?.(bodyLanguage);
+          
+        if (!requestLanguage) {
+          console.error('[updateItem] item.user.update is not a function', { item });
+          this.message.error('No se puede actualizar: método update no encontrado.');
+          return;
+        }
+        requestLanguage
+          .then(response => {
+            console.log('[updateItem] response case 3:', response);
+            this.userData.user = response;
+            this.editLanguageDefault = false;
+            this.message.success(this.translate.instant('EDIT_PERSONAL_DATA_SUCCESS'));
+          })
+          .catch(err => {
+            console.error('[updateItem] error case 2:', err);
+            this.message.error(this.translate.instant('EDIT_PERSONAL_DATA_ERROR'));
+          });
+        break;        
     }
   }
   
@@ -101,6 +150,9 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
       case 2:
         this.editUserSurname = false;
         break;
+      case 3:
+        this.editLanguageDefault = false;
+        break;
     }
   }
 
@@ -109,6 +161,7 @@ export class PersonalDataComponent implements OnInit, OnDestroy {
       this.userData = user;
       this.editedName = this.userData.user.name;
       this.editedSurname = this.userData.user.surname;
+      //this.editedLanguageDefault = this.userData.user.language;
     });
   }
   

@@ -9,6 +9,22 @@ import {
   NzTableSortOrder,
 } from "ng-zorro-antd/table";
 
+// Interface for question data in chart
+interface QuestionChartData {
+  questionId: number;
+  reference: string;
+  description: string;
+  rate: number;
+}
+
+// Interface for station chart
+interface StationChart {
+  stationName: string;
+  stationId: number;
+  questions: QuestionChartData[];
+  averageRate: number;
+}
+
 class itemEval {
   rate: number;
   questionId: number;
@@ -17,6 +33,8 @@ class itemEval {
   points: number;
   questionSchema: any;
   stationName: string;
+  reference?: string;
+  description?: string;
 }
 
 @Component({
@@ -30,6 +48,7 @@ export class EvaluationItemsComponent implements OnInit {
   ecoe_name: string;
 
   results: itemEval[];
+  stationCharts: StationChart[] = [];
 
   filter: Object[];
   filterFn: boolean | null;
@@ -70,10 +89,64 @@ export class EvaluationItemsComponent implements OnInit {
           });
           this.filter = filter;
           this.results = response;
+          this.calculateStationCharts();
           this.loading = false;
         });
       });
     });
+  }
+
+  // Calculate chart data grouped by station
+  calculateStationCharts(): void {
+    if (!this.results || this.results.length === 0) return;
+
+    // Group questions by station
+    const stationMap = new Map<string, { stationId: number; questions: QuestionChartData[] }>();
+
+    this.results.forEach(item => {
+      const key = item.stationName;
+      if (!stationMap.has(key)) {
+        stationMap.set(key, { stationId: item.stationId, questions: [] });
+      }
+      stationMap.get(key).questions.push({
+        questionId: item.questionId,
+        reference: item.reference || `Q${item.questionId}`,
+        description: item.description || '',
+        rate: item.rate
+      });
+    });
+
+    // Convert map to array and sort questions by ID within each station
+    this.stationCharts = [];
+    stationMap.forEach((data, stationName) => {
+      const sortedQuestions = data.questions.sort((a, b) => a.questionId - b.questionId);
+      const avgRate = sortedQuestions.reduce((sum, q) => sum + q.rate, 0) / sortedQuestions.length;
+      
+      this.stationCharts.push({
+        stationName,
+        stationId: data.stationId,
+        questions: sortedQuestions,
+        averageRate: Math.round(avgRate * 100) / 100
+      });
+    });
+
+    // Sort stations by name
+    this.stationCharts.sort((a, b) => a.stationName.localeCompare(b.stationName));
+  }
+
+  // Get bar height based on success rate (0-100%)
+  getBarHeight(rate: number): string {
+    const maxHeight = 120; // max bar height in pixels
+    const height = Math.max((rate / 100) * maxHeight, 2);
+    return `${height}px`;
+  }
+
+  // Get bar color based on success rate
+  getBarColor(rate: number): string {
+    if (rate < 50) return '#ff4d4f';  // Red for low success
+    if (rate < 70) return '#faad14';  // Orange for moderate
+    if (rate < 85) return '#52c41a';  // Green for good
+    return '#1890ff';  // Blue for excellent
   }
 
   /**Filter used to determine which rows appear in the table in function of the return value of this function */

@@ -22,6 +22,48 @@
 <div id="aciertoItems" name="aciertoItems">
   <nz-content *ngIf="results">
     <h1>{{ "ITEMS_EVAL_INFO" | translate : { ecoe_name: ecoe_name } }}</h1>
+
+    <!-- Station Charts Section -->
+    <div class="station-charts-section" *ngIf="stationCharts.length > 0">
+      <h2>{{ "SUCCESS_RATE_BY_STATION" | translate }}</h2>
+      <div class="station-charts-grid">
+        <div class="station-chart-card" *ngFor="let station of stationCharts">
+          <div class="station-chart-header">
+            <h3>{{ station.stationName }}</h3>
+            <div class="station-stats">
+              <span class="stat"><strong>{{ "QUESTIONS" | translate }}:</strong> {{ station.questions.length }}</span>
+              <span class="stat"><strong>{{ "AVERAGE" | translate }}:</strong> {{ station.averageRate }}%</span>
+            </div>
+          </div>
+          <div class="station-bar-chart">
+            <div class="y-axis-label">% {{ "SUCCESS" | translate }}</div>
+            <div class="chart-area">
+              <div class="y-axis">
+                <span>100</span>
+                <span>75</span>
+                <span>50</span>
+                <span>25</span>
+                <span>0</span>
+              </div>
+              <div class="bars-container">
+                <div class="bar-wrapper" *ngFor="let q of station.questions">
+                  <div class="bar" 
+                       [style.height]="getBarHeight(q.rate)"
+                       [style.background-color]="getBarColor(q.rate)"
+                       [nz-tooltip]="q.reference + ': ' + q.rate + '%'">
+                    <span class="bar-value" *ngIf="q.rate > 15">{{ q.rate | number:'1.0-0' }}</span>
+                  </div>
+                  <div class="bar-label" [nz-tooltip]="q.description">{{ q.reference }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="x-axis-label">{{ "QUESTION" | translate }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2>{{ "DETAILED_TABLE" | translate }}</h2>
     <nz-table
       #table
       [nzData]="results"
