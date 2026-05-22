@@ -13,13 +13,13 @@
   (nzOnCancel)="handleCancel()"
   [nzFooter]="modalFooter"
   [nzBodyStyle]="{height: '400px' }">
-  
+
   <nz-tabset *ngIf="isStation">
     <nz-tab *ngFor="let tab of tabs" [nzTitle]="titleTemplate">
       <ng-template #titleTemplate>
         <i nz-icon [nzType]="tab.icon"></i>
         {{ tab.name }}
-      </ng-template>      
+      </ng-template>
       <ng-container *ngIf="tab.content">
         <ng-container *ngTemplateOutlet="tab.content"></ng-container>
       </ng-container>
@@ -27,7 +27,7 @@
   </nz-tabset>
 
   <ng-container *ngIf="!isStation">
-    <ng-container *ngTemplateOutlet="importTemplate"></ng-container>ss
+    <ng-container *ngTemplateOutlet="importTemplate"></ng-container>
   </ng-container>
 
   <ng-template #importTemplate>
@@ -63,22 +63,22 @@
 
   <ng-template #ecoesTemplate>
     <nz-row>
-      <nz-select  nzShowSearch 
-                  nzAllowClear 
+      <nz-select  nzShowSearch
+                  nzAllowClear
                   nzPlaceHolder="{{ 'SELECT_ECOE' | translate }}"
-                  [(ngModel)]="selectedEcoe" 
+                  [(ngModel)]="selectedEcoe"
                   (ngModelChange)="getStations()">
-  
-        <nz-option  *ngFor="let ecoe of ecoeList" 
-                    nzCustomContent [nzLabel]="ecoe.name" 
-                    [nzValue]="ecoe"> 
+
+        <nz-option  *ngFor="let ecoe of ecoeList"
+                    nzCustomContent [nzLabel]="ecoe.name"
+                    [nzValue]="ecoe">
           {{ ecoe.name }}
         </nz-option>
       </nz-select>
     </nz-row>
-  
+
     <nz-row>
-      <nz-select  nzMode="multiple" 
+      <nz-select  nzMode="multiple"
                   nzPlaceHolder="{{'SELECT_STATION_TO_IMPORT' | translate }}"
                   [nzOptions]="stationsOptions"
                   [(ngModel)]="selectedStations">
