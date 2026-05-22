@@ -34,7 +34,7 @@
         </th>
         <th>{{"NAME" | translate}}</th>
         <th nzWidth="300px">{{"CODE" | translate}}</th>
-        <th nzWidth="300px">{{"WEITH" | translate}}</th>
+        <th nzWidth="300px">{{"WEIGHT" | translate}}</th>
         <th nzWidth="100px">{{"QUESTIONS" | translate}}</th>
         <th nzWidth="240px">
           <nz-button-group>
@@ -52,7 +52,7 @@
       <ng-template ngFor let-item [ngForOf]="table.data">
         <tr>
           <td></td>
-           
+
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
               {{item.name}}
@@ -74,10 +74,10 @@
           </td>
           <td>
             <ng-container *ngIf="!editCache[item.id].edit">
-              {{item.weith}}%
+              {{item.weight}}%
             </ng-container>
             <ng-container *ngIf="editCache[item.id].edit">
-              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].weith">
+              <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="editCache[item.id].weight">
             </ng-container>
           </td>
           <td>{{item.questions?.length}}</td>
@@ -114,7 +114,7 @@
             <nz-form-label>{{'CODE' | translate}}</nz-form-label>
           </div>
           <div nz-col nzSpan="3">
-            <nz-form-label>{{'WEITH' | translate}}</nz-form-label>
+            <nz-form-label>{{'WEIGHT' | translate}}</nz-form-label>
           </div>
         </div>
         <!--SCT Form Add Area -->
@@ -133,8 +133,8 @@
               </nz-form-control>
             </div>
             <div nz-col nzSpan="3">
-              <nz-form-control [nzErrorTip]="'WEITH_INPUT_REQUIRED' | translate">
-                <input nz-input [placeholder]="('WEITH_PLACEHOLDER' | translate)" formControlName="weith"/>
+              <nz-form-control [nzErrorTip]="'WEIGHT_INPUT_REQUIRED' | translate">
+                <input nz-input [placeholder]="('WEIGHT_PLACEHOLDER' | translate)" formControlName="weight"/>
               </nz-form-control>
             </div>
             <div nz-col nzSpan="3" style="display:flex;align-items:center;justify-content:center;">
@@ -146,7 +146,7 @@
             <div nz-col nzSpan="4" style="bottom: 0" *ngIf="i > 0">
               <button nz-button nzType="danger" nzShape="circle" (click)="deleteRow(i)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
             </div>
-            
+
           </div>
         </ng-container>
 
@@ -164,9 +164,9 @@
         </nz-form-item>
       </form>
       <!-- SCT mensaje warning-->
-      <nz-alert *ngIf="areaForm.get('areaRow').errors?.totalWeithNot100"
+      <nz-alert *ngIf="areaForm.get('areaRow').errors?.totalWEIGHTNot100"
           nzType="error"
-          nzMessage="La suma total de WEITH debe ser 100 (actual: {{areaForm.get('areaRow').errors.totalWeithNot100}})">
+          nzMessage="La suma total de WEIGHT debe ser 100 (actual: {{areaForm.get('areaRow').errors.totalWEIGHTNot100}})">
       </nz-alert>
       <div class="footer">
         <button type="button" (click)="cancelForm()" class="ant-btn" style="margin-right: 8px;"><span>{{'CANCEL' | translate}}</span></button>

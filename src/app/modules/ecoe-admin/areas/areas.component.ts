@@ -31,7 +31,7 @@ export class AreasComponent implements OnInit {
   rowArea: RowArea = {
     name: ['', Validators.required],
     code: ['', Validators.required],
-    weith: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+    weight: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
     locked: [false]
   };
 
@@ -47,7 +47,7 @@ export class AreasComponent implements OnInit {
 
   areasParser: ParserFile = {
     "filename": "areas.csv",
-    "fields": ["name", "code", "weith"],
+    "fields": ["name", "code", "weight"],
     "data": [
       ["Anamnesis", "1", ""],
       ["Exploración física", "2", ""],
@@ -69,7 +69,7 @@ export class AreasComponent implements OnInit {
 
     this.areaForm = this.fb.group({
       //areaRow: this.fb.array([])
-      areaRow: this.fb.array([], [this.validateTotalWeith.bind(this)]) // SCT validate weith
+      areaRow: this.fb.array([], [this.validateTotalWEIGHT.bind(this)]) // SCT validate weight
     });
 
     this.control = <FormArray>this.areaForm.controls.areaRow;
@@ -102,19 +102,19 @@ export class AreasComponent implements OnInit {
     this.InitAreaRow();
 
   }
-  /** SCT Validador global: suma de los WEITH debe ser 100 */
+  /** SCT Validador global: suma de los WEIGHT debe ser 100 */
     // SCT valida pesos
-  validateTotalWeith(control: AbstractControl): any {
+  validateTotalWEIGHT(control: AbstractControl): any {
     const rows = (control as FormArray).controls;
 
     const total = rows.reduce((acc, row) => {
-      const val = Number(row.get('weith')?.value);
+      const val = Number(row.get('weight')?.value);
       return acc + (isNaN(val) ? 0 : val);
     }, 0);
 
-    return total === 100 ? null : { totalWeithNot100: total };
+    return total === 100 ? null : { totalWEIGHTNot100: total };
   }
-  getTotalWeith(): number {
+  getTotalWEIGHT(): number {
     // When the form includes existing areas (rows with an `id`), we must
     // avoid double-counting them. Build the total as:
     // - sum of all form rows' weights
@@ -122,7 +122,7 @@ export class AreasComponent implements OnInit {
 
     // Sum weights from form rows
     const formTotal = this.control.controls.reduce((acc, row) => {
-      const val = Number(row.get('weith')?.value);
+      const val = Number(row.get('weight')?.value);
       return acc + (isNaN(val) ? 0 : val);
     }, 0);
 
@@ -138,7 +138,7 @@ export class AreasComponent implements OnInit {
     // Sum weights of existing areas that are NOT represented in the form
     const remainingExisting = this.areas.reduce((acc, area) => {
       if (idsInForm.has(Number(area.id))) { return acc; }
-      return acc + Number(area.weith || 0);
+      return acc + Number(area.weight || 0);
     }, 0);
 
     return remainingExisting + formTotal;
@@ -211,8 +211,8 @@ export class AreasComponent implements OnInit {
    * @param item Resource selected
    */
    updateItem(item: any): void {
-    
-    new Area(item).update({name: item.name, code: item.code, weith: Number(item.weith)})
+
+    new Area(item).update({name: item.name, code: item.code, weight: Number(item.weight)})
     //new Area(item).update({name: item.name, code: item.code})
       .then((response: any) => {
         this.editCache[item.$id].edit = false;
@@ -249,7 +249,7 @@ export class AreasComponent implements OnInit {
         if (item.id) {
           // existing area -> fetch instance then update (avoid assigning id to prototype)
           const promise = Area.fetch(item.id, {cache: false})
-            .then((areaInstance: any) => areaInstance.update({name: item.name, code: item.code.toString(), weith: Number(item.weith || 0)}))
+            .then((areaInstance: any) => areaInstance.update({name: item.name, code: item.code.toString(), weight: Number(item.weight || 0)}))
             .then(result => {
               this.logPromisesOK.push(result);
               return result;
@@ -265,7 +265,7 @@ export class AreasComponent implements OnInit {
           area.ecoe = this.ecoe;
           area.name = item.name;
           area.code = item.code.toString();
-          area.weith = Number(item.weith || 0);
+          area.weight = Number(item.weight || 0);
 
           const promise = area.save()
             .then(result => {
@@ -291,7 +291,7 @@ export class AreasComponent implements OnInit {
   /**
    * Method for import areas values from file.
    * @param parserResult values that was readed from file.
-   * Convertimos los CSV fields a objetos con name, code, weith
+   * Convertimos los CSV fields a objetos con name, code, weight
    */
 /*   importAreas(parserResult: Array<any>) {
     this.saveArrayAreas(parserResult)
@@ -301,19 +301,19 @@ export class AreasComponent implements OnInit {
       .finally(() => this.loadAreas());
   } */
   importAreas(parserResult: Array<any>) {
-  // Convertimos CSV/JSON fields a objetos {name, code, weith}
+  // Convertimos CSV/JSON fields a objetos {name, code, weight}
   const formatted = parserResult.map(item => ({
     name: item[' '] || item.name,
     code: item.code.toString(),
-    weith: Number(item.weith) || 0
+    weight: Number(item.weight) || 0
   }));
 
-  // Verificamos total WEITH incluyendo áreas existentes
-  const formTotal = formatted.reduce((acc, item) => acc + item.weith, 0);
-  const totalWeith = this.areas.reduce((acc, area) => acc + (area.weith || 0), 0) + formTotal;
+  // Verificamos total WEIGHT incluyendo áreas existentes
+  const formTotal = formatted.reduce((acc, item) => acc + item.weight, 0);
+  const totalWEIGHT = this.areas.reduce((acc, area) => acc + (area.weight || 0), 0) + formTotal;
 
-  if (totalWeith > 100) {
-    this.message.error(`La suma total de WEITH no puede superar 100. Actualmente: ${totalWeith}`);
+  if (totalWEIGHT > 100) {
+    this.message.error(`La suma total de WEIGHT no puede superar 100. Actualmente: ${totalWEIGHT}`);
     return;
   }
 
@@ -369,7 +369,7 @@ export class AreasComponent implements OnInit {
         id: [area.id],
         name: [area.name, Validators.required],
         code: [area.code, Validators.required],
-        weith: [area.weith || 0, [Validators.required, Validators.min(0), Validators.max(100)]],
+        weight: [area.weight || 0, [Validators.required, Validators.min(0), Validators.max(100)]],
         locked: [false]
       }));
     });
@@ -405,7 +405,7 @@ export class AreasComponent implements OnInit {
 
     controls.forEach(c => {
       const isLocked = !!c.get('locked')?.value;
-      const val = Number(c.get('weith')?.value) || 0;
+      const val = Number(c.get('weight')?.value) || 0;
       if (isLocked) {
         lockedSum += val;
       } else {
@@ -431,7 +431,7 @@ export class AreasComponent implements OnInit {
     for (let i = 0; i < m; i++) {
       const value = base + (remainder > 0 ? 1 : 0);
       remainder = Math.max(0, remainder - 1);
-      const control = unlocked[i].get('weith');
+      const control = unlocked[i].get('weight');
       if (control) {
         control.setValue(value);
         control.markAsDirty();
@@ -487,8 +487,8 @@ export class AreasComponent implements OnInit {
         this.getFormControl('code', +i).markAsDirty();
         this.getFormControl('code', +i).updateValueAndValidity();
 
-        this.getFormControl('weith', +i).markAsDirty();
-        this.getFormControl('weith', +i).updateValueAndValidity();
+        this.getFormControl('weight', +i).markAsDirty();
+        this.getFormControl('weight', +i).updateValueAndValidity();
       }
     }
     if (this.areaForm.valid) {
@@ -499,13 +499,13 @@ export class AreasComponent implements OnInit {
           this.InitAreaRow();
         });
     }
-    // SCT Validación total de WEITH incluyendo áreas existentes
-    const total = this.getTotalWeith();
+    // SCT Validación total de WEIGHT incluyendo áreas existentes
+    const total = this.getTotalWEIGHT();
     if (total > 100) {
       this.message.error(`La suma de los pesos no puede superar 100. Actualmente: ${total}`);
       return;
     }
-    
+
   } */
 
   /**
@@ -523,7 +523,7 @@ export class AreasComponent implements OnInit {
   const rowsToSave = allRows.filter(r => {
     const hasName = r.name !== undefined && r.name !== null && String(r.name).trim() !== '';
     const hasCode = r.code !== undefined && r.code !== null && String(r.code).trim() !== '';
-    const hasWeight = Number(r.weith) && Number(r.weith) !== 0;
+    const hasWeight = Number(r.weight) && Number(r.weight) !== 0;
     const hasId = r.id !== undefined && r.id !== null && r.id !== '';
     return hasId || hasName || hasCode || hasWeight;
   });
@@ -543,15 +543,15 @@ export class AreasComponent implements OnInit {
       this.getFormControl('code', i).markAsDirty();
       this.getFormControl('code', i).updateValueAndValidity();
 
-      this.getFormControl('weith', i).markAsDirty();
-      this.getFormControl('weith', i).updateValueAndValidity();
+      this.getFormControl('weight', i).markAsDirty();
+      this.getFormControl('weight', i).updateValueAndValidity();
     }
   });
 
   // Validate total weight considering only rows to save + existing areas not in the form
-  const totalWeith = this.getTotalWeithForRows(rowsToSave);
-  if (totalWeith > 100) {
-    this.message.error(`La suma de los pesos no puede superar 100. Actualmente: ${totalWeith}`);
+  const totalWEIGHT = this.getTotalWEIGHTForRows(rowsToSave);
+  if (totalWEIGHT > 100) {
+    this.message.error(`La suma de los pesos no puede superar 100. Actualmente: ${totalWEIGHT}`);
     return;
   }
 
@@ -559,7 +559,7 @@ export class AreasComponent implements OnInit {
   const anyInvalid = rowsToSave.some((r, idx) => {
     // find index in allRows to access controls
     const i = allRows.indexOf(r);
-    return this.getFormControl('name', i).invalid || this.getFormControl('code', i).invalid || this.getFormControl('weith', i).invalid;
+    return this.getFormControl('name', i).invalid || this.getFormControl('code', i).invalid || this.getFormControl('weight', i).invalid;
   });
   if (anyInvalid) {
     this.message.error('Hay campos inválidos. Revise los campos requeridos.');
@@ -579,9 +579,9 @@ export class AreasComponent implements OnInit {
    * Compute total weight for a set of form rows plus existing areas not represented in those rows.
    * This prevents double-counting when the form already contains existing areas.
    */
-  getTotalWeithForRows(rows: any[]): number {
+  getTotalWEIGHTForRows(rows: any[]): number {
     // Sum weights from provided rows
-    const formTotal = rows.reduce((acc, row) => acc + (Number(row.weith) || 0), 0);
+    const formTotal = rows.reduce((acc, row) => acc + (Number(row.weight) || 0), 0);
 
     // Collect ids present in rows
     const idsInRows = new Set<number>();
@@ -590,7 +590,7 @@ export class AreasComponent implements OnInit {
     // Sum existing areas not in rows
     const remainingExisting = this.areas.reduce((acc, area) => {
       if (idsInRows.has(Number(area.id))) { return acc; }
-      return acc + Number(area.weith || 0);
+      return acc + Number(area.weight || 0);
     }, 0);
 
     return remainingExisting + formTotal;
