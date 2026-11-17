@@ -1,18 +1,18 @@
-FROM node:16 AS build
+# Node 22 LTS (node 16 ya no tiene soporte y las dependencias de compilación piden node 18 o posterior).
+# El webpack 4 de Angular 11 usa md4: con OpenSSL 3 necesita el proveedor legacy.
+FROM node:22-bookworm-slim AS build
 WORKDIR /app
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
-# install and cache app dependencies
+# install and cache app dependencies (exactamente las del yarn.lock)
 COPY package.json package.json
 COPY yarn.lock yarn.lock
 
-RUN yarn install
-RUN yarn global add @angular/cli@11
+RUN yarn install --frozen-lockfile
 
 COPY . /app
 
-ENV GENERATE_SOURCEMAP false
-
-RUN ng build --prod --output-path dist
+RUN yarn build --configuration=production --output-path dist
 
 FROM nginx:alpine as ngi
 

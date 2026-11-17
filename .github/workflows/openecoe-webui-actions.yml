@@ -38,7 +38,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -51,6 +51,8 @@ jobs:
     - name: Install dependencies
       run: yarn --frozen-lockfile
     - name: Build application
+      env:
+        NODE_OPTIONS: --openssl-legacy-provider
       run: yarn build --configuration=production
     #- name: Launch tests
     #  run: yarn test

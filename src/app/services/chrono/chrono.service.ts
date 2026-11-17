@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import * as io from 'socket.io-client';
+import {io, Socket} from 'socket.io-client';
 import {Observable} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {map} from 'rxjs/operators';
@@ -14,7 +14,7 @@ import {ECOEConfig} from '../../models/chrono';
 })
 export class ChronoService {
 
-  private socket: SocketIOClient.Socket;
+  private socket: Socket;
   private readonly URL_CHRONO = environment.CHRONO_ROUTE;
   private readonly API_ROUTE = environment.API_ROUTE;
   private readonly API_V1: string = '/api/v1';
@@ -29,14 +29,15 @@ export class ChronoService {
    */
   onConnected(round: number) {
     const command = '/round';
-    this.socket = io.connect(this.URI_SOCKETIO + command + round, {
+    this.socket = io(this.URI_SOCKETIO + command + round, {
       transports: ['websocket'],
       reconnectionDelayMax: 1000,
       forceNew: true
     });
     return Observable.create(observer =>
-      this.socket.on('connect', data =>
-        observer.next(['connect', data])
+      // socket.io v4: el evento connect no lleva datos (en v2 tampoco los traía).
+      this.socket.on('connect', () =>
+        observer.next(['connect', undefined])
       )
     );
   }
