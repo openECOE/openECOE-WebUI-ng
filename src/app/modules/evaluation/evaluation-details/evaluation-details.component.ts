@@ -96,7 +96,7 @@ export class EvaluationDetailsComponent implements OnInit {
         }
       }
     }
-    
+
   }
 
   getShiftDays(shifts: Shift[]) {
@@ -110,7 +110,7 @@ export class EvaluationDetailsComponent implements OnInit {
     this.ecoeDays = aux_arr;
 
     if (!this.selectedEcoeDay) {
-      this.selectedEcoeDay = this.checkForNextStep(this.ecoeDays); 
+      this.selectedEcoeDay = this.checkForNextStep(this.ecoeDays);
       this.onEcoeDateSelected(this.selectedEcoeDay)
     } else {
       this.onChangeECOEDay(this.selectedEcoeDay)
@@ -160,18 +160,29 @@ export class EvaluationDetailsComponent implements OnInit {
   }
 
   getData(ecoe: number) {
-    const roundsPromise = Round.query({
-      where: {'ecoe': ecoe}
-    }).then((rounds: Round[]) => {
+    const roundsPromise = Round.query(
+      {where: { ecoe: ecoe }},
+      {skip: ["ecoe"]}
+    )
+      .then((rounds: Round[]) => {
         this.rounds = rounds;
-        if (!this.selectedRound) {this.selectedRound = this.checkForNextStep(rounds); }
-      }).catch(err => {
-        console.error('[EvaluationDetailsComponent]','getData()','Round.query',err);
+        if (!this.selectedRound) {
+          this.selectedRound = this.checkForNextStep(rounds);
+        }
+      })
+      .catch((err) => {
+        console.error(
+          "[EvaluationDetailsComponent]",
+          "getData()",
+          "Round.query",
+          err
+        );
         return err;
       });
-    const shiftsPromise = Shift.query({
-      where: {'ecoe': ecoe}
-    }).then((shifts: any[]) => {
+    const shiftsPromise = Shift.query(
+      {where: {'ecoe': ecoe}},
+      {skip: ['ecoe']}
+    ).then((shifts: any[]) => {
         this.shifts = shifts;
       }).catch(err => {
         console.error('[EvaluationDetailsComponent]','getData()','Shift.query',err);
@@ -190,7 +201,7 @@ export class EvaluationDetailsComponent implements OnInit {
       where: {ecoe: this.ecoeId},
       sort: {order: false},
     }, {
-      skip: ['parentStation', 'childrenStations']
+      skip: ['parentStation', 'childrenStations', 'ecoe']
     }).then(async (stations: Station[]) => {
       for (const station of stations) {
         const _eval = await station.can.evaluate()

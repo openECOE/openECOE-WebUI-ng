@@ -43,7 +43,7 @@ export class Job extends Item {
   name: string;
   progress: number;
   complete: boolean;
-  user: User;
+  user: number;
   created: Date;
   finished: Date;
   description: string;
@@ -68,6 +68,7 @@ export class ECOE extends Item {
 
   static archive = Route.GET<ECOE | Pagination<ECOE>>("/archive");
   static dearchive = Route.POST("/archive/<int:id>/restore");
+  generateCSV = Route.POST<Job>("/csv");
 
   configuration = Route.GET("/configuration");
   results = Route.GET("/results");

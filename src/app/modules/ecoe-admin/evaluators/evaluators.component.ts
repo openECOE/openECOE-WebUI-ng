@@ -94,9 +94,9 @@ export class EvaluatorsComponent implements OnInit {
             this.ecoe_name = ecoe.name;
             return this.getStations()
           })
-          .then(stations => {
+          .then(async stations => {
             this.listStations = stations;
-            this.loadEvaluators();
+            await this.loadEvaluators();
             this.loading = false;
             this.getPermissionForm();
           })
@@ -132,20 +132,31 @@ export class EvaluatorsComponent implements OnInit {
   }
 
   async loadEvaluators() {
-    this.evaluators = [];
     this.loading = true;
+    this.evaluators = [];
+
 
     try {
      const usersWithEvalautePermission = await this.apiService.getEvaluators(this.ecoe);
 
-     usersWithEvalautePermission.forEach(async (evaluator) => {
+     await Promise.all(usersWithEvalautePermission.map(async (evaluator) => {
       const _evaluator = { id: evaluator.id, stations: null, user: evaluator };
       _evaluator.stations = await this.apiService.getStationsByEvaluator(
         _evaluator.user,
         this.ecoe
       );
       this.evaluators.push(_evaluator);
-    });
+    }));
+
+      this.evaluators = this.evaluators.sort((a, b) => {
+        if (a.user.email < b.user.email) {
+          return -1;
+        }
+        if (a.user.email > b.user.email) {
+          return 1;
+        }
+        return 0;
+      });
 
       this.totalItems = this.evaluators.length;
     } catch (error) {
